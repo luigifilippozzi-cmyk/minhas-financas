@@ -11,14 +11,14 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { getAuth }       from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 import { getFirestore }  from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
-// TODO: Substitua com as credenciais do seu projeto Firebase
 const firebaseConfig = {
-  apiKey:            'SUA_API_KEY',
-  authDomain:        'SEU_PROJETO.firebaseapp.com',
-  projectId:         'SEU_PROJETO_ID',
-  storageBucket:     'SEU_PROJETO.appspot.com',
-  messagingSenderId: 'SEU_SENDER_ID',
-  appId:             'SEU_APP_ID',
+  apiKey:            'AIzaSyCm0DBw1sFiUG59_iL8Ofht7QJrcvssMc4',
+  authDomain:        'minhas-financas-285da.firebaseapp.com',
+  projectId:         'minhas-financas-285da',
+  storageBucket:     'minhas-financas-285da.firebasestorage.app',
+  messagingSenderId: '849955751024',
+  appId:             '1:849955751024:web:8ed2d800d267206aab60b5',
+  measurementId:     'G-FZLNQW6WE9',
 };
 
 // Inicializa o Firebase
