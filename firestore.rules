@@ -1,0 +1,45 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Verifica se o usuário está autenticado
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Verifica se o usuário é membro de um grupo
+    function isMemberOfGroup(grupoId) {
+      return isSignedIn() &&
+             get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.grupoId == grupoId;
+    }
+
+    // Usuários: só pode ler/escrever o próprio perfil
+    match /usuarios/{userId} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Grupos: membros podem ler e atualizar; qualquer autenticado pode criar
+    match /grupos/{grupoId} {
+      allow read, update: if isSignedIn() && isMemberOfGroup(grupoId);
+      allow create: if isSignedIn();
+    }
+
+    // Categorias: apenas membros do grupo
+    match /categorias/{categoriaId} {
+      allow read, write: if isSignedIn() && isMemberOfGroup(resource.data.grupoId);
+      allow create: if isSignedIn() && isMemberOfGroup(request.resource.data.grupoId);
+    }
+
+    // Despesas: apenas membros do grupo
+    match /despesas/{despesaId} {
+      allow read, write: if isSignedIn() && isMemberOfGroup(resource.data.grupoId);
+      allow create: if isSignedIn() && isMemberOfGroup(request.resource.data.grupoId);
+    }
+
+    // Orçamentos: apenas membros do grupo
+    match /orcamentos/{orcamentoId} {
+      allow read, write: if isSignedIn() && isMemberOfGroup(resource.data.grupoId);
+      allow create: if isSignedIn() && isMemberOfGroup(request.resource.data.grupoId);
+    }
+  }
+}

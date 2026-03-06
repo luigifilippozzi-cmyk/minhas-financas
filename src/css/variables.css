@@ -1,0 +1,65 @@
+/* ============================================================
+   VARIÁVEIS GLOBAIS — Minhas Finanças
+   Edite aqui para mudar o tema visual do app inteiro
+   ============================================================ */
+
+:root {
+  /* Cores Primárias */
+  --color-primary:       #4F46E5;  /* Índigo — botões, links ativos */
+  --color-primary-hover: #4338CA;
+  --color-primary-light: #EEF2FF;
+
+  /* Cores de Superfície */
+  --color-bg:            #F8FAFC;  /* Fundo da página */
+  --color-surface:       #FFFFFF;  /* Cards, modais */
+  --color-border:        #E2E8F0;  /* Bordas */
+
+  /* Cores de Texto */
+  --color-text:          #1E293B;  /* Texto principal */
+  --color-text-muted:    #64748B;  /* Texto secundário */
+  --color-text-inverse:  #FFFFFF;
+
+  /* Cores de Status (orçamentos) */
+  --color-ok:            #22C55E;  /* Verde: 0–70% */
+  --color-warning:       #F59E0B;  /* Amarelo: 70–90% */
+  --color-danger:        #EF4444;  /* Vermelho: 90–100% */
+  --color-critical:      #7C3AED;  /* Roxo: >100% */
+
+  /* Sombras */
+  --shadow-sm:  0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md:  0 4px 6px  rgba(0,0,0,0.07);
+  --shadow-lg:  0 10px 15px rgba(0,0,0,0.10);
+
+  /* Raios de Borda */
+  --radius-sm:  4px;
+  --radius-md:  8px;
+  --radius-lg:  16px;
+  --radius-full: 9999px;
+
+  /* Tipografia */
+  --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-size-xs:   12px;
+  --font-size-sm:   14px;
+  --font-size-base: 16px;
+  --font-size-lg:   18px;
+  --font-size-xl:   24px;
+  --font-size-2xl:  30px;
+
+  /* Espaçamento */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+
+  /* Layout */
+  --navbar-height: 60px;
+  --max-width:     1100px;
+  --sidebar-width: 260px;
+
+  /* Transições */
+  --transition: 0.2s ease;
+}
