@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minhas Finanças — Login</title>
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body class="auth-page">
+
+  <main class="auth-container">
+    <div class="auth-card">
+
+      <!-- Logo / Cabeçalho -->
+      <div class="auth-header">
+        <span class="auth-logo">💰</span>
+        <h1 class="auth-title">Minhas Finanças</h1>
+        <p class="auth-subtitle">Gestão financeira familiar</p>
+      </div>
+
+      <!-- Abas: Login / Cadastro -->
+      <div class="auth-tabs">
+        <button class="tab-btn tab-active" data-tab="login">Entrar</button>
+        <button class="tab-btn" data-tab="cadastro">Criar conta</button>
+      </div>
+
+      <!-- Formulário de Login -->
+      <form id="form-login" class="auth-form" novalidate>
+        <div class="form-group">
+          <label for="login-email">E-mail</label>
+          <input
+            type="email"
+            id="login-email"
+            placeholder="seu@email.com"
+            required
+            autocomplete="email"
+          />
+        </div>
+        <div class="form-group">
+          <label for="login-senha">Senha</label>
+          <input
+            type="password"
+            id="login-senha"
+            placeholder="Mínimo 6 caracteres"
+            required
+            minlength="6"
+            autocomplete="current-password"
+          />
+        </div>
+        <div id="login-erro" class="form-erro hidden"></div>
+        <button type="submit" class="btn btn-primary btn-full">Entrar</button>
+      </form>
+
+      <!-- Formulário de Cadastro -->
+      <form id="form-cadastro" class="auth-form hidden" novalidate>
+        <div class="form-group">
+          <label for="cadastro-nome">Nome</label>
+          <input
+            type="text"
+            id="cadastro-nome"
+            placeholder="Seu nome"
+            required
+            autocomplete="name"
+          />
+        </div>
+        <div class="form-group">
+          <label for="cadastro-email">E-mail</label>
+          <input
+            type="email"
+            id="cadastro-email"
+            placeholder="seu@email.com"
+            required
+            autocomplete="email"
+          />
+        </div>
+        <div class="form-group">
+          <label for="cadastro-senha">Senha</label>
+          <input
+            type="password"
+            id="cadastro-senha"
+            placeholder="Mínimo 6 caracteres"
+            required
+            minlength="6"
+            autocomplete="new-password"
+          />
+        </div>
+        <div id="cadastro-erro" class="form-erro hidden"></div>
+        <button type="submit" class="btn btn-primary btn-full">Criar conta</button>
+      </form>
+
+    </div>
+  </main>
+
+  <!-- Firebase SDK (versão modular) -->
+  <!-- TODO: Substituir pelos scripts do seu projeto Firebase -->
+  <!-- <script type="module" src="js/config/firebase.js"></script> -->
+  <script type="module" src="js/services/auth.js"></script>
+
+</body>
+</html>
