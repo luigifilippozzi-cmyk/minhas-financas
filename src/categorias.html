@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Categorias — Minhas Finanças</title>
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+
+  <!-- Header / Navbar -->
+  <header class="navbar">
+    <div class="navbar-brand">
+      <a href="index.html" class="navbar-back" title="Voltar ao Dashboard">←</a>
+      <span>🏷️</span>
+      <span>Categorias</span>
+    </div>
+    <div class="navbar-user">
+      <span id="usuario-nome">Carregando...</span>
+      <button id="btn-logout" class="btn btn-outline btn-sm">Sair</button>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="main-content">
+
+    <section class="section">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">🏷️ Gerenciar Categorias</h2>
+          <p class="section-subtitle">
+            Alterações são sincronizadas em tempo real para todos os membros do grupo.
+          </p>
+        </div>
+        <button id="btn-nova-categoria" class="btn btn-primary">+ Nova Categoria</button>
+      </div>
+
+      <!-- Lista de categorias -->
+      <div id="categorias-lista" class="cat-lista">
+        <p class="empty-state">Carregando categorias...</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══ MODAL: Nova / Editar Categoria ═══ -->
+  <div class="modal hidden" id="modal-categoria">
+    <div class="modal-backdrop" id="backdrop-categoria"></div>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-cat-titulo">Nova Categoria</h3>
+        <button class="modal-close" id="btn-fechar-modal-cat">✕</button>
+      </div>
+
+      <form id="form-categoria" novalidate>
+        <input type="hidden" id="cat-id" />
+
+        <!-- Prévia visual em tempo real -->
+        <div class="cat-preview">
+          <span id="preview-emoji">📦</span>
+          <span id="preview-nome" class="cat-preview-nome">Nova Categoria</span>
+          <span id="preview-cor" class="cat-preview-cor" style="background:#95A5A6"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="cat-emoji">Emoji</label>
+          <input type="text" id="cat-emoji" placeholder="Ex: 🍔" maxlength="4" required />
+          <span class="form-help">Clique no campo e use qualquer emoji do teclado.</span>
+        </div>
+
+        <div class="form-group">
+          <label for="cat-nome">Nome da Categoria</label>
+          <input type="text" id="cat-nome" placeholder="Ex: Alimentação" maxlength="30" required />
+        </div>
+
+        <div class="form-group">
+          <label for="cat-cor">Cor</label>
+          <div class="color-picker-row">
+            <input type="color" id="cat-cor" value="#95A5A6" />
+            <div class="color-swatches" id="color-swatches">
+              <!-- Cores rápidas, preenchidas via JS -->
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="cat-orcamento">Orçamento Mensal (R$)</label>
+          <input
+            type="number"
+            id="cat-orcamento"
+            placeholder="0 = sem limite"
+            min="0"
+            step="0.01"
+          />
+          <span class="form-help">Deixe 0 ou vazio para não definir limite.</span>
+        </div>
+
+        <p id="cat-erro" class="form-error hidden"></p>
+
+        <div class="modal-actions">
+          <button type="button" id="btn-cancelar-cat" class="btn btn-outline">Cancelar</button>
+          <button type="submit" id="btn-salvar-cat" class="btn btn-primary">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══ MODAL: Confirmar Desativação ═══ -->
+  <div class="modal hidden" id="modal-confirmar">
+    <div class="modal-backdrop" id="backdrop-confirmar"></div>
+    <div class="modal-card modal-card-sm">
+      <div class="modal-header">
+        <h3>Desativar Categoria</h3>
+        <button class="modal-close" id="btn-fechar-confirmar">✕</button>
+      </div>
+      <p id="confirmar-mensagem" class="confirmar-msg"></p>
+      <div class="modal-actions">
+        <button id="btn-cancelar-confirmar" class="btn btn-outline">Cancelar</button>
+        <button id="btn-confirmar-acao" class="btn btn-danger">Desativar</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/pages/categorias.js"></script>
+</body>
+</html>
