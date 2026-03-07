@@ -1,0 +1,42 @@
+# ============================================================
+# DEPLOY AUTOMÁTICO — Firebase Hosting
+#
+# Este workflow é disparado toda vez que há um push na branch
+# main. Ele faz o deploy do app no Firebase Hosting automaticamente.
+#
+# CONFIGURAÇÃO NECESSÁRIA (feita uma única vez):
+# 1. Gere o token: no terminal Windows, rode `firebase login:ci`
+# 2. Copie o token gerado
+# 3. No GitHub: Settings → Secrets and variables → Actions
+# 4. Clique em "New repository secret"
+# 5. Nome: FIREBASE_TOKEN  |  Valor: (cole o token)
+# ============================================================
+
+name: Deploy para Firebase Hosting
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Faz checkout do código
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      # 2. Instala o Firebase CLI
+      - name: Instala Firebase CLI
+        run: npm install -g firebase-tools
+
+      # 3. Faz deploy no Firebase Hosting
+      - name: Deploy no Firebase Hosting
+        run: firebase deploy --only hosting --token "${{ secrets.FIREBASE_TOKEN }}" --project minhas-financas-285da
+
+      # 4. Exibe a URL do app após o deploy
+      - name: URL do app
+        run: echo "✅ App publicado em https://minhas-financas-285da.web.app"

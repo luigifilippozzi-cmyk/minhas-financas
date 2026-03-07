@@ -9,15 +9,24 @@ import {
   signOut,
   onAuthStateChanged,
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import { criarPerfil, buscarPerfil } from './database.js';
 
 /**
- * Cria uma nova conta com email e senha.
+ * Cria uma nova conta com email e senha, e grava o perfil no Firestore.
+ * @param {string} nome
  * @param {string} email
  * @param {string} senha
  * @returns {Promise<UserCredential>}
  */
-export async function cadastrar(email, senha) {
-  return createUserWithEmailAndPassword(auth, email, senha);
+export async function cadastrar(nome, email, senha) {
+  const credencial = await createUserWithEmailAndPassword(auth, email, senha);
+  // Cria o perfil do usuário no Firestore (sem grupoId ainda)
+  await criarPerfil(credencial.user.uid, {
+    nome: nome.trim(),
+    email: email.trim(),
+    grupoId: null,
+  });
+  return credencial;
 }
 
 /**
@@ -64,9 +73,15 @@ if (document.getElementById('form-login')) {
   const erroLogin    = document.getElementById('login-erro');
   const erroCadastro = document.getElementById('cadastro-erro');
 
-  // Redireciona se já estiver logado
-  onAuthChange((user) => {
-    if (user) window.location.href = 'index.html';
+  // Redireciona baseado no estado do grupo: com grupo → dashboard, sem grupo → setup
+  onAuthChange(async (user) => {
+    if (!user) return;
+    const perfil = await buscarPerfil(user.uid);
+    if (perfil?.grupoId) {
+      window.location.href = 'index.html';
+    } else {
+      window.location.href = 'grupo.html';
+    }
   });
 
   // Controle de abas
@@ -95,15 +110,16 @@ if (document.getElementById('form-login')) {
     }
   });
 
-  // Submit de Cadastro
+  // Submit de Cadastro — captura nome + email + senha
   formCadastro.addEventListener('submit', async (e) => {
     e.preventDefault();
     erroCadastro.classList.add('hidden');
+    const nome  = document.getElementById('cadastro-nome').value.trim();
     const email = document.getElementById('cadastro-email').value.trim();
     const senha = document.getElementById('cadastro-senha').value;
     try {
-      await cadastrar(email, senha);
-      // onAuthChange cuidará do redirecionamento
+      await cadastrar(nome, email, senha);
+      // onAuthChange cuidará do redirecionamento para grupo.html
     } catch (err) {
       erroCadastro.textContent = traduzirErroFirebase(err.code);
       erroCadastro.classList.remove('hidden');

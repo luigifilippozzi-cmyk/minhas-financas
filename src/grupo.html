@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minhas Finanças — Configurar Grupo</title>
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body class="auth-page">
+
+  <main class="auth-container">
+    <div class="auth-card grupo-card">
+
+      <!-- Cabeçalho -->
+      <div class="auth-header">
+        <span class="auth-logo">👨‍👩‍👧</span>
+        <h1 class="auth-title">Seu Grupo Familiar</h1>
+        <p class="auth-subtitle">Crie um novo grupo ou entre em um existente</p>
+      </div>
+
+      <!-- Abas: Criar / Entrar -->
+      <div class="auth-tabs">
+        <button class="tab-btn tab-active" data-tab="criar">Criar grupo</button>
+        <button class="tab-btn" data-tab="entrar">Entrar com código</button>
+      </div>
+
+      <!-- ── Formulário: Criar Grupo ── -->
+      <form id="form-criar" class="auth-form" novalidate>
+        <p class="form-help">
+          Você será o administrador do grupo. Depois de criar, compartilhe o código de convite
+          com sua família.
+        </p>
+        <div class="form-group">
+          <label for="criar-nome">Nome do grupo</label>
+          <input
+            type="text"
+            id="criar-nome"
+            placeholder="Ex: Família Silva"
+            required
+            maxlength="50"
+            autocomplete="off"
+          />
+        </div>
+        <div id="criar-erro" class="form-erro hidden"></div>
+        <button type="submit" class="btn btn-primary btn-full" id="btn-criar">
+          Criar grupo
+        </button>
+      </form>
+
+      <!-- ── Formulário: Entrar com Código ── -->
+      <form id="form-entrar" class="auth-form hidden" novalidate>
+        <p class="form-help">
+          Peça o código de 6 letras para quem criou o grupo e insira abaixo.
+        </p>
+        <div class="form-group">
+          <label for="entrar-codigo">Código de convite</label>
+          <input
+            type="text"
+            id="entrar-codigo"
+            placeholder="Ex: A3F9KZ"
+            required
+            maxlength="6"
+            autocomplete="off"
+            style="text-transform: uppercase; letter-spacing: 4px; font-size: 1.4rem; text-align: center;"
+          />
+        </div>
+        <div id="entrar-erro" class="form-erro hidden"></div>
+        <button type="submit" class="btn btn-primary btn-full" id="btn-entrar">
+          Entrar no grupo
+        </button>
+      </form>
+
+      <!-- ── Tela de Sucesso (exibida após criar/entrar) ── -->
+      <div id="tela-sucesso" class="hidden">
+        <div class="sucesso-icon">✅</div>
+        <h2 class="sucesso-titulo">Grupo configurado!</h2>
+        <p id="sucesso-msg" class="sucesso-msg"></p>
+
+        <!-- Código de convite (só aparece ao criar) -->
+        <div id="bloco-codigo" class="codigo-convite hidden">
+          <p class="codigo-label">Código de convite para compartilhar:</p>
+          <div class="codigo-valor" id="codigo-gerado">——</div>
+          <button type="button" class="btn btn-outline btn-sm" id="btn-copiar">
+            📋 Copiar código
+          </button>
+        </div>
+
+        <button type="button" class="btn btn-primary btn-full" id="btn-ir-dashboard"
+                style="margin-top: var(--space-6);">
+          Ir para o Dashboard →
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <script type="module" src="js/pages/grupo.js"></script>
+
+</body>
+</html>
