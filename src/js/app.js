@@ -4,7 +4,7 @@
 // ============================================================
 
 import { onAuthChange, logout } from './services/auth.js';
-import { buscarPerfil } from './services/database.js';
+import { buscarPerfil, ouvirParcelamentosAbertos } from './services/database.js';
 import { iniciarListenerCategorias } from './controllers/categorias.js';
 import {
   iniciarListenerDespesas,
@@ -32,6 +32,7 @@ let estadoApp = {
 let _unsubCats = null;
 let _unsubDesp = null;
 let _unsubOrc  = null;
+let _unsubProj = null; // RF-014: parcelamentos em aberto
 
 // ── Inicialização ─────────────────────────────────────────────
 
@@ -53,6 +54,7 @@ onAuthChange(async (user) => {
   atualizarTituloPeriodo();
   preencherSelectPeriodo();
   iniciarListeners();
+  iniciarListenerParcelamentos(estadoApp.perfil.grupoId); // RF-014
   configurarEventos();
 });
 
@@ -157,6 +159,14 @@ function configurarEventos() {
     }
   });
 
+  // RF-014: toggle painel parcelamentos
+  document.getElementById('parc-toggle-dash')?.addEventListener('click', () => {
+    const body = document.getElementById('parc-body-dash');
+    if (body) body.classList.toggle('parc-body--collapsed');
+    const icon = document.querySelector('#parc-toggle-dash .parc-toggle-icon');
+    if (icon) icon.textContent = body?.classList.contains('parc-body--collapsed') ? '▸' : '▾';
+  });
+
   // Filtro de período
   document.getElementById('select-mes')?.addEventListener('change', (e) => {
     estadoApp.mes = Number(e.target.value);
@@ -206,6 +216,69 @@ window.confirmarExcluirDespesa = async (id) => {
     await deletarDespesa(id);
   }
 };
+
+// ── RF-014: Parcelamentos em Aberto ──────────────────────────
+
+function iniciarListenerParcelamentos(grupoId) {
+  if (_unsubProj) _unsubProj();
+  _unsubProj = ouvirParcelamentosAbertos(grupoId, (projecoes) => {
+    renderizarPainelParcelamentos(projecoes);
+  });
+}
+
+function renderizarPainelParcelamentos(projecoes) {
+  const widget = document.getElementById('parc-widget-dash');
+  const lista  = document.getElementById('parc-lista-dash');
+  const total  = document.getElementById('parc-total-dash');
+  if (!widget || !lista || !total) return;
+
+  const hoje    = new Date();
+  const futuras = projecoes.filter(p => {
+    const d = p.data?.toDate?.() ?? new Date(p.data);
+    return d > hoje;
+  });
+
+  if (!futuras.length) {
+    widget.classList.add('hidden');
+    return;
+  }
+  widget.classList.remove('hidden');
+
+  // Totais por responsável
+  const porResp = {};
+  let totalGeral = 0;
+  futuras.forEach(p => {
+    const resp = (p.responsavel || p.portador || '—').split(' ')[0];
+    if (!porResp[resp]) porResp[resp] = { total: 0, compras: {} };
+    porResp[resp].total += p.valor ?? 0;
+    totalGeral          += p.valor ?? 0;
+    const cid = p.parcelamento_id ?? p.descricao;
+    if (!porResp[resp].compras[cid])
+      porResp[resp].compras[cid] = { descricao: p.descricao, valor: p.valor, qtd: 0 };
+    porResp[resp].compras[cid].qtd++;
+  });
+
+  total.textContent = formatarMoedaDash(totalGeral);
+  lista.innerHTML = Object.entries(porResp).map(([resp, d]) => `
+    <div class="parc-resp-row">
+      <div class="parc-resp-header">
+        <span class="parc-resp-nome">👤 ${resp}</span>
+        <span class="parc-resp-total">${formatarMoedaDash(d.total)}</span>
+      </div>
+      <div class="parc-resp-items">
+        ${Object.values(d.compras).map(c => `
+          <div class="parc-compra-item">
+            <span class="parc-compra-desc">${c.descricao}</span>
+            <span class="parc-compra-info">${c.qtd} parcela${c.qtd > 1 ? 's' : ''} restante${c.qtd > 1 ? 's' : ''}</span>
+            <span class="parc-compra-valor">${formatarMoedaDash(c.valor * c.qtd)}</span>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function formatarMoedaDash(v) {
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v ?? 0);
+}
 
 // ── Período ──────────────────────────────────────────────────
 

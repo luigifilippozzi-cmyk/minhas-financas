@@ -1,17 +1,17 @@
 // ============================================================
-// PAGE: Despesas — RF-005
-// Registro, edição e exclusão de despesas.
+// PAGE: Despesas — RF-005 + RF-012 + RF-014
 //
-// SINCRONIZAÇÃO BIDIRECIONAL:
-//   Ambos os membros do grupo compartilham o mesmo grupoId.
-//   Qualquer escrita (criar/editar/excluir) feita por um usuário
-//   dispara o onSnapshot no outro dispositivo em tempo real,
-//   sem necessidade de refresh.
+// RF-014 ADIÇÕES:
+//  • Campo "responsável" no formulário de nova/edição de despesa
+//  • Chips de total por responsável no resumo do mês
+//  • Filtro de lista por responsável
+//  • Painel de Parcelamentos em Aberto (tipo='projecao')
+//  • Despesas projetadas exibidas com estilo diferenciado
 // ============================================================
 
 import { onAuthChange, logout } from '../services/auth.js';
-import { buscarPerfil } from '../services/database.js';
-import { ouvirCategorias } from '../services/database.js';
+import { buscarPerfil, buscarGrupo } from '../services/database.js';
+import { ouvirCategorias, ouvirParcelamentosAbertos } from '../services/database.js';
 import {
   iniciarListenerDespesas,
   salvarDespesa,
@@ -22,86 +22,219 @@ import { dataHoje } from '../utils/helpers.js';
 
 // ── Estado da página ──────────────────────────────────────────
 let _usuario    = null;
-let _perfil     = null;
 let _grupoId    = null;
-let _mes        = new Date().getMonth() + 1;  // 1-12
+let _grupo      = null;     // dados do grupo (nomesMembros)
+let _mes        = new Date().getMonth() + 1;
 let _ano        = new Date().getFullYear();
-let _despesas   = [];   // lista completa do mês (sem filtro)
-let _categorias = [];   // lista de categorias ativas do grupo
-let _catMap     = {};   // { [id]: categoria } — lookup rápido
+let _despesas   = [];
+let _categorias = [];
+let _catMap     = {};
+let _projecoes  = [];       // RF-014: parcelas futuras em aberto
 
-// Listeners ativos
-let _unsubDesp = null;
-let _unsubCats = null;
-
-// ID da despesa a excluir (para o modal de confirmação)
+let _unsubDesp  = null;
+let _unsubCats  = null;
+let _unsubProj  = null;     // RF-014: listener de projeções
 let _idParaExcluir = null;
 
 // ── Inicialização ─────────────────────────────────────────────
-
 onAuthChange(async (user) => {
-  if (!user) {
-    window.location.href = '../login.html';
-    return;
-  }
+  if (!user) { window.location.href = '../login.html'; return; }
 
   _usuario = user;
-  _perfil  = await buscarPerfil(user.uid);
+  const perfil = await buscarPerfil(user.uid);
+  if (!perfil?.grupoId) { window.location.href = '../grupo.html'; return; }
 
-  if (!_perfil?.grupoId) {
-    window.location.href = '../grupo.html';
-    return;
-  }
+  _grupoId = perfil.grupoId;
+  document.getElementById('usuario-nome').textContent = perfil.nome ?? user.email;
 
-  _grupoId = _perfil.grupoId;
-  document.getElementById('usuario-nome').textContent = _perfil.nome ?? user.email;
+  // RF-014: carrega dados do grupo para obter nomes dos membros
+  _grupo = await buscarGrupo(_grupoId);
+  preencherDropdownResponsavel();
 
   configurarEventos();
   atualizarTituloMes();
   iniciarListeners();
+  iniciarListenerProjecoes();
 });
 
-// ── Listeners em tempo real ────────────────────────────────────
+// ── Listener de Projeções (RF-014) ────────────────────────────
+function iniciarListenerProjecoes() {
+  if (_unsubProj) _unsubProj();
+  _unsubProj = ouvirParcelamentosAbertos(_grupoId, (projecoes) => {
+    _projecoes = projecoes;
+    renderizarPainelParcelamentos();
+  });
+}
 
+// ── Listeners de Despesas ─────────────────────────────────────
 function iniciarListeners() {
-  // Cancela listeners anteriores ao trocar de mês
   if (_unsubDesp) _unsubDesp();
   if (_unsubCats) _unsubCats();
 
-  // Categorias: listener permanente (não depende do mês)
   _unsubCats = ouvirCategorias(_grupoId, (cats) => {
     _categorias = cats.sort((a, b) => a.nome.localeCompare(b.nome));
     _catMap = Object.fromEntries(_categorias.map((c) => [c.id, c]));
     preencherSelectCategorias(_categorias);
     preencherFiltroCategorias(_categorias);
-    renderizarLista(); // re-renderiza com os novos nomes/emojis
+    renderizarLista();
   });
 
-  // Despesas do mês: listener em tempo real (bidirecional)
-  // Quando qualquer membro do grupo criar, editar ou excluir uma despesa,
-  // este callback é chamado automaticamente pelo Firestore.
   _unsubDesp = iniciarListenerDespesas(_grupoId, _mes, _ano, (despesas) => {
     _despesas = despesas;
     atualizarChips();
     renderizarLista();
+    renderizarChipsResponsavel();
+    preencherFiltroResponsavel();
   });
 }
 
-// ── Renderização ──────────────────────────────────────────────
+// ── RF-014: Painel de Parcelamentos em Aberto ─────────────────
+function renderizarPainelParcelamentos() {
+  const widget = document.getElementById('parc-widget');
+  const lista  = document.getElementById('parc-lista-desp');
+  const total  = document.getElementById('parc-total-desp');
+  if (!widget || !lista || !total) return;
 
+  const hoje    = new Date();
+  const futuras = _projecoes.filter(p => {
+    const d = p.data?.toDate?.() ?? new Date(p.data);
+    return d > hoje;
+  });
+
+  if (!futuras.length) {
+    widget.classList.add('hidden');
+    return;
+  }
+
+  widget.classList.remove('hidden');
+
+  // Agrupa por responsável / portador
+  const porResp = {};
+  let totalGeral = 0;
+
+  futuras.forEach(p => {
+    const resp = p.responsavel || p.portador || '—';
+    const val  = p.valor ?? 0;
+    if (!porResp[resp]) porResp[resp] = { total: 0, items: [] };
+    porResp[resp].total += val;
+    porResp[resp].items.push(p);
+    totalGeral += val;
+  });
+
+  total.textContent = formatarMoeda(totalGeral);
+
+  // Renderiza linhas por responsável
+  lista.innerHTML = Object.entries(porResp).map(([resp, dados]) => {
+    const primeiroNome = resp.split(' ')[0];
+    return `
+    <div class="parc-resp-row">
+      <div class="parc-resp-header">
+        <span class="parc-resp-nome">👤 ${primeiroNome}</span>
+        <span class="parc-resp-total">${formatarMoeda(dados.total)}</span>
+      </div>
+      <div class="parc-resp-items">
+        ${agruparParPorCompra(dados.items)}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function agruparParPorCompra(items) {
+  // Agrupa pelo parcelamento_id para mostrar 1 linha por compra
+  const compras = {};
+  items.forEach(p => {
+    const id = p.parcelamento_id ?? p.descricao;
+    if (!compras[id]) compras[id] = { descricao: p.descricao, valor: p.valor, parcelas: [] };
+    compras[id].parcelas.push(p.parcela ?? '—');
+  });
+  return Object.values(compras).map(c => {
+    const qtd    = c.parcelas.length;
+    const total  = c.valor * qtd;
+    const parcs  = c.parcelas.slice(0, 3).join(', ') + (qtd > 3 ? '…' : '');
+    return `
+    <div class="parc-compra-item">
+      <span class="parc-compra-desc">${c.descricao}</span>
+      <span class="parc-compra-info">${qtd} parcela${qtd > 1 ? 's' : ''} (${parcs})</span>
+      <span class="parc-compra-valor">${formatarMoeda(total)}</span>
+    </div>`;
+  }).join('');
+}
+
+// ── RF-014: Chips por responsável ────────────────────────────
+function renderizarChipsResponsavel() {
+  const container = document.getElementById('chips-responsavel');
+  if (!container) return;
+
+  const porResp = {};
+  _despesas
+    .filter(d => d.tipo !== 'projecao')
+    .forEach(d => {
+      const resp = d.responsavel || d.portador || '';
+      if (!resp) return;
+      const nome = resp.split(' ')[0]; // primeiro nome
+      if (!porResp[nome]) porResp[nome] = 0;
+      porResp[nome] += d.valor ?? 0;
+    });
+
+  if (!Object.keys(porResp).length) {
+    container.innerHTML = '';
+    return;
+  }
+
+  container.innerHTML = Object.entries(porResp).map(([nome, val]) => `
+    <div class="desp-chip desp-chip-resp">
+      <span class="desp-chip-label">💳 ${nome}</span>
+      <span class="desp-chip-valor">${formatarMoeda(val)}</span>
+    </div>`
+  ).join('');
+}
+
+// ── RF-014: Dropdown de responsável no modal ─────────────────
+function preencherDropdownResponsavel() {
+  const sel = document.getElementById('despesa-responsavel');
+  if (!sel || !_grupo) return;
+
+  const nomes = Object.values(_grupo.nomesMembros ?? {});
+  sel.innerHTML = '<option value="">— não definido —</option>' +
+    nomes.map(n => `<option value="${n}">${n}</option>`).join('');
+}
+
+// ── RF-014: Filtro por responsável ──────────────────────────
+function preencherFiltroResponsavel() {
+  const sel = document.getElementById('filtro-responsavel');
+  if (!sel) return;
+  const atual = sel.value;
+
+  // Coleta responsáveis únicos do mês
+  const responsaveis = [...new Set(
+    _despesas
+      .map(d => d.responsavel || d.portador || '')
+      .filter(Boolean)
+      .map(r => r.split(' ')[0]) // primeiro nome
+  )].sort();
+
+  sel.innerHTML = '<option value="">Todos os responsáveis</option>' +
+    responsaveis.map(r => `<option value="${r}">${r}</option>`).join('');
+  if (atual) sel.value = atual;
+}
+
+// ── Renderização ──────────────────────────────────────────────
 function renderizarLista() {
-  const lista       = document.getElementById('despesas-lista');
+  const lista = document.getElementById('despesas-lista');
   if (!lista) return;
 
   const filtroTexto = (document.getElementById('filtro-texto')?.value ?? '').toLowerCase().trim();
-  const filtroCat   = document.getElementById('filtro-categoria')?.value ?? '';
+  const filtroCat   = document.getElementById('filtro-categoria')?.value  ?? '';
+  const filtroResp  = document.getElementById('filtro-responsavel')?.value ?? '';
 
-  // Aplica filtros locais (sem re-query ao Firestore)
   let filtradas = _despesas;
-  if (filtroCat)   filtradas = filtradas.filter((d) => d.categoriaId === filtroCat);
-  if (filtroTexto) filtradas = filtradas.filter((d) =>
-    d.descricao.toLowerCase().includes(filtroTexto)
-  );
+  if (filtroCat)   filtradas = filtradas.filter(d => d.categoriaId === filtroCat);
+  if (filtroTexto) filtradas = filtradas.filter(d => d.descricao.toLowerCase().includes(filtroTexto));
+  // RF-014: filtro por responsável (primeiro nome, case-insensitive)
+  if (filtroResp)  filtradas = filtradas.filter(d => {
+    const resp = (d.responsavel || d.portador || '').split(' ')[0].toLowerCase();
+    return resp === filtroResp.toLowerCase();
+  });
 
   if (!filtradas.length) {
     lista.innerHTML = `<p class="empty-state">${
@@ -113,22 +246,37 @@ function renderizarLista() {
   }
 
   lista.innerHTML = filtradas.map((d) => {
-    const cat    = _catMap[d.categoriaId];
-    const emoji  = cat?.emoji ?? '❓';
-    const nome   = cat?.nome  ?? '—';
-    const cor    = cat?.cor   ?? '#6c757d';
-    const badge  = `<span class="desp-cat-badge" style="background:${cor}22;color:${cor};">${emoji} ${nome}</span>`;
-    const dataFmt = formatarData(d.data);
+    const cat      = _catMap[d.categoriaId];
+    const emoji    = cat?.emoji ?? '❓';
+    const nome     = cat?.nome  ?? '—';
+    const cor      = cat?.cor   ?? '#6c757d';
+    const badge    = `<span class="desp-cat-badge" style="background:${cor}22;color:${cor};">${emoji} ${nome}</span>`;
+    const dataFmt  = formatarData(d.data);
+    const isProj   = d.tipo === 'projecao';
+
+    // RF-014: badges adicionais
+    const portBadge = (d.responsavel || d.portador)
+      ? `<span class="desp-resp-badge">${(d.responsavel || d.portador).split(' ')[0]}</span>`
+      : '';
+    const parcelaBadge = (d.parcela && d.parcela !== '-')
+      ? `<span class="desp-parcela-badge">${d.parcela}</span>`
+      : '';
+    const projBadge = isProj
+      ? '<span class="desp-proj-badge" title="Parcela projetada — ainda não confirmada pela fatura">📋 projeção</span>'
+      : '';
 
     return `
-    <div class="desp-item card">
+    <div class="desp-item card${isProj ? ' desp-item--proj' : ''}">
       <div class="desp-item-left">
         ${badge}
         <span class="desp-item-descricao">${d.descricao}</span>
-        <span class="desp-item-data">${dataFmt}</span>
+        <div class="desp-item-meta">
+          <span class="desp-item-data">${dataFmt}</span>
+          ${portBadge}${parcelaBadge}${projBadge}
+        </div>
       </div>
       <div class="desp-item-right">
-        <span class="desp-item-valor">${formatarMoeda(d.valor)}</span>
+        <span class="desp-item-valor${isProj ? ' desp-item-valor--proj' : ''}">${formatarMoeda(d.valor)}</span>
         <div class="desp-item-acoes">
           <button
             class="btn btn-sm btn-outline"
@@ -147,11 +295,14 @@ function renderizarLista() {
 }
 
 function atualizarChips() {
-  const total = _despesas.reduce((s, d) => s + d.valor, 0);
+  const total = _despesas
+    .filter(d => d.tipo !== 'projecao')
+    .reduce((s, d) => s + d.valor, 0);
+  const count = _despesas.filter(d => d.tipo !== 'projecao').length;
   const chipTotal = document.getElementById('chip-total');
   const chipCount = document.getElementById('chip-count');
   if (chipTotal) chipTotal.textContent = formatarMoeda(total);
-  if (chipCount) chipCount.textContent = _despesas.length;
+  if (chipCount) chipCount.textContent = count;
 }
 
 function atualizarTituloMes() {
@@ -160,13 +311,12 @@ function atualizarTituloMes() {
 }
 
 // ── Selects ───────────────────────────────────────────────────
-
 function preencherSelectCategorias(cats) {
   const sel = document.getElementById('despesa-categoria');
   if (!sel) return;
   const atual = sel.value;
   sel.innerHTML = '<option value="">Selecione uma categoria</option>' +
-    cats.map((c) => `<option value="${c.id}">${c.emoji} ${c.nome}</option>`).join('');
+    cats.map(c => `<option value="${c.id}">${c.emoji} ${c.nome}</option>`).join('');
   if (atual) sel.value = atual;
 }
 
@@ -175,14 +325,14 @@ function preencherFiltroCategorias(cats) {
   if (!sel) return;
   const atual = sel.value;
   sel.innerHTML = '<option value="">Todas as categorias</option>' +
-    cats.map((c) => `<option value="${c.id}">${c.emoji} ${c.nome}</option>`).join('');
+    cats.map(c => `<option value="${c.id}">${c.emoji} ${c.nome}</option>`).join('');
   if (atual) sel.value = atual;
 }
 
 // ── Modal de Despesa ─────────────────────────────────────────
-
 function abrirModalDespesa(despesa = null) {
   preencherSelectCategorias(_categorias);
+  preencherDropdownResponsavel();
 
   document.getElementById('despesa-id').value        = despesa?.id ?? '';
   document.getElementById('despesa-descricao').value = despesa?.descricao ?? '';
@@ -191,6 +341,9 @@ function abrirModalDespesa(despesa = null) {
   document.getElementById('despesa-data').value      = despesa
     ? (despesa.data?.toDate?.() ?? new Date(despesa.data)).toISOString().slice(0, 10)
     : dataHoje();
+  // RF-014: campo responsável
+  const selResp = document.getElementById('despesa-responsavel');
+  if (selResp) selResp.value = despesa?.responsavel ?? '';
 
   document.getElementById('modal-despesa-titulo').textContent =
     despesa ? 'Editar Despesa' : 'Nova Despesa';
@@ -207,7 +360,6 @@ function fecharModalDespesa() {
 }
 
 // ── Modal de Exclusão ─────────────────────────────────────────
-
 function abrirModalExcluir(id, descricao) {
   _idParaExcluir = id;
   document.getElementById('excluir-descricao').textContent = `"${descricao}"`;
@@ -220,22 +372,14 @@ function fecharModalExcluir() {
 }
 
 // ── Eventos ───────────────────────────────────────────────────
-
 function configurarEventos() {
-  // Logout
   document.getElementById('btn-logout')?.addEventListener('click', () => logout());
-
-  // Nova despesa
-  document.getElementById('btn-nova-despesa')?.addEventListener('click', () => {
-    abrirModalDespesa();
-  });
-
-  // Fechar modal despesa
+  document.getElementById('btn-nova-despesa')?.addEventListener('click', () => abrirModalDespesa());
   document.getElementById('btn-fechar-modal')?.addEventListener('click', fecharModalDespesa);
   document.getElementById('btn-cancelar-despesa')?.addEventListener('click', fecharModalDespesa);
   document.querySelector('#modal-despesa .modal-backdrop')?.addEventListener('click', fecharModalDespesa);
 
-  // Submit formulário despesa
+  // Submit do formulário
   document.getElementById('form-despesa')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const erroEl  = document.getElementById('despesa-erro');
@@ -244,18 +388,20 @@ function configurarEventos() {
     btnSave.disabled = true;
     btnSave.textContent = 'Salvando…';
 
+    const responsavel = document.getElementById('despesa-responsavel')?.value ?? '';
+
     const dados = {
       descricao:   document.getElementById('despesa-descricao').value.trim(),
       valor:       parseFloat(document.getElementById('despesa-valor').value),
       categoriaId: document.getElementById('despesa-categoria').value,
       data:        new Date(document.getElementById('despesa-data').value + 'T12:00:00'),
+      responsavel,     // RF-014
     };
     const despesaId = document.getElementById('despesa-id').value || null;
 
     try {
       await salvarDespesa(dados, _grupoId, _usuario.uid, despesaId);
       fecharModalDespesa();
-      // O listener onSnapshot atualiza a lista automaticamente
     } catch (err) {
       erroEl.textContent = err.message;
       erroEl.classList.remove('hidden');
@@ -264,69 +410,56 @@ function configurarEventos() {
     }
   });
 
-  // Fechar modal exclusão
+  // Modal exclusão
   document.getElementById('btn-fechar-excluir')?.addEventListener('click', fecharModalExcluir);
   document.getElementById('btn-cancelar-excluir')?.addEventListener('click', fecharModalExcluir);
   document.querySelector('#modal-excluir .modal-backdrop')?.addEventListener('click', fecharModalExcluir);
-
-  // Confirmar exclusão
   document.getElementById('btn-confirmar-excluir')?.addEventListener('click', async () => {
     if (!_idParaExcluir) return;
     const btn = document.getElementById('btn-confirmar-excluir');
-    btn.disabled = true;
-    btn.textContent = 'Excluindo…';
+    btn.disabled = true; btn.textContent = 'Excluindo…';
     try {
       await deletarDespesa(_idParaExcluir);
       fecharModalExcluir();
-      // O listener onSnapshot remove o item da lista automaticamente
     } finally {
-      btn.disabled = false;
-      btn.textContent = 'Excluir';
+      btn.disabled = false; btn.textContent = 'Excluir';
     }
   });
 
   // Navegação de mês
   document.getElementById('btn-mes-ant')?.addEventListener('click', () => {
-    if (_mes === 1) { _mes = 12; _ano--; }
-    else { _mes--; }
-    atualizarTituloMes();
-    atualizarChips();
-    iniciarListeners();
+    if (_mes === 1) { _mes = 12; _ano--; } else { _mes--; }
+    atualizarTituloMes(); atualizarChips(); iniciarListeners();
   });
-
   document.getElementById('btn-mes-prox')?.addEventListener('click', () => {
-    if (_mes === 12) { _mes = 1; _ano++; }
-    else { _mes++; }
-    atualizarTituloMes();
-    atualizarChips();
-    iniciarListeners();
+    if (_mes === 12) { _mes = 1; _ano++; } else { _mes++; }
+    atualizarTituloMes(); atualizarChips(); iniciarListeners();
   });
 
-  // Filtros locais (sem re-query)
-  document.getElementById('filtro-texto')?.addEventListener('input', () => renderizarLista());
-  document.getElementById('filtro-categoria')?.addEventListener('change', () => renderizarLista());
+  // Filtros
+  document.getElementById('filtro-texto')?.addEventListener('input',  () => renderizarLista());
+  document.getElementById('filtro-categoria')?.addEventListener('change',   () => renderizarLista());
+  document.getElementById('filtro-responsavel')?.addEventListener('change', () => renderizarLista());  // RF-014
 
-  // Exportar CSV — RF-012
+  // Exportar CSV
   document.getElementById('btn-exportar-csv')?.addEventListener('click', () => exportarCSV());
+
+  // RF-014: toggle painel parcelamentos
+  document.getElementById('parc-toggle')?.addEventListener('click', () => {
+    const body = document.getElementById('parc-body-desp');
+    if (body) body.classList.toggle('parc-body--collapsed');
+    const icon = document.querySelector('#parc-toggle .parc-toggle-icon');
+    if (icon) icon.textContent = body?.classList.contains('parc-body--collapsed') ? '▸' : '▾';
+  });
 }
 
 // ── Exportação CSV ────────────────────────────────────────────
-
-/**
- * RF-012 — Exportar despesas do mês corrente para arquivo CSV.
- * Usa separador ";" e BOM UTF-8 para compatibilidade com Excel (pt-BR).
- * Arquivo gerado: despesas-{mes}-{ano}.csv
- */
 function exportarCSV() {
-  if (!_despesas.length) {
-    alert('Nenhuma despesa para exportar neste período.');
-    return;
-  }
+  const exportaveis = _despesas.filter(d => d.tipo !== 'projecao');
+  if (!exportaveis.length) { alert('Nenhuma despesa para exportar neste período.'); return; }
 
-  const cabecalho = ['Data', 'Descrição', 'Categoria', 'Emoji', 'Valor (R$)'];
-
-  // Ordena por data antes de exportar
-  const ordenadas = [..._despesas].sort((a, b) => {
+  const cabecalho = ['Data', 'Descrição', 'Responsável', 'Categoria', 'Emoji', 'Parcela', 'Valor (R$)'];
+  const ordenadas = [...exportaveis].sort((a, b) => {
     const da = (a.data?.toDate?.() ?? new Date(a.data)).getTime();
     const db = (b.data?.toDate?.() ?? new Date(b.data)).getTime();
     return da - db;
@@ -336,31 +469,27 @@ function exportarCSV() {
     const cat       = _catMap[d.categoriaId];
     const dataFmt   = formatarData(d.data);
     const descricao = `"${d.descricao.replace(/"/g, '""')}"`;
+    const resp      = d.responsavel || d.portador || '';
     const catNome   = cat?.nome  ?? '—';
     const catEmoji  = cat?.emoji ?? '';
+    const parcela   = d.parcela || '-';
     const valor     = d.valor.toFixed(2).replace('.', ',');
-    return [dataFmt, descricao, `"${catNome}"`, catEmoji, valor].join(';');
+    return [dataFmt, descricao, `"${resp}"`, `"${catNome}"`, catEmoji, parcela, valor].join(';');
   });
 
   const csv  = '\uFEFF' + [cabecalho.join(';'), ...linhas].join('\r\n');
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const url  = URL.createObjectURL(blob);
-
   const a    = document.createElement('a');
   a.href     = url;
   a.download = `despesas-${nomeMes(_mes).toLowerCase().replace(/\s/g, '-')}-${_ano}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
 
 // ── Funções globais (chamadas pelos botões inline) ────────────
 window._despEditar = (id) => {
-  const despesa = _despesas.find((d) => d.id === id);
+  const despesa = _despesas.find(d => d.id === id);
   if (despesa) abrirModalDespesa(despesa);
 };
-
-window._despExcluir = (id, descricao) => {
-  abrirModalExcluir(id, descricao);
-};
+window._despExcluir = (id, descricao) => abrirModalExcluir(id, descricao);

@@ -127,6 +127,14 @@
           <span class="imp-chip-label">Com erro</span>
           <span class="imp-chip-valor" id="chip-erros">0</span>
         </div>
+        <div class="imp-chip imp-chip--dup hidden" id="chip-dup-wrap">
+          <span class="imp-chip-label">Duplicados</span>
+          <span class="imp-chip-valor" id="chip-dup">0</span>
+        </div>
+        <div class="imp-chip imp-chip--proj hidden" id="chip-proj-wrap">
+          <span class="imp-chip-label">Parcelas futuras</span>
+          <span class="imp-chip-valor" id="chip-proj">0</span>
+        </div>
       </div>
 
       <!-- Ações em lote -->
@@ -176,8 +184,10 @@
       <div class="imp-resultado-icon" id="resultado-icon">✅</div>
       <h3 id="resultado-titulo">Importação concluída!</h3>
       <p  id="resultado-msg">—</p>
+      <p id="resultado-proj" class="hidden" style="margin-top:.75rem;font-size:.9rem;color:var(--primary);"></p>
       <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1.25rem;">
         <a href="despesas.html" class="btn btn-primary">Ver Despesas</a>
+        <a href="index.html"    class="btn btn-outline">Ver Parcelamentos</a>
         <button id="btn-nova-importacao" class="btn btn-outline">Nova Importação</button>
       </div>
     </div>

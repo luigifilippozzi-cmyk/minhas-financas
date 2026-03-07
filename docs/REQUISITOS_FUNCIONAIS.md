@@ -15,6 +15,7 @@
 | RF-011 | Sincronização em Tempo Real | Alta | ✅ Implementado |
 | RF-012 | Exportação de Dados | Baixa | ✅ Implementado |
 | RF-013 | Importação de Transações via Excel | Média | ✅ Implementado |
+| RF-014 | Gestão Multi-Usuário de Cartão de Crédito | Alta | ✅ Implementado |
 
 ---
 
@@ -108,3 +109,31 @@
 - Importação em lote para o Firestore (mesma estrutura das despesas manuais)
 - Flag `origem: 'importacao'` nas despesas importadas para rastreabilidade
 - Ambos os membros do grupo veem as despesas importadas em tempo real (onSnapshot)
+
+## RF-014: Gestão Multi-Usuário de Cartão de Crédito
+**Prioridade:** Alta | **Versão:** v0.8.0 | **Status:** ✅ Implementado
+
+### Deduplicação de Imports
+- Chave única por transação: `{estab}||{valor}||{portador}||{parcela}` (parceladas) ou `{data}||{estab}||{valor}||{portador}` (únicas)
+- Ao fazer upload, verifica Firestore em tempo real e marca duplicatas no preview
+- Duplicatas ficam desmarcadas por padrão; usuário pode forçar re-importação
+- Qualquer usuário do grupo pode importar extratos sem risco de duplicação
+
+### Projeção de Parcelas Futuras
+- Ao importar parcela "N/M", gera automaticamente as parcelas N+1..M para os meses seguintes
+- Cada parcela futura é salva com `tipo: 'projecao'` e `parcelamento_id` compartilhado
+- Projeções aparecem na lista de Despesas dos meses futuros com estilo diferenciado (bordas roxas)
+- Quando o extrato real chegar no mês seguinte, a parcela real é marcada como "duplicada da projeção"
+
+### Visibilidade de Parcelamentos em Aberto
+- Painel "💳 Parcelamentos em Aberto" no Dashboard (index) e em Despesas
+- Mostra total pendente por responsável e por compra
+- Agrupamento por `parcelamento_id` para exibir 1 linha por compra (com qtd de parcelas restantes)
+- Painel ocultável via toggle ▾/▸
+
+### Campo Responsável
+- Campo "Responsável" no formulário de Nova/Editar Despesa (dropdown com membros do grupo)
+- Para despesas importadas: responsável = portador (nome do titular do cartão no extrato)
+- Chips de total por responsável no resumo mensal da página de Despesas
+- Filtro de lista por responsável (dropdown "Todos os responsáveis")
+- CSV exportado inclui coluna "Responsável"
