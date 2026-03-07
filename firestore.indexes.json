@@ -1,4 +1,14 @@
 {
-  "indexes": [],
+  "indexes": [
+    {
+      "collectionGroup": "despesas",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "grupoId", "order": "ASCENDING" },
+        { "fieldPath": "tipo",    "order": "ASCENDING" },
+        { "fieldPath": "data",    "order": "ASCENDING" }
+      ]
+    }
+  ],
   "fieldOverrides": []
 }

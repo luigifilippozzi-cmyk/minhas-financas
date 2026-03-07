@@ -56,6 +56,22 @@
         </div>
       </div>
 
+      <!-- RF-014: Painel de Parcelamentos em Aberto -->
+      <div class="card parc-widget hidden" id="parc-widget-dash">
+        <div class="parc-widget-header" id="parc-toggle-dash" style="cursor:pointer;">
+          <span>💳 Parcelamentos em Aberto</span>
+          <div style="display:flex;align-items:center;gap:.75rem;">
+            <span class="parc-total-valor" id="parc-total-dash">R$ 0,00</span>
+            <span class="parc-toggle-icon">▾</span>
+          </div>
+        </div>
+        <div id="parc-body-dash" class="parc-body">
+          <div id="parc-lista-dash">
+            <p class="empty-state" style="font-size:.85rem;">Carregando…</p>
+          </div>
+        </div>
+      </div>
+
       <!-- Grid de categorias com progresso -->
       <div class="categorias-grid" id="categorias-grid">
         <!-- Preenchido dinamicamente via JS -->

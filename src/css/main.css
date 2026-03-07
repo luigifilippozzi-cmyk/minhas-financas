@@ -1014,3 +1014,178 @@ a:hover { text-decoration: underline; }
 }
 #sec-resultado h3 { text-align: center; font-size: 1.3rem; margin-bottom: .4rem; }
 #sec-resultado p  { text-align: center; color: var(--text-muted); margin: 0; }
+
+/* ============================================================
+   RF-014: PARCELAMENTOS, RESPONSÁVEL, PROJEÇÕES
+   ============================================================ */
+
+/* ── Chip por responsável (na página de despesas) ── */
+.desp-chip-resp {
+  background: var(--color-bg-alt, #f0f4ff);
+  border: 1px solid var(--color-primary, #1565c0);
+}
+.desp-chip-resp .desp-chip-label { color: var(--color-primary, #1565c0); }
+.desp-chip-resp .desp-chip-valor { color: var(--color-primary, #1565c0); font-weight: 700; }
+
+/* ── Badge de responsável e parcela na lista de despesas ── */
+.desp-item-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .35rem;
+  margin-top: .2rem;
+}
+.desp-resp-badge {
+  font-size: .72rem;
+  font-weight: 600;
+  padding: .1rem .45rem;
+  border-radius: 99px;
+  background: #e3f2fd;
+  color: #1565c0;
+  border: 1px solid #bbdefb;
+}
+.desp-parcela-badge {
+  font-size: .72rem;
+  font-weight: 700;
+  padding: .1rem .45rem;
+  border-radius: 99px;
+  background: #fff3e0;
+  color: #e65100;
+  border: 1px solid #ffe0b2;
+}
+.desp-proj-badge {
+  font-size: .72rem;
+  padding: .1rem .45rem;
+  border-radius: 99px;
+  background: #f3e5f5;
+  color: #7b1fa2;
+  border: 1px solid #e1bee7;
+}
+
+/* ── Item projetado na lista ── */
+.desp-item--proj {
+  opacity: .85;
+  border-left: 3px solid #ab47bc !important;
+  background: #faf4ff !important;
+}
+.desp-item-valor--proj { color: #7b1fa2 !important; }
+
+/* ── Painel Parcelamentos em Aberto ── */
+.parc-widget {
+  margin-bottom: 1.25rem;
+  border: 1px solid #bbdefb;
+  background: #f0f8ff;
+}
+.parc-widget-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .85rem 1.25rem;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #1565c0;
+  user-select: none;
+}
+.parc-total-valor {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1565c0;
+}
+.parc-toggle-icon {
+  font-size: .85rem;
+  color: #1565c0;
+  transition: transform .2s;
+}
+.parc-body {
+  padding: 0 1.25rem 1rem;
+  border-top: 1px solid #bbdefb;
+  overflow: hidden;
+  transition: max-height .3s ease;
+}
+.parc-body--collapsed {
+  display: none;
+}
+
+/* ── Linha por responsável dentro do painel ── */
+.parc-resp-row { margin-top: .85rem; }
+.parc-resp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: .4rem;
+}
+.parc-resp-nome {
+  font-weight: 600;
+  font-size: .9rem;
+  color: #1565c0;
+}
+.parc-resp-total {
+  font-weight: 700;
+  font-size: .95rem;
+  color: #1565c0;
+}
+.parc-resp-items { margin-left: 1rem; }
+
+/* ── Item de compra individual no painel ── */
+.parc-compra-item {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .3rem 0;
+  border-bottom: 1px solid #e3f2fd;
+  font-size: .85rem;
+}
+.parc-compra-item:last-child { border-bottom: none; }
+.parc-compra-desc {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--color-text);
+  max-width: 55%;
+}
+.parc-compra-info {
+  color: var(--text-muted, #888);
+  font-size: .78rem;
+  white-space: nowrap;
+}
+.parc-compra-valor {
+  font-weight: 700;
+  color: #1565c0;
+  white-space: nowrap;
+  min-width: 80px;
+  text-align: right;
+}
+
+/* ── Chips de import: duplicados e projeções ── */
+.imp-chip--dup  { background: #fff8e1; border-color: #f9a825; }
+.imp-chip--dup  .imp-chip-label,
+.imp-chip--dup  .imp-chip-valor { color: #f57f17; }
+.imp-chip--proj { background: #f3e5f5; border-color: #ab47bc; }
+.imp-chip--proj .imp-chip-label,
+.imp-chip--proj .imp-chip-valor { color: #6a1b9a; }
+
+/* ── Linha duplicada no preview ── */
+.imp-row-dup { background: #fffde7 !important; }
+.imp-row-dup td { opacity: .8; }
+
+/* ── Badge de parcelas projetadas na célula Parcela ── */
+.imp-badge-proj {
+  display: block;
+  font-size: .68rem;
+  font-weight: 600;
+  color: #7b1fa2;
+  background: #f3e5f5;
+  border-radius: 4px;
+  padding: .05rem .3rem;
+  margin-top: .15rem;
+  white-space: nowrap;
+}
+.imp-badge--dup {
+  background: #fff8e1;
+  color: #f57f17;
+  border: 1px solid #ffe082;
+  padding: .2rem .5rem;
+  border-radius: 4px;
+  font-size: .8rem;
+}

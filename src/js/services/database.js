@@ -124,6 +124,37 @@ export async function excluirDespesa(despesaId) {
   return deleteDoc(doc(db, 'despesas', despesaId));
 }
 
+// ── RF-014: Deduplicação ──────────────────────────────────────
+
+/**
+ * Retorna um Set com todas as chave_dedup já gravadas no grupo.
+ * Usado para detectar duplicatas no import.
+ */
+export async function buscarChavesDedup(grupoId) {
+  const q    = query(collection(db, 'despesas'), where('grupoId', '==', grupoId));
+  const snap = await getDocs(q);
+  return new Set(snap.docs.map((d) => d.data().chave_dedup).filter(Boolean));
+}
+
+// ── RF-014: Parcelamentos em Aberto ───────────────────────────
+
+/**
+ * Listener em tempo real de todas as despesas com tipo='projecao'
+ * do grupo (parcelas futuras geradas automaticamente no import).
+ * Requer composite index: (grupoId ASC, tipo ASC, data ASC).
+ */
+export function ouvirParcelamentosAbertos(grupoId, callback) {
+  const q = query(
+    collection(db, 'despesas'),
+    where('grupoId', '==', grupoId),
+    where('tipo', '==', 'projecao'),
+    orderBy('data', 'asc'),
+  );
+  return onSnapshot(q, (snap) =>
+    callback(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+  );
+}
+
 // ── Orçamentos ───────────────────────────────────────────────
 
 export async function definirOrcamento(dados) {

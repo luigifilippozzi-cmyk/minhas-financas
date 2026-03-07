@@ -29,33 +29,29 @@
     </div>
   </header>
 
-  <!-- Conteúdo Principal -->
   <main class="main-content">
 
     <!-- ═══ CABEÇALHO DA PÁGINA ═══ -->
     <div class="desp-page-header">
-
-      <!-- Navegação de mês -->
       <div class="desp-nav-mes">
-        <button id="btn-mes-ant" class="btn btn-outline btn-sm">‹</button>
+        <button id="btn-mes-ant"  class="btn btn-outline btn-sm">‹</button>
         <h2 class="desp-titulo-mes" id="titulo-mes">Março 2026</h2>
         <button id="btn-mes-prox" class="btn btn-outline btn-sm">›</button>
       </div>
 
-      <!-- Sync banner: confirma que dados são compartilhados -->
-      <div class="desp-sync-banner" id="sync-banner" title="Alterações de qualquer membro são sincronizadas em tempo real">
+      <div class="desp-sync-banner" id="sync-banner" title="Alterações são sincronizadas em tempo real">
         <span class="desp-sync-dot"></span>
         <span>Sincronizado com o grupo</span>
       </div>
 
       <div style="display:flex;gap:.5rem;">
-        <button id="btn-exportar-csv" class="btn btn-outline" title="Exportar despesas do mês para CSV">📥 Exportar CSV</button>
+        <button id="btn-exportar-csv" class="btn btn-outline" title="Exportar CSV">📥 Exportar CSV</button>
         <button id="btn-nova-despesa" class="btn btn-primary">+ Nova Despesa</button>
       </div>
     </div>
 
-    <!-- ═══ CHIPS DE RESUMO ═══ -->
-    <div class="desp-resumo-chips">
+    <!-- ═══ CHIPS DE RESUMO DO MÊS ═══ -->
+    <div class="desp-resumo-chips" id="resumo-chips">
       <div class="desp-chip">
         <span class="desp-chip-label">Total do mês</span>
         <span class="desp-chip-valor" id="chip-total">R$ 0,00</span>
@@ -64,12 +60,33 @@
         <span class="desp-chip-label">Registros</span>
         <span class="desp-chip-valor" id="chip-count">0</span>
       </div>
+      <!-- RF-014: chips por responsável (preenchidos via JS) -->
+      <div id="chips-responsavel" style="display:contents;"></div>
+    </div>
+
+    <!-- ═══ RF-014: PARCELAMENTOS EM ABERTO ═══ -->
+    <div class="card parc-widget hidden" id="parc-widget">
+      <div class="parc-widget-header" id="parc-toggle" style="cursor:pointer;">
+        <span>💳 Parcelamentos em Aberto</span>
+        <div style="display:flex;align-items:center;gap:.75rem;">
+          <span class="parc-total-valor" id="parc-total-desp">R$ 0,00</span>
+          <span class="parc-toggle-icon">▾</span>
+        </div>
+      </div>
+      <div id="parc-body-desp" class="parc-body">
+        <!-- Linha por portador, expandível -->
+        <div id="parc-lista-desp"></div>
+      </div>
     </div>
 
     <!-- ═══ FILTROS ═══ -->
     <div class="desp-filtros">
       <select id="filtro-categoria" class="select-input">
         <option value="">Todas as categorias</option>
+      </select>
+      <!-- RF-014: filtro por responsável -->
+      <select id="filtro-responsavel" class="select-input">
+        <option value="">Todos os responsáveis</option>
       </select>
       <input
         type="text"
@@ -130,6 +147,15 @@
         <div class="form-group">
           <label for="despesa-data">Data</label>
           <input type="date" id="despesa-data" required />
+        </div>
+
+        <!-- RF-014: campo Responsável -->
+        <div class="form-group">
+          <label for="despesa-responsavel">Responsável</label>
+          <select id="despesa-responsavel">
+            <option value="">— não definido —</option>
+            <!-- Preenchido dinamicamente com os membros do grupo -->
+          </select>
         </div>
 
         <div id="despesa-erro" class="form-erro hidden"></div>
