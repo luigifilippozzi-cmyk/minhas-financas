@@ -1,18 +1,24 @@
 # ============================================================
 # DEPLOY AUTOMÁTICO — Firebase Hosting
 #
-# Este workflow é disparado toda vez que há um push na branch
-# main. Ele faz o deploy do app no Firebase Hosting automaticamente.
+# Disparado a cada push na branch main.
 #
-# CONFIGURAÇÃO NECESSÁRIA (feita uma única vez):
-# 1. Gere o token: no terminal Windows, rode `firebase login:ci`
-# 2. Copie o token gerado
-# 3. No GitHub: Settings → Secrets and variables → Actions
-# 4. Clique em "New repository secret"
-# 5. Nome: FIREBASE_TOKEN  |  Valor: (cole o token)
+# CONFIGURAÇÃO NECESSÁRIA (uma única vez no Windows):
+# ──────────────────────────────────────────────────
+# 1. Abra o Terminal do Windows (PowerShell ou CMD)
+# 2. npm install -g firebase-tools
+# 3. firebase login
+# 4. firebase login:ci
+#    → Copia o token exibido (começa com "1//")
+# 5. GitHub → Settings → Secrets and variables → Actions
+#    → New repository secret
+#    → Nome: FIREBASE_TOKEN | Valor: (cole o token)
+#
+# Após configurar, todo push na main fará deploy automático!
+# URL do app: https://minhas-financas-285da.web.app
 # ============================================================
 
-name: Deploy para Firebase Hosting
+name: 🚀 Deploy — Firebase Hosting
 
 on:
   push:
@@ -21,22 +27,27 @@ on:
 
 jobs:
   deploy:
-    name: Deploy
+    name: Deploy para Firebase Hosting
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Faz checkout do código
-      - name: Checkout do repositório
+      - name: 📥 Checkout do repositório
         uses: actions/checkout@v4
 
-      # 2. Instala o Firebase CLI
-      - name: Instala Firebase CLI
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 📦 Instala Firebase CLI
         run: npm install -g firebase-tools
 
-      # 3. Faz deploy no Firebase Hosting
-      - name: Deploy no Firebase Hosting
-        run: firebase deploy --only hosting --token "${{ secrets.FIREBASE_TOKEN }}" --project minhas-financas-285da
+      - name: 🚀 Deploy no Firebase Hosting
+        run: |
+          firebase deploy --only hosting \
+            --token "${{ secrets.FIREBASE_TOKEN }}" \
+            --project minhas-financas-285da \
+            --non-interactive
 
-      # 4. Exibe a URL do app após o deploy
-      - name: URL do app
-        run: echo "✅ App publicado em https://minhas-financas-285da.web.app"
+      - name: ✅ Deploy concluído
+        run: echo "App publicado em https://minhas-financas-285da.web.app"
