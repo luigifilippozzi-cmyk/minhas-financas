@@ -4,8 +4,8 @@
 |---|-----------|-----------|--------|
 | RF-001 | Autenticação de Usuários | Alta | ✅ Implementado |
 | RF-002 | Gerenciamento de Grupos Familiares | Alta | ✅ Implementado |
-| RF-003 | Gerenciamento de Categorias | Alta | 🔵 Em Desenvolvimento |
-| RF-004 | Orçamento Mensal por Categoria | Alta | ⬜ Não Implementado |
+| RF-003 | Gerenciamento de Categorias | Alta | ✅ Implementado |
+| RF-004 | Orçamento Mensal por Categoria | Alta | 🔵 Em Desenvolvimento |
 | RF-005 | Registro de Despesas | Alta | 🟡 Parcial (frontend estático) |
 | RF-006 | Visualização de Despesas | Alta | 🟡 Parcial (frontend estático) |
 | RF-007 | Edição de Despesas | Média | ⬜ Não Implementado |
@@ -35,7 +35,7 @@
 - Máximo de 2 usuários por grupo (fase inicial)
 
 ## RF-003: Gerenciamento de Categorias
-**Prioridade:** Alta | **Versão:** v0.3.0 | **Status:** 🔵 Em Desenvolvimento
+**Prioridade:** Alta | **Versão:** v0.3.0 | **Status:** ✅ Implementado
 
 - 6 categorias padrão são criadas ao criar um grupo
 - CRUD completo: criar, editar (nome, emoji, cor, orçamento) e desativar (soft-delete)
@@ -44,11 +44,15 @@
 - Desativação preserva histórico de despesas vinculadas
 
 ## RF-004: Orçamento Mensal por Categoria
-**Prioridade:** Alta | **Versão:** v0.5.0
+**Prioridade:** Alta | **Versão:** v0.4.0 | **Status:** 🔵 Em Desenvolvimento
 
-- Definir valor de orçamento por categoria
-- Orçamento é mensal (renova todo mês automaticamente)
-- Orçamento é compartilhado entre membros do grupo
+- Definir limite de orçamento por categoria para cada mês
+- Edição inline com salvamento automático (debounce 800ms + blur/Enter)
+- Sync bidirecional em tempo real: ajuste de um usuário atualiza imediatamente para o outro
+- Navegação entre meses (‹ Março 2026 ›)
+- Botão "Copiar orçamentos do mês anterior" (não sobrescreve valores já definidos)
+- Chips de resumo: Total Orçado / Gasto / Disponível com atualização em tempo real
+- ID composto no Firestore (grupoId_categoriaId_ano_mes) garante upsert sem conflito
 
 ## RF-005: Registro de Despesas
 **Prioridade:** Alta | **Versão:** v0.4.0

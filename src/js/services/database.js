@@ -132,6 +132,21 @@ export async function definirOrcamento(dados) {
   return setDoc(doc(db, 'orcamentos', id), dados, { merge: true });
 }
 
+/**
+ * Busca orçamentos de um mês/ano específico (leitura única, sem listener).
+ * Usado para copiar orçamentos do mês anterior.
+ */
+export async function buscarOrcamentos(grupoId, mes, ano) {
+  const q = query(
+    collection(db, 'orcamentos'),
+    where('grupoId', '==', grupoId),
+    where('mes', '==', mes),
+    where('ano', '==', ano),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
 export function ouvirOrcamentos(grupoId, mes, ano, callback) {
   const q = query(
     collection(db, 'orcamentos'),
