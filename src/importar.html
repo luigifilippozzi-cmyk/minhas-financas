@@ -50,15 +50,16 @@
       <div class="imp-template-info">
         <div class="imp-template-cols">
           <span class="imp-col-badge imp-col-obrig">Data</span>
-          <span class="imp-col-badge imp-col-obrig">Descrição</span>
-          <span class="imp-col-badge imp-col-obrig">Valor (R$)</span>
-          <span class="imp-col-badge imp-col-opcl">Categoria</span>
-          <span class="imp-col-badge imp-col-opcl">Observação</span>
+          <span class="imp-col-badge imp-col-obrig">Estabelecimento</span>
+          <span class="imp-col-badge imp-col-obrig">Portador</span>
+          <span class="imp-col-badge imp-col-obrig">Valor</span>
+          <span class="imp-col-badge imp-col-opcl">Parcela</span>
         </div>
         <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
           <span style="font-size:.8rem;color:var(--text-muted);">
             <span style="color:var(--primary);">■</span> Obrigatório &nbsp;
-            <span style="color:var(--text-muted);">■</span> Opcional
+            <span style="color:var(--text-muted);">■</span> Opcional &nbsp;·&nbsp;
+            Layout idêntico ao extrato CSV exportado pelo banco.
           </span>
         </div>
       </div>
@@ -84,9 +85,9 @@
         <div class="imp-drop-icon">📂</div>
         <p class="imp-drop-texto">Arraste o arquivo aqui</p>
         <p class="imp-drop-sub">ou</p>
-        <label for="file-input" class="btn btn-outline imp-btn-select">Selecionar arquivo .xlsx</label>
-        <input type="file" id="file-input" accept=".xlsx,.xls" style="display:none;" />
-        <p class="imp-drop-hint">Apenas arquivos Excel (.xlsx)</p>
+        <label for="file-input" class="btn btn-outline imp-btn-select">Selecionar arquivo</label>
+        <input type="file" id="file-input" accept=".xlsx,.xls,.csv" style="display:none;" />
+        <p class="imp-drop-hint">Extrato CSV do banco ou planilha Excel (.xlsx)</p>
       </div>
 
       <!-- Arquivo selecionado -->
@@ -145,8 +146,10 @@
           <thead>
             <tr>
               <th style="width:40px;"><input type="checkbox" id="chk-all" title="Marcar/desmarcar todos" /></th>
-              <th>Data</th>
-              <th>Descrição</th>
+              <th style="width:90px;">Data</th>
+              <th>Estabelecimento</th>
+              <th style="width:120px;">Portador</th>
+              <th style="width:90px;">Parcela</th>
               <th style="width:110px;">Valor</th>
               <th style="width:200px;">Categoria</th>
               <th style="width:60px;">Status</th>
