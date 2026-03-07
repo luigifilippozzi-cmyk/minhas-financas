@@ -3,8 +3,8 @@
 | # | Requisito | Prioridade | Status |
 |---|-----------|-----------|--------|
 | RF-001 | Autenticação de Usuários | Alta | ✅ Implementado |
-| RF-002 | Gerenciamento de Grupos Familiares | Alta | 🔵 Em Desenvolvimento |
-| RF-003 | Gerenciamento de Categorias | Alta | ⬜ Não Implementado |
+| RF-002 | Gerenciamento de Grupos Familiares | Alta | ✅ Implementado |
+| RF-003 | Gerenciamento de Categorias | Alta | 🔵 Em Desenvolvimento |
 | RF-004 | Orçamento Mensal por Categoria | Alta | ⬜ Não Implementado |
 | RF-005 | Registro de Despesas | Alta | 🟡 Parcial (frontend estático) |
 | RF-006 | Visualização de Despesas | Alta | 🟡 Parcial (frontend estático) |
@@ -27,7 +27,7 @@
 - Validação de formato de email
 
 ## RF-002: Gerenciamento de Grupos Familiares
-**Prioridade:** Alta | **Versão:** v0.2.0 | **Status:** 🔵 Em Desenvolvimento
+**Prioridade:** Alta | **Versão:** v0.2.0 | **Status:** ✅ Implementado
 
 - Usuário pode criar novo grupo familiar
 - Sistema gera código de convite de 6 caracteres
@@ -35,12 +35,13 @@
 - Máximo de 2 usuários por grupo (fase inicial)
 
 ## RF-003: Gerenciamento de Categorias
-**Prioridade:** Alta | **Versão:** v0.3.0
+**Prioridade:** Alta | **Versão:** v0.3.0 | **Status:** 🔵 Em Desenvolvimento
 
 - 6 categorias padrão são criadas ao criar um grupo
-- CRUD completo de categorias (criar, ler, atualizar, excluir)
-- Campos: nome, emoji, cor (hex)
-- Categorias são sincronizadas entre os membros do grupo
+- CRUD completo: criar, editar (nome, emoji, cor, orçamento) e desativar (soft-delete)
+- Ambos os membros do grupo podem editar categorias em tempo real (onSnapshot)
+- Campos: nome, emoji, cor (hex), orçamento mensal (opcional)
+- Desativação preserva histórico de despesas vinculadas
 
 ## RF-004: Orçamento Mensal por Categoria
 **Prioridade:** Alta | **Versão:** v0.5.0

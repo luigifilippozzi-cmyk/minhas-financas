@@ -171,6 +171,185 @@ a:hover { text-decoration: underline; }
   font-family: monospace;
 }
 
+/* ============================================================
+   RF-003 — Página de Categorias
+   ============================================================ */
+
+/* Subtítulo da seção */
+.section-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-top: var(--space-1);
+}
+
+/* Botão voltar na navbar */
+.navbar-back {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-inverse);
+  text-decoration: none;
+  margin-right: var(--space-2);
+  opacity: 0.8;
+  transition: opacity var(--transition);
+}
+.navbar-back:hover { opacity: 1; }
+
+/* ── Lista de categorias ── */
+.cat-lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.cat-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition);
+}
+.cat-item:hover { box-shadow: var(--shadow-md); }
+
+.cat-item-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.cat-item-emoji {
+  font-size: 1.8rem;
+  line-height: 1;
+  min-width: 2rem;
+  text-align: center;
+}
+
+.cat-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cat-item-nome {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.cat-item-orcamento {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.cat-item-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.cat-cor-badge {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-full);
+  border: 2px solid rgba(0,0,0,0.1);
+  flex-shrink: 0;
+}
+
+.cat-btn-desativar {
+  background: transparent;
+  color: var(--color-danger);
+  border: 1.5px solid var(--color-danger);
+  opacity: 0.7;
+  transition: opacity var(--transition);
+}
+.cat-btn-desativar:hover { opacity: 1; }
+
+/* ── Prévia no modal ── */
+.cat-preview {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.cat-preview > span:first-child {
+  font-size: 2rem;
+}
+
+.cat-preview-nome {
+  font-weight: 600;
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+}
+
+.cat-preview-cor {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  border: 2px solid rgba(0,0,0,0.1);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* ── Seletor de cores ── */
+.color-picker-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.color-picker-row input[type="color"] {
+  width: 44px;
+  height: 36px;
+  padding: 2px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.color-swatches {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.color-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform var(--transition), border-color var(--transition);
+  padding: 0;
+}
+.color-swatch:hover {
+  transform: scale(1.2);
+  border-color: rgba(0,0,0,0.2);
+}
+
+/* ── Modal menor (confirmação) ── */
+.modal-card-sm {
+  max-width: 380px;
+}
+
+.confirmar-msg {
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  line-height: 1.6;
+  margin-bottom: var(--space-5);
+}
+
 /* ── Responsivo ── */
 @media (max-width: 640px) {
   .main-content {
@@ -188,5 +367,15 @@ a:hover { text-decoration: underline; }
 
   .categorias-grid {
     grid-template-columns: 1fr;
+  }
+
+  /* Categorias - responsivo */
+  .cat-item {
+    flex-wrap: wrap;
+  }
+
+  .cat-item-right {
+    width: 100%;
+    justify-content: flex-end;
   }
 }

@@ -1,30 +1,33 @@
 // ============================================================
 // CONTROLLER: Categorias — RF-003
+// Gerenciamento de Categorias (CRUD completo)
+// Ambos os membros do grupo podem criar, editar e desativar
+// categorias; as mudanças são sincronizadas em tempo real.
 // ============================================================
 
-import { criarCategoria as criarCategoriaDB, ouvirCategorias, atualizarCategoria } from '../services/database.js';
+import {
+  criarCategoria as criarCategoriaDB,
+  ouvirCategorias,
+  atualizarCategoria,
+  excluirCategoria,
+} from '../services/database.js';
 import { criarCategoria as modelCategoria, CATEGORIAS_PADRAO } from '../models/Categoria.js';
 
 let _categorias = [];
 
-/** Retorna as categorias em cache */
+/** Retorna as categorias em cache (array em memória). */
 export function getCategorias() { return _categorias; }
 
-/**
- * Cria as categorias padrão para um novo grupo.
- * @param {string} grupoId
- */
-export async function criarCategoriasPadrao(grupoId) {
-  const promises = CATEGORIAS_PADRAO.map((cat) =>
-    criarCategoriaDB(modelCategoria({ ...cat, grupoId }))
-  );
-  await Promise.all(promises);
-}
+// ── Listeners ─────────────────────────────────────────────────
 
 /**
- * Inicia listener de categorias e popula o select de despesas.
- * @param {string} grupoId
- * @param {function} onChange
+ * Inicia listener em tempo real de categorias.
+ * Popula o <select> de despesas automaticamente.
+ * Qualquer alteração feita pelo parceiro é refletida aqui.
+ *
+ * @param {string}   grupoId
+ * @param {function} onChange  - callback com array de categorias
+ * @returns {function} unsubscribe
  */
 export function iniciarListenerCategorias(grupoId, onChange) {
   return ouvirCategorias(grupoId, (cats) => {
@@ -50,4 +53,62 @@ function preencherSelectCategorias(categorias) {
     select.appendChild(opt);
   });
   if (valorAtual) select.value = valorAtual;
+}
+
+// ── CRUD ──────────────────────────────────────────────────────
+
+/**
+ * Cria as categorias padrão para um novo grupo.
+ * Chamado apenas ao criar o grupo (grupos.js / RF-002).
+ * @param {string} grupoId
+ */
+export async function criarCategoriasPadrao(grupoId) {
+  const promises = CATEGORIAS_PADRAO.map((cat) =>
+    criarCategoriaDB(modelCategoria({ ...cat, grupoId }))
+  );
+  await Promise.all(promises);
+}
+
+/**
+ * Cria ou atualiza uma categoria.
+ * Operação compartilhada: qualquer membro do grupo pode salvar.
+ *
+ * @param {object}      dados        - { nome, emoji, cor, orcamentoMensal }
+ * @param {string}      grupoId      - ID do grupo (necessário ao criar)
+ * @param {string|null} categoriaId  - null = nova categoria, string = edição
+ * @returns {Promise<string>}        - ID da categoria
+ */
+export async function salvarCategoria(dados, grupoId, categoriaId = null) {
+  const { nome, emoji, cor, orcamentoMensal } = dados;
+
+  if (!nome?.trim()) throw new Error('O nome da categoria é obrigatório.');
+  if (!emoji?.trim()) throw new Error('Escolha um emoji para a categoria.');
+
+  const payload = {
+    nome: nome.trim(),
+    emoji: emoji.trim(),
+    cor: cor || '#95A5A6',
+    orcamentoMensal: Number(orcamentoMensal) || 0,
+  };
+
+  if (categoriaId) {
+    // Edição — atualiza apenas os campos enviados
+    await atualizarCategoria(categoriaId, payload);
+    return categoriaId;
+  } else {
+    // Criação — precisa do grupoId e do campo ativa
+    const novaCat = modelCategoria({ ...payload, grupoId });
+    const ref = await criarCategoriaDB(novaCat);
+    return ref.id;
+  }
+}
+
+/**
+ * Desativa (soft-delete) uma categoria.
+ * A categoria some das listas mas os registros históricos são preservados.
+ *
+ * @param {string} categoriaId
+ */
+export async function desativarCategoria(categoriaId) {
+  await excluirCategoria(categoriaId); // sets ativa: false
 }
