@@ -14,6 +14,7 @@
 | RF-010 | Filtros e Período | Média | ✅ Implementado |
 | RF-011 | Sincronização em Tempo Real | Alta | ✅ Implementado |
 | RF-012 | Exportação de Dados | Baixa | ✅ Implementado |
+| RF-013 | Importação de Transações via Excel | Média | ✅ Implementado |
 
 ---
 
@@ -93,3 +94,17 @@
 - Separador ";" e BOM UTF-8 para compatibilidade com Excel (pt-BR)
 - Despesas ordenadas por data no arquivo exportado
 - Alerta informativo se não houver despesas no período
+
+## RF-013: Importação de Transações via Excel
+**Prioridade:** Média | **Versão:** v0.7.0 | **Status:** ✅ Implementado
+
+- Template Excel disponível para download com colunas: Data, Descrição, Valor (R$), Categoria
+- Sheet "Instruções" no template explica como preencher
+- Página dedicada `importar.html` com área de upload (drag & drop ou clique)
+- Parse do arquivo Excel via SheetJS (client-side, sem servidor)
+- Tabela de preview com todas as transações lidas do arquivo
+- Dropdown por linha para mapear/confirmar a categoria de cada transação
+- Checkbox por linha para incluir/excluir transações individuais
+- Importação em lote para o Firestore (mesma estrutura das despesas manuais)
+- Flag `origem: 'importacao'` nas despesas importadas para rastreabilidade
+- Ambos os membros do grupo veem as despesas importadas em tempo real (onSnapshot)
