@@ -13,7 +13,7 @@
 | RF-009 | Dashboard de Orçamentos | Alta | ✅ Implementado |
 | RF-010 | Filtros e Período | Média | ✅ Implementado |
 | RF-011 | Sincronização em Tempo Real | Alta | ✅ Implementado |
-| RF-012 | Exportação de Dados | Baixa | ⬜ Não Implementado |
+| RF-012 | Exportação de Dados | Baixa | ✅ Implementado |
 
 ---
 
@@ -85,7 +85,11 @@
 - Cards de totais: Total Orçado / Total Gasto / Disponível
 
 ## RF-012: Exportação de Dados
-**Prioridade:** Baixa | **Versão:** pós v1.0.0
+**Prioridade:** Baixa | **Versão:** v0.6.0 | **Status:** ✅ Implementado
 
-- Exportar despesas do período para CSV
-- Incluir todas as colunas relevantes
+- Botão "📥 Exportar CSV" na página de Despesas
+- Gera arquivo `despesas-{mês}-{ano}.csv` com as despesas do período visualizado
+- Colunas: Data, Descrição, Categoria, Emoji, Valor (R$)
+- Separador ";" e BOM UTF-8 para compatibilidade com Excel (pt-BR)
+- Despesas ordenadas por data no arquivo exportado
+- Alerta informativo se não houver despesas no período
