@@ -378,4 +378,265 @@ a:hover { text-decoration: underline; }
     width: 100%;
     justify-content: flex-end;
   }
+
+  /* Orçamentos - responsivo */
+  .orc-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .orc-resumo-chips {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .orc-item-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
+  .orc-input-wrap {
+    width: 100%;
+  }
+
+  .orc-input {
+    flex: 1;
+    width: 100%;
+  }
 }
+
+/* ============================================================
+   RF-004 — Página de Orçamentos
+   ============================================================ */
+
+/* ── Cabeçalho ── */
+.orc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.orc-nav-mes {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.orc-mes-titulo {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-text);
+  min-width: 180px;
+  text-align: center;
+}
+
+/* ── Chips de resumo ── */
+.orc-resumo-chips {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.orc-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  min-width: 100px;
+}
+
+.orc-chip-label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+.orc-chip-valor {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.orc-chip-orcado  { border-top: 3px solid var(--color-primary); }
+.orc-chip-gasto   { border-top: 3px solid var(--color-warning); }
+.orc-chip-disponivel { border-top: 3px solid var(--color-ok); }
+.orc-chip-negativo .orc-chip-valor { color: var(--color-danger); }
+.orc-chip-negativo { border-top-color: var(--color-danger); }
+
+/* ── Banner de sync ── */
+.orc-sync-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--color-primary-light);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-primary);
+  margin-bottom: var(--space-4);
+}
+
+/* ── Ações do mês ── */
+.orc-acoes {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-4);
+}
+
+.orc-feedback {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-md);
+  transition: opacity var(--transition);
+}
+.orc-feedback.hidden { display: none; }
+.orc-feedback-ok  { color: #166534; background: #dcfce7; }
+.orc-feedback-erro { color: #7f1d1d; background: #fee2e2; }
+
+/* ── Lista de orçamentos ── */
+.orc-lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.orc-item {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.orc-item-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.orc-item-cat {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: 1;
+  min-width: 0;
+}
+
+.orc-emoji {
+  font-size: 1.6rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.orc-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.orc-item-nome {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.orc-item-gasto {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* ── Input de orçamento ── */
+.orc-input-wrap {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: border-color var(--transition);
+  flex-shrink: 0;
+}
+
+.orc-input-wrap:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.orc-input-prefix {
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  border-right: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.orc-input {
+  padding: var(--space-2) var(--space-3);
+  border: none;
+  outline: none;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-surface);
+  width: 110px;
+  text-align: right;
+}
+
+/* ── Barras de progresso ── */
+.orc-progress-track {
+  height: 8px;
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.orc-sem-limite { opacity: 0.4; }
+
+.orc-progress-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 0.4s ease;
+}
+
+.orc-fill-ok       { background: var(--color-ok); }
+.orc-fill-warning  { background: var(--color-warning); }
+.orc-fill-danger   { background: var(--color-danger); }
+.orc-fill-critical { background: var(--color-critical); }
+
+/* ── Legenda ── */
+.orc-item-legenda {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--font-size-xs);
+}
+
+.orc-pct-ok       { color: #166534; font-weight: 600; }
+.orc-pct-warning  { color: #92400e; font-weight: 600; }
+.orc-pct-danger   { color: #991b1b; font-weight: 600; }
+.orc-pct-critical { color: #4c1d95; font-weight: 600; }
+.orc-sem-limite-texto { color: var(--color-text-muted); }
+.orc-excedeu { color: var(--color-danger); font-weight: 700; }

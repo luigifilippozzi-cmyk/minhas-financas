@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orçamentos — Minhas Finanças</title>
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+
+  <!-- Header / Navbar -->
+  <header class="navbar">
+    <div class="navbar-brand">
+      <a href="index.html" class="navbar-back" title="Voltar ao Dashboard">←</a>
+      <span>💰</span>
+      <span>Orçamentos</span>
+    </div>
+    <div class="navbar-user">
+      <span id="usuario-nome">Carregando...</span>
+      <button id="btn-logout" class="btn btn-outline btn-sm">Sair</button>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="main-content">
+
+    <section class="section">
+
+      <!-- Cabeçalho com navegação de mês e resumo -->
+      <div class="orc-header">
+        <div class="orc-nav-mes">
+          <button id="btn-mes-anterior" class="btn btn-outline btn-sm">‹</button>
+          <h2 class="orc-mes-titulo" id="orc-mes-titulo">Março 2026</h2>
+          <button id="btn-mes-proximo" class="btn btn-outline btn-sm">›</button>
+        </div>
+
+        <div class="orc-resumo-chips">
+          <span class="orc-chip orc-chip-orcado">
+            <span class="orc-chip-label">Orçado</span>
+            <span class="orc-chip-valor" id="chip-total-orcado">R$ 0,00</span>
+          </span>
+          <span class="orc-chip orc-chip-gasto">
+            <span class="orc-chip-label">Gasto</span>
+            <span class="orc-chip-valor" id="chip-total-gasto">R$ 0,00</span>
+          </span>
+          <span class="orc-chip orc-chip-disponivel">
+            <span class="orc-chip-label">Disponível</span>
+            <span class="orc-chip-valor" id="chip-total-disponivel">R$ 0,00</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Aviso de sync em tempo real -->
+      <div class="orc-sync-banner">
+        <span>🔄</span>
+        <span>Alterações são sincronizadas em tempo real para todos os membros do grupo.</span>
+      </div>
+
+      <!-- Ações do mês -->
+      <div class="orc-acoes">
+        <button id="btn-copiar-mes-ant" class="btn btn-outline btn-sm">
+          📋 Copiar orçamentos do mês anterior
+        </button>
+        <span id="orc-feedback" class="orc-feedback hidden"></span>
+      </div>
+
+      <!-- Lista de categorias com orçamento editável -->
+      <div id="orc-lista" class="orc-lista">
+        <p class="empty-state">Carregando categorias...</p>
+      </div>
+
+    </section>
+  </main>
+
+  <script type="module" src="js/pages/orcamentos.js"></script>
+</body>
+</html>
