@@ -2,8 +2,8 @@
 
 | # | Requisito | Prioridade | Status |
 |---|-----------|-----------|--------|
-| RF-001 | Autenticação de Usuários | Alta | ⬜ Não Implementado |
-| RF-002 | Gerenciamento de Grupos Familiares | Alta | ⬜ Não Implementado |
+| RF-001 | Autenticação de Usuários | Alta | ✅ Implementado |
+| RF-002 | Gerenciamento de Grupos Familiares | Alta | 🔵 Em Desenvolvimento |
 | RF-003 | Gerenciamento de Categorias | Alta | ⬜ Não Implementado |
 | RF-004 | Orçamento Mensal por Categoria | Alta | ⬜ Não Implementado |
 | RF-005 | Registro de Despesas | Alta | 🟡 Parcial (frontend estático) |
@@ -18,7 +18,7 @@
 ---
 
 ## RF-001: Autenticação de Usuários
-**Prioridade:** Alta | **Versão:** v0.1.0
+**Prioridade:** Alta | **Versão:** v0.1.0 | **Status:** ✅ Implementado
 
 - Usuário pode criar conta com email e senha
 - Usuário pode fazer login com email e senha
@@ -27,7 +27,7 @@
 - Validação de formato de email
 
 ## RF-002: Gerenciamento de Grupos Familiares
-**Prioridade:** Alta | **Versão:** v0.2.0
+**Prioridade:** Alta | **Versão:** v0.2.0 | **Status:** 🔵 Em Desenvolvimento
 
 - Usuário pode criar novo grupo familiar
 - Sistema gera código de convite de 6 caracteres

@@ -36,8 +36,8 @@ onAuthChange(async (user) => {
   estadoApp.perfil  = await buscarPerfil(user.uid);
 
   if (!estadoApp.perfil?.grupoId) {
-    // TODO: Exibir tela de criar/entrar em grupo (RF-002)
-    console.warn('Usuário sem grupo. Implementar RF-002.');
+    // Usuário sem grupo → tela de configuração (RF-002)
+    window.location.href = 'grupo.html';
     return;
   }
 
