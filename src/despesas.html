@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Despesas — Minhas Finanças</title>
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+
+  <!-- Header / Navbar -->
+  <header class="navbar">
+    <div class="navbar-brand">
+      <a href="index.html" style="text-decoration:none;color:inherit;display:flex;gap:.4rem;align-items:center;">
+        <span>💰</span>
+        <span>Minhas Finanças</span>
+      </a>
+    </div>
+    <div class="navbar-user">
+      <span id="usuario-nome">Carregando...</span>
+      <a href="index.html"      class="btn btn-outline btn-sm">🏠 Dashboard</a>
+      <a href="despesas.html"   class="btn btn-primary  btn-sm">💸 Despesas</a>
+      <a href="orcamentos.html" class="btn btn-outline btn-sm">💰 Orçamentos</a>
+      <a href="categorias.html" class="btn btn-outline btn-sm">🏷️ Categorias</a>
+      <button id="btn-logout"   class="btn btn-outline btn-sm">Sair</button>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="main-content">
+
+    <!-- ═══ CABEÇALHO DA PÁGINA ═══ -->
+    <div class="desp-page-header">
+
+      <!-- Navegação de mês -->
+      <div class="desp-nav-mes">
+        <button id="btn-mes-ant" class="btn btn-outline btn-sm">‹</button>
+        <h2 class="desp-titulo-mes" id="titulo-mes">Março 2026</h2>
+        <button id="btn-mes-prox" class="btn btn-outline btn-sm">›</button>
+      </div>
+
+      <!-- Sync banner: confirma que dados são compartilhados -->
+      <div class="desp-sync-banner" id="sync-banner" title="Alterações de qualquer membro são sincronizadas em tempo real">
+        <span class="desp-sync-dot"></span>
+        <span>Sincronizado com o grupo</span>
+      </div>
+
+      <button id="btn-nova-despesa" class="btn btn-primary">+ Nova Despesa</button>
+    </div>
+
+    <!-- ═══ CHIPS DE RESUMO ═══ -->
+    <div class="desp-resumo-chips">
+      <div class="desp-chip">
+        <span class="desp-chip-label">Total do mês</span>
+        <span class="desp-chip-valor" id="chip-total">R$ 0,00</span>
+      </div>
+      <div class="desp-chip desp-chip-count">
+        <span class="desp-chip-label">Registros</span>
+        <span class="desp-chip-valor" id="chip-count">0</span>
+      </div>
+    </div>
+
+    <!-- ═══ FILTROS ═══ -->
+    <div class="desp-filtros">
+      <select id="filtro-categoria" class="select-input">
+        <option value="">Todas as categorias</option>
+      </select>
+      <input
+        type="text"
+        id="filtro-texto"
+        class="input-field"
+        placeholder="🔍 Buscar por descrição…"
+      />
+    </div>
+
+    <!-- ═══ LISTA DE DESPESAS ═══ -->
+    <div id="despesas-lista" class="desp-lista">
+      <p class="empty-state">Carregando despesas…</p>
+    </div>
+
+  </main>
+
+  <!-- ═══ MODAL: Nova / Editar Despesa ═══ -->
+  <div class="modal hidden" id="modal-despesa">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card modal-card-sm">
+      <div class="modal-header">
+        <h3 id="modal-despesa-titulo">Nova Despesa</h3>
+        <button class="modal-close" id="btn-fechar-modal">✕</button>
+      </div>
+      <form id="form-despesa" novalidate>
+        <input type="hidden" id="despesa-id" />
+
+        <div class="form-group">
+          <label for="despesa-descricao">Descrição</label>
+          <input
+            type="text"
+            id="despesa-descricao"
+            placeholder="Ex: Supermercado"
+            autocomplete="off"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="despesa-valor">Valor (R$)</label>
+          <input
+            type="number"
+            id="despesa-valor"
+            placeholder="0,00"
+            min="0.01"
+            step="0.01"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="despesa-categoria">Categoria</label>
+          <select id="despesa-categoria" required>
+            <option value="">Selecione uma categoria</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="despesa-data">Data</label>
+          <input type="date" id="despesa-data" required />
+        </div>
+
+        <div id="despesa-erro" class="form-erro hidden"></div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" id="btn-cancelar-despesa">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="btn-salvar-despesa">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══ MODAL: Confirmar Exclusão ═══ -->
+  <div class="modal hidden" id="modal-excluir">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card modal-card-sm">
+      <div class="modal-header">
+        <h3>Excluir Despesa</h3>
+        <button class="modal-close" id="btn-fechar-excluir">✕</button>
+      </div>
+      <p style="margin:1rem 0;">
+        Tem certeza que deseja excluir <strong id="excluir-descricao"></strong>?
+        Esta ação não pode ser desfeita.
+      </p>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" id="btn-cancelar-excluir">Cancelar</button>
+        <button type="button" class="btn btn-danger"  id="btn-confirmar-excluir">Excluir</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/pages/despesas.js"></script>
+</body>
+</html>

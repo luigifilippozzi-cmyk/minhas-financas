@@ -1,34 +1,97 @@
 // ============================================================
-// CONTROLLER: Despesas — RF-005, RF-006, RF-007, RF-008
+// CONTROLLER: Despesas — RF-005
+// Registro de despesas compartilhado entre membros do grupo.
+// Qualquer alteração (criar/editar/excluir) feita por um usuário
+// é sincronizada em tempo real para o outro via onSnapshot.
 // ============================================================
 
-import { criarDespesa as criarDespesaDB, atualizarDespesa, excluirDespesa, ouvirDespesas } from '../services/database.js';
+import {
+  criarDespesa as criarDespesaDB,
+  atualizarDespesa,
+  excluirDespesa,
+  ouvirDespesas,
+} from '../services/database.js';
 import { criarDespesa as modelDespesa } from '../models/Despesa.js';
 import { formatarMoeda, formatarData } from '../utils/formatters.js';
-import { dataHoje } from '../utils/helpers.js';
 
 let _unsubscribeDespesas = null;
 
-/**
- * Inicia o listener de despesas em tempo real.
- * @param {string} grupoId
- * @param {number} mes
- * @param {number} ano
- */
-export function iniciarListenerDespesas(grupoId, mes, ano) {
-  if (_unsubscribeDespesas) _unsubscribeDespesas();
+// ── Listener ─────────────────────────────────────────────────
 
-  _unsubscribeDespesas = ouvirDespesas(grupoId, mes, ano, (despesas) => {
-    renderizarDespesas(despesas);
-  });
+/**
+ * Inicia (ou reinicia) o listener em tempo real de despesas.
+ * Ambos os membros do grupo recebem atualizações imediatamente
+ * porque ambos têm o mesmo grupoId e ouvem a mesma coleção.
+ *
+ * @param {string}   grupoId
+ * @param {number}   mes
+ * @param {number}   ano
+ * @param {function} onChange  — callback(despesas[])
+ * @returns {function} unsubscribe
+ */
+export function iniciarListenerDespesas(grupoId, mes, ano, onChange) {
+  if (_unsubscribeDespesas) _unsubscribeDespesas();
+  _unsubscribeDespesas = ouvirDespesas(grupoId, mes, ano, onChange);
+  return _unsubscribeDespesas;
+}
+
+// ── Escrita ───────────────────────────────────────────────────
+
+/**
+ * Cria ou atualiza uma despesa.
+ * A escrita dispara onSnapshot em todos os listeners ativos do grupo,
+ * garantindo sincronização bidirecional em tempo real.
+ *
+ * @param {object}      dados       — { descricao, valor, categoriaId, data }
+ * @param {string}      grupoId
+ * @param {string}      usuarioId   — UID de quem está registrando
+ * @param {string|null} despesaId   — null = criar, string = atualizar
+ */
+export async function salvarDespesa(dados, grupoId, usuarioId, despesaId = null) {
+  const despesa = modelDespesa({ ...dados, grupoId, usuarioId });
+
+  if (despesaId) {
+    // Atualiza mantendo metadados originais (quem criou, etc.)
+    await atualizarDespesa(despesaId, {
+      descricao:   despesa.descricao,
+      valor:       despesa.valor,
+      categoriaId: despesa.categoriaId,
+      data:        despesa.data,
+    });
+  } else {
+    await criarDespesaDB(despesa);
+  }
 }
 
 /**
- * Renderiza a lista de despesas na UI.
- * @param {Array} despesas
+ * Exclui uma despesa permanentemente.
+ * A exclusão dispara onSnapshot → removida da UI de todos os membros.
+ *
+ * @param {string} despesaId
  */
-function renderizarDespesas(despesas) {
-  const lista = document.getElementById('despesas-lista');
+export async function deletarDespesa(despesaId) {
+  await excluirDespesa(despesaId);
+}
+
+// ── Renderização (usada no index.html / dashboard) ────────────
+
+/**
+ * Renderiza a lista de despesas em um elemento do DOM.
+ *
+ * @param {Array}  despesas
+ * @param {Array}  categorias       — lista de categorias para enriquecimento
+ * @param {string} containerId      — id do elemento de destino
+ * @param {string} onEditar         — nome da função global para editar
+ * @param {string} onExcluir        — nome da função global para excluir
+ */
+export function renderizarListaDespesas(
+  despesas,
+  categorias = [],
+  containerId = 'despesas-lista',
+  onEditar = 'editarDespesa',
+  onExcluir = 'confirmarExcluirDespesa',
+) {
+  const lista = document.getElementById(containerId);
   if (!lista) return;
 
   if (!despesas.length) {
@@ -36,42 +99,28 @@ function renderizarDespesas(despesas) {
     return;
   }
 
-  lista.innerHTML = despesas.map((d) => `
+  // Mapa rápido de categorias para lookup por ID
+  const catMap = Object.fromEntries(categorias.map((c) => [c.id, c]));
+
+  lista.innerHTML = despesas.map((d) => {
+    const cat = catMap[d.categoriaId];
+    const catLabel = cat ? `${cat.emoji} ${cat.nome}` : (d.categoriaId ?? '—');
+    const catCor   = cat?.cor ?? '#6c757d';
+
+    return `
     <div class="despesa-item card">
-      <div class="despesa-info">
+      <div class="despesa-left">
+        <span class="despesa-cat-badge" style="background:${catCor}22; color:${catCor};">${catLabel}</span>
         <span class="despesa-descricao">${d.descricao}</span>
-        <span class="despesa-meta">${formatarData(d.data)}</span>
+        <span class="despesa-data">${formatarData(d.data)}</span>
       </div>
-      <span class="despesa-categoria-badge">${d.categoriaNome ?? ''}</span>
-      <span class="despesa-valor">${formatarMoeda(d.valor)}</span>
-      <div class="despesa-acoes">
-        <button class="btn btn-sm btn-outline" onclick="editarDespesa('${d.id}')">✏️</button>
-        <button class="btn btn-sm btn-danger"  onclick="confirmarExcluirDespesa('${d.id}')">🗑️</button>
+      <div class="despesa-right">
+        <span class="despesa-valor">${formatarMoeda(d.valor)}</span>
+        <div class="despesa-acoes">
+          <button class="btn btn-sm btn-outline" onclick="${onEditar}('${d.id}')" title="Editar">✏️</button>
+          <button class="btn btn-sm btn-danger"  onclick="${onExcluir}('${d.id}')" title="Excluir">🗑️</button>
+        </div>
       </div>
-    </div>
-  `).join('');
-}
-
-/**
- * Salva uma despesa (criar ou atualizar).
- * @param {object} dados
- * @param {string} grupoId
- * @param {string} usuarioId
- * @param {string|null} despesaId
- */
-export async function salvarDespesa(dados, grupoId, usuarioId, despesaId = null) {
-  const despesa = modelDespesa({ ...dados, grupoId, usuarioId });
-  if (despesaId) {
-    await atualizarDespesa(despesaId, despesa);
-  } else {
-    await criarDespesaDB(despesa);
-  }
-}
-
-/**
- * Exclui uma despesa após confirmação.
- * @param {string} despesaId
- */
-export async function deletarDespesa(despesaId) {
-  await excluirDespesa(despesaId);
+    </div>`;
+  }).join('');
 }

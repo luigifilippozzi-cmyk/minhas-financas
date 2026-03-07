@@ -640,3 +640,206 @@ a:hover { text-decoration: underline; }
 .orc-pct-critical { color: #4c1d95; font-weight: 600; }
 .orc-sem-limite-texto { color: var(--color-text-muted); }
 .orc-excedeu { color: var(--color-danger); font-weight: 700; }
+
+/* ============================================================
+   PÁGINA DE DESPESAS — RF-005
+   ============================================================ */
+
+/* ── Cabeçalho da página ── */
+.desp-page-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.desp-nav-mes {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+.desp-titulo-mes {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  min-width: 11rem;
+  text-align: center;
+  color: var(--color-text);
+}
+
+/* ── Sync banner ── */
+.desp-sync-banner {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: var(--font-size-xs);
+  color: #166534;
+  background: #dcfce7;
+  border: 1px solid #86efac;
+  border-radius: var(--radius-full);
+  padding: .25rem .75rem;
+  cursor: default;
+}
+
+.desp-sync-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #16a34a;
+  animation: desp-pulse 2s infinite;
+  flex-shrink: 0;
+}
+
+@keyframes desp-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: .4; }
+}
+
+/* ── Chips de resumo ── */
+.desp-resumo-chips {
+  display: flex;
+  gap: .75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.desp-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: .5rem 1.25rem;
+  min-width: 8rem;
+}
+
+.desp-chip-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.desp-chip-valor {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-top: .1rem;
+}
+
+/* ── Filtros ── */
+.desp-filtros {
+  display: flex;
+  gap: .75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.desp-filtros .select-input,
+.desp-filtros .input-field {
+  flex: 1;
+  min-width: 160px;
+}
+
+/* ── Lista de despesas ── */
+.desp-lista {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+}
+
+.desp-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  padding: .75rem 1rem;
+  flex-wrap: wrap;
+}
+
+.desp-item-left {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.desp-cat-badge,
+.despesa-cat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .2rem;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  padding: .15rem .55rem;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.desp-item-descricao,
+.despesa-descricao {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.desp-item-data,
+.despesa-data,
+.despesa-meta {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.desp-item-right {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-shrink: 0;
+}
+
+.desp-item-valor,
+.despesa-valor {
+  font-weight: 700;
+  font-size: var(--font-size-md);
+  color: var(--color-danger);
+  white-space: nowrap;
+}
+
+.desp-item-acoes,
+.despesa-acoes {
+  display: flex;
+  gap: .3rem;
+}
+
+/* ── Estilos de compatibilidade (cards usados em index.html) ── */
+.despesa-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  padding: .75rem 1rem;
+  flex-wrap: wrap;
+}
+
+.despesa-left {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.despesa-right {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-shrink: 0;
+}
