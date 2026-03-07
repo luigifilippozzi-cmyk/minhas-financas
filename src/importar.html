@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Importar Transações — Minhas Finanças</title>
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+
+  <!-- Header / Navbar -->
+  <header class="navbar">
+    <div class="navbar-brand">
+      <a href="index.html" style="text-decoration:none;color:inherit;display:flex;gap:.4rem;align-items:center;">
+        <span>💰</span>
+        <span>Minhas Finanças</span>
+      </a>
+    </div>
+    <div class="navbar-user">
+      <span id="usuario-nome">Carregando...</span>
+      <a href="index.html"      class="btn btn-outline btn-sm">🏠 Dashboard</a>
+      <a href="despesas.html"   class="btn btn-outline btn-sm">💸 Despesas</a>
+      <a href="orcamentos.html" class="btn btn-outline btn-sm">💰 Orçamentos</a>
+      <a href="categorias.html" class="btn btn-outline btn-sm">🏷️ Categorias</a>
+      <a href="importar.html"   class="btn btn-primary  btn-sm">📥 Importar</a>
+      <button id="btn-logout"   class="btn btn-outline btn-sm">Sair</button>
+    </div>
+  </header>
+
+  <main class="main-content">
+
+    <!-- ═══ CABEÇALHO ═══ -->
+    <div class="imp-page-header">
+      <div>
+        <h2 class="imp-titulo">📥 Importar Transações</h2>
+        <p class="imp-subtitulo">Importe despesas do seu cartão de crédito via planilha Excel</p>
+      </div>
+    </div>
+
+    <!-- ═══ PASSO 1: DOWNLOAD DO TEMPLATE ═══ -->
+    <div class="card imp-card" id="sec-template">
+      <div class="imp-step-badge">Passo 1</div>
+      <h3 class="imp-step-titulo">Baixe o template e preencha suas transações</h3>
+      <p class="imp-step-desc">
+        Use o template oficial para garantir que as colunas estejam no formato correto.
+        Preencha com suas transações e salve o arquivo como <strong>.xlsx</strong>.
+      </p>
+      <div class="imp-template-info">
+        <div class="imp-template-cols">
+          <span class="imp-col-badge imp-col-obrig">Data</span>
+          <span class="imp-col-badge imp-col-obrig">Descrição</span>
+          <span class="imp-col-badge imp-col-obrig">Valor (R$)</span>
+          <span class="imp-col-badge imp-col-opcl">Categoria</span>
+          <span class="imp-col-badge imp-col-opcl">Observação</span>
+        </div>
+        <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
+          <span style="font-size:.8rem;color:var(--text-muted);">
+            <span style="color:var(--primary);">■</span> Obrigatório &nbsp;
+            <span style="color:var(--text-muted);">■</span> Opcional
+          </span>
+        </div>
+      </div>
+      <a
+        href="templates/template-importacao.xlsx"
+        download="template-importacao.xlsx"
+        class="btn btn-primary imp-btn-download"
+      >
+        ⬇️ Baixar Template Excel
+      </a>
+    </div>
+
+    <!-- ═══ PASSO 2: UPLOAD DO ARQUIVO ═══ -->
+    <div class="card imp-card" id="sec-upload">
+      <div class="imp-step-badge">Passo 2</div>
+      <h3 class="imp-step-titulo">Carregue o arquivo preenchido</h3>
+      <p class="imp-step-desc">
+        Arraste o arquivo <strong>.xlsx</strong> para a área abaixo ou clique para selecionar.
+      </p>
+
+      <!-- Área de drop -->
+      <div class="imp-drop-area" id="drop-area">
+        <div class="imp-drop-icon">📂</div>
+        <p class="imp-drop-texto">Arraste o arquivo aqui</p>
+        <p class="imp-drop-sub">ou</p>
+        <label for="file-input" class="btn btn-outline imp-btn-select">Selecionar arquivo .xlsx</label>
+        <input type="file" id="file-input" accept=".xlsx,.xls" style="display:none;" />
+        <p class="imp-drop-hint">Apenas arquivos Excel (.xlsx)</p>
+      </div>
+
+      <!-- Arquivo selecionado -->
+      <div class="imp-arquivo-selecionado hidden" id="arquivo-info">
+        <span class="imp-arquivo-icon">📄</span>
+        <span id="arquivo-nome">—</span>
+        <button id="btn-trocar-arquivo" class="btn btn-outline btn-sm">Trocar</button>
+      </div>
+
+      <!-- Mensagem de erro de leitura -->
+      <div class="form-erro hidden" id="erro-leitura"></div>
+    </div>
+
+    <!-- ═══ PASSO 3: PREVIEW E CONFIRMAÇÃO ═══ -->
+    <div class="card imp-card hidden" id="sec-preview">
+      <div class="imp-step-badge imp-step-badge--verde">Passo 3</div>
+      <h3 class="imp-step-titulo">Revise e confirme as transações</h3>
+      <p class="imp-step-desc">
+        Verifique as transações lidas, ajuste as categorias e desmarque o que não deseja importar.
+      </p>
+
+      <!-- Chips de resumo do preview -->
+      <div class="imp-resumo-chips">
+        <div class="imp-chip">
+          <span class="imp-chip-label">Lidas</span>
+          <span class="imp-chip-valor" id="chip-lidas">0</span>
+        </div>
+        <div class="imp-chip imp-chip--verde">
+          <span class="imp-chip-label">Selecionadas</span>
+          <span class="imp-chip-valor" id="chip-selecionadas">0</span>
+        </div>
+        <div class="imp-chip imp-chip--azul">
+          <span class="imp-chip-label">Total</span>
+          <span class="imp-chip-valor" id="chip-total-imp">R$ 0,00</span>
+        </div>
+        <div class="imp-chip imp-chip--aviso hidden" id="chip-erros-wrap">
+          <span class="imp-chip-label">Com erro</span>
+          <span class="imp-chip-valor" id="chip-erros">0</span>
+        </div>
+      </div>
+
+      <!-- Ações em lote -->
+      <div class="imp-acoes-lote">
+        <button id="btn-sel-todos"    class="btn btn-outline btn-sm">☑ Selecionar todos</button>
+        <button id="btn-desel-todos"  class="btn btn-outline btn-sm">☐ Desmarcar todos</button>
+        <span style="flex:1;"></span>
+        <label class="imp-label-cat-lote">Definir categoria para todos:</label>
+        <select id="sel-cat-lote" class="select-input imp-sel-lote">
+          <option value="">— manter individual —</option>
+        </select>
+      </div>
+
+      <!-- Tabela de preview -->
+      <div class="imp-table-wrap">
+        <table class="imp-table" id="tabela-preview">
+          <thead>
+            <tr>
+              <th style="width:40px;"><input type="checkbox" id="chk-all" title="Marcar/desmarcar todos" /></th>
+              <th>Data</th>
+              <th>Descrição</th>
+              <th style="width:110px;">Valor</th>
+              <th style="width:200px;">Categoria</th>
+              <th style="width:60px;">Status</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-preview">
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Botão importar -->
+      <div class="imp-footer-acao">
+        <span id="imp-aviso-zero" class="hidden" style="color:var(--danger);font-size:.9rem;">
+          ⚠️ Selecione ao menos uma transação para importar.
+        </span>
+        <button id="btn-importar" class="btn btn-primary imp-btn-importar">
+          📥 Importar <span id="btn-imp-count">0</span> despesas
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══ RESULTADO ═══ -->
+    <div class="card imp-card hidden" id="sec-resultado">
+      <div class="imp-resultado-icon" id="resultado-icon">✅</div>
+      <h3 id="resultado-titulo">Importação concluída!</h3>
+      <p  id="resultado-msg">—</p>
+      <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1.25rem;">
+        <a href="despesas.html" class="btn btn-primary">Ver Despesas</a>
+        <button id="btn-nova-importacao" class="btn btn-outline">Nova Importação</button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- SheetJS — carregado antes do módulo para ficar disponível como XLSX global -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script type="module" src="js/pages/importar.js"></script>
+</body>
+</html>
