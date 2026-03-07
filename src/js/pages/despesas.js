@@ -305,6 +305,54 @@ function configurarEventos() {
   // Filtros locais (sem re-query)
   document.getElementById('filtro-texto')?.addEventListener('input', () => renderizarLista());
   document.getElementById('filtro-categoria')?.addEventListener('change', () => renderizarLista());
+
+  // Exportar CSV — RF-012
+  document.getElementById('btn-exportar-csv')?.addEventListener('click', () => exportarCSV());
+}
+
+// ── Exportação CSV ────────────────────────────────────────────
+
+/**
+ * RF-012 — Exportar despesas do mês corrente para arquivo CSV.
+ * Usa separador ";" e BOM UTF-8 para compatibilidade com Excel (pt-BR).
+ * Arquivo gerado: despesas-{mes}-{ano}.csv
+ */
+function exportarCSV() {
+  if (!_despesas.length) {
+    alert('Nenhuma despesa para exportar neste período.');
+    return;
+  }
+
+  const cabecalho = ['Data', 'Descrição', 'Categoria', 'Emoji', 'Valor (R$)'];
+
+  // Ordena por data antes de exportar
+  const ordenadas = [..._despesas].sort((a, b) => {
+    const da = (a.data?.toDate?.() ?? new Date(a.data)).getTime();
+    const db = (b.data?.toDate?.() ?? new Date(b.data)).getTime();
+    return da - db;
+  });
+
+  const linhas = ordenadas.map((d) => {
+    const cat       = _catMap[d.categoriaId];
+    const dataFmt   = formatarData(d.data);
+    const descricao = `"${d.descricao.replace(/"/g, '""')}"`;
+    const catNome   = cat?.nome  ?? '—';
+    const catEmoji  = cat?.emoji ?? '';
+    const valor     = d.valor.toFixed(2).replace('.', ',');
+    return [dataFmt, descricao, `"${catNome}"`, catEmoji, valor].join(';');
+  });
+
+  const csv  = '\uFEFF' + [cabecalho.join(';'), ...linhas].join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `despesas-${nomeMes(_mes).toLowerCase().replace(/\s/g, '-')}-${_ano}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 // ── Funções globais (chamadas pelos botões inline) ────────────
