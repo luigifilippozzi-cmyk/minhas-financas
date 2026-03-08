@@ -43,9 +43,9 @@ jobs:
       - name: 📦 Instala Firebase CLI
         run: npm install -g firebase-tools
 
-      - name: 🚀 Deploy no Firebase Hosting + Firestore Indexes
+      - name: 🚀 Deploy no Firebase Hosting + Firestore
         run: |
-          firebase deploy --only hosting,firestore:indexes \
+          firebase deploy --only hosting,firestore \
             --token "${{ secrets.FIREBASE_TOKEN }}" \
             --project minhas-financas-285da \
             --non-interactive
