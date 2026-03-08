@@ -8,6 +8,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  sendPasswordResetEmail,
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 import { criarPerfil, buscarPerfil } from './database.js';
 
@@ -68,14 +69,82 @@ export function getUsuarioAtual() {
   return auth.currentUser;
 }
 
+/**
+ * Envia um e-mail de recuperação de senha para o endereço informado.
+ * RF-015: Recuperação de Senha.
+ * @param {string} email
+ * @returns {Promise<void>}
+ */
+export async function recuperarSenha(email) {
+  return sendPasswordResetEmail(auth, email);
+}
+
 // ── Controle de UI da página de Login ──────────────────────
 // Este bloco só é executado se estamos na página login.html
 if (document.getElementById('form-login')) {
-  const formLogin    = document.getElementById('form-login');
-  const formCadastro = document.getElementById('form-cadastro');
-  const tabs         = document.querySelectorAll('.tab-btn');
-  const erroLogin    = document.getElementById('login-erro');
-  const erroCadastro = document.getElementById('cadastro-erro');
+  const formLogin      = document.getElementById('form-login');
+  const formCadastro   = document.getElementById('form-cadastro');
+  const tabs           = document.querySelectorAll('.tab-btn');
+  const erroLogin      = document.getElementById('login-erro');
+  const erroCadastro   = document.getElementById('cadastro-erro');
+
+  // ── RF-015: Recuperação de senha ────────────────────────
+  const secaoRecuperar  = document.getElementById('section-recuperar');
+  const formRecuperar   = document.getElementById('form-recuperar');
+  const erroRecuperar   = document.getElementById('recuperar-erro');
+  const sucessoRecuperar = document.getElementById('recuperar-sucesso');
+  const linkEsqueci     = document.getElementById('link-esqueci');
+  const linkVoltarLogin = document.getElementById('link-voltar-login');
+  const authTabs        = document.querySelector('.auth-tabs');
+
+  /** Mostra a seção de recuperação e oculta o resto */
+  function mostrarRecuperacao() {
+    formLogin.classList.add('hidden');
+    formCadastro.classList.add('hidden');
+    authTabs.classList.add('hidden');
+    secaoRecuperar.classList.remove('hidden');
+    erroRecuperar.classList.add('hidden');
+    sucessoRecuperar.classList.add('hidden');
+    document.getElementById('recuperar-email').value = '';
+  }
+
+  /** Volta para o formulário de login */
+  function voltarLogin() {
+    secaoRecuperar.classList.add('hidden');
+    authTabs.classList.remove('hidden');
+    formLogin.classList.remove('hidden');
+    formCadastro.classList.add('hidden');
+    tabs.forEach((t) => t.classList.remove('tab-active'));
+    tabs[0]?.classList.add('tab-active');
+  }
+
+  linkEsqueci?.addEventListener('click', (e) => {
+    e.preventDefault();
+    mostrarRecuperacao();
+  });
+
+  linkVoltarLogin?.addEventListener('click', (e) => {
+    e.preventDefault();
+    voltarLogin();
+  });
+
+  formRecuperar?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    erroRecuperar.classList.add('hidden');
+    sucessoRecuperar.classList.add('hidden');
+    const email = document.getElementById('recuperar-email').value.trim();
+    try {
+      await recuperarSenha(email);
+      // Resposta genérica: não revela se o e-mail existe (segurança)
+      sucessoRecuperar.textContent =
+        'Se este e-mail estiver cadastrado, você receberá um link em breve. Verifique também sua caixa de spam.';
+      sucessoRecuperar.classList.remove('hidden');
+      formRecuperar.reset();
+    } catch (err) {
+      erroRecuperar.textContent = traduzirErroFirebase(err.code);
+      erroRecuperar.classList.remove('hidden');
+    }
+  });
 
   // Flag que bloqueia o redirecionamento automático do onAuthChange
   // enquanto o cadastro está em andamento (evita race condition).
@@ -156,7 +225,7 @@ function traduzirErroFirebase(code) {
     'auth/invalid-email':           'E-mail inválido.',
     'auth/user-not-found':          'Usuário não encontrado.',
     'auth/wrong-password':          'Senha incorreta.',
-    'auth/email-already-in-use':    'Este e-mail já está em uso.',
+    'auth/email-already-in-use':    'Este e-mail já possui uma conta. Use a aba "Entrar" ou recupere sua senha.',
     'auth/weak-password':           'Senha muito fraca. Use no mínimo 6 caracteres.',
     'auth/too-many-requests':       'Muitas tentativas. Tente novamente mais tarde.',
     'auth/network-request-failed':  'Erro de conexão. Verifique sua internet.',

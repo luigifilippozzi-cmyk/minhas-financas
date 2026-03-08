@@ -16,6 +16,7 @@
 | RF-012 | Exportação de Dados | Baixa | ✅ Implementado |
 | RF-013 | Importação de Transações via Excel | Média | ✅ Implementado |
 | RF-014 | Gestão Multi-Usuário de Cartão de Crédito | Alta | ✅ Implementado |
+| RF-015 | Recuperação de Senha | Média | ✅ Implementado |
 
 ---
 
@@ -137,3 +138,16 @@
 - Chips de total por responsável no resumo mensal da página de Despesas
 - Filtro de lista por responsável (dropdown "Todos os responsáveis")
 - CSV exportado inclui coluna "Responsável"
+
+## RF-015: Recuperação de Senha
+**Prioridade:** Média | **Versão:** v1.1.0 | **Status:** ✅ Implementado
+
+- Usuário pode solicitar link de recuperação de senha diretamente na tela de login
+- Link "Esqueceu sua senha?" visível abaixo do botão "Entrar" no formulário de login
+- Ao clicar, exibe seção de recuperação com campo de e-mail e botão "Enviar link de recuperação"
+- Firebase envia e-mail com link de redefinição para endereços cadastrados
+- Resposta genérica de sucesso: "Se este e-mail estiver cadastrado, você receberá um link em breve" (não revela se o e-mail existe — boa prática de segurança)
+- Erros de e-mail inválido são mostrados ao usuário em português
+- Botão "Voltar ao login" retorna à tela de login sem precisar recarregar a página
+- Ao tentar cadastrar e-mail já em uso, a mensagem de erro inclui sugestão de recuperar a senha
+- Implementado com `sendPasswordResetEmail` do Firebase Auth v10

@@ -51,6 +51,11 @@
         </div>
         <div id="login-erro" class="form-erro hidden"></div>
         <button type="submit" class="btn btn-primary btn-full">Entrar</button>
+        <p style="text-align:center; margin-top: var(--space-3); font-size: var(--font-size-sm);">
+          <a href="#" id="link-esqueci" style="color: var(--color-primary); text-decoration: none;">
+            Esqueceu sua senha?
+          </a>
+        </p>
       </form>
 
       <!-- Formulário de Cadastro -->
@@ -89,6 +94,36 @@
         <div id="cadastro-erro" class="form-erro hidden"></div>
         <button type="submit" class="btn btn-primary btn-full">Criar conta</button>
       </form>
+
+      <!-- ── Seção de Recuperação de Senha (RF-015) ── -->
+      <div id="section-recuperar" class="hidden">
+        <h2 style="font-size: var(--font-size-lg); font-weight: 600; margin-bottom: var(--space-4); color: var(--color-text);">
+          Recuperar senha
+        </h2>
+        <p style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: var(--space-4);">
+          Informe o e-mail cadastrado e enviaremos um link para redefinir sua senha.
+        </p>
+        <form id="form-recuperar" class="auth-form" novalidate>
+          <div class="form-group">
+            <label for="recuperar-email">E-mail</label>
+            <input
+              type="email"
+              id="recuperar-email"
+              placeholder="seu@email.com"
+              required
+              autocomplete="email"
+            />
+          </div>
+          <div id="recuperar-erro"   class="form-erro   hidden"></div>
+          <div id="recuperar-sucesso" class="form-sucesso hidden"></div>
+          <button type="submit" class="btn btn-primary btn-full">Enviar link de recuperação</button>
+        </form>
+        <p style="text-align:center; margin-top: var(--space-3); font-size: var(--font-size-sm);">
+          <a href="#" id="link-voltar-login" style="color: var(--color-primary); text-decoration: none;">
+            ← Voltar ao login
+          </a>
+        </p>
+      </div>
 
     </div>
   </main>
