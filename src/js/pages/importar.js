@@ -33,7 +33,13 @@ let _chavesExistentes = new Set(); // RF-014: chaves já importadas
 onAuthChange(async (user) => {
   if (!user) { window.location.href = '../login.html'; return; }
   _usuario = user;
-  const perfil = await buscarPerfil(user.uid);
+  let perfil;
+  try {
+    perfil = await buscarPerfil(user.uid);
+  } catch (_err) {
+    window.location.href = '../login.html';
+    return;
+  }
   if (!perfil?.grupoId) { window.location.href = '../grupo.html'; return; }
   _grupoId = perfil.grupoId;
   document.getElementById('usuario-nome').textContent = perfil.nome ?? user.email;

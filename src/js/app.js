@@ -43,7 +43,14 @@ onAuthChange(async (user) => {
   }
 
   estadoApp.usuario = user;
-  estadoApp.perfil  = await buscarPerfil(user.uid);
+
+  try {
+    estadoApp.perfil = await buscarPerfil(user.uid);
+  } catch (_err) {
+    // Falha ao buscar perfil (ex: erro de rede) → redireciona para login por segurança
+    window.location.href = 'login.html';
+    return;
+  }
 
   if (!estadoApp.perfil?.grupoId) {
     window.location.href = 'grupo.html';

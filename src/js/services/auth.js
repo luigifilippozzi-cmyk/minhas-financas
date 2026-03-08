@@ -20,6 +20,10 @@ import { criarPerfil, buscarPerfil } from './database.js';
  */
 export async function cadastrar(nome, email, senha) {
   const credencial = await createUserWithEmailAndPassword(auth, email, senha);
+  // Aguarda o ID token estar disponível no SDK antes de escrever no Firestore.
+  // Sem este await pode ocorrer race condition onde o token ainda não foi
+  // propagado para o Firestore SDK, causando permission-denied.
+  await credencial.user.getIdToken();
   // Cria o perfil do usuário no Firestore (sem grupoId ainda)
   await criarPerfil(credencial.user.uid, {
     nome: nome.trim(),
@@ -73,9 +77,14 @@ if (document.getElementById('form-login')) {
   const erroLogin    = document.getElementById('login-erro');
   const erroCadastro = document.getElementById('cadastro-erro');
 
+  // Flag que bloqueia o redirecionamento automático do onAuthChange
+  // enquanto o cadastro está em andamento (evita race condition).
+  let _registrando = false;
+
   // Redireciona baseado no estado do grupo: com grupo → dashboard, sem grupo → setup
   onAuthChange(async (user) => {
     if (!user) return;
+    if (_registrando) return; // Cadastro em andamento: aguarda o fluxo terminar
     const perfil = await buscarPerfil(user.uid);
     if (perfil?.grupoId) {
       window.location.href = 'index.html';
@@ -117,10 +126,20 @@ if (document.getElementById('form-login')) {
     const nome  = document.getElementById('cadastro-nome').value.trim();
     const email = document.getElementById('cadastro-email').value.trim();
     const senha = document.getElementById('cadastro-senha').value;
+
+    _registrando = true; // Bloqueia o onAuthChange de redirecionar durante o cadastro
     try {
       await cadastrar(nome, email, senha);
-      // onAuthChange cuidará do redirecionamento para grupo.html
+      // Cadastro completo — redireciona manualmente para setup de grupo
+      window.location.href = 'grupo.html';
     } catch (err) {
+      // Se o Auth foi criado mas criarPerfil falhou, remove o usuário órfão do Auth
+      // para evitar estado inconsistente (autenticado sem perfil no Firestore).
+      if (auth.currentUser) {
+        try { await auth.currentUser.delete(); } catch (_) { /* ignora */ }
+        await signOut(auth).catch(() => {});
+      }
+      _registrando = false;
       erroCadastro.textContent = traduzirErroFirebase(err.code);
       erroCadastro.classList.remove('hidden');
     }
