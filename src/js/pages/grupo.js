@@ -16,7 +16,14 @@ onAuthChange(async (user) => {
     return;
   }
 
-  const perfil = await buscarPerfil(user.uid);
+  let perfil;
+  try {
+    perfil = await buscarPerfil(user.uid);
+  } catch (_err) {
+    window.location.href = 'login.html';
+    return;
+  }
+
   if (perfil?.grupoId) {
     // Já tem grupo → não precisa estar nesta tela
     window.location.href = 'index.html';
