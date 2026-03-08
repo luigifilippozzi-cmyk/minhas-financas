@@ -94,6 +94,16 @@
   margin-bottom: var(--space-3);
 }
 
+.form-sucesso {
+  background-color: #DCFCE7;
+  color: #15803D;
+  border: 1px solid #BBF7D0;
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-3);
+}
+
 /* ── Barra de Progresso ── */
 .progress-bar-track {
   width: 100%;
