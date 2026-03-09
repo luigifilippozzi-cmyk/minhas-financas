@@ -65,6 +65,12 @@
   color: var(--color-text);
 }
 
+.form-required {
+  color: var(--color-danger);
+  font-weight: 700;
+  margin-left: 2px;
+}
+
 .form-group input,
 .form-group select,
 .select-input {

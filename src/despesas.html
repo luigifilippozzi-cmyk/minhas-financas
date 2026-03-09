@@ -149,13 +149,14 @@
           <input type="date" id="despesa-data" required />
         </div>
 
-        <!-- RF-014: campo Responsável -->
+        <!-- RF-014: campo Responsável (obrigatório — Issue #49) -->
         <div class="form-group">
-          <label for="despesa-responsavel">Responsável</label>
-          <select id="despesa-responsavel">
-            <option value="">— não definido —</option>
+          <label for="despesa-responsavel">Responsável <span class="form-required">*</span></label>
+          <select id="despesa-responsavel" required>
+            <option value="">Selecione o responsável</option>
             <!-- Preenchido dinamicamente com os membros do grupo -->
           </select>
+          <span class="form-help">Obrigatório: informe quem realizou a despesa.</span>
         </div>
 
         <div id="despesa-erro" class="form-erro hidden"></div>
