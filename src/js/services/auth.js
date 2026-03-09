@@ -156,7 +156,7 @@ if (document.getElementById('form-login')) {
     if (_registrando) return; // Cadastro em andamento: aguarda o fluxo terminar
     const perfil = await buscarPerfil(user.uid);
     if (perfil?.grupoId) {
-      window.location.href = 'index.html';
+      window.location.href = 'dashboard.html';
     } else {
       window.location.href = 'grupo.html';
     }
