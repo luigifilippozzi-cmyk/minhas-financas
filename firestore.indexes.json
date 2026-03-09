@@ -5,8 +5,33 @@
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "grupoId", "order": "ASCENDING" },
+        { "fieldPath": "data",    "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "despesas",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "grupoId", "order": "ASCENDING" },
         { "fieldPath": "tipo",    "order": "ASCENDING" },
         { "fieldPath": "data",    "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "orcamentos",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "grupoId", "order": "ASCENDING" },
+        { "fieldPath": "mes",     "order": "ASCENDING" },
+        { "fieldPath": "ano",     "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "categorias",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "grupoId", "order": "ASCENDING" },
+        { "fieldPath": "ativa",   "order": "ASCENDING" }
       ]
     }
   ],

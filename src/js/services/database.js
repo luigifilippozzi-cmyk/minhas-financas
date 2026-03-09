@@ -75,10 +75,10 @@ export function ouvirCategorias(grupoId, callback) {
     where('grupoId', '==', grupoId),
     where('ativa', '==', true),
   );
-  return onSnapshot(q, (snap) => {
-    const cats = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-    callback(cats);
-  });
+  return onSnapshot(q,
+    (snap) => { callback(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); },
+    (err)  => { console.error('[ouvirCategorias] Erro no listener:', err); },
+  );
 }
 
 export async function atualizarCategoria(categoriaId, dados) {
@@ -110,10 +110,10 @@ export function ouvirDespesas(grupoId, mes, ano, callback) {
     where('data', '<=', fim),
     orderBy('data', 'desc'),
   );
-  return onSnapshot(q, (snap) => {
-    const despesas = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-    callback(despesas);
-  });
+  return onSnapshot(q,
+    (snap) => { callback(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); },
+    (err)  => { console.error('[ouvirDespesas] Erro no listener:', err); },
+  );
 }
 
 export async function atualizarDespesa(despesaId, dados) {
@@ -150,8 +150,9 @@ export function ouvirParcelamentosAbertos(grupoId, callback) {
     where('tipo', '==', 'projecao'),
     orderBy('data', 'asc'),
   );
-  return onSnapshot(q, (snap) =>
-    callback(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+  return onSnapshot(q,
+    (snap) => { callback(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); },
+    (err)  => { console.error('[ouvirParcelamentosAbertos] Erro no listener:', err); },
   );
 }
 
@@ -185,8 +186,8 @@ export function ouvirOrcamentos(grupoId, mes, ano, callback) {
     where('mes', '==', mes),
     where('ano', '==', ano),
   );
-  return onSnapshot(q, (snap) => {
-    const orc = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-    callback(orc);
-  });
+  return onSnapshot(q,
+    (snap) => { callback(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); },
+    (err)  => { console.error('[ouvirOrcamentos] Erro no listener:', err); },
+  );
 }
