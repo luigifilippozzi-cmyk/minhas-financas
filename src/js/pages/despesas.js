@@ -470,12 +470,34 @@ function configurarEventos() {
   // Exportar CSV
   document.getElementById('btn-exportar-csv')?.addEventListener('click', () => exportarCSV());
 
-  // RF-014: toggle painel parcelamentos
+  // RF-014: toggle painel parcelamentos (header interno)
   document.getElementById('parc-toggle')?.addEventListener('click', () => {
     const body = document.getElementById('parc-body-desp');
     if (body) body.classList.toggle('parc-body--collapsed');
     const icon = document.querySelector('#parc-toggle .parc-toggle-icon');
     if (icon) icon.textContent = body?.classList.contains('parc-body--collapsed') ? '▸' : '▾';
+  });
+
+  // CT-009.5: botão externo de visibilidade do painel de parcelamentos
+  document.getElementById('btn-ver-parc-desp')?.addEventListener('click', () => {
+    const widget = document.getElementById('parc-widget');
+    if (!widget) return;
+    if (widget.classList.contains('hidden')) {
+      widget.classList.remove('hidden');
+      // Expande o body caso esteja colapsado
+      const body = document.getElementById('parc-body-desp');
+      if (body) body.classList.remove('parc-body--collapsed');
+      const icon = document.querySelector('#parc-toggle .parc-toggle-icon');
+      if (icon) icon.textContent = '▾';
+      // Mostra empty-state se não houver lista
+      const lista = document.getElementById('parc-lista-desp');
+      if (lista && !lista.querySelector('.parc-resp-row')) {
+        lista.innerHTML = '<p class="empty-state" style="font-size:.85rem;padding:.5rem 0;">Nenhum parcelamento em aberto no momento.</p>';
+      }
+    } else {
+      widget.classList.add('hidden');
+    }
+    widget.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
 }
 

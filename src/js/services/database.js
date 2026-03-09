@@ -136,6 +136,46 @@ export async function buscarChavesDedup(grupoId) {
   return new Set(snap.docs.map((d) => d.data().chave_dedup).filter(Boolean));
 }
 
+/**
+ * RF-051: Retorna mapa de chave_dedup → docId para projeções (tipo='projecao').
+ * Permite substituir uma projeção pela despesa real ao importar.
+ */
+export async function buscarMapaProjecoes(grupoId) {
+  const q = query(
+    collection(db, 'despesas'),
+    where('grupoId', '==', grupoId),
+    where('tipo', '==', 'projecao'),
+  );
+  const snap = await getDocs(q);
+  const mapa = new Map();
+  snap.docs.forEach((d) => {
+    const chave = d.data().chave_dedup;
+    if (chave) mapa.set(chave, d.id);
+  });
+  return mapa;
+}
+
+/**
+ * RF-051: Retorna mapa descricaoLower → categoriaId de importações anteriores.
+ * Melhora o auto-preenchimento de categoria para compras recorrentes/parceladas.
+ */
+export async function buscarMapaCategorias(grupoId) {
+  const q = query(
+    collection(db, 'despesas'),
+    where('grupoId', '==', grupoId),
+    where('origem', '==', 'importacao'),
+  );
+  const snap = await getDocs(q);
+  const mapa = {};
+  snap.docs.forEach((d) => {
+    const { descricao, categoriaId } = d.data();
+    if (descricao && categoriaId) {
+      mapa[descricao.toLowerCase().trim()] = categoriaId;
+    }
+  });
+  return mapa;
+}
+
 // ── RF-014: Parcelamentos em Aberto ───────────────────────────
 
 /**

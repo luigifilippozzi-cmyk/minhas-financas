@@ -1227,3 +1227,16 @@ a:hover { text-decoration: underline; }
   border-radius: 4px;
   font-size: .8rem;
 }
+
+/* RF-051: substitui projeção pela despesa real */
+.imp-row-subst { background: #e8f5e9 !important; }
+.imp-badge--subst {
+  background: #2e7d32;
+  color: #fff;
+  border: 1px solid #1b5e20;
+  padding: .2rem .5rem;
+  border-radius: 4px;
+  font-size: .78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
