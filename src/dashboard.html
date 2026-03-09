@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minhas Finanças</title>
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+
+  <!-- Header / Navbar -->
+  <header class="navbar">
+    <div class="navbar-brand">
+      <span>💰</span>
+      <span>Minhas Finanças</span>
+    </div>
+    <div class="navbar-user">
+      <span id="usuario-nome">Carregando...</span>
+      <a href="despesas.html"   class="btn btn-outline btn-sm">💸 Despesas</a>
+      <a href="orcamentos.html" class="btn btn-outline btn-sm">💰 Orçamentos</a>
+      <a href="categorias.html" class="btn btn-outline btn-sm">🏷️ Categorias</a>
+      <a href="importar.html"   class="btn btn-outline btn-sm">📥 Importar</a>
+      <button id="btn-logout"   class="btn btn-outline btn-sm">Sair</button>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="main-content">
+
+    <!-- ═══ SEÇÃO: DASHBOARD DE ORÇAMENTOS ═══ -->
+    <section class="section" id="section-dashboard">
+      <div class="section-header">
+        <h2 class="section-title">📊 Dashboard — <span id="mes-ano-atual"></span></h2>
+        <div class="section-actions">
+          <select id="select-mes" class="select-input"></select>
+          <select id="select-ano" class="select-input"></select>
+        </div>
+      </div>
+
+      <!-- Cards de resumo -->
+      <div class="resumo-cards">
+        <div class="card resumo-card">
+          <span class="resumo-label">Total Orçado</span>
+          <span class="resumo-valor" id="total-orcado">R$ 0,00</span>
+        </div>
+        <div class="card resumo-card">
+          <span class="resumo-label">Total Gasto</span>
+          <span class="resumo-valor" id="total-gasto">R$ 0,00</span>
+        </div>
+        <div class="card resumo-card">
+          <span class="resumo-label">Disponível</span>
+          <span class="resumo-valor" id="total-disponivel">R$ 0,00</span>
+        </div>
+      </div>
+
+      <!-- RF-014: Painel de Parcelamentos em Aberto -->
+      <div class="card parc-widget hidden" id="parc-widget-dash">
+        <div class="parc-widget-header" id="parc-toggle-dash" style="cursor:pointer;">
+          <span>💳 Parcelamentos em Aberto</span>
+          <div style="display:flex;align-items:center;gap:.75rem;">
+            <span class="parc-total-valor" id="parc-total-dash">R$ 0,00</span>
+            <span class="parc-toggle-icon">▾</span>
+          </div>
+        </div>
+        <div id="parc-body-dash" class="parc-body">
+          <div id="parc-lista-dash">
+            <p class="empty-state" style="font-size:.85rem;">Carregando…</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid de categorias com progresso -->
+      <div class="categorias-grid" id="categorias-grid">
+        <!-- Preenchido dinamicamente via JS -->
+        <p class="empty-state">Carregando categorias...</p>
+      </div>
+    </section>
+
+    <!-- ═══ SEÇÃO: DESPESAS ═══ -->
+    <section class="section" id="section-despesas">
+      <div class="section-header">
+        <h2 class="section-title">💸 Despesas</h2>
+        <button id="btn-nova-despesa" class="btn btn-primary">+ Nova Despesa</button>
+      </div>
+
+      <!-- Lista de despesas -->
+      <div class="despesas-lista" id="despesas-lista">
+        <!-- Preenchido dinamicamente via JS -->
+        <p class="empty-state">Nenhuma despesa registrada ainda.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══ MODAL: Nova / Editar Despesa ═══ -->
+  <div class="modal hidden" id="modal-despesa">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-despesa-titulo">Nova Despesa</h3>
+        <button class="modal-close" id="btn-fechar-modal">✕</button>
+      </div>
+      <form id="form-despesa" novalidate>
+        <input type="hidden" id="despesa-id" />
+        <div class="form-group">
+          <label for="despesa-descricao">Descrição</label>
+          <input type="text" id="despesa-descricao" placeholder="Ex: Supermercado" required />
+        </div>
+        <div class="form-group">
+          <label for="despesa-valor">Valor (R$)</label>
+          <input type="number" id="despesa-valor" placeholder="0,00" min="0.01" step="0.01" required />
+        </div>
+        <div class="form-group">
+          <label for="despesa-categoria">Categoria</label>
+          <select id="despesa-categoria" required>
+            <option value="">Selecione uma categoria</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="despesa-data">Data</label>
+          <input type="date" id="despesa-data" required />
+        </div>
+        <div id="despesa-erro" class="form-erro hidden"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" id="btn-cancelar-despesa">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Firebase SDK (versão modular) -->
+  <!-- TODO: Substituir pelos scripts do seu projeto Firebase -->
+  <!-- <script type="module" src="js/config/firebase.js"></script> -->
+  <script type="module" src="js/app.js"></script>
+
+</body>
+</html>

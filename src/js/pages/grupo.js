@@ -26,7 +26,7 @@ onAuthChange(async (user) => {
 
   if (perfil?.grupoId) {
     // Já tem grupo → não precisa estar nesta tela
-    window.location.href = 'index.html';
+    window.location.href = 'dashboard.html';
     return;
   }
 
@@ -139,7 +139,7 @@ function inicializarPagina(user, perfil) {
 
   // ── Botão ir para o dashboard ─────────────────────────────
   btnDashboard?.addEventListener('click', () => {
-    window.location.href = 'index.html';
+    window.location.href = 'dashboard.html';
   });
 }
 
