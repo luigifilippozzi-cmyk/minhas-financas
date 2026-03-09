@@ -17,17 +17,22 @@
 import { onAuthChange, logout }             from '../services/auth.js';
 import { buscarPerfil, ouvirCategorias,
          criarDespesa as criarDespesaDB,
-         buscarChavesDedup }                from '../services/database.js';
+         excluirDespesa,
+         buscarChavesDedup,
+         buscarMapaProjecoes,
+         buscarMapaCategorias }             from '../services/database.js';
 import { modelDespesa }                     from '../models/Despesa.js';
 import { formatarMoeda, formatarData }      from '../utils/formatters.js';
 
 // ── Estado ───────────────────────────────────────────────────
-let _usuario          = null;
-let _grupoId          = null;
-let _categorias       = [];
-let _unsubCats        = null;
-let _linhas           = [];
-let _chavesExistentes = new Set(); // RF-014: chaves já importadas
+let _usuario              = null;
+let _grupoId              = null;
+let _categorias           = [];
+let _unsubCats            = null;
+let _linhas               = [];
+let _chavesExistentes     = new Set(); // RF-014: chaves já importadas
+let _projecaoDocMap       = new Map(); // RF-051: chave_dedup → docId de projeções
+let _mapaCategoriasHist   = {};        // RF-051: descricaoLow → categoriaId
 
 // ── Inicialização ─────────────────────────────────────────────
 onAuthChange(async (user) => {
@@ -46,6 +51,9 @@ onAuthChange(async (user) => {
 
   // RF-014: pré-carrega chaves de deduplicação
   _chavesExistentes = await buscarChavesDedup(_grupoId);
+  // RF-051: pré-carrega mapa de projeções e histórico de categorias
+  _projecaoDocMap     = await buscarMapaProjecoes(_grupoId);
+  _mapaCategoriasHist = await buscarMapaCategorias(_grupoId);
 
   _unsubCats = ouvirCategorias(_grupoId, (cats) => {
     _categorias = cats.sort((a, b) => a.nome.localeCompare(b.nome));
@@ -152,12 +160,20 @@ async function processarArquivo(file) {
   reader.readAsArrayBuffer(file);
 }
 
-// ── RF-014: Marca duplicatas antes de exibir o preview ───────
+// ── RF-014 / RF-051: Marca duplicatas antes de exibir o preview ──
 async function marcarDuplicatas() {
-  // Recarrega as chaves existentes no momento do upload
+  // Recarrega os dados existentes no momento do upload
   _chavesExistentes = await buscarChavesDedup(_grupoId);
+  _projecaoDocMap   = await buscarMapaProjecoes(_grupoId);
+  _mapaCategoriasHist = await buscarMapaCategorias(_grupoId);
+
   _linhas.forEach((l) => {
-    if (l.chave_dedup && _chavesExistentes.has(l.chave_dedup)) {
+    if (!l.chave_dedup || l.erro) return;
+    if (_projecaoDocMap.has(l.chave_dedup)) {
+      // RF-051: existe uma projeção para esta parcela — pode substituí-la pela real
+      l.substitui_projecao = true;
+      l.duplicado = false;
+    } else if (_chavesExistentes.has(l.chave_dedup)) {
       l.duplicado = true;
     }
   });
@@ -333,6 +349,15 @@ function normalizarData(val) {
 // ── Auto-mapeamento de categorias ────────────────────────────
 function mapearCategoria(estab) {
   if (!estab || !_categorias.length) return '';
+
+  // RF-051: prioriza correspondência exata com importações anteriores
+  const chaveHist = estab.toLowerCase().trim();
+  if (_mapaCategoriasHist[chaveHist]) {
+    // Confirma que a categoria ainda existe no grupo
+    const catExiste = _categorias.find(c => c.id === _mapaCategoriasHist[chaveHist]);
+    if (catExiste) return _mapaCategoriasHist[chaveHist];
+  }
+
   const e = estab.toLowerCase();
   const regras = [
     { keys: ['mercado','supermercado','pao','padaria','hortifruti','feira','lemon','sams','açougue','boutique do pao'], cat: 'alimentação' },
@@ -364,15 +389,16 @@ function renderizarPreview() {
 
   _linhas.forEach((l) => {
     const tr = document.createElement('tr');
-    if (l.erro)      tr.classList.add('imp-row-erro');
-    if (l.duplicado) tr.classList.add('imp-row-dup');
+    if (l.erro)              tr.classList.add('imp-row-erro');
+    if (l.duplicado)         tr.classList.add('imp-row-dup');
+    if (l.substitui_projecao) tr.classList.add('imp-row-subst');
 
     // Checkbox
     const tdChk = document.createElement('td');
     const chk   = document.createElement('input');
     chk.type = 'checkbox'; chk.className = 'chk-linha';
     chk.dataset.idx = l._idx;
-    // Duplicatas e erros ficam desmarcados por padrão
+    // Duplicatas e erros ficam desmarcados; "substitui projeção" fica marcado (é importação real)
     chk.checked = !l.erro && !l.duplicado;
     chk.addEventListener('change', () => atualizarChipsPreview());
     tdChk.appendChild(chk);
@@ -426,7 +452,10 @@ function renderizarPreview() {
     // Status
     const tdStatus = document.createElement('td');
     tdStatus.style.textAlign = 'center';
-    if (l.duplicado) {
+    if (l.substitui_projecao) {
+      // RF-051: badge especial — substitui projeção pela despesa real
+      tdStatus.innerHTML = '<span class="imp-badge imp-badge--subst" title="Substitui parcela projetada pela despesa real — a projeção será removida">🔄 Real</span>';
+    } else if (l.duplicado) {
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--dup" title="Já importado anteriormente">🔄</span>';
     } else if (l.erro) {
       tdStatus.innerHTML = `<span class="imp-badge imp-badge--erro" title="${l.erro}">⚠️</span>`;
@@ -456,6 +485,7 @@ function atualizarChipsPreview() {
   const total    = sel.reduce((s, cb) => s + (_linhas[+cb.dataset.idx]?.valor || 0), 0);
   const erros    = _linhas.filter(l => l.erro).length;
   const dups     = _linhas.filter(l => l.duplicado).length;
+  const subst    = _linhas.filter(l => l.substitui_projecao).length;
 
   // Conta projeções que serão geradas
   const projTotal = sel.reduce((acc, cb) => {
@@ -507,6 +537,13 @@ async function executarImportacao() {
     const parc_id = info ? crypto.randomUUID() : null;
 
     try {
+      // RF-051: se esta parcela substitui uma projeção, remove a projeção antes de gravar
+      if (l.substitui_projecao && l.chave_dedup && _projecaoDocMap.has(l.chave_dedup)) {
+        const projecaoId = _projecaoDocMap.get(l.chave_dedup);
+        await excluirDespesa(projecaoId);
+        _projecaoDocMap.delete(l.chave_dedup); // evita tentar excluir duas vezes no mesmo lote
+      }
+
       // Salva a despesa principal
       await criarDespesaDB(modelDespesa({
         descricao:       l.descricao,
