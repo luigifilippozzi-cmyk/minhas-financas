@@ -70,8 +70,12 @@
 
         <div class="form-group">
           <label for="cat-emoji">Emoji</label>
-          <input type="text" id="cat-emoji" placeholder="Ex: 🍔" maxlength="4" required />
-          <span class="form-help">Clique no campo e use qualquer emoji do teclado.</span>
+          <div class="emoji-input-row">
+            <input type="text" id="cat-emoji" placeholder="Ex: 🍔" maxlength="4" required />
+            <button type="button" id="btn-emoji-picker" class="btn btn-outline btn-sm">🎨 Escolher</button>
+          </div>
+          <div id="emoji-picker-grid" class="emoji-grid hidden"></div>
+          <span class="form-help">Sugerido pelo nome da categoria, ou escolha manualmente.</span>
         </div>
 
         <div class="form-group">

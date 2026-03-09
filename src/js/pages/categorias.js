@@ -10,9 +10,10 @@ import { ouvirCategorias } from '../services/database.js';
 import { salvarCategoria, desativarCategoria } from '../controllers/categorias.js';
 
 // ── Estado ────────────────────────────────────────────────────
-let _grupoId    = null;
-let _categorias = [];
+let _grupoId     = null;
+let _categorias  = [];
 let _unsubscribe = null;
+let _emojiManual = false;   // true quando o usuário escolheu o emoji manualmente
 
 // ── Bootstrap ─────────────────────────────────────────────────
 
@@ -88,6 +89,66 @@ function renderizarLista(cats) {
     `).join('');
 }
 
+// ── Emoji: sugestão automática e picker ──────────────────────
+
+const EMOJI_SUGESTOES = [
+  { regex: /aliment|comida|restaurante|lanche|jantar|almoço|refeição/i, emoji: '🍽️' },
+  { regex: /supermercado|mercado|feira|hortifruti/i,                     emoji: '🛒' },
+  { regex: /padaria|pão|café da manhã|panificadora/i,                    emoji: '🥐' },
+  { regex: /transporte|ônibus|metrô|trem|passagem/i,                     emoji: '🚌' },
+  { regex: /uber|táxi|carro|combustível|gasolina|estacion/i,             emoji: '🚗' },
+  { regex: /saúde|médico|hospital|clínica|consulta/i,                    emoji: '🏥' },
+  { regex: /farmácia|remédio|medicamento|drogaria/i,                     emoji: '💊' },
+  { regex: /academia|ginástica|esporte|gym|personal|fit/i,               emoji: '🏋️' },
+  { regex: /educação|escola|faculdade|curso|aula/i,                      emoji: '📚' },
+  { regex: /aluguel|moradia|condomínio|iptu|aparta/i,                    emoji: '🏠' },
+  { regex: /luz|energia elétrica/i,                                      emoji: '💡' },
+  { regex: /água|saneamento/i,                                           emoji: '💧' },
+  { regex: /internet|streaming|netflix|spotify|assinatura/i,             emoji: '🌐' },
+  { regex: /telefone|celular|plano|chip/i,                               emoji: '📱' },
+  { regex: /lazer|diversão|entretenimento/i,                             emoji: '🎮' },
+  { regex: /cinema|teatro|show|evento/i,                                 emoji: '🎬' },
+  { regex: /viagem|voo|hotel|hospedagem/i,                               emoji: '✈️' },
+  { regex: /roupa|vestuário|moda|tênis|calçado/i,                        emoji: '👕' },
+  { regex: /beleza|salão|cabelo|estética|manicure/i,                     emoji: '💅' },
+  { regex: /pet|cachorro|gato|veterinário|ração/i,                       emoji: '🐾' },
+  { regex: /presente|gift|doação/i,                                      emoji: '🎁' },
+  { regex: /imposto|taxa|tributo/i,                                      emoji: '📋' },
+  { regex: /banco|juros|parcela|empréstimo/i,                            emoji: '🏦' },
+  { regex: /investimento|poupança|tesouro|fundo/i,                       emoji: '💰' },
+  { regex: /trabalho|salário|freelance/i,                                emoji: '💼' },
+  { regex: /festa|aniversário|celebração/i,                              emoji: '🎉' },
+];
+
+const EMOJI_PICKER_LISTA = [
+  '🍽️','🛒','🥐','🚗','🚌','✈️','🏠','💡','💧','🏥','💊','🏋️',
+  '📚','🎓','🌐','📱','💻','🎮','🎬','🎵','👕','💅','🐾','🎁',
+  '📋','🏦','💰','💼','🎉','📂','🔧','🌱','🍕','☕','🎂','🎯',
+  '💸','⚡','🎨','🏡','💎','🛠️','🍺','🏖️','🏃','🌍','📦','🔑',
+];
+
+function sugerirEmoji(nome) {
+  for (const { regex, emoji } of EMOJI_SUGESTOES) {
+    if (regex.test(nome)) return emoji;
+  }
+  return null;
+}
+
+function buildEmojiPicker() {
+  const grid = document.getElementById('emoji-picker-grid');
+  grid.innerHTML = EMOJI_PICKER_LISTA.map((e) =>
+    `<button type="button" class="emoji-btn" data-emoji="${e}">${e}</button>`,
+  ).join('');
+  grid.querySelectorAll('.emoji-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.getElementById('cat-emoji').value = btn.dataset.emoji;
+      _emojiManual = true;
+      atualizarPrevia();
+      grid.classList.add('hidden');
+    });
+  });
+}
+
 // ── Modal Criar / Editar ──────────────────────────────────────
 
 const CORES_RAPIDAS = [
@@ -100,9 +161,16 @@ function abrirModal(cat = null) {
   document.getElementById('modal-cat-titulo').textContent =
     cat ? 'Editar Categoria' : 'Nova Categoria';
 
+  // Ao editar, o emoji já existe → considera como manual para não sobrescrever
+  // Ao criar novo, emoji começa vazio → auto-sugestão entra em ação ao digitar o nome
+  _emojiManual = cat !== null;
+
+  // Fecha picker caso esteja aberto
+  document.getElementById('emoji-picker-grid').classList.add('hidden');
+
   // Preenche campos
   document.getElementById('cat-id').value         = cat?.id ?? '';
-  document.getElementById('cat-emoji').value      = cat?.emoji ?? '📦';
+  document.getElementById('cat-emoji').value      = cat?.emoji ?? '';
   document.getElementById('cat-nome').value       = cat?.nome ?? '';
   document.getElementById('cat-cor').value        = cat?.cor ?? '#95A5A6';
   document.getElementById('cat-orcamento').value  = cat?.orcamentoMensal ?? '';
@@ -129,17 +197,21 @@ function abrirModal(cat = null) {
 }
 
 function fecharModal() {
+  _emojiManual = false;
+  document.getElementById('emoji-picker-grid').classList.add('hidden');
   document.getElementById('modal-categoria').classList.add('hidden');
   document.getElementById('form-categoria').reset();
 }
 
 function atualizarPrevia() {
-  const emoji = document.getElementById('cat-emoji').value || '📦';
-  const nome  = document.getElementById('cat-nome').value  || 'Nova Categoria';
-  const cor   = document.getElementById('cat-cor').value   || '#95A5A6';
+  const emojiRaw = document.getElementById('cat-emoji').value;
+  const nome     = document.getElementById('cat-nome').value  || 'Nova Categoria';
+  const cor      = document.getElementById('cat-cor').value   || '#95A5A6';
+  // Mostra emoji sugerido na prévia mesmo antes de confirmar no campo
+  const emoji    = emojiRaw || sugerirEmoji(nome) || '📦';
 
-  document.getElementById('preview-emoji').textContent = emoji;
-  document.getElementById('preview-nome').textContent  = nome;
+  document.getElementById('preview-emoji').textContent    = emoji;
+  document.getElementById('preview-nome').textContent     = nome;
   document.getElementById('preview-cor').style.background = cor;
 }
 
@@ -178,13 +250,44 @@ function configurarEventos() {
   document.getElementById('backdrop-categoria')
     .addEventListener('click', fecharModal);
 
-  // Atualiza prévia ao digitar
-  document.getElementById('cat-emoji')
-    .addEventListener('input', atualizarPrevia);
-  document.getElementById('cat-nome')
-    .addEventListener('input', atualizarPrevia);
-  document.getElementById('cat-cor')
-    .addEventListener('input', atualizarPrevia);
+  // Atualiza prévia ao digitar — emoji manual bloqueia auto-sugestão
+  document.getElementById('cat-emoji').addEventListener('input', () => {
+    _emojiManual = document.getElementById('cat-emoji').value.trim() !== '';
+    atualizarPrevia();
+  });
+
+  document.getElementById('cat-nome').addEventListener('input', () => {
+    if (!_emojiManual) {
+      const sugestao = sugerirEmoji(document.getElementById('cat-nome').value);
+      // Preenche o campo com a sugestão (ou limpa se não houver)
+      document.getElementById('cat-emoji').value = sugestao ?? '';
+    }
+    atualizarPrevia();
+  });
+
+  document.getElementById('cat-cor').addEventListener('input', atualizarPrevia);
+
+  // Picker de emoji
+  document.getElementById('btn-emoji-picker').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const grid = document.getElementById('emoji-picker-grid');
+    if (grid.classList.contains('hidden')) {
+      buildEmojiPicker();
+      grid.classList.remove('hidden');
+    } else {
+      grid.classList.add('hidden');
+    }
+  });
+
+  // Fecha picker ao clicar fora
+  document.addEventListener('click', (e) => {
+    const grid = document.getElementById('emoji-picker-grid');
+    if (!grid.classList.contains('hidden') &&
+        !e.target.closest('#emoji-picker-grid') &&
+        e.target.id !== 'btn-emoji-picker') {
+      grid.classList.add('hidden');
+    }
+  });
 
   // Submit do formulário
   document.getElementById('form-categoria')
@@ -196,10 +299,14 @@ function configurarEventos() {
       btnSalvar.disabled = true;
       btnSalvar.textContent = 'Salvando…';
 
-      const catId = document.getElementById('cat-id').value || null;
+      const catId     = document.getElementById('cat-id').value || null;
+      const nomeVal   = document.getElementById('cat-nome').value;
+      const emojiRaw  = document.getElementById('cat-emoji').value.trim();
+      // Se o campo emoji ainda estiver vazio, usa a sugestão; fallback para 📦
+      const emojiFinal = emojiRaw || sugerirEmoji(nomeVal) || '📦';
       const dados = {
-        emoji:           document.getElementById('cat-emoji').value,
-        nome:            document.getElementById('cat-nome').value,
+        emoji:           emojiFinal,
+        nome:            nomeVal,
         cor:             document.getElementById('cat-cor').value,
         orcamentoMensal: document.getElementById('cat-orcamento').value,
       };
