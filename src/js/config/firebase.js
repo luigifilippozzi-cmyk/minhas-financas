@@ -8,7 +8,10 @@
 // ============================================================
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { getAuth }       from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import {
+  initializeAuth,
+  browserSessionPersistence,
+} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 import { getFirestore }  from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 const firebaseConfig = {
@@ -22,8 +25,15 @@ const firebaseConfig = {
 };
 
 // Inicializa o Firebase
-const app  = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db   = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+
+// Persistência de sessão: a autenticação é descartada ao fechar o navegador.
+// Isso impede que dados financeiros fiquem acessíveis em dispositivos compartilhados.
+// O usuário precisa fazer login novamente a cada nova sessão do navegador.
+const auth = initializeAuth(app, {
+  persistence: browserSessionPersistence,
+});
+
+const db = getFirestore(app);
 
 export { app, auth, db };

@@ -9,6 +9,7 @@ import {
   doc,
   addDoc,
   getDoc,
+  setDoc,
   updateDoc,
   query,
   where,
@@ -38,12 +39,14 @@ export async function criarNovoGrupo(nomeGrupo, userId, nomeUsuario) {
     dataCriacao: serverTimestamp(),
   });
 
-  // 2. Atualiza o perfil do usuário com o grupoId ANTES de criar categorias.
-  //    Isso é necessário porque a regra do Firestore para 'categorias create'
-  //    verifica isMemberOfGroup(), que lê o campo grupoId do perfil do usuário.
-  await updateDoc(doc(db, 'usuarios', userId), {
-    grupoId: grupoRef.id,
-  });
+  // 2. Vincula o usuário ao grupo ANTES de criar categorias.
+  //    Usa setDoc com merge para funcionar mesmo se o documento não existir
+  //    (caso em que criarPerfil falhou em uma tentativa anterior de cadastro).
+  await setDoc(doc(db, 'usuarios', userId), {
+    grupoId:      grupoRef.id,
+    nome:         nomeUsuario || '',
+    criadoPor:    userId,
+  }, { merge: true });
 
   // 3. Cria as 6 categorias padrão para este grupo (agora o usuário já é membro)
   const categoriasPromises = CATEGORIAS_PADRAO.map((cat) =>
@@ -103,10 +106,11 @@ export async function entrarNoGrupo(codigo, userId, nomeUsuario) {
     [`nomesMembros.${userId}`]: nomeUsuario || 'Membro',
   });
 
-  // 5. Atualiza o perfil do usuário com o grupoId
-  await updateDoc(doc(db, 'usuarios', userId), {
+  // 5. Vincula o usuário ao grupo (usa setDoc+merge para tolerar perfil inexistente)
+  await setDoc(doc(db, 'usuarios', userId), {
     grupoId: grupoDoc.id,
-  });
+    nome:    nomeUsuario || '',
+  }, { merge: true });
 
   return grupoDoc.id;
 }
