@@ -201,7 +201,7 @@ function preencherDropdownResponsavel() {
   if (!sel || !_grupo) return;
 
   const nomes = Object.values(_grupo.nomesMembros ?? {});
-  sel.innerHTML = '<option value="">— não definido —</option>' +
+  sel.innerHTML = '<option value="">Selecione o responsável</option>' +
     nomes.map(n => `<option value="${n}">${n}</option>`).join('');
 }
 
@@ -347,9 +347,19 @@ function abrirModalDespesa(despesa = null) {
   document.getElementById('despesa-data').value      = despesa
     ? (despesa.data?.toDate?.() ?? new Date(despesa.data)).toISOString().slice(0, 10)
     : dataHoje();
-  // RF-014: campo responsável
+  // RF-014: campo responsável — obrigatório (Issue #49)
+  // Para nova despesa: pré-seleciona o usuário logado
+  // Para edição: mantém o responsável original
   const selResp = document.getElementById('despesa-responsavel');
-  if (selResp) selResp.value = despesa?.responsavel ?? '';
+  if (selResp) {
+    if (despesa) {
+      selResp.value = despesa.responsavel ?? '';
+    } else {
+      // Determina o nome do usuário atual pelo nomesMembros do grupo
+      const nomeUsuarioAtual = _grupo?.nomesMembros?.[_usuario?.uid] ?? '';
+      selResp.value = nomeUsuarioAtual;
+    }
+  }
 
   document.getElementById('modal-despesa-titulo').textContent =
     despesa ? 'Editar Despesa' : 'Nova Despesa';
@@ -396,12 +406,22 @@ function configurarEventos() {
 
     const responsavel = document.getElementById('despesa-responsavel')?.value ?? '';
 
+    // Validação do responsável — obrigatório (Issue #49)
+    if (!responsavel) {
+      erroEl.textContent = 'Selecione o responsável pela despesa.';
+      erroEl.classList.remove('hidden');
+      btnSave.disabled = false;
+      btnSave.textContent = 'Salvar';
+      document.getElementById('despesa-responsavel')?.focus();
+      return;
+    }
+
     const dados = {
       descricao:   document.getElementById('despesa-descricao').value.trim(),
       valor:       parseFloat(document.getElementById('despesa-valor').value),
       categoriaId: document.getElementById('despesa-categoria').value,
       data:        new Date(document.getElementById('despesa-data').value + 'T12:00:00'),
-      responsavel,     // RF-014
+      responsavel,     // RF-014 — agora obrigatório
     };
     const despesaId = document.getElementById('despesa-id').value || null;
 

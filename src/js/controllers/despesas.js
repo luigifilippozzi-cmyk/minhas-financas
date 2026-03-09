@@ -52,14 +52,17 @@ export async function salvarDespesa(dados, grupoId, usuarioId, despesaId = null)
 
   if (despesaId) {
     // Atualiza mantendo metadados originais (quem criou, etc.)
+    // Fix #49: incluído responsavel no update (estava ausente)
     await atualizarDespesa(despesaId, {
       descricao:   despesa.descricao,
       valor:       despesa.valor,
       categoriaId: despesa.categoriaId,
       data:        despesa.data,
+      responsavel: dados.responsavel ?? '',
     });
   } else {
-    await criarDespesaDB(despesa);
+    // Fix #49: responsavel incluído no documento criado
+    await criarDespesaDB({ ...despesa, responsavel: dados.responsavel ?? '' });
   }
 }
 
