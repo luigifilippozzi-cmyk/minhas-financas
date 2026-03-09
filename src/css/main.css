@@ -338,6 +338,44 @@ a:hover { text-decoration: underline; }
   border-color: rgba(0,0,0,0.2);
 }
 
+/* ── Emoji Picker ── */
+.emoji-input-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.emoji-input-row input {
+  flex: 1;
+  min-width: 0;
+}
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: var(--space-1);
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  margin-top: var(--space-2);
+  max-height: 160px;
+  overflow-y: auto;
+}
+.emoji-grid.hidden { display: none; }
+.emoji-btn {
+  font-size: 1.3rem;
+  background: none;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  padding: var(--space-1);
+  line-height: 1;
+  transition: background var(--transition), border-color var(--transition);
+}
+.emoji-btn:hover {
+  background: var(--color-bg);
+  border-color: var(--color-border);
+}
+
 /* ── Modal menor (confirmação) ── */
 .modal-card-sm {
   max-width: 380px;
