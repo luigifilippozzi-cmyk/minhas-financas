@@ -38,7 +38,14 @@ export async function criarNovoGrupo(nomeGrupo, userId, nomeUsuario) {
     dataCriacao: serverTimestamp(),
   });
 
-  // 2. Cria as 6 categorias padrão para este grupo
+  // 2. Atualiza o perfil do usuário com o grupoId ANTES de criar categorias.
+  //    Isso é necessário porque a regra do Firestore para 'categorias create'
+  //    verifica isMemberOfGroup(), que lê o campo grupoId do perfil do usuário.
+  await updateDoc(doc(db, 'usuarios', userId), {
+    grupoId: grupoRef.id,
+  });
+
+  // 3. Cria as 6 categorias padrão para este grupo (agora o usuário já é membro)
   const categoriasPromises = CATEGORIAS_PADRAO.map((cat) =>
     addDoc(collection(db, 'categorias'), {
       grupoId: grupoRef.id,
@@ -50,11 +57,6 @@ export async function criarNovoGrupo(nomeGrupo, userId, nomeUsuario) {
     })
   );
   await Promise.all(categoriasPromises);
-
-  // 3. Atualiza o perfil do usuário com o grupoId
-  await updateDoc(doc(db, 'usuarios', userId), {
-    grupoId: grupoRef.id,
-  });
 
   return grupoRef.id;
 }

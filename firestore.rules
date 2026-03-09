@@ -18,10 +18,24 @@ service cloud.firestore {
       allow read, write: if isSignedIn() && request.auth.uid == userId;
     }
 
-    // Grupos: membros podem ler e atualizar; qualquer autenticado pode criar
+    // Grupos: qualquer autenticado pode criar e ler (necessário para busca por
+    // código de convite); atualização permitida a membros OU para entrar no
+    // grupo via código (usuário adiciona-se à lista de membros sem remover outros).
     match /grupos/{grupoId} {
-      allow read, update: if isSignedIn() && isMemberOfGroup(grupoId);
+      allow read:   if isSignedIn();
       allow create: if isSignedIn();
+      allow update: if isSignedIn() && (
+        // Membros existentes podem alterar qualquer campo
+        isMemberOfGroup(grupoId) ||
+        // Novo usuário pode entrar: só adiciona-se a membros, não remove ninguém,
+        // e o grupo ainda não está cheio.
+        (
+          request.resource.data.membros.hasAll(resource.data.membros) &&
+          request.auth.uid in request.resource.data.membros &&
+          !(request.auth.uid in resource.data.membros) &&
+          resource.data.membros.size() < resource.data.maxMembros
+        )
+      );
     }
 
     // Categorias: apenas membros do grupo
