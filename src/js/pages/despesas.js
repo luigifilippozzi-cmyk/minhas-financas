@@ -270,6 +270,10 @@ function renderizarLista() {
     const projBadge = isProj
       ? '<span class="desp-proj-badge" title="Parcela projetada — ainda não confirmada pela fatura">📋 projeção</span>'
       : '';
+    // NRF-001: badge conjunta
+    const conjuntaBadge = d.isConjunta
+      ? `<span class="desp-conjunta-badge" title="Dividida 50/50 — Meu Bolso: ${formatarMoeda(d.valorAlocado ?? d.valor / 2)}">👫 conjunta</span>`
+      : '';
 
     return `
     <div class="desp-item card${isProj ? ' desp-item--proj' : ''}">
@@ -278,7 +282,7 @@ function renderizarLista() {
         <span class="desp-item-descricao">${d.descricao}</span>
         <div class="desp-item-meta">
           <span class="desp-item-data">${dataFmt}</span>
-          ${portBadge}${parcelaBadge}${projBadge}
+          ${portBadge}${parcelaBadge}${projBadge}${conjuntaBadge}
         </div>
       </div>
       <div class="desp-item-right">
@@ -301,19 +305,45 @@ function renderizarLista() {
 }
 
 function atualizarChips() {
-  const total = _despesas
-    .filter(d => d.tipo !== 'projecao')
-    .reduce((s, d) => s + d.valor, 0);
-  const count = _despesas.filter(d => d.tipo !== 'projecao').length;
+  const reais  = _despesas.filter(d => d.tipo !== 'projecao');
+  const total  = reais.reduce((s, d) => s + d.valor, 0);
+  const count  = reais.length;
   const chipTotal = document.getElementById('chip-total');
   const chipCount = document.getElementById('chip-count');
   if (chipTotal) chipTotal.textContent = formatarMoeda(total);
   if (chipCount) chipCount.textContent = count;
+
+  // NRF-001: "Meu Bolso" = individuais + valorAlocado das conjuntas
+  const meuBolso = reais.reduce((s, d) => {
+    if (d.isConjunta) return s + (d.valorAlocado ?? d.valor / 2);
+    return s + d.valor;
+  }, 0);
+  const chipMB    = document.getElementById('chip-meu-bolso');
+  const chipMBVal = document.getElementById('chip-meu-bolso-valor');
+  if (chipMB && chipMBVal) {
+    const hasConjunta = reais.some(d => d.isConjunta);
+    chipMB.style.display = hasConjunta ? '' : 'none';
+    chipMBVal.textContent = formatarMoeda(meuBolso);
+  }
 }
 
 function atualizarTituloMes() {
   const el = document.getElementById('titulo-mes');
   if (el) el.textContent = `${nomeMes(_mes)} ${_ano}`;
+}
+
+// NRF-001: atualiza texto de preview do split no modal
+function atualizarPreviewConjunta() {
+  const toggle = document.getElementById('despesa-conjunta');
+  const preview = document.getElementById('conjunta-preview-text');
+  if (!toggle || !preview) return;
+  if (!toggle.checked) { preview.textContent = ''; return; }
+  const val = parseFloat(document.getElementById('despesa-valor')?.value ?? 0);
+  if (val > 0) {
+    preview.textContent = `→ Meu Bolso: ${formatarMoeda(val / 2)} | Família: ${formatarMoeda(val)}`;
+  } else {
+    preview.textContent = 'Informe o valor para ver a divisão.';
+  }
 }
 
 // ── Selects ───────────────────────────────────────────────────
@@ -359,6 +389,20 @@ function abrirModalDespesa(despesa = null) {
       const nomeUsuarioAtual = _grupo?.nomesMembros?.[_usuario?.uid] ?? '';
       selResp.value = nomeUsuarioAtual;
     }
+  }
+
+  // NRF-001: toggle isConjunta — pré-preenchido se editando, ou auto pela categoria
+  const toggleConj = document.getElementById('despesa-conjunta');
+  if (toggleConj) {
+    if (despesa) {
+      toggleConj.checked = despesa.isConjunta ?? false;
+    } else {
+      // Auto-fill baseado na categoria seleccionada
+      const catId = document.getElementById('despesa-categoria').value;
+      const cat   = _categorias.find(c => c.id === catId);
+      toggleConj.checked = cat?.isConjuntaPadrao ?? false;
+    }
+    atualizarPreviewConjunta();
   }
 
   document.getElementById('modal-despesa-titulo').textContent =
@@ -416,12 +460,17 @@ function configurarEventos() {
       return;
     }
 
+    const valor       = parseFloat(document.getElementById('despesa-valor').value);
+    const isConjunta  = document.getElementById('despesa-conjunta')?.checked ?? false;
     const dados = {
-      descricao:   document.getElementById('despesa-descricao').value.trim(),
-      valor:       parseFloat(document.getElementById('despesa-valor').value),
-      categoriaId: document.getElementById('despesa-categoria').value,
-      data:        new Date(document.getElementById('despesa-data').value + 'T12:00:00'),
-      responsavel,     // RF-014 — agora obrigatório
+      descricao:    document.getElementById('despesa-descricao').value.trim(),
+      valor,
+      categoriaId:  document.getElementById('despesa-categoria').value,
+      data:         new Date(document.getElementById('despesa-data').value + 'T12:00:00'),
+      responsavel,      // RF-014 — agora obrigatório
+      // NRF-001: divisão conjunta
+      isConjunta,
+      valorAlocado: isConjunta ? Math.round(valor * 100 / 2) / 100 : undefined,
     };
     const despesaId = document.getElementById('despesa-id').value || null;
 
@@ -466,6 +515,20 @@ function configurarEventos() {
   document.getElementById('filtro-texto')?.addEventListener('input',  () => renderizarLista());
   document.getElementById('filtro-categoria')?.addEventListener('change',   () => renderizarLista());
   document.getElementById('filtro-responsavel')?.addEventListener('change', () => renderizarLista());  // RF-014
+
+  // NRF-001: auto-toggle conjunta ao mudar categoria no modal
+  document.getElementById('despesa-categoria')?.addEventListener('change', () => {
+    const catId = document.getElementById('despesa-categoria').value;
+    const cat   = _categorias.find(c => c.id === catId);
+    const toggle = document.getElementById('despesa-conjunta');
+    if (toggle && cat?.isConjuntaPadrao !== undefined) {
+      toggle.checked = cat.isConjuntaPadrao;
+    }
+    atualizarPreviewConjunta();
+  });
+  // NRF-001: atualiza preview quando toggle ou valor mudam
+  document.getElementById('despesa-conjunta')?.addEventListener('change', atualizarPreviewConjunta);
+  document.getElementById('despesa-valor')?.addEventListener('input', atualizarPreviewConjunta);
 
   // Exportar CSV
   document.getElementById('btn-exportar-csv')?.addEventListener('click', () => exportarCSV());
