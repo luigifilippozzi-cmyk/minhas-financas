@@ -19,9 +19,12 @@ export function modelDespesa(dados) {
     data:        dados.data instanceof Date ? dados.data : new Date(dados.data),
   };
   // Campos opcionais: incluídos apenas se presentes
+  // NRF-001: isConjunta, valorAlocado
+  // NRF-002: status
   const opcionais = [
     'origem', 'portador', 'parcela', 'responsavel',
     'tipo', 'chave_dedup', 'parcelamento_id', 'importadoEm',
+    'isConjunta', 'valorAlocado', 'status',
   ];
   opcionais.forEach((k) => { if (dados[k] !== undefined) obj[k] = dados[k]; });
   return obj;
