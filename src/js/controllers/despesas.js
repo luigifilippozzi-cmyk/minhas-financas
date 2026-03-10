@@ -48,17 +48,31 @@ export function iniciarListenerDespesas(grupoId, mes, ano, onChange) {
  * @param {string|null} despesaId   — null = criar, string = atualizar
  */
 export async function salvarDespesa(dados, grupoId, usuarioId, despesaId = null) {
-  const despesa = modelDespesa({ ...dados, grupoId, usuarioId });
+  // NRF-001: garante valorAlocado = valor/2 quando isConjunta=true
+  const dadosNormalizados = { ...dados };
+  if (dadosNormalizados.isConjunta) {
+    dadosNormalizados.valorAlocado =
+      Math.round((dadosNormalizados.valor ?? 0) * 100 / 2) / 100;
+  } else {
+    // Remove campos conjunta se desmarcado
+    dadosNormalizados.isConjunta   = false;
+    dadosNormalizados.valorAlocado = null;
+  }
+
+  const despesa = modelDespesa({ ...dadosNormalizados, grupoId, usuarioId });
 
   if (despesaId) {
     // Atualiza mantendo metadados originais (quem criou, etc.)
     // Fix #49: incluído responsavel no update (estava ausente)
     await atualizarDespesa(despesaId, {
-      descricao:   despesa.descricao,
-      valor:       despesa.valor,
-      categoriaId: despesa.categoriaId,
-      data:        despesa.data,
-      responsavel: dados.responsavel ?? '',
+      descricao:    despesa.descricao,
+      valor:        despesa.valor,
+      categoriaId:  despesa.categoriaId,
+      data:         despesa.data,
+      responsavel:  dados.responsavel ?? '',
+      // NRF-001
+      isConjunta:   despesa.isConjunta ?? false,
+      valorAlocado: despesa.valorAlocado ?? null,
     });
   } else {
     // Fix #49: responsavel incluído no documento criado
