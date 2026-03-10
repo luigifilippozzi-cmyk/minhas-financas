@@ -56,6 +56,17 @@
           <span class="resumo-label">Disponível</span>
           <span class="resumo-valor" id="total-disponivel">R$ 0,00</span>
         </div>
+        <!-- NRF-001: cards de divisão conjunta (visíveis apenas quando há despesas conjuntas) -->
+        <div class="card resumo-card resumo-card--meu-bolso" id="card-meu-bolso" style="display:none;">
+          <span class="resumo-label">👤 Meu Bolso</span>
+          <span class="resumo-valor" id="total-meu-bolso">R$ 0,00</span>
+          <span class="resumo-sublabel">individuais + 50% conjuntas</span>
+        </div>
+        <div class="card resumo-card resumo-card--familia" id="card-familia" style="display:none;">
+          <span class="resumo-label">👨‍👩‍👧 Família</span>
+          <span class="resumo-valor" id="total-familia">R$ 0,00</span>
+          <span class="resumo-sublabel">total conjunto do grupo</span>
+        </div>
       </div>
 
       <!-- RF-014: Painel de Parcelamentos em Aberto -->
