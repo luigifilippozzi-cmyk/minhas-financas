@@ -33,6 +33,24 @@ export function renderizarDashboard(categorias, despesas, orcamentos) {
   definirTexto('total-gasto',     formatarMoeda(totalGasto));
   definirTexto('total-disponivel', formatarMoeda(totalOrcado - totalGasto));
 
+  // NRF-001: cálculo "Meu Bolso" vs "Família"
+  // totalFamilia = soma de todos os gastos reais (não projeções)
+  // totalMeuBolso = individuais + valorAlocado das conjuntas
+  const despesasReais = despesas.filter(d => d.tipo !== 'projecao');
+  const hasConjunta   = despesasReais.some(d => d.isConjunta);
+  const totalFamilia  = despesasReais.reduce((s, d) => s + (d.valor ?? 0), 0);
+  const totalMeuBolso = despesasReais.reduce((s, d) => {
+    if (d.isConjunta) return s + (d.valorAlocado ?? (d.valor ?? 0) / 2);
+    return s + (d.valor ?? 0);
+  }, 0);
+
+  const cardMB  = document.getElementById('card-meu-bolso');
+  const cardFam = document.getElementById('card-familia');
+  if (cardMB)  cardMB.style.display  = hasConjunta ? '' : 'none';
+  if (cardFam) cardFam.style.display = hasConjunta ? '' : 'none';
+  definirTexto('total-meu-bolso', formatarMoeda(totalMeuBolso));
+  definirTexto('total-familia',   formatarMoeda(totalFamilia));
+
   // Renderiza cards de categoria
   if (!categorias.length) {
     grid.innerHTML = '<p class="empty-state">Nenhuma categoria cadastrada.</p>';
