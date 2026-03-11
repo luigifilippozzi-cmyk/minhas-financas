@@ -231,3 +231,88 @@ export function ouvirOrcamentos(grupoId, mes, ano, callback) {
     (err)  => { console.error('[ouvirOrcamentos] Erro no listener:', err); },
   );
 }
+
+
+// ── NRF-002: Parcelamentos (coleção mestre) ─────────────────
+
+/**
+ * Cria um registro mestre de parcelamento na coleção 'parcelamentos'.
+ * Dados: { grupoId, estabelecimento, valorTotal, totalParcelas,
+ *           portador, usuarioId, dataOriginal }
+ */
+export async function criarParcelamento(dados) {
+  return addDoc(collection(db, 'parcelamentos'), {
+    ...dados,
+    parcelasPagas: 0,
+    status: 'ativo',        // 'ativo' | 'quitado'
+    criadoEm: serverTimestamp(),
+    atualizadoEm: serverTimestamp(),
+  });
+}
+
+/**
+ * Listener em tempo real de todos os parcelamentos ativos do grupo.
+ * Requer índice: (grupoId ASC, status ASC, criadoEm ASC).
+ */
+export function ouvirParcelamentos(grupoId, callback) {
+  const q = query(
+    collection(db, 'parcelamentos'),
+    where('grupoId', '==', grupoId),
+    where('status', '==', 'ativo'),
+    orderBy('criadoEm', 'asc'),
+  );
+  return onSnapshot(q, (snap) => {
+    callback(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+  }, (err) => {
+    console.error('[ouvirParcelamentos] Erro no listener:', err);
+  });
+}
+
+/**
+ * Incrementa parcelasPagas de um parcelamento mestre.
+ * Se parcelasPagas >= totalParcelas → status = 'quitado'.
+ */
+export async function reconciliarParcela(parcelamentoId, totalParcelas) {
+  const ref = doc(db, 'parcelamentos', parcelamentoId);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) return;
+  const { parcelasPagas = 0 } = snap.data();
+  const novoTotal = parcelasPagas + 1;
+  return updateDoc(ref, {
+    parcelasPagas: novoTotal,
+    status: novoTotal >= totalParcelas ? 'quitado' : 'ativo',
+    atualizadoEm: serverTimestamp(),
+  });
+}
+
+// ── NRF-002: Fuzzy Matching de Projeções ───────────────────
+
+/**
+ * Retorna todas as projeções do grupo com dados completos.
+ * Usado pelo algoritmo de fuzzy matching no processo de importação.
+ * (Leitura única — não usa listener para evitar custo desnecessário.)
+ */
+export async function buscarProjecoesDetalhadas(grupoId) {
+  const q = query(
+    collection(db, 'despesas'),
+    where('grupoId', '==', grupoId),
+    where('tipo', '==', 'projecao'),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+/**
+ * Atualiza o status de uma parcela projetada: 'pendente' → 'pago'.
+ * Também grava a referência para a despesa real que a substituiu.
+ * @param {string} despesaId   – docId da projeção
+ * @param {string} despesaRealId – docId da despesa real importada
+ */
+export async function atualizarStatusParcela(despesaId, despesaRealId) {
+  return updateDoc(doc(db, 'despesas', despesaId), {
+    status: 'pago',
+    despesaRealId,
+    pagaEm: serverTimestamp(),
+    tipo: 'projecao_paga',   // distingue de projecoes pendentes nos listeners
+  });
+}
