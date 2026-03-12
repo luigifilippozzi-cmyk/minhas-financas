@@ -55,5 +55,13 @@ service cloud.firestore {
       allow read, write: if isSignedIn() && isMemberOfGroup(resource.data.grupoId);
       allow create: if isSignedIn() && isMemberOfGroup(request.resource.data.grupoId);
     }
+
+    // Parcelamentos: apenas membros do grupo
+    match /parcelamentos/{parcId} {
+      allow read: if isSignedIn() && isMemberOfGroup(resource.data.grupoId);
+      allow create: if isSignedIn() && isMemberOfGroup(request.resource.data.grupoId);
+      allow update: if isSignedIn() && isMemberOfGroup(resource.data.grupoId);
+      allow delete: if false;
+    }
   }
 }
