@@ -412,3 +412,35 @@ a:hover { text-decoration: underline; }
   color: var(--color-text-muted, #6c757d);
   margin-top: .15rem;
 }
+
+/* ── NRF-002: Reconciliação Fuzzy ── */
+
+/* Badge de reconciliação fuzzy (amarelo âmbar) */
+.imp-badge--fuzzy {
+  display: inline-block;
+  padding: .1rem .35rem;
+  border-radius: .25rem;
+  font-size: .72rem;
+  font-weight: 600;
+  line-height: 1.4;
+  background: #fff8e1;
+  color: #e65100;
+  border: 1px solid #ffcc02;
+  cursor: default;
+  white-space: nowrap;
+}
+
+/* Linha de preview com match fuzzy (fundo âmbar suave) */
+.imp-row-fuzzy {
+  background: rgba(255, 193, 7, .08) !important;
+}
+.imp-row-fuzzy:hover {
+  background: rgba(255, 193, 7, .14) !important;
+}
+
+/* Chip de counter de reconciliações fuzzy */
+#chip-fuzzy-wrap .chip {
+  background: #fff8e1;
+  color: #e65100;
+  border: 1px solid #ffcc02;
+}
