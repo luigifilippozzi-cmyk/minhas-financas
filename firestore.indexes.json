@@ -33,6 +33,15 @@
         { "fieldPath": "grupoId", "order": "ASCENDING" },
         { "fieldPath": "ativa",   "order": "ASCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "parcelamentos",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "grupoId",    "order": "ASCENDING" },
+        { "fieldPath": "status",     "order": "ASCENDING" },
+        { "fieldPath": "criadoEm",   "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []
