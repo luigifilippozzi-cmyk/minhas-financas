@@ -264,8 +264,6 @@ function parsearLinhasExtrato(rows) {
 }
 
 // ── RF-014: Gera chave de deduplicação ───────────────────────
-// Compras parceladas: usa parcela no lugar da data → permite detectar
-// projeções existentes quando o extrato real do mês chegar.
 function gerarChaveDedup(data, estab, valor, portador, parcela) {
   if (!data || isNaN(valor)) return null;
   const estabNorm = String(estab ?? '').toLowerCase().trim()
@@ -274,7 +272,6 @@ function gerarChaveDedup(data, estab, valor, portador, parcela) {
   const parc     = parcela && String(parcela).trim() !== '-' ? String(parcela).trim() : null;
 
   if (parc) {
-    // Ex: "lemon supermercado ltda||35.08||luigi filippozzi||02/06"
     return `${estabNorm}||${Number(valor).toFixed(2)}||${portNorm}||${parc}`;
   }
   const dataISO = (data instanceof Date ? data : new Date(data)).toISOString().slice(0, 10);
@@ -301,7 +298,6 @@ function gerarProjecoes(linha, parcelamentoId) {
   for (let n = info.atual + 1; n <= info.total; n++) {
     const dataBase = linha.data instanceof Date ? linha.data : new Date(linha.data);
     const dataProj = new Date(dataBase);
-    // Avança 1 mês por parcela
     dataProj.setMonth(dataProj.getMonth() + (n - info.atual));
     const parcelaStr = `${String(n).padStart(2, '0')}/${String(info.total).padStart(2, '0')}`;
     const chaveDedup = gerarChaveDedup(dataProj, linha.descricao, linha.valor, linha.portador, parcelaStr);
@@ -353,7 +349,6 @@ function mapearCategoria(estab) {
   // RF-051: prioriza correspondência exata com importações anteriores
   const chaveHist = estab.toLowerCase().trim();
   if (_mapaCategoriasHist[chaveHist]) {
-    // Confirma que a categoria ainda existe no grupo
     const catExiste = _categorias.find(c => c.id === _mapaCategoriasHist[chaveHist]);
     if (catExiste) return _mapaCategoriasHist[chaveHist];
   }
@@ -398,29 +393,22 @@ function renderizarPreview() {
     const chk   = document.createElement('input');
     chk.type = 'checkbox'; chk.className = 'chk-linha';
     chk.dataset.idx = l._idx;
-    // Duplicatas e erros ficam desmarcados; "substitui projeção" fica marcado (é importação real)
     chk.checked = !l.erro && !l.duplicado;
     chk.addEventListener('change', () => atualizarChipsPreview());
     tdChk.appendChild(chk);
 
-    // Data
     const tdData = criarTd(l.data ? formatarData(l.data) : '—');
-
-    // Estabelecimento
     const tdEstab = criarTd(l.descricao || '—');
 
-    // Portador (primeiros 2 nomes)
     const portCurto  = l.portador ? l.portador.split(' ').slice(0, 2).join(' ') : '—';
     const tdPortador = criarTd(portCurto, '.82rem', 'var(--text-muted)');
 
-    // Parcela — destaca parcelados
     const parcelaInfo = parsearParcela(l.parcela);
     const tdParcela   = criarTd(l.parcela || '-', '.82rem',
       parcelaInfo ? '#1565c0' : 'var(--text-muted)');
     tdParcela.style.textAlign = 'center';
     if (parcelaInfo) tdParcela.style.fontWeight = '600';
 
-    // Projeções que serão geradas
     if (parcelaInfo) {
       const qtdProj = parcelaInfo.total - parcelaInfo.atual;
       const tip = document.createElement('span');
@@ -430,12 +418,10 @@ function renderizarPreview() {
       tdParcela.appendChild(tip);
     }
 
-    // Valor
     const tdVal = criarTd(isNaN(l.valor) ? '—' : formatarMoeda(l.valor));
     tdVal.style.textAlign = 'right'; tdVal.style.fontWeight = '600';
     if (!isNaN(l.valor)) tdVal.style.color = 'var(--danger)';
 
-    // Categoria
     const tdCat  = document.createElement('td');
     const selCat = document.createElement('select');
     selCat.className     = 'sel-cat-linha select-input';
@@ -449,11 +435,9 @@ function renderizarPreview() {
     });
     tdCat.appendChild(selCat);
 
-    // Status
     const tdStatus = document.createElement('td');
     tdStatus.style.textAlign = 'center';
     if (l.substitui_projecao) {
-      // RF-051: badge especial — substitui projeção pela despesa real
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--subst" title="Substitui parcela projetada pela despesa real — a projeção será removida">🔄 Real</span>';
     } else if (l.duplicado) {
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--dup" title="Já importado anteriormente">🔄</span>';
@@ -487,7 +471,6 @@ function atualizarChipsPreview() {
   const dups     = _linhas.filter(l => l.duplicado).length;
   const subst    = _linhas.filter(l => l.substitui_projecao).length;
 
-  // Conta projeções que serão geradas
   const projTotal = sel.reduce((acc, cb) => {
     const info = parsearParcela(_linhas[+cb.dataset.idx]?.parcela);
     return acc + (info ? info.total - info.atual : 0);
@@ -498,18 +481,15 @@ function atualizarChipsPreview() {
   document.getElementById('chip-total-imp').textContent    = formatarMoeda(total);
   document.getElementById('btn-imp-count').textContent     = sel.length;
 
-  // Chip de erros
   if (erros > 0) {
     document.getElementById('chip-erros').textContent = erros;
     document.getElementById('chip-erros-wrap').classList.remove('hidden');
   }
-  // Chip de duplicatas
   const dupWrap = document.getElementById('chip-dup-wrap');
   if (dupWrap) {
     document.getElementById('chip-dup').textContent = dups;
     dupWrap.classList.toggle('hidden', dups === 0);
   }
-  // Chip de projeções
   const projWrap = document.getElementById('chip-proj-wrap');
   if (projWrap) {
     document.getElementById('chip-proj').textContent = projTotal;
@@ -536,15 +516,19 @@ async function executarImportacao() {
     const info   = parsearParcela(l.parcela);
     const parc_id = info ? crypto.randomUUID() : null;
 
+    // NRF-001: auto-mark isConjunta/valorAlocado from category's isConjuntaPadrao
+    const catObj       = _categorias.find(c => c.id === cat);
+    const isConj       = catObj?.isConjuntaPadrao ?? false;
+    const valorAlocado = isConj ? Math.round(l.valor * 100 / 2) / 100 : null;
+
     try {
       // RF-051: se esta parcela substitui uma projeção, remove a projeção antes de gravar
       if (l.substitui_projecao && l.chave_dedup && _projecaoDocMap.has(l.chave_dedup)) {
         const projecaoId = _projecaoDocMap.get(l.chave_dedup);
         await excluirDespesa(projecaoId);
-        _projecaoDocMap.delete(l.chave_dedup); // evita tentar excluir duas vezes no mesmo lote
+        _projecaoDocMap.delete(l.chave_dedup);
       }
 
-      // Salva a despesa principal
       await criarDespesaDB(modelDespesa({
         descricao:       l.descricao,
         valor:           l.valor,
@@ -560,13 +544,14 @@ async function executarImportacao() {
         chave_dedup:     l.chave_dedup,
         parcelamento_id: parc_id,
         importadoEm:     new Date(),
+        // NRF-001
+        isConjunta:   isConj,
+        valorAlocado: valorAlocado,
       }));
 
-      // RF-014: Gera e salva parcelas futuras projetadas
       if (info && parc_id) {
         const projecoes = gerarProjecoes({ ...l, categoriaId: cat }, parc_id);
         for (const p of projecoes) {
-          // Pula se a projeção já existe (evita duplicar projeções)
           if (p.chave_dedup && _chavesExistentes.has(p.chave_dedup)) continue;
           await criarDespesaDB(modelDespesa({
             ...p,
@@ -574,8 +559,11 @@ async function executarImportacao() {
             usuarioId:   _usuario.uid,
             origem:      'projecao',
             importadoEm: new Date(),
+            // NRF-001: propaga divisão conjunta para parcelas projetadas
+            isConjunta:   isConj,
+            valorAlocado: valorAlocado,
           }));
-          _chavesExistentes.add(p.chave_dedup); // evita duplicar dentro do mesmo lote
+          _chavesExistentes.add(p.chave_dedup);
           projGeradas++;
         }
       }
