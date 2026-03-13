@@ -17,7 +17,7 @@ export const CATEGORIAS_PADRAO = [
  * @param {object} dados
  * @returns {object}
  */
-export function criarCategoria({ grupoId, nome, emoji = '📦', cor = '#95A5A6', orcamentoMensal = 0 }) {
+export function criarCategoria({ grupoId, nome, emoji = '📦', cor = '#95A5A6', orcamentoMensal = 0, isConjuntaPadrao = false }) {
   if (!grupoId) throw new Error('grupoId é obrigatório');
   if (!nome?.trim()) throw new Error('Nome é obrigatório');
 
@@ -27,6 +27,9 @@ export function criarCategoria({ grupoId, nome, emoji = '📦', cor = '#95A5A6',
     emoji,
     cor,
     orcamentoMensal: Number(orcamentoMensal),
+    // NRF-001: se verdadeiro, despesas desta categoria são
+    // automaticamente marcadas como conjuntas (50/50)
+    isConjuntaPadrao: Boolean(isConjuntaPadrao),
     ativa: true,
   };
 }

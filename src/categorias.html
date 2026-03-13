@@ -105,6 +105,18 @@
           <span class="form-help">Deixe 0 ou vazio para não definir limite.</span>
         </div>
 
+        <!-- NRF-001: toggle de despesa conjunta padrão -->
+        <div class="form-group form-group-toggle">
+          <label class="toggle-label" for="cat-conjunta-padrao">
+            <span>👫 Despesa conjunta padrão</span>
+            <span class="form-help">Despesas desta categoria serão automaticamente divididas 50/50.</span>
+          </label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="cat-conjunta-padrao" />
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+
         <p id="cat-erro" class="form-error hidden"></p>
 
         <div class="modal-actions">

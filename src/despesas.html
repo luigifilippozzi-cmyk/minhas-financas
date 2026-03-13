@@ -62,6 +62,11 @@
         <span class="desp-chip-label">Registros</span>
         <span class="desp-chip-valor" id="chip-count">0</span>
       </div>
+      <!-- NRF-001: chip "Meu Bolso" — minha parte das conjuntas + individuais -->
+      <div class="desp-chip desp-chip-meu-bolso" id="chip-meu-bolso" style="display:none;">
+        <span class="desp-chip-label">👤 Meu Bolso</span>
+        <span class="desp-chip-valor" id="chip-meu-bolso-valor">R$ 0,00</span>
+      </div>
       <!-- RF-014: chips por responsável (preenchidos via JS) -->
       <div id="chips-responsavel" style="display:contents;"></div>
     </div>
@@ -159,6 +164,18 @@
             <!-- Preenchido dinamicamente com os membros do grupo -->
           </select>
           <span class="form-help">Obrigatório: informe quem realizou a despesa.</span>
+        </div>
+
+        <!-- NRF-001: toggle despesa conjunta -->
+        <div class="form-group form-group-toggle">
+          <label class="toggle-label" for="despesa-conjunta">
+            <span>👫 Despesa conjunta (50/50)</span>
+            <span class="form-help" id="conjunta-preview-text"> </span>
+          </label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="despesa-conjunta" />
+            <span class="toggle-track"></span>
+          </label>
         </div>
 
         <div id="despesa-erro" class="form-erro hidden"></div>

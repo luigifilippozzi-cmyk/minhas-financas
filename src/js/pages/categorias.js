@@ -72,6 +72,9 @@ function renderizarLista(cats) {
                 ? `Limite: R$ ${Number(cat.orcamentoMensal).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
                 : 'Sem limite definido'}
             </span>
+            ${cat.isConjuntaPadrao
+              ? '<span class="cat-conjunta-badge" title="Despesas desta categoria são divididas 50/50">👫 conjunta</span>'
+              : ''}
           </div>
         </div>
         <div class="cat-item-right">
@@ -174,6 +177,9 @@ function abrirModal(cat = null) {
   document.getElementById('cat-nome').value       = cat?.nome ?? '';
   document.getElementById('cat-cor').value        = cat?.cor ?? '#95A5A6';
   document.getElementById('cat-orcamento').value  = cat?.orcamentoMensal ?? '';
+  // NRF-001: toggle isConjuntaPadrao
+  const toggleConj = document.getElementById('cat-conjunta-padrao');
+  if (toggleConj) toggleConj.checked = cat?.isConjuntaPadrao ?? false;
   document.getElementById('cat-erro').classList.add('hidden');
 
   // Atualiza prévia
@@ -305,10 +311,12 @@ function configurarEventos() {
       // Se o campo emoji ainda estiver vazio, usa a sugestão; fallback para 📦
       const emojiFinal = emojiRaw || sugerirEmoji(nomeVal) || '📦';
       const dados = {
-        emoji:           emojiFinal,
-        nome:            nomeVal,
-        cor:             document.getElementById('cat-cor').value,
-        orcamentoMensal: document.getElementById('cat-orcamento').value,
+        emoji:             emojiFinal,
+        nome:              nomeVal,
+        cor:               document.getElementById('cat-cor').value,
+        orcamentoMensal:   document.getElementById('cat-orcamento').value,
+        // NRF-001: toggle conjunta padrão
+        isConjuntaPadrao:  document.getElementById('cat-conjunta-padrao')?.checked ?? false,
       };
 
       try {
