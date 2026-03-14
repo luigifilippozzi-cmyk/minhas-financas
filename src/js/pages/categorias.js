@@ -343,7 +343,7 @@ function configurarEventos() {
   document.getElementById('btn-confirmar-acao')
     .addEventListener('click', async () => {
       if (!_pendingDesativarId) return;
-      await desativarCategoria(_pendingDesativarId);
+      await desativarCategoria(_pendingDesativarId, _grupoId);
       fecharConfirmar();
     });
 }

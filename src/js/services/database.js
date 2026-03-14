@@ -89,6 +89,23 @@ export async function excluirCategoria(categoriaId) {
   return updateDoc(doc(db, 'categorias', categoriaId), { ativa: false });
 }
 
+/**
+ * Remove todos os orçamentos associados a uma categoria excluída.
+ * Chamado automaticamente por desativarCategoria().
+ *
+ * @param {string} grupoId
+ * @param {string} categoriaId
+ */
+export async function excluirOrcamentosDaCategoria(grupoId, categoriaId) {
+  const q = query(
+    collection(db, 'orcamentos'),
+    where('grupoId',     '==', grupoId),
+    where('categoriaId', '==', categoriaId),
+  );
+  const snap = await getDocs(q);
+  await Promise.all(snap.docs.map((d) => deleteDoc(d.ref)));
+}
+
 // ── Despesas ─────────────────────────────────────────────────
 
 export async function criarDespesa(dados) {
