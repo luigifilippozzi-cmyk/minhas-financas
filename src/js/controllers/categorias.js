@@ -10,6 +10,7 @@ import {
   ouvirCategorias,
   atualizarCategoria,
   excluirCategoria,
+  excluirOrcamentosDaCategoria,
 } from '../services/database.js';
 import { criarCategoria as modelCategoria, CATEGORIAS_PADRAO } from '../models/Categoria.js';
 
@@ -106,11 +107,13 @@ export async function salvarCategoria(dados, grupoId, categoriaId = null) {
 }
 
 /**
- * Desativa (soft-delete) uma categoria.
- * A categoria some das listas mas os registros históricos são preservados.
+ * Desativa (soft-delete) uma categoria e remove todos os seus orçamentos.
+ * A categoria some das listas mas os registros históricos de despesas são preservados.
  *
  * @param {string} categoriaId
+ * @param {string} grupoId
  */
-export async function desativarCategoria(categoriaId) {
-  await excluirCategoria(categoriaId); // sets ativa: false
+export async function desativarCategoria(categoriaId, grupoId) {
+  await excluirCategoria(categoriaId);                            // sets ativa: false
+  await excluirOrcamentosDaCategoria(grupoId, categoriaId);       // limpa orçamentos órfãos
 }
