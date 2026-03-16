@@ -332,15 +332,19 @@ function atualizarTituloMes() {
   if (el) el.textContent = `${nomeMes(_mes)} ${_ano}`;
 }
 
-// NRF-001: atualiza texto de preview do split no modal
+// NRF-001: atualiza texto de preview do split no modal (fix #72 — radio)
 function atualizarPreviewConjunta() {
-  const toggle = document.getElementById('despesa-conjunta');
+  const isConj  = document.querySelector('[name="despesa-tipo"]:checked')?.value === 'conjunta';
   const preview = document.getElementById('conjunta-preview-text');
-  if (!toggle || !preview) return;
-  if (!toggle.checked) { preview.textContent = ''; return; }
+  if (!preview) return;
+  if (!isConj) { preview.textContent = '50/50'; return; }
   const val = parseFloat(document.getElementById('despesa-valor')?.value ?? 0);
   if (val > 0) {
-    preview.textContent = `→ Meu Bolso: ${formatarMoeda(val / 2)} | Família: ${formatarMoeda(val)}`;
+    preview.textContent = `→ Meu Bolso: ${formatarMoeda(val / 2)}`;
+  } else {
+    preview.textContent = 'Informe o valor para ver a divisão.';
+  }
+}
   } else {
     preview.textContent = 'Informe o valor para ver a divisão.';
   }
@@ -392,15 +396,19 @@ function abrirModalDespesa(despesa = null) {
   }
 
   // NRF-001: toggle isConjunta — pré-preenchido se editando, ou auto pela categoria
-  const toggleConj = document.getElementById('despesa-conjunta');
+  const toggleConj = document.querySelector('[name="despesa-tipo"]');
   if (toggleConj) {
     if (despesa) {
-      toggleConj.checked = despesa.isConjunta ?? false;
+      const radioVal = despesa.isConjunta ? 'conjunta' : 'individual';
+      const radioEl = document.querySelector(`[name="despesa-tipo"][value="${radioVal}"]`);
+      if (radioEl) radioEl.checked = true;
     } else {
       // Auto-fill baseado na categoria seleccionada
       const catId = document.getElementById('despesa-categoria').value;
       const cat   = _categorias.find(c => c.id === catId);
-      toggleConj.checked = cat?.isConjuntaPadrao ?? false;
+      const val = cat?.isConjuntaPadrao ? 'conjunta' : 'individual';
+      const r = document.querySelector(`[name="despesa-tipo"][value="${val}"]`);
+      if (r) r.checked = true;
     }
     atualizarPreviewConjunta();
   }
@@ -461,7 +469,17 @@ function configurarEventos() {
     }
 
     const valor       = parseFloat(document.getElementById('despesa-valor').value);
-    const isConjunta  = document.getElementById('despesa-conjunta')?.checked ?? false;
+    // NRF-001 fix #72 — radio obrigatório
+    const tipoSelecionado = document.querySelector('[name="despesa-tipo"]:checked')?.value;
+    if (!tipoSelecionado) {
+      erroEl.textContent = 'Selecione o tipo da despesa: Individual ou Conjunta.';
+      erroEl.classList.remove('hidden');
+      btnSave.disabled = false;
+      btnSave.textContent = 'Salvar';
+      document.getElementById('form-group-tipo-despesa')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+    const isConjunta = tipoSelecionado === 'conjunta';
     const dados = {
       descricao:    document.getElementById('despesa-descricao').value.trim(),
       valor,
@@ -520,14 +538,17 @@ function configurarEventos() {
   document.getElementById('despesa-categoria')?.addEventListener('change', () => {
     const catId = document.getElementById('despesa-categoria').value;
     const cat   = _categorias.find(c => c.id === catId);
-    const toggle = document.getElementById('despesa-conjunta');
-    if (toggle && cat?.isConjuntaPadrao !== undefined) {
-      toggle.checked = cat.isConjuntaPadrao;
+    if (cat?.isConjuntaPadrao !== undefined) {
+      const valCat = cat.isConjuntaPadrao ? 'conjunta' : 'individual';
+      const rCat = document.querySelector(`[name="despesa-tipo"][value="${valCat}"]`);
+      if (rCat) rCat.checked = true;
     }
     atualizarPreviewConjunta();
   });
   // NRF-001: atualiza preview quando toggle ou valor mudam
-  document.getElementById('despesa-conjunta')?.addEventListener('change', atualizarPreviewConjunta);
+  document.querySelectorAll('[name="despesa-tipo"]').forEach(r =>
+    r.addEventListener('change', atualizarPreviewConjunta)
+  );
   document.getElementById('despesa-valor')?.addEventListener('input', atualizarPreviewConjunta);
 
   // Exportar CSV

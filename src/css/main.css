@@ -360,6 +360,47 @@ a:hover { text-decoration: underline; }
   transform: translateX(20px);
 }
 
+/* ── fix #72: radio group individual/conjunta ── */
+.despesa-tipo-radio {
+  display: flex;
+  gap: .75rem;
+  margin-top: .25rem;
+}
+.despesa-tipo-option {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex: 1;
+  padding: .65rem .85rem;
+  border: 2px solid var(--color-border, #dee2e6);
+  border-radius: .5rem;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.despesa-tipo-option:has(input:checked) {
+  border-color: var(--color-primary, #5c6bc0);
+  background: rgba(92, 107, 192, .08);
+}
+.despesa-tipo-option input[type='radio'] {
+  display: none;
+}
+.despesa-tipo-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+.despesa-tipo-texto {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+.despesa-tipo-texto strong {
+  font-size: .875rem;
+}
+.despesa-tipo-texto small {
+  font-size: .72rem;
+  color: var(--color-text-muted, #6c757d);
+}
+
 /* ── Badge "conjunta" nas listas de despesas ── */
 .desp-conjunta-badge {
   display: inline-flex;
