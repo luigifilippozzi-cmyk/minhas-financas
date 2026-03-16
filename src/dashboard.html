@@ -108,71 +108,7 @@
 
   </main>
 
-  <!-- ═══ MODAL: Nova / Editar Despesa ═══ -->
-  <div class="modal hidden" id="modal-despesa">
-    <div class="modal-backdrop"></div>
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3 id="modal-despesa-titulo">Nova Despesa</h3>
-        <button class="modal-close" id="btn-fechar-modal">✕</button>
-      </div>
-      <form id="form-despesa" novalidate>
-        <input type="hidden" id="despesa-id" />
-        <div class="form-group">
-          <label for="despesa-descricao">Descrição</label>
-          <input type="text" id="despesa-descricao" placeholder="Ex: Supermercado" required />
-        </div>
-        <div class="form-group">
-          <label for="despesa-valor">Valor (R$)</label>
-          <input type="number" id="despesa-valor" placeholder="0,00" min="0.01" step="0.01" required />
-        </div>
-        <div class="form-group">
-          <label for="despesa-categoria">Categoria</label>
-          <select id="despesa-categoria" required>
-            <option value="">Selecione uma categoria</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="despesa-data">Data</label>
-          <input type="date" id="despesa-data" required />
-        </div>
-        <div class="form-group">
-          <label for="despesa-responsavel">Responsável <span class="form-required">*</span></label>
-          <select id="despesa-responsavel" required>
-            <option value="">Selecione o responsável</option>
-          </select>
-          <span class="form-help">Obrigatório: informe quem realizou a despesa.</span>
-        </div>
-        <div class="form-group" id="form-group-tipo-despesa">
-          <label>Tipo de despesa <span class="form-required">*</span></label>
-          <div class="despesa-tipo-radio">
-            <label class="despesa-tipo-option" id="label-individual">
-              <input type="radio" name="despesa-tipo" id="despesa-tipo-individual" value="individual" />
-              <span class="despesa-tipo-icon">👤</span>
-              <span class="despesa-tipo-texto">
-                <strong>Individual</strong>
-                <small>Só minha</small>
-              </span>
-            </label>
-            <label class="despesa-tipo-option" id="label-conjunta">
-              <input type="radio" name="despesa-tipo" id="despesa-tipo-conjunta" value="conjunta" />
-              <span class="despesa-tipo-icon">👫</span>
-              <span class="despesa-tipo-texto">
-                <strong>Conjunta</strong>
-                <small id="conjunta-preview-text">50/50</small>
-              </span>
-            </label>
-          </div>
-        </div>
-        <div id="despesa-erro" class="form-erro hidden"></div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline" id="btn-cancelar-despesa">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Salvar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
+  <!-- Modal de despesa removido: btn-nova-despesa redireciona para despesas.html -->
   <!-- Firebase SDK (versão modular) -->
   <!-- TODO: Substituir pelos scripts do seu projeto Firebase -->
   <!-- <script type="module" src="js/config/firebase.js"></script> -->

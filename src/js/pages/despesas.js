@@ -61,6 +61,34 @@ onAuthChange(async (user) => {
   atualizarTituloMes();
   iniciarListeners();
   iniciarListenerProjecoes();
+
+  // Atalhos do dashboard: ?nova=1 abre form vazio; ?editar=ID abre form preenchido
+  const _params = new URLSearchParams(window.location.search);
+  const _atalhoNova   = _params.get('nova') === '1';
+  const _atalhoEditar = _params.get('editar');
+  if (_atalhoNova || _atalhoEditar) {
+    const tentarAbrir = setInterval(() => {
+      if (_categorias.length > 0 || document.readyState === 'complete') {
+        clearInterval(tentarAbrir);
+        if (_atalhoEditar) {
+          const despesa = _despesas.find(d => d.id === _atalhoEditar);
+          if (despesa) abrirModalDespesa(despesa);
+          // Se as despesas ainda não chegaram, aguarda mais um pouco
+          else {
+            const aguardarDesp = setInterval(() => {
+              const d = _despesas.find(d => d.id === _atalhoEditar);
+              if (d) { clearInterval(aguardarDesp); abrirModalDespesa(d); }
+            }, 100);
+            setTimeout(() => clearInterval(aguardarDesp), 3000);
+          }
+        } else {
+          abrirModalDespesa();
+        }
+        history.replaceState(null, '', window.location.pathname);
+      }
+    }, 100);
+    setTimeout(() => clearInterval(tentarAbrir), 3000);
+  }
 });
 
 // ── Listener de Projeções (RF-014) ────────────────────────────

@@ -4,11 +4,10 @@
 // ============================================================
 
 import { onAuthChange, logout } from './services/auth.js';
-import { buscarPerfil, buscarGrupo, ouvirParcelamentosAbertos } from './services/database.js';
+import { buscarPerfil, ouvirParcelamentosAbertos } from './services/database.js';
 import { iniciarListenerCategorias } from './controllers/categorias.js';
 import {
   iniciarListenerDespesas,
-  salvarDespesa,
   deletarDespesa,
   renderizarListaDespesas,
 } from './controllers/despesas.js';
@@ -26,7 +25,6 @@ let estadoApp = {
   categorias: [],
   despesas:   [],
   orcamentos: [],
-  grupo:      null,
 };
 
 // Referências para unsubscribe ao trocar período
@@ -59,7 +57,6 @@ onAuthChange(async (user) => {
   }
 
   definirTexto('usuario-nome', estadoApp.perfil.nome ?? user.email);
-  estadoApp.grupo = await buscarGrupo(estadoApp.perfil.grupoId);
   atualizarTituloPeriodo();
   preencherSelectPeriodo();
   iniciarListeners();
@@ -129,70 +126,9 @@ function configurarEventos() {
     await logout();
   });
 
-  // Abrir modal nova despesa
+  // Atalho para nova despesa — redireciona para despesas.html e abre o modal lá
   document.getElementById('btn-nova-despesa')?.addEventListener('click', () => {
-    abrirModalDespesa();
-  });
-
-  // Fechar modal
-  document.getElementById('btn-fechar-modal')?.addEventListener('click', fecharModalDespesa);
-  document.getElementById('btn-cancelar-despesa')?.addEventListener('click', fecharModalDespesa);
-  document.querySelector('.modal-backdrop')?.addEventListener('click', fecharModalDespesa);
-
-  // Submit do formulário
-  document.getElementById('form-despesa')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const erroEl  = document.getElementById('despesa-erro');
-    const btnSave = e.target.querySelector('[type="submit"]');
-    erroEl.classList.add('hidden');
-    btnSave.disabled = true;
-    btnSave.textContent = 'Salvando…';
-
-    // Validação: responsável obrigatório
-    const responsavel = document.getElementById('despesa-responsavel')?.value ?? '';
-    if (!responsavel) {
-      erroEl.textContent = 'Selecione o responsável pela despesa.';
-      erroEl.classList.remove('hidden');
-      btnSave.disabled = false;
-      btnSave.textContent = 'Salvar';
-      document.getElementById('despesa-responsavel')?.focus();
-      return;
-    }
-
-    // Validação: tipo de despesa obrigatório
-    const tipoSelecionado = document.querySelector('[name="despesa-tipo"]:checked')?.value;
-    if (!tipoSelecionado) {
-      erroEl.textContent = 'Selecione o tipo da despesa: Individual ou Conjunta.';
-      erroEl.classList.remove('hidden');
-      btnSave.disabled = false;
-      btnSave.textContent = 'Salvar';
-      document.getElementById('form-group-tipo-despesa')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
-
-    const isConjunta = tipoSelecionado === 'conjunta';
-    const valor = parseFloat(document.getElementById('despesa-valor').value);
-    const dados = {
-      descricao:    document.getElementById('despesa-descricao').value.trim(),
-      valor,
-      categoriaId:  document.getElementById('despesa-categoria').value,
-      data:         new Date(document.getElementById('despesa-data').value + 'T12:00:00'),
-      responsavel,
-      isConjunta,
-      valorAlocado: isConjunta ? Math.round(valor * 100 / 2) / 100 : undefined,
-    };
-    const despesaId = document.getElementById('despesa-id').value || null;
-
-    try {
-      await salvarDespesa(dados, estadoApp.perfil.grupoId, estadoApp.usuario.uid, despesaId);
-      fecharModalDespesa();
-    } catch (err) {
-      erroEl.textContent = err.message;
-      erroEl.classList.remove('hidden');
-    } finally {
-      btnSave.disabled = false;
-      btnSave.textContent = 'Salvar';
-    }
+    window.location.href = 'despesas.html?nova=1';
   });
 
   // RF-014: toggle painel parcelamentos (header interno)
@@ -225,22 +161,6 @@ function configurarEventos() {
     widget.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
 
-  // NRF-001: auto-toggle conjunta ao mudar categoria
-  document.getElementById('despesa-categoria')?.addEventListener('change', () => {
-    const catId = document.getElementById('despesa-categoria').value;
-    const cat   = estadoApp.categorias.find(c => c.id === catId);
-    if (cat?.isConjuntaPadrao !== undefined) {
-      const val = cat.isConjuntaPadrao ? 'conjunta' : 'individual';
-      const r   = document.querySelector(`[name="despesa-tipo"][value="${val}"]`);
-      if (r) r.checked = true;
-    }
-    atualizarPreviewConjuntaDash();
-  });
-  document.querySelectorAll('[name="despesa-tipo"]').forEach(r =>
-    r.addEventListener('change', atualizarPreviewConjuntaDash)
-  );
-  document.getElementById('despesa-valor')?.addEventListener('input', atualizarPreviewConjuntaDash);
-
   // Filtro de período
   document.getElementById('select-mes')?.addEventListener('change', (e) => {
     estadoApp.mes = Number(e.target.value);
@@ -254,85 +174,12 @@ function configurarEventos() {
   });
 }
 
-// ── Modal de Despesa ─────────────────────────────────────────
-
-function abrirModalDespesa(despesa = null) {
-  preencherSelectCategorias(estadoApp.categorias);
-  preencherDropdownResponsavel();
-
-  document.getElementById('despesa-id').value        = despesa?.id ?? '';
-  document.getElementById('despesa-descricao').value = despesa?.descricao ?? '';
-  document.getElementById('despesa-valor').value     = despesa?.valor ?? '';
-  document.getElementById('despesa-categoria').value = despesa?.categoriaId ?? '';
-  document.getElementById('despesa-data').value      = despesa
-    ? (despesa.data?.toDate?.() ?? new Date(despesa.data)).toISOString().slice(0, 10)
-    : dataHoje();
-
-  // Responsável: pré-seleciona usuário atual para nova despesa
-  const selResp = document.getElementById('despesa-responsavel');
-  if (selResp) {
-    selResp.value = despesa
-      ? (despesa.responsavel ?? '')
-      : (estadoApp.grupo?.nomesMembros?.[estadoApp.usuario?.uid] ?? '');
-  }
-
-  // Tipo: pré-preenche ao editar; nenhum selecionado para nova despesa
-  document.querySelectorAll('[name="despesa-tipo"]').forEach(r => r.checked = false);
-  if (despesa) {
-    const radioVal = despesa.isConjunta ? 'conjunta' : 'individual';
-    const radioEl  = document.querySelector(`[name="despesa-tipo"][value="${radioVal}"]`);
-    if (radioEl) radioEl.checked = true;
-  }
-  atualizarPreviewConjuntaDash();
-
-  document.getElementById('modal-despesa-titulo').textContent =
-    despesa ? 'Editar Despesa' : 'Nova Despesa';
-  document.getElementById('despesa-erro').classList.add('hidden');
-  document.getElementById('modal-despesa').classList.remove('hidden');
-}
-
-// ── Responsável dropdown ───────────────────────────────────────────────
-function preencherDropdownResponsavel() {
-  const sel = document.getElementById('despesa-responsavel');
-  if (!sel || !estadoApp.grupo) return;
-  const nomes = Object.values(estadoApp.grupo.nomesMembros ?? {});
-  const atual = sel.value;
-  sel.innerHTML = '<option value="">Selecione o responsável</option>' +
-    nomes.map(n => `<option value="${n}">${n}</option>`).join('');
-  if (atual) sel.value = atual;
-}
-
-// ── Preview conjunta (dashboard) ────────────────────────────────────────
-function atualizarPreviewConjuntaDash() {
-  const isConj  = document.querySelector('[name="despesa-tipo"]:checked')?.value === 'conjunta';
-  const preview = document.getElementById('conjunta-preview-text');
-  if (!preview) return;
-  if (!isConj) { preview.textContent = '50/50'; return; }
-  const val = parseFloat(document.getElementById('despesa-valor')?.value ?? 0);
-  if (val > 0) {
-    const fmt = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val / 2);
-    preview.textContent = `→ Meu Bolso: ${fmt}`;
-  } else {
-    preview.textContent = 'Informe o valor para ver a divisão.';
-  }
-}
-
-function fecharModalDespesa() {
-  document.getElementById('modal-despesa').classList.add('hidden');
-  document.getElementById('form-despesa').reset();
-}
-
 // Expõe funções para os botões inline na lista de despesas
 window.editarDespesa = (id) => {
-  const despesa = estadoApp.despesas.find((d) => d.id === id);
-  if (despesa) abrirModalDespesa(despesa);
+  // Redireciona para despesas.html onde o formulário completo está disponível
+  window.location.href = `despesas.html?editar=${id}`;
 };
 
-window.confirmarExcluirDespesa = async (id) => {
-  if (confirm('Tem certeza que deseja excluir esta despesa?')) {
-    await deletarDespesa(id);
-  }
-};
 
 // ── RF-014: Parcelamentos em Aberto ──────────────────────────
 
