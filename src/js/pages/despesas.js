@@ -391,23 +391,23 @@ function abrirModalDespesa(despesa = null) {
     }
   }
 
-  // NRF-001: toggle isConjunta — pré-preenchido se editando, ou auto pela categoria
-  const toggleConj = document.querySelector('[name="despesa-tipo"]');
-  if (toggleConj) {
-    if (despesa) {
-      const radioVal = despesa.isConjunta ? 'conjunta' : 'individual';
-      const radioEl = document.querySelector(`[name="despesa-tipo"][value="${radioVal}"]`);
-      if (radioEl) radioEl.checked = true;
-    } else {
-      // Auto-fill baseado na categoria seleccionada
-      const catId = document.getElementById('despesa-categoria').value;
-      const cat   = _categorias.find(c => c.id === catId);
-      const val = cat?.isConjuntaPadrao ? 'conjunta' : 'individual';
-      const r = document.querySelector(`[name="despesa-tipo"][value="${val}"]`);
+  // NRF-001: tipo de despesa — preenche ao editar; limpa para nova (usuário deve escolher)
+  document.querySelectorAll('[name="despesa-tipo"]').forEach(r => r.checked = false);
+  if (despesa) {
+    const radioVal = despesa.isConjunta ? 'conjunta' : 'individual';
+    const radioEl  = document.querySelector(`[name="despesa-tipo"][value="${radioVal}"]`);
+    if (radioEl) radioEl.checked = true;
+  } else {
+    // Auto-seleciona só se a categoria tiver isConjuntaPadrao definido explicitamente
+    const catId = document.getElementById('despesa-categoria').value;
+    const cat   = _categorias.find(c => c.id === catId);
+    if (cat?.isConjuntaPadrao !== undefined) {
+      const val = cat.isConjuntaPadrao ? 'conjunta' : 'individual';
+      const r   = document.querySelector(`[name="despesa-tipo"][value="${val}"]`);
       if (r) r.checked = true;
     }
-    atualizarPreviewConjunta();
   }
+  atualizarPreviewConjunta();
 
   document.getElementById('modal-despesa-titulo').textContent =
     despesa ? 'Editar Despesa' : 'Nova Despesa';
