@@ -345,10 +345,6 @@ function atualizarPreviewConjunta() {
     preview.textContent = 'Informe o valor para ver a divisão.';
   }
 }
-  } else {
-    preview.textContent = 'Informe o valor para ver a divisão.';
-  }
-}
 
 // ── Selects ───────────────────────────────────────────────────
 function preencherSelectCategorias(cats) {
