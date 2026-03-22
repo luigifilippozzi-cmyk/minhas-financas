@@ -36,6 +36,10 @@ let _unsubCats  = null;
 let _unsubProj  = null;     // RF-014: listener de projeções
 let _idParaExcluir = null;
 
+// Atalhos de abertura automática do modal (via URL params do dashboard)
+let _atalhoAbrirNova   = false;
+let _atalhoAbrirEditar = null;
+
 // ── Inicialização ─────────────────────────────────────────────
 onAuthChange(async (user) => {
   if (!user) { window.location.href = '../login.html'; return; }
@@ -57,38 +61,19 @@ onAuthChange(async (user) => {
   _grupo = await buscarGrupo(_grupoId);
   preencherDropdownResponsavel();
 
+  // Atalhos do dashboard: flags setadas ANTES de iniciarListeners() para evitar
+  // race condition quando Firestore usa cache e dispara callback sincronamente
+  const _urlParams = new URLSearchParams(window.location.search);
+  if (_urlParams.get('nova') === '1')  _atalhoAbrirNova   = true;
+  if (_urlParams.get('editar'))        _atalhoAbrirEditar = _urlParams.get('editar');
+  if (_atalhoAbrirNova || _atalhoAbrirEditar) {
+    history.replaceState(null, '', window.location.pathname);
+  }
+
   configurarEventos();
   atualizarTituloMes();
   iniciarListeners();
   iniciarListenerProjecoes();
-
-  // Atalhos do dashboard: ?nova=1 abre form vazio; ?editar=ID abre form preenchido
-  const _params = new URLSearchParams(window.location.search);
-  const _atalhoNova   = _params.get('nova') === '1';
-  const _atalhoEditar = _params.get('editar');
-  if (_atalhoNova || _atalhoEditar) {
-    const tentarAbrir = setInterval(() => {
-      if (_categorias.length > 0 || document.readyState === 'complete') {
-        clearInterval(tentarAbrir);
-        if (_atalhoEditar) {
-          const despesa = _despesas.find(d => d.id === _atalhoEditar);
-          if (despesa) abrirModalDespesa(despesa);
-          // Se as despesas ainda não chegaram, aguarda mais um pouco
-          else {
-            const aguardarDesp = setInterval(() => {
-              const d = _despesas.find(d => d.id === _atalhoEditar);
-              if (d) { clearInterval(aguardarDesp); abrirModalDespesa(d); }
-            }, 100);
-            setTimeout(() => clearInterval(aguardarDesp), 3000);
-          }
-        } else {
-          abrirModalDespesa();
-        }
-        history.replaceState(null, '', window.location.pathname);
-      }
-    }, 100);
-    setTimeout(() => clearInterval(tentarAbrir), 3000);
-  }
 });
 
 // ── Listener de Projeções (RF-014) ────────────────────────────
@@ -111,6 +96,11 @@ function iniciarListeners() {
     preencherSelectCategorias(_categorias);
     preencherFiltroCategorias(_categorias);
     renderizarLista();
+    // Atalho ?nova=1: abre modal assim que categorias chegam (primeira vez)
+    if (_atalhoAbrirNova) {
+      _atalhoAbrirNova = false;
+      abrirModalDespesa();
+    }
   });
 
   _unsubDesp = iniciarListenerDespesas(_grupoId, _mes, _ano, (despesas) => {
@@ -119,6 +109,11 @@ function iniciarListeners() {
     renderizarLista();
     renderizarChipsResponsavel();
     preencherFiltroResponsavel();
+    // Atalho ?editar=ID: abre modal com a despesa assim que dados chegam
+    if (_atalhoAbrirEditar) {
+      const d = _despesas.find(d => d.id === _atalhoAbrirEditar);
+      if (d) { _atalhoAbrirEditar = null; abrirModalDespesa(d); }
+    }
   });
 }
 
