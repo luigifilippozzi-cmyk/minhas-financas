@@ -198,12 +198,21 @@ function renderizarChipsResponsavel() {
   _despesas
     .filter(d => d.tipo !== 'projecao')
     .forEach(d => {
-      const resp = d.responsavel || d.portador || '';
-      if (!resp) return;
-      const nome = resp.split(' ')[0]; // primeiro nome
-      if (!porResp[nome]) porResp[nome] = 0;
-      // Conjunta: o responsável paga apenas a sua parte (valorAlocado = 50%)
-      porResp[nome] += d.isConjunta ? (d.valorAlocado ?? (d.valor ?? 0) / 2) : (d.valor ?? 0);
+      if (d.isConjunta) {
+        // Despesa conjunta 50/50: cada membro do grupo paga valorAlocado
+        const share = d.valorAlocado ?? (d.valor ?? 0) / 2;
+        Object.values(_grupo?.nomesMembros ?? {}).forEach(m => {
+          const nome = m.split(' ')[0];
+          if (!porResp[nome]) porResp[nome] = 0;
+          porResp[nome] += share;
+        });
+      } else {
+        const resp = d.responsavel || d.portador || '';
+        if (!resp) return;
+        const nome = resp.split(' ')[0];
+        if (!porResp[nome]) porResp[nome] = 0;
+        porResp[nome] += d.valor ?? 0;
+      }
     });
 
   if (!Object.keys(porResp).length) {
