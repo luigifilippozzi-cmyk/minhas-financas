@@ -50,6 +50,8 @@ export function iniciarListenerDespesas(grupoId, mes, ano, onChange) {
 export async function salvarDespesa(dados, grupoId, usuarioId, despesaId = null) {
   // NRF-001: garante valorAlocado = valor/2 quando isConjunta=true
   const dadosNormalizados = { ...dados };
+  // [DEBUG #90 — remover após diagnóstico]
+  console.log('[SALVAR-DEBUG] entrada dados.isConjunta:', dados.isConjunta, '| dadosNormalizados.isConjunta:', dadosNormalizados.isConjunta);
   if (dadosNormalizados.isConjunta) {
     dadosNormalizados.valorAlocado =
       Math.round((dadosNormalizados.valor ?? 0) * 100 / 2) / 100;
@@ -60,6 +62,8 @@ export async function salvarDespesa(dados, grupoId, usuarioId, despesaId = null)
   }
 
   const despesa = modelDespesa({ ...dadosNormalizados, grupoId, usuarioId });
+  // [DEBUG #90]
+  console.log('[SALVAR-DEBUG] despesa.isConjunta:', despesa.isConjunta, '| despesa.valorAlocado:', despesa.valorAlocado);
 
   if (despesaId) {
     // Atualiza mantendo metadados originais (quem criou, etc.)
