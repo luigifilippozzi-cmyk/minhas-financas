@@ -448,6 +448,14 @@ a:hover { text-decoration: underline; }
 .desp-chip-meu-bolso .desp-chip-label,
 .desp-chip-meu-bolso .desp-chip-valor { color: #283593; }
 
+/* ── NRF-001: Chip "Compartilhadas por usuário" ── */
+.desp-chip-compartilhada {
+  background: #f3e5f5;
+  border: 1px solid #ce93d8;
+}
+.desp-chip-compartilhada .desp-chip-label { color: #6a1b9a; }
+.desp-chip-compartilhada .desp-chip-valor { color: #6a1b9a; font-weight: 700; }
+
 /* ── Cards "Meu Bolso" e "Família" no dashboard ── */
 .resumo-card--meu-bolso {
   border-left: 4px solid #7986cb;

@@ -108,6 +108,7 @@ function iniciarListeners() {
     atualizarChips();
     renderizarLista();
     renderizarChipsResponsavel();
+    renderizarChipsCompartilhadas();
     preencherFiltroResponsavel();
     // Atalho ?editar=ID: abre modal com a despesa assim que dados chegam
     if (_atalhoAbrirEditar) {
@@ -187,6 +188,32 @@ function agruparParPorCompra(items) {
       <span class="parc-compra-valor">${formatarMoeda(total)}</span>
     </div>`;
   }).join('');
+}
+
+// ── NRF-001: Chips de despesas compartilhadas por usuário ────
+function renderizarChipsCompartilhadas() {
+  const container = document.getElementById('chips-compartilhadas');
+  if (!container) return;
+
+  const conjuntas = _despesas.filter(d => d.tipo !== 'projecao' && d.isConjunta);
+  if (!conjuntas.length) {
+    container.innerHTML = '';
+    return;
+  }
+
+  // Soma valorAlocado de conjuntas por membro do grupo
+  const porResp = {};
+  Object.values(_grupo?.nomesMembros ?? {}).forEach(m => {
+    const nome = m.split(' ')[0];
+    porResp[nome] = conjuntas.reduce((s, d) => s + (d.valorAlocado ?? (d.valor ?? 0) / 2), 0);
+  });
+
+  container.innerHTML = Object.entries(porResp).map(([nome, val]) => `
+    <div class="desp-chip desp-chip-compartilhada">
+      <span class="desp-chip-label">👫 ${nome}</span>
+      <span class="desp-chip-valor">${formatarMoeda(val)}</span>
+    </div>`
+  ).join('');
 }
 
 // ── RF-014: Chips por responsável ────────────────────────────
