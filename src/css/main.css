@@ -500,3 +500,61 @@ a:hover { text-decoration: underline; }
   color: #e65100;
   border: 1px solid #ffcc02;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   SEÇÃO RECEITAS — Dashboard & Página de Gestão
+   ══════════════════════════════════════════════════════════════ */
+
+/* Card de resumo — borda verde receitas */
+.resumo-card--receita  { border-left: 4px solid #2e7d32; }
+.resumo-card--saldo    { border-left: 4px solid #1565c0; }
+
+/* Valor total de receitas */
+.rec-verde { color: #2e7d32; font-weight: 700; }
+
+/* Saldo positivo / negativo */
+.rec-saldo--positivo { color: #2e7d32 !important; font-weight: 700; }
+.rec-saldo--negativo { color: #c62828 !important; font-weight: 700; }
+
+/* Barra de progresso de receitas */
+.rec-bar-track {
+  width: 100%;
+  height: 6px;
+  background: #e8f5e9;
+  border-radius: 3px;
+  overflow: hidden;
+  margin: .35rem 0 .2rem;
+}
+.rec-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width .3s ease;
+}
+
+/* Valor da categoria de receita */
+.rec-cat-valor {
+  font-size: .875rem;
+  font-weight: 700;
+}
+
+/* Card de categoria receita — override de cores */
+.rec-categoria-card { border-top: 3px solid #2e7d32; }
+
+/* ── Página receitas.html ── */
+.rec-lista { display: flex; flex-direction: column; gap: .5rem; }
+
+.rec-item {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  background: var(--color-surface, #fff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: var(--radius-md, 8px);
+  padding: .65rem 1rem;
+}
+.rec-item-emoji { font-size: 1.2rem; min-width: 1.6rem; text-align: center; }
+.rec-item-info  { flex: 1; min-width: 0; }
+.rec-item-desc  { font-weight: 600; font-size: .9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rec-item-meta  { font-size: .75rem; color: var(--color-text-muted, #6c757d); }
+.rec-item-valor { font-weight: 700; color: #2e7d32; white-space: nowrap; }
+.rec-item-acoes { display: flex; gap: .4rem; }

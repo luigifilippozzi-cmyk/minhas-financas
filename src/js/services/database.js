@@ -141,6 +141,65 @@ export async function excluirDespesa(despesaId) {
   return deleteDoc(doc(db, 'despesas', despesaId));
 }
 
+// ── Receitas ─────────────────────────────────────────────────
+
+export async function criarReceita(dados) {
+  return addDoc(collection(db, 'receitas'), {
+    ...dados,
+    dataCriacao: serverTimestamp(),
+  });
+}
+
+export function ouvirReceitas(grupoId, mes, ano, callback) {
+  const inicio = new Date(ano, mes - 1, 1);
+  const fim    = new Date(ano, mes, 0, 23, 59, 59);
+  const q = query(
+    collection(db, 'receitas'),
+    where('grupoId', '==', grupoId),
+    where('data', '>=', inicio),
+    where('data', '<=', fim),
+    orderBy('data', 'desc'),
+  );
+  return onSnapshot(q,
+    (snap) => { callback(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); },
+    (err)  => { console.error('[ouvirReceitas] Erro no listener:', err); },
+  );
+}
+
+export async function atualizarReceita(receitaId, dados) {
+  return updateDoc(doc(db, 'receitas', receitaId), dados);
+}
+
+export async function excluirReceita(receitaId) {
+  return deleteDoc(doc(db, 'receitas', receitaId));
+}
+
+export function ouvirCategoriasReceita(grupoId, callback) {
+  const q = query(
+    collection(db, 'categorias'),
+    where('grupoId', '==', grupoId),
+    where('tipo',    '==', 'receita'),
+    where('ativa',   '==', true),
+  );
+  return onSnapshot(q,
+    (snap) => { callback(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); },
+    (err)  => { console.error('[ouvirCategoriasReceita] Erro no listener:', err); },
+  );
+}
+
+/**
+ * Cria categorias de receita padrão caso o grupo ainda não tenha nenhuma.
+ * Chamado ao iniciar o app para garantir que grupos existentes também recebam as categorias.
+ */
+export async function garantirCategoriasReceita(grupoId, categoriasPadrao) {
+  const q    = query(collection(db, 'categorias'), where('grupoId', '==', grupoId), where('tipo', '==', 'receita'));
+  const snap = await getDocs(q);
+  if (!snap.empty) return; // já existem
+  await Promise.all(categoriasPadrao.map((cat) =>
+    addDoc(collection(db, 'categorias'), { ...cat, grupoId, ativa: true })
+  ));
+}
+
 // ── RF-014: Deduplicação ──────────────────────────────────────
 
 /**
