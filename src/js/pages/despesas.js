@@ -194,6 +194,10 @@ function renderizarChipsResponsavel() {
   const container = document.getElementById('chips-responsavel');
   if (!container) return;
 
+  // [DEBUG #90] — remover após diagnóstico
+  console.log('[CHIPS-DEBUG] nomesMembros:', JSON.stringify(_grupo?.nomesMembros));
+  console.log('[CHIPS-DEBUG] conjuntas:', _despesas.filter(d=>d.isConjunta).map(d=>({desc:d.descricao,valor:d.valor,valorAlocado:d.valorAlocado,isConjunta:d.isConjunta})));
+
   const porResp = {};
   _despesas
     .filter(d => d.tipo !== 'projecao')
@@ -214,6 +218,9 @@ function renderizarChipsResponsavel() {
         porResp[nome] += d.valor ?? 0;
       }
     });
+
+  // [DEBUG #90]
+  console.log('[CHIPS-DEBUG] porResp:', JSON.stringify(porResp));
 
   if (!Object.keys(porResp).length) {
     container.innerHTML = '';
@@ -517,6 +524,8 @@ function configurarEventos() {
       return;
     }
     const isConjunta = tipoSelecionado === 'conjunta';
+    // [DEBUG #90] — remover após diagnóstico
+    console.log('[SUBMIT-DEBUG] tipoSelecionado:', tipoSelecionado, '| isConjunta:', isConjunta, '| valor:', valor);
     const dados = {
       descricao:    document.getElementById('despesa-descricao').value.trim(),
       valor,
