@@ -10,21 +10,22 @@
  * @returns {object}
  */
 export function modelDespesa(dados) {
+  const isConj = dados.isConjunta === true;
   const obj = {
-    grupoId:     dados.grupoId,
-    categoriaId: dados.categoriaId ?? '',
-    usuarioId:   dados.usuarioId,
-    descricao:   String(dados.descricao ?? '').trim(),
-    valor:       Number(dados.valor),
-    data:        dados.data instanceof Date ? dados.data : new Date(dados.data),
+    grupoId:      dados.grupoId,
+    categoriaId:  dados.categoriaId ?? '',
+    usuarioId:    dados.usuarioId,
+    descricao:    String(dados.descricao ?? '').trim(),
+    valor:        Number(dados.valor),
+    data:         dados.data instanceof Date ? dados.data : new Date(dados.data),
+    // NRF-001: sempre incluídos para evitar undefined em caches antigos do model
+    isConjunta:   isConj,
+    valorAlocado: isConj ? (dados.valorAlocado ?? Math.round(Number(dados.valor) * 100 / 2) / 100) : null,
   };
   // Campos opcionais: incluídos apenas se presentes
-  // NRF-001: isConjunta, valorAlocado
-  // NRF-002: status
   const opcionais = [
     'origem', 'portador', 'parcela', 'responsavel',
-    'tipo', 'chave_dedup', 'parcelamento_id', 'importadoEm',
-    'isConjunta', 'valorAlocado', 'status',
+    'tipo', 'chave_dedup', 'parcelamento_id', 'importadoEm', 'status',
   ];
   opcionais.forEach((k) => { if (dados[k] !== undefined) obj[k] = dados[k]; });
   return obj;
