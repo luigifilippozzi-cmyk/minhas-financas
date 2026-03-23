@@ -202,7 +202,8 @@ function renderizarChipsResponsavel() {
       if (!resp) return;
       const nome = resp.split(' ')[0]; // primeiro nome
       if (!porResp[nome]) porResp[nome] = 0;
-      porResp[nome] += d.valor ?? 0;
+      // Conjunta: o responsável paga apenas a sua parte (valorAlocado = 50%)
+      porResp[nome] += d.isConjunta ? (d.valorAlocado ?? (d.valor ?? 0) / 2) : (d.valor ?? 0);
     });
 
   if (!Object.keys(porResp).length) {
@@ -284,9 +285,11 @@ function renderizarLista() {
     const isProj   = d.tipo === 'projecao';
 
     // RF-014: badges adicionais
-    const portBadge = (d.responsavel || d.portador)
-      ? `<span class="desp-resp-badge">${(d.responsavel || d.portador).split(' ')[0]}</span>`
-      : '';
+    const portBadge = d.isConjunta
+      ? `<span class="desp-resp-badge desp-resp-badge--conjunta">👫 compartilhada</span>`
+      : (d.responsavel || d.portador)
+        ? `<span class="desp-resp-badge">${(d.responsavel || d.portador).split(' ')[0]}</span>`
+        : '';
     const parcelaBadge = (d.parcela && d.parcela !== '-')
       ? `<span class="desp-parcela-badge">${d.parcela}</span>`
       : '';
@@ -309,7 +312,7 @@ function renderizarLista() {
         </div>
       </div>
       <div class="desp-item-right">
-        <span class="desp-item-valor${isProj ? ' desp-item-valor--proj' : ''}">${formatarMoeda(d.valor)}</span>
+        <span class="desp-item-valor${isProj ? ' desp-item-valor--proj' : ''}">${formatarMoeda(d.isConjunta ? (d.valorAlocado ?? d.valor / 2) : d.valor)}</span>
         <div class="desp-item-acoes">
           <button
             class="btn btn-sm btn-outline"
