@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Receitas — Minhas Finanças</title>
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+
+  <!-- Header / Navbar -->
+  <header class="navbar">
+    <div class="navbar-brand">
+      <a href="dashboard.html" style="text-decoration:none;color:inherit;display:flex;gap:.4rem;align-items:center;">
+        <span>💰</span>
+        <span>Minhas Finanças</span>
+      </a>
+    </div>
+    <div class="navbar-user">
+      <span id="usuario-nome">Carregando...</span>
+      <a href="dashboard.html"  class="btn btn-outline btn-sm">🏠 Dashboard</a>
+      <a href="despesas.html"   class="btn btn-outline btn-sm">💸 Despesas</a>
+      <a href="receitas.html"   class="btn btn-primary  btn-sm">📥 Receitas</a>
+      <a href="orcamentos.html" class="btn btn-outline btn-sm">💰 Orçamentos</a>
+      <a href="categorias.html" class="btn btn-outline btn-sm">🏷️ Categorias</a>
+      <a href="importar.html"   class="btn btn-outline btn-sm">📤 Importar</a>
+      <button id="btn-logout"   class="btn btn-outline btn-sm">Sair</button>
+    </div>
+  </header>
+
+  <main class="main-content">
+
+    <!-- ═══ CABEÇALHO DA PÁGINA ═══ -->
+    <div class="desp-page-header">
+      <div class="desp-nav-mes">
+        <button id="btn-mes-ant"  class="btn btn-outline btn-sm">‹</button>
+        <h2 class="desp-titulo-mes" id="titulo-mes">Mês</h2>
+        <button id="btn-mes-prox" class="btn btn-outline btn-sm">›</button>
+      </div>
+
+      <div class="desp-sync-banner" title="Alterações são sincronizadas em tempo real">
+        <span class="desp-sync-dot"></span>
+        <span>Sincronizado com o grupo</span>
+      </div>
+
+      <div>
+        <button id="btn-nova-receita" class="btn btn-success">+ Nova Receita</button>
+      </div>
+    </div>
+
+    <!-- ═══ CHIPS DE RESUMO ═══ -->
+    <div class="desp-resumo-chips">
+      <div class="desp-chip" style="border-color:#66bb6a;background:#f1f8e9;">
+        <span class="desp-chip-label" style="color:#2e7d32;">Total do mês</span>
+        <span class="desp-chip-valor rec-verde" id="chip-total-rec">R$ 0,00</span>
+      </div>
+      <div class="desp-chip desp-chip-count">
+        <span class="desp-chip-label">Registros</span>
+        <span class="desp-chip-valor" id="chip-count-rec">0</span>
+      </div>
+    </div>
+
+    <!-- ═══ LISTA DE RECEITAS ═══ -->
+    <div class="rec-lista" id="rec-lista">
+      <p class="empty-state">Nenhuma receita registrada neste mês.</p>
+    </div>
+
+  </main>
+
+  <!-- ═══ MODAL: Nova / Editar Receita ═══ -->
+  <div class="modal-overlay" id="modal-receita" style="display:none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-rec-titulo">Nova Receita</h3>
+        <button class="modal-close" id="btn-fechar-modal-rec">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="form-receita" novalidate>
+
+          <div class="form-group">
+            <label class="form-label" for="rec-descricao">Descrição</label>
+            <input type="text" id="rec-descricao" class="form-input" placeholder="Ex: Salário março" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="rec-valor">Valor (R$)</label>
+            <input type="number" id="rec-valor" class="form-input" placeholder="0,00" min="0.01" step="0.01" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="rec-categoria">Categoria</label>
+            <select id="rec-categoria" class="form-input">
+              <option value="">Selecione uma categoria</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="rec-data">Data</label>
+            <input type="date" id="rec-data" class="form-input" required />
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn btn-outline" id="btn-cancelar-rec">Cancelar</button>
+            <button type="submit" class="btn btn-success" id="btn-salvar-rec">Salvar</button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de confirmação de exclusão -->
+  <div class="modal-overlay" id="modal-confirmar-rec" style="display:none;">
+    <div class="modal" style="max-width:400px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Excluir Receita</h3>
+        <button class="modal-close" id="btn-fechar-confirm-rec">×</button>
+      </div>
+      <div class="modal-body">
+        <p>Tem certeza que deseja excluir esta receita? Esta ação não pode ser desfeita.</p>
+        <div class="form-actions" style="margin-top:1rem;">
+          <button class="btn btn-outline" id="btn-cancelar-del-rec">Cancelar</button>
+          <button class="btn btn-danger"  id="btn-confirmar-del-rec">Excluir</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/pages/receitas.js"></script>
+
+</body>
+</html>

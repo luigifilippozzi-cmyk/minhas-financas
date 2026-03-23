@@ -20,9 +20,10 @@
     <div class="navbar-user">
       <span id="usuario-nome">Carregando...</span>
       <a href="despesas.html"   class="btn btn-outline btn-sm">💸 Despesas</a>
+      <a href="receitas.html"   class="btn btn-outline btn-sm">📥 Receitas</a>
       <a href="orcamentos.html" class="btn btn-outline btn-sm">💰 Orçamentos</a>
       <a href="categorias.html" class="btn btn-outline btn-sm">🏷️ Categorias</a>
-      <a href="importar.html"   class="btn btn-outline btn-sm">📥 Importar</a>
+      <a href="importar.html"   class="btn btn-outline btn-sm">📤 Importar</a>
       <button id="btn-logout"   class="btn btn-outline btn-sm">Sair</button>
     </div>
   </header>
@@ -89,6 +90,30 @@
       <div class="categorias-grid" id="categorias-grid">
         <!-- Preenchido dinamicamente via JS -->
         <p class="empty-state">Carregando categorias...</p>
+      </div>
+    </section>
+
+    <!-- ═══ SEÇÃO: RECEITAS ═══ -->
+    <section class="section" id="section-receitas">
+      <div class="section-header">
+        <h2 class="section-title">📥 Receitas — <span id="rec-mes-titulo"></span></h2>
+        <a href="receitas.html" class="btn btn-success btn-sm">+ Nova Receita</a>
+      </div>
+
+      <div class="resumo-cards">
+        <div class="card resumo-card resumo-card--receita">
+          <span class="resumo-label">Total Receitas</span>
+          <span class="resumo-valor rec-verde" id="rec-total">R$ 0,00</span>
+        </div>
+        <div class="card resumo-card resumo-card--saldo">
+          <span class="resumo-label">Saldo</span>
+          <span class="resumo-valor" id="rec-saldo">R$ 0,00</span>
+          <span class="resumo-sublabel">Receitas − Despesas</span>
+        </div>
+      </div>
+
+      <div class="categorias-grid" id="receitas-grid">
+        <p class="empty-state">Carregando receitas...</p>
       </div>
     </section>
 

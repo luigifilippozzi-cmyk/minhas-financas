@@ -4,7 +4,14 @@
 // ============================================================
 
 import { onAuthChange, logout } from './services/auth.js';
-import { buscarPerfil, buscarGrupo, ouvirParcelamentosAbertos } from './services/database.js';
+import {
+  buscarPerfil,
+  buscarGrupo,
+  ouvirParcelamentosAbertos,
+  ouvirReceitas,
+  ouvirCategoriasReceita,
+  garantirCategoriasReceita,
+} from './services/database.js';
 import { iniciarListenerCategorias } from './controllers/categorias.js';
 import {
   iniciarListenerDespesas,
@@ -13,6 +20,8 @@ import {
 } from './controllers/despesas.js';
 import { iniciarListenerOrcamentos } from './controllers/orcamentos.js';
 import { renderizarDashboard } from './controllers/dashboard.js';
+import { renderizarDashboardReceitas } from './controllers/receitas-dashboard.js';
+import { CATEGORIAS_RECEITA_PADRAO } from './models/Receita.js';
 import { mesAnoAtual, dataHoje, definirTexto } from './utils/helpers.js';
 import { nomeMes } from './utils/formatters.js';
 
@@ -23,16 +32,20 @@ let estadoApp = {
   nomeAtual:  '',   // nome do usuário logado conforme nomesMembros do grupo (fix #90)
   mes:        mesAnoAtual().mes,
   ano:        mesAnoAtual().ano,
-  categorias: [],
-  despesas:   [],
-  orcamentos: [],
+  categorias:         [],
+  despesas:           [],
+  orcamentos:         [],
+  receitas:           [],
+  categoriasReceita:  [],
 };
 
 // Referências para unsubscribe ao trocar período
-let _unsubCats = null;
-let _unsubDesp = null;
-let _unsubOrc  = null;
-let _unsubProj = null; // RF-014: parcelamentos em aberto
+let _unsubCats    = null;
+let _unsubDesp    = null;
+let _unsubOrc     = null;
+let _unsubProj    = null; // RF-014: parcelamentos em aberto
+let _unsubRec     = null; // receitas do mês
+let _unsubCatRec  = null; // categorias de receita
 
 // ── Inicialização ─────────────────────────────────────────────
 
@@ -65,6 +78,8 @@ onAuthChange(async (user) => {
   preencherSelectPeriodo();
   iniciarListeners();
   iniciarListenerParcelamentos(estadoApp.perfil.grupoId); // RF-014
+  iniciarListenerCategoriasReceita(estadoApp.perfil.grupoId);
+  garantirCategoriasReceita(estadoApp.perfil.grupoId, CATEGORIAS_RECEITA_PADRAO).catch(() => {});
   configurarEventos();
 });
 
@@ -78,6 +93,7 @@ function iniciarListeners() {
   if (_unsubCats) _unsubCats();
   if (_unsubDesp) _unsubDesp();
   if (_unsubOrc)  _unsubOrc();
+  if (_unsubRec)  _unsubRec();
 
   // Categorias — não filtram por mês
   _unsubCats = iniciarListenerCategorias(grupoId, (cats) => {
@@ -93,6 +109,12 @@ function iniciarListeners() {
     estadoApp.despesas = desp;
     renderizarDashboard(estadoApp.categorias, estadoApp.despesas, estadoApp.orcamentos, estadoApp.nomeAtual);
     renderizarListaDespesas(estadoApp.despesas, estadoApp.categorias);
+    // Re-render receitas so saldo stays in sync when despesas change
+    renderizarDashboardReceitas(
+      estadoApp.categoriasReceita,
+      estadoApp.receitas,
+      estadoApp.despesas.filter(d => d.tipo !== 'projecao').reduce((s, d) => s + (d.valor ?? 0), 0),
+    );
   });
 
   // Orçamentos do mês
@@ -100,6 +122,36 @@ function iniciarListeners() {
     estadoApp.orcamentos = orc;
     renderizarDashboard(estadoApp.categorias, estadoApp.despesas, estadoApp.orcamentos, estadoApp.nomeAtual);
   });
+
+  // Receitas do mês
+  _unsubRec = ouvirReceitas(grupoId, mes, ano, (recs) => {
+    estadoApp.receitas = recs;
+    atualizarTituloReceitas();
+    renderizarDashboardReceitas(
+      estadoApp.categoriasReceita,
+      estadoApp.receitas,
+      estadoApp.despesas.filter(d => d.tipo !== 'projecao').reduce((s, d) => s + (d.valor ?? 0), 0),
+    );
+  });
+}
+
+// ── Listener de Categorias de Receita (persistente — não muda com período) ──
+
+function iniciarListenerCategoriasReceita(grupoId) {
+  if (_unsubCatRec) _unsubCatRec();
+  _unsubCatRec = ouvirCategoriasReceita(grupoId, (cats) => {
+    estadoApp.categoriasReceita = cats;
+    renderizarDashboardReceitas(
+      estadoApp.categoriasReceita,
+      estadoApp.receitas,
+      estadoApp.despesas.filter(d => d.tipo !== 'projecao').reduce((s, d) => s + (d.valor ?? 0), 0),
+    );
+  });
+}
+
+function atualizarTituloReceitas() {
+  const el = document.getElementById('rec-mes-titulo');
+  if (el) el.textContent = `${nomeMes(estadoApp.mes)} ${estadoApp.ano}`;
 }
 
 // ── Categorias no select ───────────────────────────────────────
