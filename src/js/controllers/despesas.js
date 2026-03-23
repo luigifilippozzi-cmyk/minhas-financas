@@ -50,8 +50,6 @@ export function iniciarListenerDespesas(grupoId, mes, ano, onChange) {
 export async function salvarDespesa(dados, grupoId, usuarioId, despesaId = null) {
   // NRF-001: garante valorAlocado = valor/2 quando isConjunta=true
   const dadosNormalizados = { ...dados };
-  // [DEBUG #90 — remover após diagnóstico]
-  console.log('[SALVAR-DEBUG] entrada dados.isConjunta:', dados.isConjunta, '| dadosNormalizados.isConjunta:', dadosNormalizados.isConjunta);
   if (dadosNormalizados.isConjunta) {
     dadosNormalizados.valorAlocado =
       Math.round((dadosNormalizados.valor ?? 0) * 100 / 2) / 100;
@@ -62,25 +60,29 @@ export async function salvarDespesa(dados, grupoId, usuarioId, despesaId = null)
   }
 
   const despesa = modelDespesa({ ...dadosNormalizados, grupoId, usuarioId });
-  // [DEBUG #90]
-  console.log('[SALVAR-DEBUG] despesa.isConjunta:', despesa.isConjunta, '| despesa.valorAlocado:', despesa.valorAlocado);
 
   if (despesaId) {
     // Atualiza mantendo metadados originais (quem criou, etc.)
     // Fix #49: incluído responsavel no update (estava ausente)
+    // NRF-001 fix: usa dadosNormalizados diretamente para isConjunta/valorAlocado
+    // pois modelDespesa trata esses campos como opcionais e pode retornar undefined
     await atualizarDespesa(despesaId, {
       descricao:    despesa.descricao,
       valor:        despesa.valor,
       categoriaId:  despesa.categoriaId,
       data:         despesa.data,
       responsavel:  dados.responsavel ?? '',
-      // NRF-001
-      isConjunta:   despesa.isConjunta ?? false,
-      valorAlocado: despesa.valorAlocado ?? null,
+      isConjunta:   dadosNormalizados.isConjunta ?? false,
+      valorAlocado: dadosNormalizados.valorAlocado ?? null,
     });
   } else {
     // Fix #49: responsavel incluído no documento criado
-    await criarDespesaDB({ ...despesa, responsavel: dados.responsavel ?? '' });
+    await criarDespesaDB({
+      ...despesa,
+      responsavel:  dados.responsavel ?? '',
+      isConjunta:   dadosNormalizados.isConjunta ?? false,
+      valorAlocado: dadosNormalizados.valorAlocado ?? null,
+    });
   }
 }
 
