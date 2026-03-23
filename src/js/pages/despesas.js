@@ -419,18 +419,24 @@ function abrirModalDespesa(despesa = null) {
 
   // NRF-001: tipo de despesa — preenche ao editar; limpa para nova (usuário deve escolher)
   document.querySelectorAll('[name="despesa-tipo"]').forEach(r => r.checked = false);
+  document.querySelectorAll('.despesa-tipo-option').forEach(l => l.classList.remove('selecionado'));
+
+  const _selecionarTipo = (val) => {
+    const radio = document.querySelector(`[name="despesa-tipo"][value="${val}"]`);
+    if (radio) {
+      radio.checked = true;
+      radio.closest('.despesa-tipo-option')?.classList.add('selecionado');
+    }
+  };
+
   if (despesa) {
-    const radioVal = despesa.isConjunta ? 'conjunta' : 'individual';
-    const radioEl  = document.querySelector(`[name="despesa-tipo"][value="${radioVal}"]`);
-    if (radioEl) radioEl.checked = true;
+    _selecionarTipo(despesa.isConjunta ? 'conjunta' : 'individual');
   } else {
     // Auto-seleciona só se a categoria tiver isConjuntaPadrao definido explicitamente
     const catId = document.getElementById('despesa-categoria').value;
     const cat   = _categorias.find(c => c.id === catId);
     if (cat?.isConjuntaPadrao !== undefined) {
-      const val = cat.isConjuntaPadrao ? 'conjunta' : 'individual';
-      const r   = document.querySelector(`[name="despesa-tipo"][value="${val}"]`);
-      if (r) r.checked = true;
+      _selecionarTipo(cat.isConjuntaPadrao ? 'conjunta' : 'individual');
     }
   }
   atualizarPreviewConjunta();
@@ -563,9 +569,26 @@ function configurarEventos() {
     if (cat?.isConjuntaPadrao !== undefined) {
       const valCat = cat.isConjuntaPadrao ? 'conjunta' : 'individual';
       const rCat = document.querySelector(`[name="despesa-tipo"][value="${valCat}"]`);
-      if (rCat) rCat.checked = true;
+      if (rCat) {
+        rCat.checked = true;
+        document.querySelectorAll('.despesa-tipo-option').forEach(l => l.classList.remove('selecionado'));
+        rCat.closest('.despesa-tipo-option')?.classList.add('selecionado');
+      }
     }
     atualizarPreviewConjunta();
+  });
+  // NRF-001: handler explícito nos cards — garante que o radio é marcado
+  // mesmo em navegadores onde display:none impede o comportamento nativo do label
+  document.querySelectorAll('.despesa-tipo-option').forEach(label => {
+    label.addEventListener('click', () => {
+      const radio = label.querySelector('input[type="radio"]');
+      if (!radio) return;
+      radio.checked = true;
+      // Fallback visual via classe (browsers sem suporte a :has)
+      document.querySelectorAll('.despesa-tipo-option').forEach(l => l.classList.remove('selecionado'));
+      label.classList.add('selecionado');
+      atualizarPreviewConjunta();
+    });
   });
   // NRF-001: atualiza preview quando toggle ou valor mudam
   document.querySelectorAll('[name="despesa-tipo"]').forEach(r =>

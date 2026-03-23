@@ -377,13 +377,19 @@ a:hover { text-decoration: underline; }
   border-radius: .5rem;
   cursor: pointer;
   transition: border-color .15s, background .15s;
+  position: relative;
 }
-.despesa-tipo-option:has(input:checked) {
+.despesa-tipo-option:has(input:checked),
+.despesa-tipo-option.selecionado {
   border-color: var(--color-primary, #5c6bc0);
   background: rgba(92, 107, 192, .08);
 }
 .despesa-tipo-option input[type='radio'] {
-  display: none;
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
 }
 .despesa-tipo-icon {
   font-size: 1.25rem;
