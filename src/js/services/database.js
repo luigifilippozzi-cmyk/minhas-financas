@@ -128,12 +128,19 @@ export function ouvirDespesas(grupoId, mes, ano, callback) {
     orderBy('data', 'desc'),
   );
   return onSnapshot(q,
-    (snap) => { callback(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); },
+    (snap) => {
+      const despesas = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      // [DEBUG #90 — remover após diagnóstico]
+      console.log('[LISTENER-DEBUG] total:', despesas.length, '| conjuntas:', despesas.filter(d => d.isConjunta).map(d => ({id: d.id, desc: d.descricao, isConjunta: d.isConjunta, valorAlocado: d.valorAlocado})));
+      callback(despesas);
+    },
     (err)  => { console.error('[ouvirDespesas] Erro no listener:', err); },
   );
 }
 
 export async function atualizarDespesa(despesaId, dados) {
+  // [DEBUG #90 — remover após diagnóstico]
+  console.log('[UPDATE-DEBUG] escrevendo no Firestore:', { id: despesaId, isConjunta: dados.isConjunta, valorAlocado: dados.valorAlocado, valor: dados.valor });
   return updateDoc(doc(db, 'despesas', despesaId), dados);
 }
 
