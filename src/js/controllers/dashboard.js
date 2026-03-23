@@ -12,7 +12,7 @@ import { definirTexto } from '../utils/helpers.js';
  * @param {Array} despesas
  * @param {Array} orcamentos
  */
-export function renderizarDashboard(categorias, despesas, orcamentos) {
+export function renderizarDashboard(categorias, despesas, orcamentos, nomeAtual = '') {
   const grid = document.getElementById('categorias-grid');
   if (!grid) return;
 
@@ -33,15 +33,21 @@ export function renderizarDashboard(categorias, despesas, orcamentos) {
   definirTexto('total-gasto',     formatarMoeda(totalGasto));
   definirTexto('total-disponivel', formatarMoeda(totalOrcado - totalGasto));
 
-  // NRF-001: cálculo "Meu Bolso" vs "Família"
-  // totalFamilia = soma de todos os gastos reais (não projeções)
-  // totalMeuBolso = individuais + valorAlocado das conjuntas
+  // NRF-001: cálculo "Meu Bolso" vs "Família" (fix #90)
+  // totalFamilia  = soma de todos os gastos reais (valor inteiro de cada despesa)
+  // totalMeuBolso = minhas individuais (responsavel == eu) + 50% das conjuntas (todas)
   const despesasReais = despesas.filter(d => d.tipo !== 'projecao');
   const hasConjunta   = despesasReais.some(d => d.isConjunta);
   const totalFamilia  = despesasReais.reduce((s, d) => s + (d.valor ?? 0), 0);
   const totalMeuBolso = despesasReais.reduce((s, d) => {
-    if (d.isConjunta) return s + (d.valorAlocado ?? (d.valor ?? 0) / 2);
-    return s + (d.valor ?? 0);
+    if (d.isConjunta) {
+      // Despesa compartilhada: conta 50% independentemente de quem lançou
+      return s + (d.valorAlocado ?? (d.valor ?? 0) / 2);
+    }
+    // Despesa individual: conta apenas se o responsável for o usuário logado
+    const resp = (d.responsavel || d.portador || '').trim();
+    if (!nomeAtual || resp === nomeAtual) return s + (d.valor ?? 0);
+    return s;
   }, 0);
 
   const cardMB  = document.getElementById('card-meu-bolso');
