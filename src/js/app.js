@@ -4,7 +4,7 @@
 // ============================================================
 
 import { onAuthChange, logout } from './services/auth.js';
-import { buscarPerfil, ouvirParcelamentosAbertos } from './services/database.js';
+import { buscarPerfil, buscarGrupo, ouvirParcelamentosAbertos } from './services/database.js';
 import { iniciarListenerCategorias } from './controllers/categorias.js';
 import {
   iniciarListenerDespesas,
@@ -20,6 +20,7 @@ import { nomeMes } from './utils/formatters.js';
 let estadoApp = {
   usuario:    null,
   perfil:     null,
+  nomeAtual:  '',   // nome do usuário logado conforme nomesMembros do grupo (fix #90)
   mes:        mesAnoAtual().mes,
   ano:        mesAnoAtual().ano,
   categorias: [],
@@ -45,6 +46,9 @@ onAuthChange(async (user) => {
 
   try {
     estadoApp.perfil = await buscarPerfil(user.uid);
+    // Resolve nome do usuário logado para cálculo correto de "Meu Bolso" (fix #90)
+    const grupo = await buscarGrupo(estadoApp.perfil?.grupoId);
+    estadoApp.nomeAtual = grupo?.nomesMembros?.[user.uid] ?? user.email ?? '';
   } catch (_err) {
     // Falha ao buscar perfil (ex: erro de rede) → redireciona para login por segurança
     window.location.href = 'login.html';
@@ -79,7 +83,7 @@ function iniciarListeners() {
   _unsubCats = iniciarListenerCategorias(grupoId, (cats) => {
     estadoApp.categorias = cats;
     preencherSelectCategorias(cats);
-    renderizarDashboard(estadoApp.categorias, estadoApp.despesas, estadoApp.orcamentos);
+    renderizarDashboard(estadoApp.categorias, estadoApp.despesas, estadoApp.orcamentos, estadoApp.nomeAtual);
     renderizarListaDespesas(estadoApp.despesas, estadoApp.categorias);
   });
 
@@ -87,14 +91,14 @@ function iniciarListeners() {
   // dispara este listener nos dois dispositivos simultaneamente
   _unsubDesp = iniciarListenerDespesas(grupoId, mes, ano, (desp) => {
     estadoApp.despesas = desp;
-    renderizarDashboard(estadoApp.categorias, estadoApp.despesas, estadoApp.orcamentos);
+    renderizarDashboard(estadoApp.categorias, estadoApp.despesas, estadoApp.orcamentos, estadoApp.nomeAtual);
     renderizarListaDespesas(estadoApp.despesas, estadoApp.categorias);
   });
 
   // Orçamentos do mês
   _unsubOrc = iniciarListenerOrcamentos(grupoId, mes, ano, (orc) => {
     estadoApp.orcamentos = orc;
-    renderizarDashboard(estadoApp.categorias, estadoApp.despesas, estadoApp.orcamentos);
+    renderizarDashboard(estadoApp.categorias, estadoApp.despesas, estadoApp.orcamentos, estadoApp.nomeAtual);
   });
 }
 
