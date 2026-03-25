@@ -22,6 +22,7 @@
 | NRF-002 | Reconciliação Fuzzy de Parcelas | Média | ✅ Implementado |
 | NRF-003 | Fluxo de Caixa — Visão Orçamentária Anual | Alta | ✅ Implementado |
 | NRF-004 | Identificação de Conta/Banco por Transação | Alta | ✅ Implementado |
+| NRF-005 | Fatura do Cartão de Crédito | Alta | ✅ Implementado |
 
 ---
 
@@ -373,3 +374,91 @@ Permite identificar em qual conta financeira (banco ou cartão de crédito) cada
 - [x] Inferência automática de banco pela descrição da transação (3 níveis: coluna do arquivo → palavras-chave na descrição → seletor global)
 - [x] Valores negativos de extrato bancário aceitos e convertidos para positivo via `Math.abs` ao importar despesas
 - [x] Receitas importadas com `Math.abs` — sempre positivas, efeito contábil correto nos relatórios
+
+---
+
+## NRF-005: Fatura do Cartão de Crédito
+**Prioridade:** Alta | **Versão:** v1.7.0 | **Status:** ✅ Implementado
+
+### Descrição
+Página dedicada ao fechamento mensal do cartão de crédito compartilhado entre dois usuários. Substitui a planilha manual de fechamento, aproveitando os dados já importados via NRF-004 (contaId = Cartão de Crédito).
+
+### Motivação
+O processo mensal exigia uma planilha Excel com ~109 transações por mês, classificação manual por responsável (Ana / Lu / ANA&LU), separação P/V (parcelado/à vista), cálculo de projeções de parcelas futuras e totalização por pessoa. O app agora faz isso automaticamente.
+
+### Funcionalidades
+
+#### Filtros
+- Seleção de mês com navegação ‹ ›
+- Seletor de conta (cartão) — auto-seleciona o primeiro tipo `cartao` cadastrado
+
+#### Cards de Resumo
+- Total da fatura (todas as transações do mês)
+- Total a pagar por membro: individual + 50% das conjuntas
+
+#### Tabs de navegação
+| Tab | Conteúdo |
+|-----|----------|
+| Todas | Todas as transações do mês para o cartão selecionado |
+| [Nome do membro] | Despesas individuais daquele membro (geradas dinamicamente de `nomesMembros`) |
+| Conjuntas | Despesas com `isConjunta = true`; coluna "Por Pessoa" = `valorAlocado ?? valor/2` |
+| Projeções | Parcelas futuras nos próximos 6 meses, agrupadas por mês e pessoa |
+
+#### Tabela de transações
+Colunas: Data | Estabelecimento | Responsável | Tipo (P/V) | Parcela | Categoria | Valor | Meu Bolso
+
+- **Tipo P/V**: P = parcelado (campo `parcela` != '-'), V = à vista
+- **Meu Bolso**: para conjuntas = `valorAlocado ?? valor/2`; para individuais = `valor`
+- Busca por descrição em tempo real
+- Linhas conjuntas destacadas em amarelo claro
+
+#### Resumo por pessoa
+Para cada membro do grupo:
+- Individuais à vista
+- Individuais parceladas
+- Conjuntas (50%)
+- **Total a pagar** = soma dos três itens acima
+
+#### Exportação Excel
+Arquivo gerado com SheetJS contendo 3 abas:
+1. **Transações**: todas as linhas do mês com todas as colunas
+2. **Resumo**: individual + conjunta + total por pessoa
+3. **Conjuntas**: somente as despesas conjuntas com split 50/50
+
+### Arquitetura
+
+#### Mapeamento planilha → app
+| Campo da planilha manual | Campo no Firestore | Lógica no app |
+|---|---|---|
+| `CRITÉRIO 1` (Ana/Lu) | `responsavel` | Match por `nomesMembros[uid].split(' ')[0]` |
+| `ANA&LU` | `isConjunta: true` | Tab "Conjuntas" + coluna "Por Pessoa" |
+| `P` / `V` | `parcela` (= "X de Y" ou '-') | Badge P/V; separação nas tabs |
+| Coluna K (valor÷2) | `valorAlocado` | `valorAlocado ?? valor/2` |
+| Projeção futura | `tipo: 'projecao'` | Tab "Projeções" com listener por mês |
+| `contaId` | `contaId` (NRF-004) | Filtro central da página |
+
+#### Arquivos adicionados/alterados
+| Arquivo | Alteração |
+|---|---|
+| `src/fatura.html` | Nova página com estrutura de filtros, cards, tabs, tabelas |
+| `src/js/pages/fatura.js` | Lógica completa: listeners, cálculos, render, exportação |
+| `src/css/main.css` | Classes `fat-*` para layout responsivo da fatura |
+| `src/dashboard.html` | Link `💳 Fatura` adicionado ao navbar |
+| `src/despesas.html` | Link `💳 Fatura` adicionado ao navbar |
+| `src/receitas.html` | Link `💳 Fatura` adicionado ao navbar |
+| `src/fluxo-caixa.html` | Link `💳 Fatura` adicionado ao navbar |
+| `src/orcamentos.html` | Link `💳 Fatura` adicionado ao navbar |
+| `src/categorias.html` | Link `💳 Fatura` adicionado ao navbar |
+| `src/importar.html` | Link `💳 Fatura` adicionado ao navbar |
+
+### Critérios de Aceitação
+- [x] Seletor de mês e conta filtram os dados em tempo real
+- [x] Cards mostram total da fatura e total por pessoa corretamente
+- [x] Tab "Todas" lista todas as transações do cartão no mês
+- [x] Tabs por membro listam apenas despesas individuais daquele membro
+- [x] Tab "Conjuntas" lista despesas com `isConjunta = true` e calcula split 50/50
+- [x] Tab "Projeções" mostra parcelas futuras dos próximos 6 meses
+- [x] Resumo "Total a pagar" = individuais + 50% conjuntas por pessoa
+- [x] Exportação Excel gera arquivo com 3 abas (Transações, Resumo, Conjuntas)
+- [x] Link no navbar visível em todas as páginas da aplicação
+- [x] Auto-seleciona o primeiro cartão de crédito cadastrado ao entrar na página

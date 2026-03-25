@@ -22,8 +22,9 @@
 - 📊 Dashboard com orçamentos, receitas, saldo e alertas visuais
 - 📈 Fluxo de Caixa anual com gráfico combinado (Chart.js) e visão orçamentária mês a mês
 - 👫 Divisão de contas conjuntas com chips por usuário
-- 🏦 Identificação de conta/banco por transação (Itaú, XP, Santander, BTG, Cartão de Crédito…)
-- 📤 Importação de extratos Excel com seleção de banco, deduplicação e projeção de parcelas
+- 🏦 Identificação de conta/banco por transação (Itaú, Bradesco, XP, Santander, BTG, Nubank, Inter, Caixa, BB, Cartão de Crédito…)
+- 💳 **Fatura do Cartão de Crédito**: fechamento mensal automático com segregação por responsável, divisão 50/50 de conjuntas, projeções de parcelas futuras e exportação Excel
+- 📤 Importação de extratos Excel/CSV com reconhecimento automático de banco, deduplicação e projeção de parcelas
 - 🔄 Sincronização em tempo real entre membros (Firestore onSnapshot)
 
 ## 🚀 Como Executar Localmente

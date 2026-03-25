@@ -11,6 +11,33 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [1.7.0] - 2026-03-25
+
+### Adicionado — NRF-005: Fatura do Cartão de Crédito
+
+Nova página que substitui a planilha manual de fechamento mensal do cartão.
+
+#### Página `fatura.html` + `fatura.js`
+- Filtro por mês (navegação ‹ › ) e seletor de conta/cartão
+- Cards de resumo: Total da fatura, total a pagar por membro (individual + 50% das conjuntas)
+- Tabs: **Todas**, por membro (dinamicamente gerado a partir de `nomesMembros`), **Conjuntas**, **Projeções**
+- Tabela completa: Data, Estabelecimento, Responsável, Tipo (P/V), Parcela, Categoria, Valor, Meu Bolso
+- Despesas conjuntas com destaque visual amarelo e coluna "Por Pessoa" (= `valorAlocado ?? valor/2`)
+- Seção "Projeções" com parcelas futuras dos próximos 6 meses agrupadas por mês/pessoa
+- Resumo detalhado por pessoa: individuais à vista, individuais parceladas, conjuntas (50%), **Total a pagar**
+- **Exportação Excel** (SheetJS) com 3 abas: Transações, Resumo, Conjuntas — substitui planilha manual
+- Link `💳 Fatura` adicionado ao navbar de todas as 8 páginas da aplicação
+
+### Corrigido — NRF-004: Detecção automática de banco no import CSV
+
+- **`CONTAS_PADRAO` expandido**: adicionados Banco Bradesco, Nubank, Banco Inter, Caixa Econômica e Banco do Brasil — agora 11 contas padrão contra as 6 anteriores
+- **`garantirContasPadrao` agora é upsert**: antes só criava contas se a lista estava vazia; agora adiciona contas faltantes ao grupo em cada inicialização, garantindo que usuários existentes recebam novos bancos automaticamente
+- **Matching com normalização de acentos** (`NFD`): "Itau" (sem acento) agora corresponde corretamente a "Banco Itaú"
+- **`contaNome` da coluna passa pela inferência**: quando o arquivo traz "Bradesco" na coluna Conta e não há match direto por nome, o valor da coluna agora passa pela função `inferirContaDaDescricao` (que reconhece a keyword "bradesco" → "Banco Bradesco") antes do fallback para o seletor global
+- Correção replicada em `importar.js` (despesas) e `receitas.js` (receitas)
+
+---
+
 ## [1.6.3] - 2026-03-25
 
 ### Adicionado
