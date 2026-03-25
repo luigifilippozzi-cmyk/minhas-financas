@@ -42,6 +42,22 @@
         { "fieldPath": "status",     "order": "ASCENDING" },
         { "fieldPath": "criadoEm",   "order": "ASCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "contas",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "grupoId", "order": "ASCENDING" },
+        { "fieldPath": "ativa",   "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "receitas",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "grupoId", "order": "ASCENDING" },
+        { "fieldPath": "data",    "order": "DESCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []
