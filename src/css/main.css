@@ -235,6 +235,11 @@ a:hover { text-decoration: underline; }
 .imp-col-obrig { background: #e3f2fd; color: var(--primary); }
 .imp-col-opcl  { background: #f3f3f3; color: var(--text-muted); }
 .imp-btn-download { display: inline-flex; align-items: center; gap: .4rem; }
+/* NRF-004: seletor de conta/banco na importação */
+.imp-conta-selector { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; padding: .9rem 1rem; background: #f0f7ff; border: 1px solid #bbdefb; border-radius: 10px; margin-bottom: 1.25rem; }
+.imp-conta-label { font-weight: 600; font-size: .92rem; color: #1565c0; white-space: nowrap; }
+.imp-conta-select { min-width: 220px; flex: 1; max-width: 360px; }
+.imp-conta-hint { font-size: .78rem; color: var(--text-muted); width: 100%; margin-top: -.2rem; }
 .imp-drop-area { border: 2px dashed var(--border-color); border-radius: 12px; padding: 2.5rem 1rem; text-align: center; transition: background .2s, border-color .2s; cursor: pointer; }
 .imp-drop-area--over { background: #e8f4fd; border-color: var(--primary); }
 .imp-drop-icon  { font-size: 2.5rem; margin-bottom: .5rem; }

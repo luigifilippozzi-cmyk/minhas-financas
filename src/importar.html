@@ -85,6 +85,17 @@
         Arraste o arquivo <strong>.xlsx</strong> para a área abaixo ou clique para selecionar.
       </p>
 
+      <!-- NRF-004: seletor de conta/banco do arquivo -->
+      <div class="imp-conta-selector">
+        <label for="sel-conta-global" class="imp-conta-label">
+          🏦 De qual banco/conta é este extrato?
+        </label>
+        <select id="sel-conta-global" class="select-input imp-conta-select">
+          <option value="">— Selecione a conta (opcional) —</option>
+        </select>
+        <span class="imp-conta-hint">Será aplicado a todas as transações. Você pode ajustar por linha no preview.</span>
+      </div>
+
       <!-- Área de drop -->
       <div class="imp-drop-area" id="drop-area">
         <div class="imp-drop-icon">📂</div>
@@ -147,8 +158,12 @@
         <button id="btn-sel-todos"    class="btn btn-outline btn-sm">☑ Selecionar todos</button>
         <button id="btn-desel-todos"  class="btn btn-outline btn-sm">☐ Desmarcar todos</button>
         <span style="flex:1;"></span>
-        <label class="imp-label-cat-lote">Definir categoria para todos:</label>
+        <label class="imp-label-cat-lote">Categoria:</label>
         <select id="sel-cat-lote" class="select-input imp-sel-lote">
+          <option value="">— manter individual —</option>
+        </select>
+        <label class="imp-label-cat-lote" style="margin-left:.5rem;">Conta:</label>
+        <select id="sel-conta-lote" class="select-input imp-sel-lote">
           <option value="">— manter individual —</option>
         </select>
       </div>
@@ -164,7 +179,8 @@
               <th style="width:120px;">Portador</th>
               <th style="width:90px;">Parcela</th>
               <th style="width:110px;">Valor</th>
-              <th style="width:200px;">Categoria</th>
+              <th style="width:160px;">Categoria</th>
+              <th style="width:140px;">Conta / Banco</th>
               <th style="width:60px;">Status</th>
             </tr>
           </thead>
