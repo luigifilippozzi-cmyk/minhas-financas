@@ -63,5 +63,17 @@ service cloud.firestore {
       allow update: if isSignedIn() && isMemberOfGroup(resource.data.grupoId);
       allow delete: if false;
     }
+
+    // Contas/Bancos: apenas membros do grupo (NRF-004)
+    match /contas/{contaId} {
+      allow read, write: if isSignedIn() && isMemberOfGroup(resource.data.grupoId);
+      allow create: if isSignedIn() && isMemberOfGroup(request.resource.data.grupoId);
+    }
+
+    // Receitas: apenas membros do grupo (RF-016)
+    match /receitas/{receitaId} {
+      allow read, write: if isSignedIn() && isMemberOfGroup(resource.data.grupoId);
+      allow create: if isSignedIn() && isMemberOfGroup(request.resource.data.grupoId);
+    }
   }
 }
