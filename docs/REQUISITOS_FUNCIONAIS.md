@@ -17,6 +17,9 @@
 | RF-013 | Importação de Transações via Excel | Média | ✅ Implementado |
 | RF-014 | Gestão Multi-Usuário de Cartão de Crédito | Alta | ✅ Implementado |
 | RF-015 | Recuperação de Senha | Média | ✅ Implementado |
+| RF-016 | Gestão de Receitas | Alta | ✅ Implementado |
+| NRF-001 | Contas Compartilhadas (divisão conjunta) | Alta | ✅ Implementado |
+| NRF-002 | Reconciliação Fuzzy de Parcelas | Média | ✅ Implementado |
 
 ---
 
@@ -151,3 +154,40 @@
 - Botão "Voltar ao login" retorna à tela de login sem precisar recarregar a página
 - Ao tentar cadastrar e-mail já em uso, a mensagem de erro inclui sugestão de recuperar a senha
 - Implementado com `sendPasswordResetEmail` do Firebase Auth v10
+
+## RF-016: Gestão de Receitas
+**Prioridade:** Alta | **Versão:** v1.3.0 | **Status:** ✅ Implementado
+
+- Página dedicada `receitas.html` com CRUD completo de receitas
+- **Criar** receita: descrição, valor, categoria, data
+- **Editar** receita: modal pré-preenchido com todos os campos
+- **Excluir** receita: modal de confirmação antes da remoção
+- Navegação entre meses (‹ / ›) com chips de total e contagem de registros
+- Categorias de receita separadas das categorias de despesa (campo `tipo: 'receita'`)
+- Categorias padrão criadas automaticamente para grupos novos e existentes:
+  - 💼 Salário, 📈 Rendimentos, 💻 Freelance, 🏠 Aluguel Recebido, 🎁 Outros
+- Sincronização bidirecional em tempo real via Firestore `onSnapshot`
+- Link "📥 Receitas" na navbar em todas as páginas
+
+### Dashboard — Seção Receitas
+- Seção dedicada entre o Dashboard de Orçamentos e a lista de Despesas
+- Card **Total Receitas** (verde) e card **Saldo** (Receitas − Despesas, verde/vermelho)
+- Grid de categorias com barra de progresso verde e percentual por categoria
+
+## NRF-001: Contas Compartilhadas (Divisão Conjunta)
+**Prioridade:** Alta | **Versão:** v1.2.0 | **Status:** ✅ Implementado
+
+- Despesas do tipo "Conjunta" são divididas entre todos os membros do grupo
+- Campo `isConjunta: true` e `valorAlocado` (50% do valor por padrão) no Firestore
+- Chips de "Contas Compartilhadas por usuário" na página de Despesas
+- Cards "Meu Bolso" e "Família" no Dashboard para visualização da divisão
+- Campo visual de seleção Tipo (Individual / Conjunta) com preview do impacto no bolso
+
+## NRF-002: Reconciliação Fuzzy de Parcelas
+**Prioridade:** Média | **Versão:** v1.1.0 | **Status:** ✅ Implementado
+
+- Ao importar extrato, verifica se existe projeção futura para a transação usando fuzzy matching
+- Critérios de match: estabelecimento similar (distância Levenshtein), valor próximo e mês seguinte
+- Match confirmado: despesa real substitui a projeção (status `projecao_paga`)
+- Badge âmbar "~Reconciliada" nas linhas de preview do import
+- `parcelamentos` coleção mestre para rastrear qtd de parcelas pagas vs. total

@@ -309,6 +309,46 @@ export function ouvirOrcamentos(grupoId, mes, ano, callback) {
 }
 
 
+// ── Fluxo de Caixa: consultas anuais ─────────────────────────
+
+export async function buscarDespesasAno(grupoId, ano) {
+  const inicio = new Date(ano, 0, 1);
+  const fim    = new Date(ano, 11, 31, 23, 59, 59);
+  const q = query(
+    collection(db, 'despesas'),
+    where('grupoId', '==', grupoId),
+    where('data', '>=', inicio),
+    where('data', '<=', fim),
+    orderBy('data'),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+export async function buscarReceitasAno(grupoId, ano) {
+  const inicio = new Date(ano, 0, 1);
+  const fim    = new Date(ano, 11, 31, 23, 59, 59);
+  const q = query(
+    collection(db, 'receitas'),
+    where('grupoId', '==', grupoId),
+    where('data', '>=', inicio),
+    where('data', '<=', fim),
+    orderBy('data'),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+export async function buscarOrcamentosAno(grupoId, ano) {
+  const q = query(
+    collection(db, 'orcamentos'),
+    where('grupoId', '==', grupoId),
+    where('ano', '==', ano),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
 // ── NRF-002: Parcelamentos (coleção mestre) ─────────────────
 
 /**
