@@ -120,6 +120,7 @@ function configurarEventos() {
   });
   document.getElementById('btn-importar')?.addEventListener('click', () => executarImportacao());
   document.getElementById('btn-nova-importacao')?.addEventListener('click', resetarTudo);
+  document.getElementById('btn-baixar-template')?.addEventListener('click', gerarTemplateDespesas); // NRF-004
 }
 
 // ── Processar arquivo ───────────────────────────────────────────
@@ -236,7 +237,7 @@ function parsearLinhasExtrato(rows) {
       headerIdx = i; break;
     }
   }
-  let idxData = 0, idxEstab = 1, idxPortador = 2, idxValor = 3, idxParcela = 4;
+  let idxData = 0, idxEstab = 1, idxPortador = 2, idxValor = 3, idxParcela = 4, idxConta = -1;
   if (headerIdx >= 0) {
     const h = rows[headerIdx].map(c => String(c ?? '').toLowerCase().trim());
     idxData     = h.findIndex(c => c === 'data');
@@ -244,6 +245,7 @@ function parsearLinhasExtrato(rows) {
     idxPortador = h.findIndex(c => c.includes('portador') || c.includes('titular'));
     idxValor    = h.findIndex(c => c.includes('valor'));
     idxParcela  = h.findIndex(c => c.includes('parcela'));
+    idxConta    = h.findIndex(c => c.includes('conta') || c.includes('banco'));  // NRF-004
     if (idxData < 0)     idxData = 0;
     if (idxEstab < 0)    idxEstab = 1;
     if (idxPortador < 0) idxPortador = 2;
@@ -258,6 +260,12 @@ function parsearLinhasExtrato(rows) {
     const portador = String(row[idxPortador] ?? '').trim();
     const valorRaw = String(row[idxValor]    ?? '').trim();
     const parcela  = idxParcela >= 0 ? String(row[idxParcela] ?? '').trim() : '-';
+    // NRF-004: resolve conta/banco column → contaId
+    const contaNome = idxConta >= 0 ? String(row[idxConta] ?? '').trim() : '';
+    const contaObj  = contaNome ? _contas.find(c =>
+      c.nome.toLowerCase().includes(contaNome.toLowerCase()) ||
+      contaNome.toLowerCase().includes(c.nome.toLowerCase())) : null;
+    const contaId   = contaObj?.id ?? '';
     if (!dataRaw && !estab && !valorRaw) continue;
     const estabLow = estab.toLowerCase();
     if (/pagamento de fatura|inclusao de pagamento|inclusão de pagamento|parcela de fatura rotativo/i.test(estabLow)) continue;
@@ -273,6 +281,7 @@ function parsearLinhasExtrato(rows) {
       _idx: resultado.length,
       data: dataFmt, descricao: estab, portador, parcela, valor,
       categoriaId: mapearCategoria(estab),
+      contaId,  // NRF-004: conta detectada do arquivo (pode ser '' se coluna ausente)
       erro: erros.length ? erros.join(', ') : null,
       chave_dedup: chave, duplicado: false,
     });
@@ -321,6 +330,49 @@ function gerarProjecoes(linha, parcelamentoId) {
     });
   }
   return projecoes;
+}
+
+// ── NRF-004: Geração dinâmica do template Excel ─────────────────
+function gerarTemplateDespesas() {
+  if (typeof XLSX === 'undefined') {
+    alert('SheetJS não carregado. Tente recarregar a página.');
+    return;
+  }
+  const wb = XLSX.utils.book_new();
+
+  // Aba principal — dados
+  const header = ['Data', 'Estabelecimento', 'Portador', 'Valor', 'Parcela', 'Conta / Banco'];
+  const contasLista = _contas.map(c => c.nome);
+  const exemplos = [
+    ['15/03/2026', 'Supermercado Pão de Açúcar', 'Luigi', '250,00', '-',    contasLista[0] ?? 'Banco Itaú'],
+    ['20/03/2026', 'Netflix',                    'Luigi',  '55,90', '-',    contasLista[1] ?? 'Cartão de Crédito'],
+    ['22/03/2026', 'Posto Shell',                'Ana',   '180,00', '02/03', contasLista[0] ?? 'Banco Itaú'],
+  ];
+  const ws = XLSX.utils.aoa_to_sheet([header, ...exemplos]);
+  ws['!cols'] = [
+    { wch: 12 }, { wch: 35 }, { wch: 18 }, { wch: 12 }, { wch: 10 }, { wch: 22 },
+  ];
+  XLSX.utils.book_append_sheet(wb, ws, 'Despesas');
+
+  // Aba instruções
+  const instrucoes = [
+    ['Campo',        'Formato / Valores aceitos',                       'Obrigatório?'],
+    ['Data',         'DD/MM/AAAA  ou  AAAA-MM-DD',                      'Sim'],
+    ['Estabelecimento','Texto livre (máx. 100 car.)',                    'Sim'],
+    ['Portador',     'Nome do titular do cartão',                        'Não'],
+    ['Valor',        'Número positivo. Vírgula ou ponto decimal.',        'Sim'],
+    ['Parcela',      '"02/06" = parcela 2 de 6. Use "-" se à vista.',    'Não'],
+    ['Conta / Banco', contasLista.length
+      ? 'Valores aceitos: ' + contasLista.join(' | ')
+      : 'Nome da conta (ex: Banco Itaú, Cartão de Crédito)',             'Não'],
+    [],
+    ['Dica:', 'Se a coluna "Conta / Banco" estiver vazia, use o seletor global na tela.'],
+  ];
+  const wsI = XLSX.utils.aoa_to_sheet(instrucoes);
+  wsI['!cols'] = [{ wch: 18 }, { wch: 55 }, { wch: 14 }];
+  XLSX.utils.book_append_sheet(wb, wsI, 'Instruções');
+
+  XLSX.writeFile(wb, 'template-despesas.xlsx');
 }
 
 // ── Normalização de valor XP: "R$ 1.290,00" → 1290.00 ─────────

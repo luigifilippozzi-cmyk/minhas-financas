@@ -56,25 +56,22 @@
         <div class="imp-template-cols">
           <span class="imp-col-badge imp-col-obrig">Data</span>
           <span class="imp-col-badge imp-col-obrig">Estabelecimento</span>
-          <span class="imp-col-badge imp-col-obrig">Portador</span>
+          <span class="imp-col-badge imp-col-opcl">Portador</span>
           <span class="imp-col-badge imp-col-obrig">Valor</span>
           <span class="imp-col-badge imp-col-opcl">Parcela</span>
+          <span class="imp-col-badge imp-col-opcl">Conta / Banco</span>
         </div>
         <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
           <span style="font-size:.8rem;color:var(--text-muted);">
             <span style="color:var(--primary);">■</span> Obrigatório &nbsp;
             <span style="color:var(--text-muted);">■</span> Opcional &nbsp;·&nbsp;
-            Layout idêntico ao extrato CSV exportado pelo banco.
+            Coluna "Conta / Banco" reconhecida automaticamente (NRF-004).
           </span>
         </div>
       </div>
-      <a
-        href="templates/template-importacao.xlsx"
-        download="template-importacao.xlsx"
-        class="btn btn-primary imp-btn-download"
-      >
+      <button id="btn-baixar-template" class="btn btn-primary imp-btn-download">
         ⬇️ Baixar Template Excel
-      </a>
+      </button>
     </div>
 
     <!-- ═══ PASSO 2: UPLOAD DO ARQUIVO ═══ -->
