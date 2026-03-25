@@ -306,7 +306,7 @@ Permite identificar em qual conta financeira (banco ou cartão de crédito) cada
 - Ao editar despesa, a conta original é pré-selecionada no dropdown
 - Campo `contaId` (id da conta) salvo opcionalmente no documento Firestore da despesa
 
-#### Importação em massa (`importar.html` / `importar.js`)
+#### Importação em massa de despesas (`importar.html` / `importar.js`)
 | Elemento | Comportamento |
 |---|---|
 | **Seletor global** (Passo 2) | Aparece antes do upload: "🏦 De qual banco é este extrato?" — seleção aplica a todas as linhas ao carregar o arquivo |
@@ -314,6 +314,18 @@ Permite identificar em qual conta financeira (banco ou cartão de crédito) cada
 | **Ação em lote** | Select "Conta:" na barra de ações do preview — atualiza todas as linhas de uma vez |
 | **Mudança global pós-preview** | Alterar o seletor global após o preview aberto atualiza todas as linhas em tempo real |
 | **Projeções de parcelas** | `contaId` propagado automaticamente para todas as parcelas futuras geradas |
+| **Leitura automática do arquivo** | Parser detecta coluna "Conta / Banco" no cabeçalho CSV/XLSX; resolve nome do banco para `contaId` via busca parcial case-insensitive |
+| **Template dinâmico** | Botão "Baixar Template" gera `.xlsx` via SheetJS com coluna "Conta / Banco" + aba "Instruções" com contas do grupo |
+
+#### Importação de receitas (`receitas.html` / `pages/receitas.js`)
+| Elemento | Comportamento |
+|---|---|
+| **Seção colapsável** | Importação integrada à página de receitas, ocultável pelo botão "📤 Importar" |
+| **Seletor global de conta** | Mesmo padrão das despesas — aplicado a todas as receitas do arquivo |
+| **Override por linha** | Coluna "Conta / Banco" na tabela de preview, editável por linha |
+| **Ação em lote** | Select "Conta:" na barra de ações do preview |
+| **Leitura automática do arquivo** | Parser `_parsearLinhasRec` detecta coluna "Conta / Banco" e resolve para `contaId` |
+| **Template dinâmico** | `_gerarTemplateRec()` via SheetJS; colunas: Data · Descrição · Valor · Categoria · Conta / Banco |
 
 ### Arquitetura Técnica
 
@@ -338,7 +350,8 @@ Permite identificar em qual conta financeira (banco ou cartão de crédito) cada
 | `models/Receita.js` | `contaId` adicionado como opcional |
 | `controllers/despesas.js` | `contaId` incluído no payload de create e update |
 | `pages/despesas.js` | Listener `ouvirContas`, populate selects, badge, filtro |
-| `pages/importar.js` | Listener `ouvirContas`, seletor global, override por linha, ação em lote, propagação para projeções |
+| `pages/importar.js` | Listener `ouvirContas`, seletor global, override por linha, ação em lote, propagação para projeções; parser com `idxConta`; template dinâmico `gerarTemplateDespesas()` |
+| `pages/receitas.js` | Importação completa com seletor global, preview, parser `_parsearLinhasRec` com `idxConta`, template dinâmico `_gerarTemplateRec()` |
 | `app.js` | Import de `garantirContasPadrao` + `CONTAS_PADRAO`; seed no boot |
 | `css/main.css` | `.desp-conta-badge`, `.imp-conta-selector`, `.imp-conta-label`, `.imp-conta-select`, `.imp-conta-hint` |
 
@@ -353,3 +366,7 @@ Permite identificar em qual conta financeira (banco ou cartão de crédito) cada
 - [x] Ação em lote "Conta:" atualiza todas as linhas
 - [x] `contaId` salvo no Firestore ao criar/editar despesa
 - [x] `contaId` propagado para projeções de parcelas na importação
+- [x] Parser de despesas detecta coluna "Conta / Banco" no CSV/XLSX e resolve para `contaId`
+- [x] Parser de receitas detecta coluna "Conta / Banco" no CSV/XLSX e resolve para `contaId`
+- [x] Template de despesas gerado dinamicamente com coluna "Conta / Banco" e aba "Instruções"
+- [x] Template de receitas gerado dinamicamente com coluna "Conta / Banco" e aba "Instruções"

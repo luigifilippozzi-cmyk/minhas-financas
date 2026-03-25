@@ -30,19 +30,28 @@ Permite distinguir em qual banco ou cartão cada transação foi realizada, tant
 - Filtro "Todas as contas" na barra de filtros da página de Despesas
 - `contaId` adicionado como campo opcional nos models `Despesa.js` e `Receita.js`
 
-#### Importação em massa (importar.html)
+#### Importação em massa de despesas (importar.html)
 - **Seletor global** "🏦 De qual banco/conta é este extrato?" (Passo 2, antes do upload)
   — aplicado automaticamente a todas as transações ao carregar o arquivo
 - **Override por linha** na tabela de preview (select por linha, igual às categorias)
 - **Ação em lote** "Conta:" na barra de ações do preview para trocar todas de uma vez
 - Mudança do seletor global após preview aberto atualiza todas as linhas em tempo real
 - `contaId` propagado para as projeções de parcelas futuras
+- **Parser NRF-004**: `parsearLinhasExtrato` detecta coluna "Conta / Banco" no cabeçalho do arquivo CSV/XLSX e resolve automaticamente para `contaId` via busca por nome
+- **Template dinâmico**: botão "Baixar Template" agora gera o `.xlsx` via SheetJS com coluna "Conta / Banco" e aba "Instruções" listando os bancos cadastrados do grupo (substituiu link estático)
+
+#### Importação de receitas (receitas.html)
+- Seção de importação colapsável integrada à página de receitas
+- Parser `_parsearLinhasRec` detecta coluna "Conta / Banco" e resolve para `contaId`
+- Template dinâmico com SheetJS incluindo coluna "Conta / Banco"
+- Seletor global, override por linha e ação em lote de conta, igual às despesas
 
 ### Alterado
 - `app.js`: importa `garantirContasPadrao` e `CONTAS_PADRAO`; seed disparado no boot do app
 - `controllers/despesas.js`: `contaId` incluído no payload de create/update
 - `pages/despesas.js`: listener `ouvirContas`, populate selects, badge, filtro ativo
-- `pages/importar.js`: importa `ouvirContas`; listener iniciado junto com categorias
+- `pages/importar.js`: parser atualizado com `idxConta`; template gerado dinamicamente; listener `ouvirContas` iniciado junto com categorias
+- `pages/receitas.js`: lógica de importação completa com suporte NRF-004
 
 ---
 
