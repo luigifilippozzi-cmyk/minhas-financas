@@ -269,12 +269,13 @@ function parsearLinhasExtrato(rows) {
     if (!dataRaw && !estab && !valorRaw) continue;
     const estabLow = estab.toLowerCase();
     if (/pagamento de fatura|inclusao de pagamento|inclusão de pagamento|parcela de fatura rotativo/i.test(estabLow)) continue;
-    const valor = normalizarValorXP(valorRaw);
-    if (!isNaN(valor) && valor < 0) continue;
+    // Aceita valores negativos (extrato bancário) e positivos (cartão de crédito)
+    // Sempre armazena como positivo — a direção contábil é despesa pelo contexto da importação
+    const valor = Math.abs(normalizarValorXP(valorRaw));
     const dataFmt = normalizarData(dataRaw);
     const erros = [];
     if (!dataFmt) erros.push('Data inválida');
-    if (!estab)   erros.push('Estabelecimento vazio');
+    if (!estab)   erros.push('Descrição vazia');
     if (isNaN(valor) || valor <= 0) erros.push('Valor inválido');
     const chave = (!erros.length) ? gerarChaveDedup(dataFmt, estab, valor, portador, parcela) : null;
     resultado.push({
@@ -344,9 +345,10 @@ function gerarTemplateDespesas() {
   const header = ['Data', 'Estabelecimento', 'Portador', 'Valor', 'Parcela', 'Conta / Banco'];
   const contasLista = _contas.map(c => c.nome);
   const exemplos = [
-    ['15/03/2026', 'Supermercado Pão de Açúcar', 'Luigi', '250,00', '-',    contasLista[0] ?? 'Banco Itaú'],
-    ['20/03/2026', 'Netflix',                    'Luigi',  '55,90', '-',    contasLista[1] ?? 'Cartão de Crédito'],
-    ['22/03/2026', 'Posto Shell',                'Ana',   '180,00', '02/03', contasLista[0] ?? 'Banco Itaú'],
+    ['15/03/2026', 'Supermercado Pão de Açúcar', 'Luigi',  '250,00', '-',     contasLista[0] ?? 'Banco Itaú'],
+    ['20/03/2026', 'Netflix',                    'Luigi',   '55,90', '-',     contasLista[1] ?? 'Cartão de Crédito'],
+    ['22/03/2026', 'Posto Shell',                'Ana',   '-180,00', '02/03', contasLista[0] ?? 'Banco Itaú'],
+    ['25/03/2026', 'Farmácia',                   'Ana',    '-42,50', '-',     contasLista[0] ?? 'Banco Itaú'],
   ];
   const ws = XLSX.utils.aoa_to_sheet([header, ...exemplos]);
   ws['!cols'] = [
@@ -360,7 +362,7 @@ function gerarTemplateDespesas() {
     ['Data',         'DD/MM/AAAA  ou  AAAA-MM-DD',                      'Sim'],
     ['Estabelecimento','Texto livre (máx. 100 car.)',                    'Sim'],
     ['Portador',     'Nome do titular do cartão',                        'Não'],
-    ['Valor',        'Número positivo. Vírgula ou ponto decimal.',        'Sim'],
+    ['Valor',        'Positivo (cartão) ou negativo (extrato bancário). O sistema usa sempre o valor absoluto.', 'Sim'],
     ['Parcela',      '"02/06" = parcela 2 de 6. Use "-" se à vista.',    'Não'],
     ['Conta / Banco', contasLista.length
       ? 'Valores aceitos: ' + contasLista.join(' | ')
