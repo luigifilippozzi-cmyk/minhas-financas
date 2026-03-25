@@ -1,0 +1,248 @@
+# 🧪 Guia de Testes — Minhas Finanças v1.0
+
+> **Como usar este guia:** Siga cada seção na ordem indicada. Para cada caso de teste, execute a ação descrita, compare com o resultado esperado, e marque ✅ se passou ou 🐛 se encontrou um bug. Reporte bugs criando uma issue no GitHub com a label `bug` e `blocker` (se impedir o fluxo principal).
+
+---
+
+## 📋 Visão Geral
+
+| Item | Detalhe |
+|------|---------|
+| **URL da aplicação** | https://minhas-financas-285da.web.app |
+| **Repositório** | https://github.com/luigifilippozzi-cmyk/minhas-financas |
+| **Milestone de testes** | [v1.0 — QA & Testes de Aceitação](https://github.com/luigifilippozzi-cmyk/minhas-financas/milestone/7) |
+| **Total de RFs** | 14 (RF-001 a RF-014) |
+| **Casos de teste** | 6 suítes (TC-001 a TC-006) |
+
+---
+
+## 🛠️ Preparação do Ambiente
+
+### O que você vai precisar
+
+- **Dois navegadores** (ou dois perfis do Chrome) — um para cada usuário
+  - Usuário A: seu perfil principal
+  - Usuário B: janela anônima ou outro navegador
+- **Um arquivo de extrato** no formato XP (CSV ou XLSX) para testar a importação
+- **O template** disponível para download em `/importar.html`
+
+### Antes de começar
+
+1. Crie duas contas de teste (emails distintos, ex: `teste.a@gmail.com` e `teste.b@gmail.com`)
+2. Abra a aplicação nos dois navegadores simultaneamente
+3. Tenha o GitHub aberto para registrar bugs encontrados
+
+---
+
+## 📌 Como Registrar um Bug no GitHub
+
+Quando encontrar um comportamento inesperado:
+
+1. Acesse https://github.com/luigifilippozzi-cmyk/minhas-financas/issues/new
+2. **Título:** `[BUG] Descrição curta do problema`
+3. **Labels:** adicione `bug` + label da RF afetada (ex: `rf-005`) + `blocker` se impedir uso
+4. **Milestone:** selecione `v1.0 — QA & Testes de Aceitação`
+5. **Corpo:** inclua:
+   - Passos para reproduzir
+   - Resultado esperado vs. resultado obtido
+   - Screenshot ou vídeo (se possível)
+
+### Como marcar um teste concluído no GitHub
+
+Cada suíte de testes está em uma issue (#29 a #35). Para marcar itens:
+1. Abra a issue correspondente
+2. Os checkboxes `- [ ]` são clicáveis diretamente na interface do GitHub
+3. Clique em cada checkbox à medida que conclui o teste
+
+---
+
+## 🔐 TC-001 — Autenticação e Grupos Familiares
+
+**Issue:** [#29 no GitHub](https://github.com/luigifilippozzi-cmyk/minhas-financas/issues/29)
+**RFs cobertas:** RF-001, RF-002
+
+### Passo a passo
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 1 | Acesse a URL → tela de login | Formulário com campos email/senha |
+| 2 | Crie conta com email válido + senha ≥ 6 chars | Redirecionado para `/grupo.html` |
+| 3 | Tente criar conta com senha de 5 chars | Erro de validação; formulário não submete |
+| 4 | Faça logout (botão no menu) | Redirecionado para `/login.html` |
+| 5 | Faça login com email/senha corretos | Redirecionado para `/index.html` |
+| 6 | Tente login com senha errada | Mensagem de erro exibida |
+| 7 | Em `/grupo.html`, crie um grupo com nome | Código de convite de 6 caracteres aparece |
+| 8 | No Usuário B: insira o código de 6 chars | Usuário B entra no grupo |
+| 9 | Usuário B tenta código "ZZZZZZ" | Mensagem de erro; sem ingresso |
+
+---
+
+## 📂 TC-002 — Categorias e Orçamentos
+
+**Issue:** [#35 no GitHub](https://github.com/luigifilippozzi-cmyk/minhas-financas/issues/35)
+**RFs cobertas:** RF-003, RF-004
+
+### Categorias (`/categorias.html`)
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 1 | Acesse `/categorias.html` | 6 categorias padrão listadas |
+| 2 | Clique "+ Nova Categoria" → preencha nome, emoji, cor → salve | Categoria aparece na lista |
+| 3 | Clique editar em uma categoria → altere nome → salve | Nome atualizado; Usuário B vê a mudança sem reload |
+| 4 | Clique desativar em uma categoria → confirme | Categoria some da lista; histórico de despesas preservado |
+
+### Orçamentos (`/orcamentos.html`)
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 5 | Clique no valor de uma categoria → digite novo valor → Enter | Valor salvo (debounce 800ms); chips Total/Gasto/Disponível atualizados |
+| 6 | Clique ‹ / › para navegar meses | Orçamentos do mês correto carregados |
+| 7 | Em mês sem orçamentos → clique "Copiar mês anterior" | Valores do mês anterior copiados |
+| 8 | Usuário A edita orçamento → Usuário B observa | Atualização em tempo real sem reload |
+
+---
+
+## 💸 TC-003 — Despesas, Filtros e Sincronização
+
+**Issue:** [#36 no GitHub](https://github.com/luigifilippozzi-cmyk/minhas-financas/issues/36)
+**RFs cobertas:** RF-005, RF-006, RF-007, RF-008, RF-010, RF-011
+
+### CRUD de Despesas (`/despesas.html`)
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 1 | Clique "+ Nova Despesa" → preencha todos os campos → salve | Despesa na lista com badge colorido da categoria |
+| 2 | Verifique o campo "Responsável" no formulário | Dropdown com membros do grupo |
+| 3 | Tente salvar sem preencher descrição | Campo destacado como inválido; sem submit |
+| 4 | Clique editar numa despesa → altere o valor → salve | Modal pré-preenchido; valor atualizado na lista |
+| 5 | Clique excluir → confirme no modal | Despesa removida; chips de total atualizados |
+| 6 | Clique excluir → clique "Cancelar" | Despesa preservada |
+
+### Filtros
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 7 | Selecione categoria no filtro | Apenas despesas da categoria exibidas |
+| 8 | Digite texto na busca | Lista filtrada em tempo real |
+| 9 | Selecione responsável no filtro | Apenas despesas do responsável selecionado |
+| 10 | Clique ‹ / › para trocar mês | Despesas do mês correto carregadas |
+
+### Sincronização em Tempo Real
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 11 | Usuário A cria despesa → Usuário B observa (sem reload) | Despesa aparece para B em < 3 segundos |
+| 12 | Verifique o indicador de conexão na página | Indicador pulsante verde visível |
+
+---
+
+## 📊 TC-004 — Dashboard
+
+**Issue:** [#37 no GitHub](https://github.com/luigifilippozzi-cmyk/minhas-financas/issues/37)
+**RFs cobertas:** RF-009
+
+### Dashboard (`/index.html`)
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 1 | Acesse o dashboard com despesas registradas | Cada categoria mostra Orçado/Gasto/% com barra colorida |
+| 2 | Verifique categoria com 0–70% gasto | Barra 🟢 Verde |
+| 3 | Verifique categoria com 70–90% gasto | Barra 🟡 Amarela |
+| 4 | Verifique categoria com > 90% gasto | Barra 🔴 Vermelha / ⚠️ Crítico |
+| 5 | Verifique cards "Total Orçado", "Total Gasto", "Disponível" | Somatório correto de todas as categorias |
+| 6 | Troque o período no seletor de mês/ano | Todos os cards atualizam para o período |
+| 7 | Verifique widget "💳 Parcelamentos em Aberto" | Total por responsável, toggle ▾ funciona |
+| 8 | Usuário A registra despesa → Usuário B observa dashboard | Barra de progresso atualiza automaticamente |
+
+---
+
+## 📤 TC-005 — Exportação e Importação
+
+**Issue:** [#38 no GitHub](https://github.com/luigifilippozzi-cmyk/minhas-financas/issues/38)
+**RFs cobertas:** RF-012, RF-013
+
+### Exportação CSV
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 1 | Em Despesas → clique "📥 Exportar CSV" | Download de `despesas-{mês}-{ano}.csv` |
+| 2 | Abra o CSV no Excel | Colunas: Data, Descrição, Categoria, Emoji, Valor, Responsável, Parcela; sem caracteres estranhos |
+| 3 | Exporte de mês sem despesas | Alerta informativo; sem download vazio |
+
+### Importação Excel (`/importar.html`)
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 4 | Clique "Baixar Template" | Download de `template-importacao.xlsx` com sheet "Instruções" |
+| 5 | Arraste um extrato XP para a área de upload | Preview com todas as transações lidas |
+| 6 | Altere a categoria de uma linha no preview | Categoria atualizada; outras linhas não afetadas |
+| 7 | Use "Aplicar categoria a todas" → selecione uma categoria | Todas as linhas recebem a categoria |
+| 8 | Desmarque o checkbox de uma linha | Linha excluída do preview |
+| 9 | Clique "Importar X transações" | Despesas salvas; resultado mostra contagem |
+| 10 | Usuário B faz o mesmo upload | Importação funciona; ambos veem as despesas |
+
+---
+
+## 💳 TC-006 — Cartão de Crédito Multi-Usuário
+
+**Issue:** [#39 no GitHub](https://github.com/luigifilippozzi-cmyk/minhas-financas/issues/39)
+**RF coberta:** RF-014
+
+### Deduplicação
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 1 | Importe um extrato → importe o mesmo arquivo novamente | 2ª vez: linhas duplicadas marcadas com 🔄 amarelo e desmarcadas por padrão |
+| 2 | Usuário A importa extrato → Usuário B importa o mesmo | B vê todas as linhas como duplicadas |
+| 3 | Marque manualmente uma duplicata → importe | Transação criada novamente (forçado pelo usuário) |
+
+### Projeção de Parcelas
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 4 | Importe extrato com item parcelado "02/06" | Parcela 02/06 importada; parcelas 03/06 a 06/06 geradas como projeções |
+| 5 | Em Despesas, navegue para o mês seguinte | Parcelas projetadas visíveis com borda roxa/lavanda |
+| 6 | Verifique chip "Projeções" no preview | Quantidade de parcelas futuras geradas exibida |
+| 7 | Importe extrato do mês seguinte com a parcela 03/06 | Parcela marcada como duplicada da projeção |
+
+### Painel de Parcelamentos em Aberto
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 8 | Acesse Dashboard com projeções salvas | Widget "💳 Parcelamentos em Aberto" com total por responsável |
+| 9 | Acesse Despesas → verifique painel lateral | Agrupado por compra com qtd. de parcelas restantes |
+| 10 | Clique no ▾ do painel | Painel colapsa e expande corretamente |
+
+### Campo Responsável
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 11 | Nova Despesa → verifique dropdown "Responsável" | Nomes dos membros do grupo listados |
+| 12 | Verifique chips de total por responsável em Despesas | Total separado por responsável exibido no cabeçalho |
+| 13 | Use filtro por responsável em Despesas | Apenas despesas do responsável selecionado exibidas |
+| 14 | Exporte CSV com despesas de responsáveis diferentes | Coluna "Responsável" presente e preenchida |
+
+---
+
+## 🚦 Critérios de Aprovação
+
+A versão v1.0 está pronta para uso quando:
+
+- [ ] **Todos os casos de TC-001 a TC-004** passam sem erros (fluxo básico)
+- [ ] **TC-005 (importação)** funciona para o formato de extrato XP utilizado
+- [ ] **TC-006 (RF-014)** deduplicação e projeções funcionam corretamente
+- [ ] **Nenhum `blocker`** em aberto no GitHub
+- [ ] **Sync em tempo real** funciona em todos os fluxos testados
+
+---
+
+## 📊 Acompanhamento no GitHub
+
+- **Milestone:** https://github.com/luigifilippozzi-cmyk/minhas-financas/milestone/7
+- **Todas as issues de teste:** https://github.com/luigifilippozzi-cmyk/minhas-financas/issues?milestone=7
+
+O progresso do milestone é atualizado automaticamente conforme os checklists das issues são marcados.
+
+---
+
+*Guia gerado em 2026-03-08 | versão v1.0*

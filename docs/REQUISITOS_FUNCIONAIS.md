@@ -21,6 +21,7 @@
 | NRF-001 | Contas Compartilhadas (divisão conjunta) | Alta | ✅ Implementado |
 | NRF-002 | Reconciliação Fuzzy de Parcelas | Média | ✅ Implementado |
 | NRF-003 | Fluxo de Caixa — Visão Orçamentária Anual | Alta | ✅ Implementado |
+| NRF-004 | Identificação de Conta/Banco por Transação | Alta | ✅ Implementado |
 
 ---
 
@@ -276,3 +277,79 @@ Colunas exibidas para cada um dos 12 meses:
 - [x] Trocar de ano recarrega todos os dados e atualiza gráfico + tabela
 - [x] Página redireciona para `login.html` se usuário não estiver autenticado
 - [x] Redirecionamento para `grupo.html` se usuário não tiver grupo associado
+
+---
+
+## NRF-004: Identificação de Conta/Banco por Transação
+**Prioridade:** Alta | **Versão:** v1.6.0 | **Status:** ✅ Implementado
+
+### Descrição
+Permite identificar em qual conta financeira (banco ou cartão de crédito) cada despesa ou receita foi realizada. A identificação é feita por uma coleção normalizada `contas` no Firestore, com seed automático dos bancos mais utilizados. A feature está integrada ao formulário manual de despesas, à lista com badge visual, e ao fluxo de importação de extratos em massa.
+
+### Funcionalidades
+
+#### Coleção `contas` (Firestore)
+- Coleção independente, com escopo por `grupoId` — mesmo padrão das `categorias`
+- Campos por documento: `nome`, `emoji`, `cor` (hex), `tipo` (`banco` | `cartao` | `dinheiro`), `ativa`, `grupoId`
+- Seed automático disparado no boot do app via `garantirContasPadrao`:
+  - 💳 Cartão de Crédito (`#7B1FA2`, tipo: cartao)
+  - 🟠 Banco Itaú (`#EC6600`, tipo: banco)
+  - 📊 Banco XP (`#1565C0`, tipo: banco)
+  - 🔴 Banco Santander (`#CC0000`, tipo: banco)
+  - 💼 Banco BTG (`#B8860B`, tipo: banco)
+  - 💵 Dinheiro (`#2E7D32`, tipo: dinheiro)
+
+#### Despesas — formulário e lista
+- Select "Conta / Banco" no modal de Nova/Editar Despesa (campo opcional; não bloqueia envio)
+- Badge colorido por banco exibido em cada item da lista (`desp-conta-badge`): background e texto com a cor do banco, emoji do banco
+- Filtro "Todas as contas" na barra de filtros da página de Despesas
+- Ao editar despesa, a conta original é pré-selecionada no dropdown
+- Campo `contaId` (id da conta) salvo opcionalmente no documento Firestore da despesa
+
+#### Importação em massa (`importar.html` / `importar.js`)
+| Elemento | Comportamento |
+|---|---|
+| **Seletor global** (Passo 2) | Aparece antes do upload: "🏦 De qual banco é este extrato?" — seleção aplica a todas as linhas ao carregar o arquivo |
+| **Override por linha** | Coluna "Conta / Banco" na tabela de preview com select por linha — editável individualmente |
+| **Ação em lote** | Select "Conta:" na barra de ações do preview — atualiza todas as linhas de uma vez |
+| **Mudança global pós-preview** | Alterar o seletor global após o preview aberto atualiza todas as linhas em tempo real |
+| **Projeções de parcelas** | `contaId` propagado automaticamente para todas as parcelas futuras geradas |
+
+### Arquitetura Técnica
+
+#### Novos arquivos
+| Arquivo | Descrição |
+|---|---|
+| `src/js/models/Conta.js` | Model `modelConta()` + constante `CONTAS_PADRAO` (6 contas padrão) |
+
+#### Funções adicionadas em `database.js`
+| Função | Descrição |
+|---|---|
+| `ouvirContas(grupoId, cb)` | Listener em tempo real de contas ativas do grupo |
+| `criarConta(dados)` | Cria nova conta no Firestore |
+| `atualizarConta(id, dados)` | Atualiza campos de uma conta |
+| `excluirConta(id)` | Soft-delete: seta `ativa: false` |
+| `garantirContasPadrao(grupoId, padrao)` | Cria contas padrão se o grupo ainda não tiver nenhuma |
+
+#### Arquivos modificados
+| Arquivo | Alteração |
+|---|---|
+| `models/Despesa.js` | `contaId` adicionado à lista de campos opcionais |
+| `models/Receita.js` | `contaId` adicionado como opcional |
+| `controllers/despesas.js` | `contaId` incluído no payload de create e update |
+| `pages/despesas.js` | Listener `ouvirContas`, populate selects, badge, filtro |
+| `pages/importar.js` | Listener `ouvirContas`, seletor global, override por linha, ação em lote, propagação para projeções |
+| `app.js` | Import de `garantirContasPadrao` + `CONTAS_PADRAO`; seed no boot |
+| `css/main.css` | `.desp-conta-badge`, `.imp-conta-selector`, `.imp-conta-label`, `.imp-conta-select`, `.imp-conta-hint` |
+
+### Critérios de Aceitação
+- [x] Contas padrão criadas automaticamente para grupos novos e existentes
+- [x] Select de conta disponível no formulário de despesa (modal)
+- [x] Badge do banco aparece corretamente na lista de despesas com cor do banco
+- [x] Filtro por conta filtra a lista de despesas
+- [x] Ao editar despesa, conta original pré-selecionada
+- [x] Seletor global no import aplica conta a todas as linhas
+- [x] Override por linha funciona independentemente do seletor global
+- [x] Ação em lote "Conta:" atualiza todas as linhas
+- [x] `contaId` salvo no Firestore ao criar/editar despesa
+- [x] `contaId` propagado para projeções de parcelas na importação

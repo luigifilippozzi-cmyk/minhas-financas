@@ -22,7 +22,8 @@
 - 📊 Dashboard com orçamentos, receitas, saldo e alertas visuais
 - 📈 Fluxo de Caixa anual com gráfico combinado (Chart.js) e visão orçamentária mês a mês
 - 👫 Divisão de contas conjuntas com chips por usuário
-- 📤 Importação de extratos Excel com deduplicação e projeção de parcelas
+- 🏦 Identificação de conta/banco por transação (Itaú, XP, Santander, BTG, Cartão de Crédito…)
+- 📤 Importação de extratos Excel com seleção de banco, deduplicação e projeção de parcelas
 - 🔄 Sincronização em tempo real entre membros (Firestore onSnapshot)
 
 ## 🚀 Como Executar Localmente
@@ -92,7 +93,8 @@ minhas-financas/
 - [x] v1.3.0 — Módulo de Receitas (RF-016) com dashboard e página de gestão
 - [x] v1.4.0 — Fluxo de Caixa anual (NRF-003) com Chart.js, tabela e badges de situação
 - [x] v1.5.0 — Redesign visual completo: Inter font, shadcn/ui + Tremor design system, navbar blur, modais animados
-- [ ] v1.6.0 — Notificações de orçamento e alertas de saldo
+- [x] v1.6.0 — NRF-004: Identificação de conta/banco por transação + seleção no import de extratos
+- [ ] v1.7.0 — Notificações de orçamento e alertas de saldo
 - [ ] v2.0.0 — App iOS via Capacitor
 
 ## 🤝 Contribuindo

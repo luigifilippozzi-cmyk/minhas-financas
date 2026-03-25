@@ -11,6 +11,41 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [1.6.0] - 2026-03-25
+
+### Adicionado — NRF-004: Identificação de Conta/Banco por Transação
+
+Permite distinguir em qual banco ou cartão cada transação foi realizada, tanto nas despesas manuais quanto na importação em massa de extratos.
+
+#### Coleção `contas` no Firestore
+- Nova coleção normalizada (mesmo padrão das `categorias`) com escopo por grupo
+- Seed automático das contas padrão ao entrar no app pela primeira vez:
+  - 💳 Cartão de Crédito, 🟠 Banco Itaú, 📊 Banco XP, 🔴 Banco Santander, 💼 Banco BTG, 💵 Dinheiro
+- CRUD completo: `ouvirContas`, `criarConta`, `excluirConta`, `garantirContasPadrao` em `database.js`
+- Novo arquivo: `src/js/models/Conta.js` com model e `CONTAS_PADRAO`
+
+#### Despesas — formulário e lista
+- Select "Conta / Banco" no modal de Nova/Editar Despesa (campo opcional)
+- Badge colorido com emoji e cor do banco em cada item da lista de despesas
+- Filtro "Todas as contas" na barra de filtros da página de Despesas
+- `contaId` adicionado como campo opcional nos models `Despesa.js` e `Receita.js`
+
+#### Importação em massa (importar.html)
+- **Seletor global** "🏦 De qual banco/conta é este extrato?" (Passo 2, antes do upload)
+  — aplicado automaticamente a todas as transações ao carregar o arquivo
+- **Override por linha** na tabela de preview (select por linha, igual às categorias)
+- **Ação em lote** "Conta:" na barra de ações do preview para trocar todas de uma vez
+- Mudança do seletor global após preview aberto atualiza todas as linhas em tempo real
+- `contaId` propagado para as projeções de parcelas futuras
+
+### Alterado
+- `app.js`: importa `garantirContasPadrao` e `CONTAS_PADRAO`; seed disparado no boot do app
+- `controllers/despesas.js`: `contaId` incluído no payload de create/update
+- `pages/despesas.js`: listener `ouvirContas`, populate selects, badge, filtro ativo
+- `pages/importar.js`: importa `ouvirContas`; listener iniciado junto com categorias
+
+---
+
 ## [1.5.0] - 2026-03-25
 
 ### Alterado — Redesign Visual Completo (UI/UX)
