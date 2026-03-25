@@ -1,8 +1,10 @@
 /* ============================================================
    DASHBOARD — Minhas Finanças
+   Inspirado em Tremor (Apache 2.0) e shadcn/ui (MIT)
    ============================================================ */
 
-/* ── Layout Geral ── */
+/* ── Layout geral ── */
+
 .main-content {
   max-width: var(--max-width);
   margin: 0 auto;
@@ -18,7 +20,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-5);
   flex-wrap: wrap;
   gap: var(--space-3);
 }
@@ -27,6 +29,8 @@
   font-size: var(--font-size-xl);
   color: var(--color-text);
   font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
 }
 
 .section-actions {
@@ -35,10 +39,13 @@
   gap: var(--space-2);
 }
 
-/* ── Cards de Resumo ── */
+/* ══════════════════════════════════════════════════════════════
+   CARDS DE RESUMO — estilo Tremor KPI card
+   ══════════════════════════════════════════════════════════════ */
+
 .resumo-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
   gap: var(--space-4);
   margin-bottom: var(--space-6);
 }
@@ -47,26 +54,63 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--transition), box-shadow var(--transition);
 }
 
+.resumo-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* Linha colorida no topo de cada card */
+.resumo-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--color-primary);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  opacity: 0.6;
+}
+
+/* Cores específicas por tipo de card */
+.resumo-card--receita::before  { background: var(--color-income); opacity: 1; }
+.resumo-card--saldo::before    { background: var(--color-balance); opacity: 1; }
+.resumo-card--meu-bolso::before { background: #818cf8; opacity: 1; }
+.resumo-card--familia::before   { background: var(--color-ok); opacity: 1; }
+
 .resumo-label {
-  font-size: var(--font-size-xs);
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.07em;
   color: var(--color-text-muted);
   font-weight: 600;
+  margin-top: var(--space-2);
 }
 
 .resumo-valor {
   font-size: var(--font-size-xl);
-  font-weight: 700;
+  font-weight: 800;
   color: var(--color-text);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
 }
 
-/* ── Grid de Categorias ── */
+.resumo-sublabel {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   GRID DE CATEGORIAS
+   ══════════════════════════════════════════════════════════════ */
+
 .categorias-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
   gap: var(--space-4);
 }
 
@@ -74,6 +118,11 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.categoria-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .categoria-card-header {
@@ -88,33 +137,45 @@
   gap: var(--space-2);
   font-weight: 600;
   font-size: var(--font-size-base);
+  color: var(--color-text);
 }
 
 .categoria-percentual {
-  font-size: var(--font-size-sm);
+  font-size: 0.72rem;
   font-weight: 700;
-  padding: 2px var(--space-2);
+  padding: 3px var(--space-2);
   border-radius: var(--radius-full);
+  letter-spacing: 0.01em;
 }
 
-.perc-ok       { background-color: #DCFCE7; color: #166534; }
-.perc-warning  { background-color: #FEF9C3; color: #854D0E; }
-.perc-danger   { background-color: #FEE2E2; color: #991B1B; }
-.perc-critical { background-color: #EDE9FE; color: #5B21B6; }
+.perc-ok       { background: var(--color-ok-light);       color: var(--color-ok-text); }
+.perc-warning  { background: var(--color-warning-light);   color: var(--color-warning-text); }
+.perc-danger   { background: var(--color-danger-light);    color: var(--color-danger-text); }
+.perc-critical { background: var(--color-critical-light);  color: var(--color-critical-text); }
 
 .categoria-valores {
   display: flex;
   justify-content: space-between;
+  align-items: baseline;
   font-size: var(--font-size-xs);
   color: var(--color-text-muted);
   margin-top: var(--space-1);
 }
 
-/* ── Lista de Despesas ── */
+.categoria-valores strong {
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LISTA DE DESPESAS (Dashboard)
+   ══════════════════════════════════════════════════════════════ */
+
 .despesas-lista {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: 6px;
 }
 
 .despesa-item {
@@ -126,10 +187,14 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   gap: var(--space-3);
-  transition: box-shadow var(--transition);
+  transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
 }
 
-.despesa-item:hover { box-shadow: var(--shadow-md); }
+.despesa-item:hover {
+  border-color: var(--color-border-hover);
+  box-shadow: var(--shadow-sm);
+  background: var(--color-surface-hover);
+}
 
 .despesa-info {
   display: flex;
@@ -149,27 +214,144 @@
 }
 
 .despesa-meta {
-  font-size: var(--font-size-xs);
+  font-size: 0.72rem;
   color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
 .despesa-categoria-badge {
-  font-size: var(--font-size-xs);
-  padding: 2px var(--space-2);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.72rem;
+  padding: 2px 8px;
   border-radius: var(--radius-full);
-  background-color: var(--color-border);
-  color: var(--color-text-muted);
+  background: var(--color-surface-alt);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
   white-space: nowrap;
+  font-weight: 500;
 }
 
 .despesa-valor {
   font-weight: 700;
   font-size: var(--font-size-base);
-  color: var(--color-danger);
+  color: var(--color-expense);
   white-space: nowrap;
+  letter-spacing: -0.01em;
 }
 
 .despesa-acoes {
   display: flex;
   gap: var(--space-1);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PARCELAMENTOS WIDGET (RF-014)
+   ══════════════════════════════════════════════════════════════ */
+
+.parc-widget {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.parc-widget-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  background: linear-gradient(135deg, #f0f0ff 0%, #f5f3ff 100%);
+  border-bottom: 1px solid #e0e7ff;
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+}
+
+.parc-total-valor {
+  font-size: var(--font-size-base);
+  font-weight: 800;
+  color: var(--color-primary);
+  letter-spacing: -0.02em;
+}
+
+.parc-toggle-icon {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  margin-left: var(--space-2);
+}
+
+.parc-body { padding: var(--space-4) var(--space-5); }
+.parc-body--collapsed { display: none; }
+
+.parc-resp-row {
+  margin-bottom: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+.parc-resp-row:last-child { margin-bottom: 0; }
+
+.parc-resp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-2);
+}
+.parc-resp-nome  { font-weight: 600; font-size: var(--font-size-sm); }
+.parc-resp-total { font-weight: 800; color: var(--color-primary); font-size: var(--font-size-sm); }
+
+.parc-resp-items { display: flex; flex-direction: column; gap: 4px; }
+
+.parc-compra-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.78rem;
+  padding: 3px 0;
+  border-top: 1px solid var(--color-border);
+}
+.parc-compra-desc  { flex: 1; color: var(--color-text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.parc-compra-info  { color: var(--color-text-muted); white-space: nowrap; }
+.parc-compra-valor { font-weight: 700; color: var(--color-text); white-space: nowrap; }
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVO
+   ══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 640px) {
+  .main-content {
+    padding: var(--space-4);
+    gap: var(--space-6);
+  }
+
+  .resumo-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+  }
+
+  .resumo-valor { font-size: var(--font-size-lg); }
+
+  .categorias-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-header { flex-direction: column; align-items: flex-start; }
+  .section-title  { font-size: var(--font-size-lg); }
+
+  .despesa-acoes .btn-sm { padding: 3px 7px; font-size: 0.7rem; }
+
+  .navbar { padding: 0 var(--space-4); gap: var(--space-2); }
+  .navbar-brand span:last-child { display: none; }
+  .navbar-user > span#usuario-nome { display: none; }
+}
+
+@media (max-width: 480px) {
+  .resumo-cards { grid-template-columns: 1fr 1fr; }
 }

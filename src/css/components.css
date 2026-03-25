@@ -1,61 +1,266 @@
 /* ============================================================
    COMPONENTES REUTILIZÁVEIS — Minhas Finanças
+   Inspirado em shadcn/ui (MIT) + Radix UI (MIT)
    ============================================================ */
 
-/* ── Botões ── */
+/* ── Reset base ── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  font-size: var(--font-size-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   NAVBAR
+   ══════════════════════════════════════════════════════════════ */
+
+.navbar {
+  position: sticky;
+  top: 0;
+  height: var(--navbar-height);
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-6);
+  z-index: 50;
+  box-shadow: var(--shadow-xs);
+  gap: var(--space-4);
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--color-text);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
+}
+
+/* Links de navegação da navbar — sobrescreve .btn-outline */
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.navbar-user::-webkit-scrollbar { display: none; }
+
+/* Separador visual antes do nome do usuário e do botão Sair */
+.navbar-user > span#usuario-nome {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  padding: 0 var(--space-3) 0 var(--space-2);
+  border-right: 1px solid var(--color-border);
+  margin-right: var(--space-1);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Nav links dentro da navbar */
+.navbar-user a.btn {
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 5px 10px;
+  border-radius: var(--radius-md);
+  white-space: nowrap;
+  transition: background var(--transition), color var(--transition);
+  letter-spacing: 0;
+}
+.navbar-user a.btn-outline {
+  background: transparent;
+  border: none;
+  color: var(--color-text-secondary);
+  box-shadow: none;
+}
+.navbar-user a.btn-outline:hover {
+  background: var(--color-surface-alt);
+  color: var(--color-text);
+  border: none;
+}
+/* Botão ativo (quando é a página atual) */
+.navbar-user a.btn-primary {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border: none;
+  box-shadow: none;
+}
+.navbar-user a.btn-primary:hover {
+  background: var(--color-primary-light);
+  color: var(--color-primary-hover);
+}
+
+/* Botão Sair */
+.navbar-user #btn-logout {
+  margin-left: var(--space-2);
+  font-size: 0.78rem;
+  padding: 5px 12px;
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 500;
+  transition: all var(--transition);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.navbar-user #btn-logout:hover {
+  background: var(--color-danger-light);
+  color: var(--color-danger-text);
+  border-color: #fca5a5;
+}
+
+/* Navbar back link (sub-páginas) */
+.navbar-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-alt);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-size: var(--font-size-base);
+  transition: background var(--transition);
+  flex-shrink: 0;
+}
+.navbar-back:hover { background: var(--color-border); color: var(--color-text); }
+
+/* ══════════════════════════════════════════════════════════════
+   BOTÕES
+   Inspirado em shadcn/ui button variants
+   ══════════════════════════════════════════════════════════════ */
+
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
   padding: var(--space-2) var(--space-4);
-  border: none;
+  border: 1.5px solid transparent;
   border-radius: var(--radius-md);
+  font-family: var(--font-family);
   font-size: var(--font-size-sm);
   font-weight: 600;
   cursor: pointer;
-  transition: background-color var(--transition), transform var(--transition);
+  transition: all var(--transition);
   text-decoration: none;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+  white-space: nowrap;
+  user-select: none;
+}
+.btn:active  { transform: scale(0.97); }
+.btn:disabled, .btn[disabled] { opacity: 0.48; cursor: not-allowed; pointer-events: none; }
+.btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-primary-ring);
 }
 
-.btn:active { transform: scale(0.97); }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
+/* Primary */
 .btn-primary {
-  background-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  border-color: var(--color-primary);
+  box-shadow: 0 1px 3px rgba(99,102,241,0.25);
+}
+.btn-primary:hover {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  box-shadow: 0 4px 12px rgba(99,102,241,0.32);
   color: var(--color-text-inverse);
 }
-.btn-primary:hover { background-color: var(--color-primary-hover); }
 
+/* Outline */
 .btn-outline {
-  background-color: transparent;
-  color: var(--color-primary);
-  border: 1.5px solid var(--color-primary);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  border-color: var(--color-border);
 }
-.btn-outline:hover { background-color: var(--color-primary-light); }
+.btn-outline:hover {
+  background: var(--color-surface-alt);
+  border-color: var(--color-border-hover);
+  color: var(--color-text);
+}
 
+/* Danger */
 .btn-danger {
-  background-color: var(--color-danger);
+  background: var(--color-danger);
   color: var(--color-text-inverse);
+  border-color: var(--color-danger);
+}
+.btn-danger:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+  box-shadow: 0 4px 10px rgba(239,68,68,0.28);
 }
 
-.btn-sm { padding: var(--space-1) var(--space-3); font-size: var(--font-size-xs); }
-.btn-full { width: 100%; }
+/* Success */
+.btn-success {
+  background: var(--color-ok);
+  color: var(--color-text-inverse);
+  border-color: var(--color-ok);
+}
+.btn-success:hover { background: #059669; border-color: #059669; }
 
-/* ── Cards ── */
+/* Ghost */
+.btn-ghost {
+  background: transparent;
+  color: var(--color-text-secondary);
+  border-color: transparent;
+}
+.btn-ghost:hover { background: var(--color-surface-alt); color: var(--color-text); }
+
+/* Sizes */
+.btn-sm  { padding: 4px var(--space-3); font-size: 0.78rem; }
+.btn-lg  { padding: var(--space-3) var(--space-6); font-size: var(--font-size-base); }
+.btn-full { width: 100%; }
+.btn-icon { padding: var(--space-2); aspect-ratio: 1; }
+
+/* ══════════════════════════════════════════════════════════════
+   CARDS
+   ══════════════════════════════════════════════════════════════ */
+
 .card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-5);
   box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition), transform var(--transition);
 }
+.card:hover { box-shadow: var(--shadow-md); }
 
-/* ── Formulários ── */
+/* ══════════════════════════════════════════════════════════════
+   FORMULÁRIOS
+   ══════════════════════════════════════════════════════════════ */
+
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 5px;
   margin-bottom: var(--space-4);
 }
 
@@ -63,58 +268,78 @@
   font-size: var(--font-size-sm);
   font-weight: 600;
   color: var(--color-text);
+  letter-spacing: 0.01em;
 }
 
-.form-required {
-  color: var(--color-danger);
-  font-weight: 700;
-  margin-left: 2px;
-}
+.form-required { color: var(--color-danger); font-weight: 700; margin-left: 2px; }
 
 .form-group input,
 .form-group select,
+.form-group textarea,
 .select-input {
-  padding: var(--space-2) var(--space-3);
+  padding: 9px var(--space-3);
   border: 1.5px solid var(--color-border);
   border-radius: var(--radius-md);
+  font-family: var(--font-family);
   font-size: var(--font-size-sm);
   color: var(--color-text);
   background-color: var(--color-surface);
-  transition: border-color var(--transition);
+  transition: border-color var(--transition), box-shadow var(--transition);
   outline: none;
+  width: 100%;
 }
+
+.form-group input::placeholder,
+.form-group textarea::placeholder { color: var(--color-text-muted); }
+
+.form-group input:hover,
+.form-group select:hover { border-color: var(--color-border-hover); }
 
 .form-group input:focus,
 .form-group select:focus,
+.form-group textarea:focus,
 .select-input:focus {
   border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-ring);
 }
 
+/* Mensagens de feedback */
 .form-erro {
-  background-color: #FEE2E2;
-  color: var(--color-danger);
-  border: 1px solid #FECACA;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--color-danger-light);
+  color: var(--color-danger-text);
+  border: 1px solid #fca5a5;
   border-radius: var(--radius-md);
   padding: var(--space-2) var(--space-3);
   font-size: var(--font-size-sm);
+  font-weight: 500;
   margin-bottom: var(--space-3);
 }
 
 .form-sucesso {
-  background-color: #DCFCE7;
-  color: #15803D;
-  border: 1px solid #BBF7D0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--color-ok-light);
+  color: var(--color-ok-text);
+  border: 1px solid #6ee7b7;
   border-radius: var(--radius-md);
   padding: var(--space-2) var(--space-3);
   font-size: var(--font-size-sm);
+  font-weight: 500;
   margin-bottom: var(--space-3);
 }
 
-/* ── Barra de Progresso ── */
+/* ══════════════════════════════════════════════════════════════
+   BARRAS DE PROGRESSO
+   ══════════════════════════════════════════════════════════════ */
+
 .progress-bar-track {
   width: 100%;
-  height: 8px;
-  background-color: var(--color-border);
+  height: 7px;
+  background: var(--color-border);
   border-radius: var(--radius-full);
   overflow: hidden;
 }
@@ -122,39 +347,54 @@
 .progress-bar-fill {
   height: 100%;
   border-radius: var(--radius-full);
-  transition: width 0.4s ease, background-color 0.4s ease;
+  transition: width 0.45s cubic-bezier(0.4,0,0.2,1), background-color 0.3s ease;
 }
 
-.progress-ok       { background-color: var(--color-ok); }
-.progress-warning  { background-color: var(--color-warning); }
-.progress-danger   { background-color: var(--color-danger); }
-.progress-critical { background-color: var(--color-critical); }
+.progress-ok       { background: var(--color-ok); }
+.progress-warning  { background: var(--color-warning); }
+.progress-danger   { background: var(--color-danger); }
+.progress-critical { background: var(--color-critical); }
 
-/* ── Modal ── */
+/* ══════════════════════════════════════════════════════════════
+   MODAL
+   Inspirado em shadcn/ui Dialog
+   ══════════════════════════════════════════════════════════════ */
+
 .modal {
   position: fixed;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100;
+  z-index: 200;
+  padding: var(--space-4);
 }
 
 .modal-backdrop {
   position: absolute;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.4);
+  background: rgba(15,23,42, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: fadeIn 0.16s ease;
 }
+
+@keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(12px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
 .modal-card {
   position: relative;
   background: var(--color-surface);
-  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
   padding: var(--space-6);
   width: 100%;
-  max-width: 480px;
-  box-shadow: var(--shadow-lg);
-  z-index: 101;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-xl);
+  z-index: 201;
+  animation: slideUp 0.2s cubic-bezier(0.34,1.56,0.64,1);
 }
 
 .modal-header {
@@ -162,69 +402,103 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: var(--space-5);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .modal-header h3 {
   font-size: var(--font-size-lg);
+  font-weight: 700;
   color: var(--color-text);
+  margin: 0;
+  letter-spacing: -0.01em;
 }
 
 .modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
   background: none;
   border: none;
+  border-radius: var(--radius-md);
   font-size: var(--font-size-lg);
   cursor: pointer;
   color: var(--color-text-muted);
-  padding: var(--space-1);
-  border-radius: var(--radius-md);
+  transition: background var(--transition), color var(--transition);
+  flex-shrink: 0;
 }
-.modal-close:hover { background-color: var(--color-border); }
+.modal-close:hover { background: var(--color-surface-alt); color: var(--color-text); }
 
 .modal-footer {
   display: flex;
   justify-content: flex-end;
   gap: var(--space-3);
   margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
 }
 
-/* ── Utilitários ── */
+/* ══════════════════════════════════════════════════════════════
+   UTILITÁRIOS
+   ══════════════════════════════════════════════════════════════ */
+
 .hidden { display: none !important; }
 
 .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
   text-align: center;
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
   padding: var(--space-10) var(--space-6);
 }
 
-/* ── Navbar ── */
-.navbar {
-  position: sticky;
-  top: 0;
-  height: var(--navbar-height);
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
-  display: flex;
+/* Badge genérico */
+.badge {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 var(--space-6);
-  z-index: 50;
-  box-shadow: var(--shadow-sm);
+  gap: 3px;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+  white-space: nowrap;
 }
 
-.navbar-brand {
-  display: flex;
+/* Chip/tag padrão */
+.chip {
+  display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
-  font-size: var(--font-size-lg);
-  font-weight: 700;
-  color: var(--color-text);
-}
-
-.navbar-user {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
   font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
+  font-weight: 500;
+  color: var(--color-text-secondary);
 }
+
+/* Divider */
+.divider {
+  height: 1px;
+  background: var(--color-border);
+  margin: var(--space-4) 0;
+  border: none;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SCROLLBAR CUSTOMIZADA (webkit)
+   ══════════════════════════════════════════════════════════════ */
+
+::-webkit-scrollbar        { width: 6px; height: 6px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  { background: var(--color-border-hover); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-text-muted); }
