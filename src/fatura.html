@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fatura do Cartão — Minhas Finanças</title>
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="navbar-brand">
+      <a href="dashboard.html" class="navbar-back" title="Voltar ao Dashboard">←</a>
+      <span>💳</span>
+      <span>Fatura do Cartão</span>
+    </div>
+    <div class="navbar-user">
+      <span id="usuario-nome">Carregando...</span>
+      <a href="dashboard.html"   class="btn btn-outline btn-sm">🏠 Dashboard</a>
+      <a href="despesas.html"    class="btn btn-outline btn-sm">💸 Despesas</a>
+      <a href="receitas.html"    class="btn btn-outline btn-sm">📥 Receitas</a>
+      <a href="orcamentos.html"  class="btn btn-outline btn-sm">💰 Orçamentos</a>
+      <a href="fluxo-caixa.html" class="btn btn-outline btn-sm">📈 Fluxo de Caixa</a>
+      <a href="categorias.html"  class="btn btn-outline btn-sm">🏷️ Categorias</a>
+      <a href="fatura.html"      class="btn btn-primary  btn-sm">💳 Fatura</a>
+      <a href="importar.html"    class="btn btn-outline btn-sm">📤 Importar</a>
+      <button id="btn-logout"    class="btn btn-outline btn-sm">Sair</button>
+    </div>
+  </header>
+
+  <main class="container fat-main">
+
+    <!-- ── Filtros ─────────────────────────────────────────── -->
+    <div class="fat-filtros card">
+      <div class="fat-filtros-row">
+        <div class="fat-nav-mes">
+          <button id="btn-mes-ant" class="btn btn-outline btn-sm">‹</button>
+          <h2 id="fat-mes-titulo" class="fat-mes-titulo">Carregando...</h2>
+          <button id="btn-mes-prox" class="btn btn-outline btn-sm">›</button>
+        </div>
+        <div class="fat-conta-sel">
+          <label for="sel-cartao">💳 Cartão / Conta:</label>
+          <select id="sel-cartao" class="select-input">
+            <option value="">— selecione —</option>
+          </select>
+        </div>
+        <button id="btn-exportar" class="btn btn-outline btn-sm fat-btn-export">⬇️ Exportar Excel</button>
+      </div>
+    </div>
+
+    <!-- ── Cards de resumo ─────────────────────────────────── -->
+    <div id="fat-resumo-cards" class="fat-cards-grid" style="display:none">
+      <div class="fat-card fat-card--total">
+        <div class="fat-card-label">Total da Fatura</div>
+        <div class="fat-card-valor" id="fat-total">R$ 0,00</div>
+        <div class="fat-card-sub" id="fat-total-sub">0 transações</div>
+      </div>
+      <div id="fat-cards-membros"></div>
+    </div>
+
+    <!-- ── Estado vazio ────────────────────────────────────── -->
+    <div id="fat-empty" class="fat-empty">
+      <div class="fat-empty-icon">💳</div>
+      <p>Selecione um cartão para visualizar a fatura do mês.</p>
+    </div>
+
+    <!-- ── Conteúdo principal ──────────────────────────────── -->
+    <div id="fat-conteudo" style="display:none">
+
+      <!-- Tabs -->
+      <div class="fat-tabs">
+        <button class="fat-tab fat-tab--active" data-tab="todas">Todas</button>
+        <div id="fat-tabs-membros"></div>
+        <button class="fat-tab" data-tab="conjuntas">👫 Conjuntas</button>
+        <button class="fat-tab" data-tab="projecoes">📅 Projeções</button>
+      </div>
+
+      <!-- Tabela de transações -->
+      <div id="fat-tab-todas" class="fat-tab-content fat-tab-content--active">
+        <div class="card">
+          <div class="fat-table-header">
+            <span class="fat-table-title">Transações do mês</span>
+            <div class="fat-table-filtros">
+              <input type="text" id="fat-busca" class="input-field" placeholder="🔍 Buscar descrição..." style="max-width:240px;font-size:.85rem"/>
+            </div>
+          </div>
+          <div class="fat-table-wrap">
+            <table class="fat-table" id="fat-tabela-todas">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Estabelecimento</th>
+                  <th>Responsável</th>
+                  <th>Tipo</th>
+                  <th>Parcela</th>
+                  <th>Categoria</th>
+                  <th class="fat-th-valor">Valor</th>
+                  <th class="fat-th-valor">Meu Bolso</th>
+                </tr>
+              </thead>
+              <tbody id="fat-tbody-todas"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab por membro (gerada dinamicamente) -->
+      <div id="fat-tab-membros-container"></div>
+
+      <!-- Tab conjuntas -->
+      <div id="fat-tab-conjuntas" class="fat-tab-content">
+        <div class="card">
+          <div class="fat-table-header">
+            <span class="fat-table-title">👫 Despesas Conjuntas (50/50)</span>
+          </div>
+          <div class="fat-table-wrap">
+            <table class="fat-table">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Estabelecimento</th>
+                  <th>Tipo</th>
+                  <th>Parcela</th>
+                  <th>Categoria</th>
+                  <th class="fat-th-valor">Valor Total</th>
+                  <th class="fat-th-valor">Por Pessoa</th>
+                </tr>
+              </thead>
+              <tbody id="fat-tbody-conjuntas"></tbody>
+            </table>
+          </div>
+          <div id="fat-conjuntas-footer" class="fat-section-footer"></div>
+        </div>
+      </div>
+
+      <!-- Tab projeções -->
+      <div id="fat-tab-projecoes" class="fat-tab-content">
+        <div class="card">
+          <div class="fat-table-header">
+            <span class="fat-table-title">📅 Parcelas Futuras — próximos 6 meses</span>
+          </div>
+          <div id="fat-proj-content">
+            <p class="fat-loading">Carregando projeções...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumo por pessoa -->
+      <div class="card fat-resumo-detalhado" id="fat-resumo-detalhado">
+        <h3 class="fat-resumo-title">💰 Resumo — Total a Pagar</h3>
+        <div id="fat-resumo-rows"></div>
+      </div>
+
+    </div><!-- /fat-conteudo -->
+
+  </main>
+
+  <!-- SheetJS para exportação -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script type="module" src="js/pages/fatura.js"></script>
+</body>
+</html>
