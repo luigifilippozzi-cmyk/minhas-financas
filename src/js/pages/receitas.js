@@ -480,12 +480,58 @@ function _parsearLinhasRec(rows) {
     const catId   = catObj?.id ?? '';
     // Resolve conta por nome
     const contaObj = contaNome ? _contas.find(c => c.nome.toLowerCase().includes(contaNome.toLowerCase()) || contaNome.toLowerCase().includes(c.nome.toLowerCase())) : null;
-    const contaId  = contaObj?.id ?? (document.getElementById('sel-conta-global-rec')?.value ?? '');
+    const contaId  = contaObj?.id
+      || _inferirContaDaDescricao(desc, _contas)
+      || (document.getElementById('sel-conta-global-rec')?.value ?? '');
     const chave    = erros.length ? null : _chaveDedup(data, desc, valor);
     const duplicado = chave ? _chavesRec.has(chave) : false;
     resultado.push({ _idx: resultado.length, data, descricao: desc, valor, categoriaId: catId, contaId, chave_dedup: chave, duplicado, erro: erros.length ? erros.join(', ') : null });
   }
   return resultado;
+}
+
+// ── NRF-004: Infere conta/banco a partir de palavras-chave na descrição ─────
+function _inferirContaDaDescricao(descricao, contas) {
+  if (!descricao || !contas.length) return '';
+  const d = descricao.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+  // 1. Match direto contra nomes das contas do grupo
+  for (const c of contas) {
+    const palavras = c.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').split(/\s+/);
+    if (palavras.some(p => p.length > 3 && d.includes(p))) return c.id;
+  }
+
+  // 2. Mapa de palavras-chave → trecho do nome da conta
+  const BANCO_KEYWORDS = [
+    { keys: ['itau', 'itaú'],                              conta: 'itaú'       },
+    { keys: ['bradesco'],                                  conta: 'bradesco'   },
+    { keys: ['santander'],                                 conta: 'santander'  },
+    { keys: ['btg'],                                       conta: 'btg'        },
+    { keys: ['xp invest', 'xpinvest', 'xp corret', 'xp pagamento'], conta: 'xp' },
+    { keys: ['nubank', 'nu pagamento', 'nu financ'],       conta: 'nubank'     },
+    { keys: ['banco inter', 'inter pagamento'],            conta: 'inter'      },
+    { keys: ['c6 bank', 'c6bank', 'c6 pagamento'],         conta: 'c6'         },
+    { keys: ['caixa eco', 'cef ', 'cx eco'],               conta: 'caixa'      },
+    { keys: ['banco do brasil', 'bb seg', 'bb pag'],       conta: 'brasil'     },
+    { keys: ['sicoob', 'sicredi'],                         conta: 'sicoob'     },
+    { keys: ['original'],                                  conta: 'original'   },
+    { keys: ['next bank', 'next pag'],                     conta: 'next'       },
+    { keys: ['neon'],                                      conta: 'neon'       },
+    { keys: ['picpay'],                                    conta: 'picpay'     },
+    { keys: ['mercado pago', 'mercadopago'],               conta: 'mercado'    },
+    { keys: ['facilcred'],                                 conta: 'facilcred'  },
+  ];
+
+  for (const regra of BANCO_KEYWORDS) {
+    if (regra.keys.some(k => d.includes(k))) {
+      const match = contas.find(c =>
+        c.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(regra.conta)
+      );
+      if (match) return match.id;
+    }
+  }
+
+  return '';
 }
 
 function _normalizarValorRec(val) {

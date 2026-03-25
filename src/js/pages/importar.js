@@ -265,7 +265,7 @@ function parsearLinhasExtrato(rows) {
     const contaObj  = contaNome ? _contas.find(c =>
       c.nome.toLowerCase().includes(contaNome.toLowerCase()) ||
       contaNome.toLowerCase().includes(c.nome.toLowerCase())) : null;
-    const contaId   = contaObj?.id ?? '';
+    const contaId   = contaObj?.id || inferirContaDaDescricao(estab, _contas);
     if (!dataRaw && !estab && !valorRaw) continue;
     const estabLow = estab.toLowerCase();
     if (/pagamento de fatura|inclusao de pagamento|inclusão de pagamento|parcela de fatura rotativo/i.test(estabLow)) continue;
@@ -375,6 +375,52 @@ function gerarTemplateDespesas() {
   XLSX.utils.book_append_sheet(wb, wsI, 'Instruções');
 
   XLSX.writeFile(wb, 'template-despesas.xlsx');
+}
+
+// ── NRF-004: Infere conta/banco a partir de palavras-chave na descrição ─────
+// Prioridade: match direto contra nome das contas do grupo → então mapa de
+// palavras-chave de bancos brasileiros mais comuns.
+function inferirContaDaDescricao(descricao, contas) {
+  if (!descricao || !contas.length) return '';
+  const d = descricao.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+  // 1. Tenta match direto: alguma palavra significativa do nome da conta está na descrição
+  for (const c of contas) {
+    const palavras = c.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').split(/\s+/);
+    if (palavras.some(p => p.length > 3 && d.includes(p))) return c.id;
+  }
+
+  // 2. Mapa de palavras-chave → trecho do nome da conta
+  const BANCO_KEYWORDS = [
+    { keys: ['itau', 'itaú'],                              conta: 'itaú'       },
+    { keys: ['bradesco'],                                  conta: 'bradesco'   },
+    { keys: ['santander'],                                 conta: 'santander'  },
+    { keys: ['btg'],                                       conta: 'btg'        },
+    { keys: ['xp invest', 'xpinvest', 'xp corret', 'xp pagamento'], conta: 'xp' },
+    { keys: ['nubank', 'nu pagamento', 'nu financ'],       conta: 'nubank'     },
+    { keys: ['banco inter', 'inter pagamento'],            conta: 'inter'      },
+    { keys: ['c6 bank', 'c6bank', 'c6 pagamento'],         conta: 'c6'         },
+    { keys: ['caixa eco', 'cef ', 'cx eco'],               conta: 'caixa'      },
+    { keys: ['banco do brasil', 'bb seg', 'bb pag'],       conta: 'brasil'     },
+    { keys: ['sicoob', 'sicredi'],                         conta: 'sicoob'     },
+    { keys: ['original'],                                  conta: 'original'   },
+    { keys: ['next bank', 'next pag'],                     conta: 'next'       },
+    { keys: ['neon'],                                      conta: 'neon'       },
+    { keys: ['picpay'],                                    conta: 'picpay'     },
+    { keys: ['mercado pago', 'mercadopago'],               conta: 'mercado'    },
+    { keys: ['facilcred'],                                 conta: 'facilcred'  },
+  ];
+
+  for (const regra of BANCO_KEYWORDS) {
+    if (regra.keys.some(k => d.includes(k))) {
+      const match = contas.find(c =>
+        c.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(regra.conta)
+      );
+      if (match) return match.id;
+    }
+  }
+
+  return '';
 }
 
 // ── Normalização de valor XP: "R$ 1.290,00" → 1290.00 ─────────
