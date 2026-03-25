@@ -20,7 +20,7 @@
 // ============================================================
 import { onAuthChange, logout } from '../services/auth.js';
 import {
-  buscarPerfil, ouvirCategorias,
+  buscarPerfil, ouvirCategorias, ouvirContas,
   criarDespesa as criarDespesaDB, excluirDespesa,
   buscarChavesDedup, buscarMapaProjecoes, buscarMapaCategorias,
   buscarProjecoesDetalhadas, atualizarStatusParcela,
@@ -34,7 +34,10 @@ import { normalizarStr, similaridade } from '../utils/helpers.js';
 let _usuario = null;
 let _grupoId = null;
 let _categorias = [];
+let _contas = [];           // NRF-004: contas/bancos do grupo
+let _contaMap = {};         // NRF-004: id → conta
 let _unsubCats = null;
+let _unsubContas = null;    // NRF-004
 let _linhas = [];
 let _chavesExistentes = new Set();
 let _projecaoDocMap = new Map();
@@ -57,6 +60,12 @@ onAuthChange(async (user) => {
     _categorias = cats.sort((a, b) => a.nome.localeCompare(b.nome));
     atualizarDropdownsCategoria();
     preencherSelCatLote();
+  });
+  // NRF-004: carrega contas/bancos disponíveis
+  _unsubContas = ouvirContas(_grupoId, (contas) => {
+    _contas   = contas.sort((a, b) => a.nome.localeCompare(b.nome));
+    _contaMap = Object.fromEntries(_contas.map((c) => [c.id, c]));
+    preencherSelectsContas();
   });
   configurarEventos();
 });
@@ -92,6 +101,22 @@ function configurarEventos() {
     if (!e.target.value) return;
     document.querySelectorAll('.sel-cat-linha').forEach((sel) => { sel.value = e.target.value; });
     atualizarChipsPreview();
+  });
+  // NRF-004: aplica conta a todas as linhas do preview
+  document.getElementById('sel-conta-lote')?.addEventListener('change', (e) => {
+    if (!e.target.value) return;
+    document.querySelectorAll('.sel-conta-linha').forEach((sel) => {
+      sel.value = e.target.value;
+      _linhas[+sel.dataset.idx].contaId = e.target.value;
+    });
+  });
+  // NRF-004: quando o usuário muda a conta global, aplica a todas as linhas do preview
+  document.getElementById('sel-conta-global')?.addEventListener('change', (e) => {
+    const contaId = e.target.value;
+    document.querySelectorAll('.sel-conta-linha').forEach((sel) => {
+      sel.value = contaId;
+      _linhas[+sel.dataset.idx].contaId = contaId;
+    });
   });
   document.getElementById('btn-importar')?.addEventListener('click', () => executarImportacao());
   document.getElementById('btn-nova-importacao')?.addEventListener('click', resetarTudo);
@@ -394,6 +419,22 @@ function renderizarPreview() {
     selCat.value = l.categoriaId ?? '';
     selCat.addEventListener('change', (e) => { _linhas[l._idx].categoriaId = e.target.value; });
     tdCat.appendChild(selCat);
+
+    // NRF-004: coluna Conta/Banco por linha
+    const tdConta  = document.createElement('td');
+    const selConta = document.createElement('select');
+    selConta.className = 'sel-conta-linha select-input';
+    selConta.style.cssText = 'font-size:.85rem;padding:.2rem .4rem;';
+    selConta.dataset.idx = l._idx;
+    selConta.innerHTML = '<option value="">— sem conta —</option>' +
+      _contas.map(c => '<option value="' + c.id + '">' + c.emoji + ' ' + c.nome + '</option>').join('');
+    // Pré-seleciona: conta da linha > conta global > vazio
+    const contaGlobal = document.getElementById('sel-conta-global')?.value ?? '';
+    selConta.value = l.contaId ?? contaGlobal;
+    if (selConta.value) _linhas[l._idx].contaId = selConta.value;
+    selConta.addEventListener('change', (e) => { _linhas[l._idx].contaId = e.target.value; });
+    tdConta.appendChild(selConta);
+
     const tdStatus = document.createElement('td');
     tdStatus.style.textAlign = 'center';
     if (l.substitui_projecao_fuzzy) {
@@ -408,7 +449,7 @@ function renderizarPreview() {
     } else {
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok">✓</span>';
     }
-    tr.append(tdChk, tdData, tdEstab, tdPortador, tdParcela, tdVal, tdCat, tdStatus);
+    tr.append(tdChk, tdData, tdEstab, tdPortador, tdParcela, tdVal, tdCat, tdConta, tdStatus);
     tbody.appendChild(tr);
   });
   document.getElementById('sec-preview').classList.remove('hidden');
@@ -471,6 +512,7 @@ async function executarImportacao() {
   for (const idx of idxs) {
     const l       = _linhas[idx];
     const cat     = document.querySelector('.sel-cat-linha[data-idx="' + idx + '"]')?.value ?? l.categoriaId ?? '';
+    const contaId = document.querySelector('.sel-conta-linha[data-idx="' + idx + '"]')?.value || l.contaId || undefined; // NRF-004
     const info    = parsearParcela(l.parcela);
     const parc_id = info ? crypto.randomUUID() : null;
     // NRF-001: auto-mark isConjunta/valorAlocado from category's isConjuntaPadrao
@@ -489,6 +531,7 @@ async function executarImportacao() {
         parcelamento_id: parc_id ?? l.parcelamento_id_proj ?? null,
         importadoEm: new Date(),
         isConjunta: isConj, valorAlocado,
+        contaId,  // NRF-004
         status: 'pago',
       }));
       // NRF-002: reconciliação por matching exato
@@ -532,6 +575,7 @@ async function executarImportacao() {
             ...p, grupoId: _grupoId, usuarioId: _usuario.uid,
             origem: 'projecao', importadoEm: new Date(),
             isConjunta: isConj, valorAlocado,
+            contaId,  // NRF-004: propaga conta para as projeções de parcelas
             status: 'pendente',
           }));
           _chavesExistentes.add(p.chave_dedup);
@@ -602,6 +646,24 @@ function atualizarDropdownsCategoria() {
     sel.value = atual || mapearCategoria(_linhas[idx]?.descricao ?? '');
   });
   preencherSelCatLote();
+}
+
+// NRF-004: preenche todos os selects de conta (global, lote e por linha)
+function preencherSelectsContas() {
+  const optStr = '<option value="">— sem conta —</option>' +
+    _contas.map(c => '<option value="' + c.id + '">' + c.emoji + ' ' + c.nome + '</option>').join('');
+  const optStrNeutro = '<option value="">— manter individual —</option>' +
+    _contas.map(c => '<option value="' + c.id + '">' + c.emoji + ' ' + c.nome + '</option>').join('');
+  const selGlobal = document.getElementById('sel-conta-global');
+  if (selGlobal) { const v = selGlobal.value; selGlobal.innerHTML = optStr; selGlobal.value = v; }
+  const selLote = document.getElementById('sel-conta-lote');
+  if (selLote)   { const v = selLote.value;   selLote.innerHTML = optStrNeutro; selLote.value = v; }
+  // Por linha (no preview)
+  document.querySelectorAll('.sel-conta-linha').forEach((sel) => {
+    const idx = +sel.dataset.idx, atual = sel.value;
+    sel.innerHTML = optStr;
+    sel.value = atual || _linhas[idx]?.contaId || '';
+  });
 }
 function resetarUpload() {
   document.getElementById('file-input').value = '';
