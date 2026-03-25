@@ -11,6 +11,17 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [1.6.3] - 2026-03-25
+
+### Adicionado
+- **Inferência automática de banco pela descrição** (`inferirContaDaDescricao`): ao importar despesas ou receitas, o sistema detecta o banco/conta em 3 níveis — (1) coluna "Conta / Banco" do arquivo, (2) palavras-chave da descrição da transação contra os nomes das contas do grupo e mapa estático de ~16 bancos brasileiros (Itaú, Bradesco, Santander, BTG, XP, Nubank, Inter, C6, Caixa, BB, Sicoob, etc.), (3) seletor global da tela
+
+### Corrigido
+- **Import de extratos bancários com valores negativos**: `parsearLinhasExtrato` agora aplica `Math.abs()` ao valor — transações de débito em conta-corrente (ex: `-R$ 180,00`) eram descartadas; agora são importadas corretamente como despesas
+- **Cache de HTML no browser**: `firebase.json` configurado com `Cache-Control: no-cache, no-store` para arquivos `.html`, evitando que o browser sirva versões desatualizadas das páginas
+
+---
+
 ## [1.6.0] - 2026-03-25
 
 ### Adicionado — NRF-004: Identificação de Conta/Banco por Transação
