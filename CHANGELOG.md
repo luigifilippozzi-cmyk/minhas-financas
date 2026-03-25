@@ -11,6 +11,42 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [1.5.0] - 2026-03-25
+
+### Alterado — Redesign Visual Completo (UI/UX)
+
+Revisão do sistema de design inspirada em bibliotecas open-source:
+- **[Inter](https://github.com/rsms/inter)** (SIL Open Font License) — tipografia adotada em toda a aplicação
+- **[shadcn/ui](https://github.com/shadcn-ui/ui)** (MIT) — paleta neutra slate, botões, modais, focus ring
+- **[Tremor](https://github.com/tremorlabs/tremor)** (Apache 2.0) — KPI cards com linha colorida + hover lift
+- **[Radix UI Colors](https://github.com/radix-ui/colors)** (MIT) — sistema semântico de cores
+
+#### `variables.css` — novo sistema de design
+- **Fonte:** Inter via Google Fonts com `preconnect` otimizado em todos os HTMLs
+- **Paleta semântica:** `--color-income` (verde), `--color-expense` (rose), `--color-balance` (blue), `--color-budget` (violet)
+- **Sombras refinadas:** 5 níveis com base `rgba(15,23,42)` mais suaves e realistas
+- **Border radius:** aumentado (6 / 10 / 14 / 20px) para visual mais moderno
+- **Transições:** `cubic-bezier(0.4,0,0.2,1)` em lugar de `ease` genérico
+- Novos tokens: `--color-surface-alt`, `--color-border-hover`, `--color-primary-ring`, `--color-*-light/text`
+
+#### `components.css` — componentes polidos
+- **Navbar:** `backdrop-filter: blur(12px)` com fundo translúcido; links de navegação sem borda, separador visual entre nome do usuário e links; botão Sair vermelho no hover; responsivo (oculta nome e brand em mobile)
+- **Botões:** sombra de cor no hover (`.btn-primary`), focus ring de acessibilidade (3px), variante `.btn-ghost`, `.btn-lg` e `.btn-icon`
+- **Cards:** hover lift com `translateY(-2px)` e `shadow-card-hover`
+- **Modal:** backdrop com `blur(4px)`, animação `slideUp` com spring, cabeçalho e rodapé com divisor
+- **Inputs:** ring de foco de 3px com cor primária translúcida, hover muda cor da borda
+- **Scrollbar customizada:** 6px, arredondada, transparente no track
+- **Feedback forms:** ícone alinhado, borda lateral colorida
+
+#### `dashboard.css` — layout e cards
+- **Cards de resumo:** linha colorida no topo (3px) por tipo de card; hover lift; valor com `font-weight: 800` e `letter-spacing: -0.03em`
+- **Category cards:** hover lift + `shadow-md`
+- **Expense items:** transição suave de borda + background ao hover
+- **Parcelamentos widget:** gradiente sutil no cabeçalho (`#f0f0ff → #f5f3ff`)
+- **Responsivo mobile:** grid 2 colunas, brand oculto, nome do usuário oculto, padding reduzido
+
+---
+
 ## [1.4.0] - 2026-03-25
 
 ### Adicionado
