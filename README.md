@@ -15,9 +15,12 @@
 - 🔐 Login e cadastro com Firebase Authentication
 - 👨‍👩‍👧 Grupos familiares com código de convite
 - 🏷️ Categorias personalizáveis (nome, emoji, cor)
-- 💸 Registro e gestão de despesas
-- 📊 Dashboard de orçamentos com alertas visuais
-- 🔄 Sincronização em tempo real entre membros
+- 💸 Registro e gestão de despesas (CRUD + exportação CSV)
+- 📥 Registro e gestão de **receitas** por categoria (Salário, Freelance, Rendimentos…)
+- 📊 Dashboard com orçamentos, receitas, saldo e alertas visuais
+- 👫 Divisão de contas conjuntas com chips por usuário
+- 📤 Importação de extratos Excel com deduplicação e projeção de parcelas
+- 🔄 Sincronização em tempo real entre membros (Firestore onSnapshot)
 
 ## 🚀 Como Executar Localmente
 
@@ -77,12 +80,12 @@ minhas-financas/
 
 ## 🗺️ Roadmap
 
-- [ ] v0.1.0 — Autenticação (Firebase Auth)
-- [ ] v0.2.0 — Sistema de Grupos Familiares
-- [ ] v0.3.0 — Categorias Editáveis
-- [ ] v0.4.0 — CRUD de Despesas
-- [ ] v0.5.0 — Dashboard de Orçamentos
-- [ ] v1.0.0 — Release Oficial
+- [x] v1.0.0 — Autenticação, Grupos, Categorias, Despesas, Orçamentos, Dashboard
+- [x] v1.1.0 — Importação de extratos, Recuperação de senha, Reconciliação fuzzy
+- [x] v1.2.0 — Contas conjuntas (NRF-001), chips por usuário, correção bug #90
+- [x] v1.3.0 — Módulo de Receitas (RF-016) com dashboard e página de gestão
+- [ ] v1.4.0 — Relatórios mensais / gráficos históricos
+- [ ] v2.0.0 — App iOS via Capacitor
 
 ## 🤝 Contribuindo
 

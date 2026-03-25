@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fluxo de Caixa — Minhas Finanças</title>
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <!-- Chart.js v4 — open source (github.com/chartjs/Chart.js) via jsDelivr CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- Header / Navbar -->
+  <header class="navbar">
+    <div class="navbar-brand">
+      <span>💰</span>
+      <span>Minhas Finanças</span>
+    </div>
+    <div class="navbar-user">
+      <span id="usuario-nome">Carregando...</span>
+      <a href="dashboard.html"  class="btn btn-outline btn-sm">📊 Dashboard</a>
+      <a href="despesas.html"   class="btn btn-outline btn-sm">💸 Despesas</a>
+      <a href="receitas.html"   class="btn btn-outline btn-sm">📥 Receitas</a>
+      <a href="orcamentos.html" class="btn btn-outline btn-sm">💰 Orçamentos</a>
+      <a href="categorias.html" class="btn btn-outline btn-sm">🏷️ Categorias</a>
+      <a href="importar.html"   class="btn btn-outline btn-sm">📤 Importar</a>
+      <button id="btn-logout"   class="btn btn-outline btn-sm">Sair</button>
+    </div>
+  </header>
+
+  <main class="main-content">
+
+    <!-- ═══ SEÇÃO: FLUXO DE CAIXA ═══ -->
+    <section class="section" id="section-fluxo">
+
+      <div class="section-header">
+        <h2 class="section-title">📈 Fluxo de Caixa — <span id="fc-titulo-ano">2026</span></h2>
+        <div class="section-actions">
+          <select id="fc-select-ano" class="select-input" title="Selecionar ano"></select>
+          <button id="fc-btn-atualizar" class="btn btn-primary btn-sm">🔄 Atualizar</button>
+        </div>
+      </div>
+
+      <!-- Cards de resumo anual -->
+      <div class="resumo-cards" id="fc-resumo-cards">
+        <div class="card resumo-card fc-card--receita">
+          <span class="resumo-label">📥 Total Receitas</span>
+          <span class="resumo-valor fc-verde" id="fc-total-receitas">R$ 0,00</span>
+          <span class="resumo-sublabel">soma do ano</span>
+        </div>
+        <div class="card resumo-card fc-card--despesa">
+          <span class="resumo-label">💸 Total Despesas</span>
+          <span class="resumo-valor fc-vermelho" id="fc-total-despesas">R$ 0,00</span>
+          <span class="resumo-sublabel">realizadas + projeções</span>
+        </div>
+        <div class="card resumo-card fc-card--saldo">
+          <span class="resumo-label">⚖️ Saldo do Ano</span>
+          <span class="resumo-valor" id="fc-saldo-ano">R$ 0,00</span>
+          <span class="resumo-sublabel">receitas − despesas</span>
+        </div>
+        <div class="card resumo-card fc-card--orcado">
+          <span class="resumo-label">🎯 Total Orçado</span>
+          <span class="resumo-valor fc-cinza" id="fc-total-orcado">R$ 0,00</span>
+          <span class="resumo-sublabel">limite planejado no ano</span>
+        </div>
+      </div>
+
+      <!-- Gráfico combinado: barras + linha -->
+      <div class="card fc-chart-card">
+        <div class="fc-chart-header">
+          <span class="fc-chart-titulo">Evolução Mensal</span>
+          <div class="fc-legenda">
+            <span class="fc-leg-item"><span class="fc-leg-dot" style="background:#2e7d32"></span>Receitas</span>
+            <span class="fc-leg-item"><span class="fc-leg-dot" style="background:#c62828"></span>Despesas</span>
+            <span class="fc-leg-item"><span class="fc-leg-dot" style="background:#9e9e9e;border:2px dashed #9e9e9e;background:transparent"></span>Orçado</span>
+            <span class="fc-leg-item"><span class="fc-leg-dot" style="background:#1565c0"></span>Saldo Acum.</span>
+          </div>
+        </div>
+        <div class="fc-chart-wrapper">
+          <canvas id="fc-chart"></canvas>
+        </div>
+      </div>
+
+      <!-- Tabela mensal detalhada -->
+      <div class="card fc-tabela-card">
+        <h3 class="fc-tabela-titulo">Detalhamento Mensal</h3>
+        <div class="fc-tabela-scroll">
+          <table class="fc-tabela">
+            <thead>
+              <tr>
+                <th>Mês</th>
+                <th class="fc-th-num">Receitas</th>
+                <th class="fc-th-num">Despesas</th>
+                <th class="fc-th-num">Orçado</th>
+                <th class="fc-th-num">Saldo Mês</th>
+                <th class="fc-th-num">Saldo Acum.</th>
+                <th class="fc-th-num">Situação</th>
+              </tr>
+            </thead>
+            <tbody id="fc-tbody">
+              <tr><td colspan="7" class="fc-empty">Carregando dados...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Estado de carregamento / erro -->
+      <div id="fc-loading" class="fc-loading-overlay" style="display:none;">
+        <div class="fc-loading-spinner"></div>
+        <span>Carregando fluxo de caixa...</span>
+      </div>
+
+    </section>
+  </main>
+
+  <script type="module" src="js/pages/fluxo-caixa.js"></script>
+
+</body>
+</html>
