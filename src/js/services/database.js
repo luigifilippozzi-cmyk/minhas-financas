@@ -310,18 +310,26 @@ export async function buscarMapaCategorias(grupoId) {
 /**
  * Listener em tempo real de todas as despesas com tipo='projecao'
  * do grupo (parcelas futuras geradas automaticamente no import).
- * Requer composite index: (grupoId ASC, tipo ASC, data ASC).
+ * Usa o índice (grupoId ASC, data DESC) já existente e filtra tipo='projecao'
+ * client-side, evitando depender do índice composto (grupoId, tipo, data)
+ * que pode ainda estar sendo construído no Firestore.
  */
 export function ouvirParcelamentosAbertos(grupoId, callback) {
+  const hoje = new Date();
   const q = query(
     collection(db, 'despesas'),
     where('grupoId', '==', grupoId),
-    where('tipo', '==', 'projecao'),
-    orderBy('data', 'asc'),
+    where('data', '>=', hoje),
+    orderBy('data', 'desc'),
   );
   return onSnapshot(q,
-    (snap) => { callback(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); },
-    (err)  => { console.error('[ouvirParcelamentosAbertos] Erro no listener:', err); },
+    (snap) => {
+      const projecoes = snap.docs
+        .map((d) => ({ id: d.id, ...d.data() }))
+        .filter((d) => d.tipo === 'projecao');
+      callback(projecoes);
+    },
+    (err) => { console.error('[ouvirParcelamentosAbertos] Erro no listener:', err); },
   );
 }
 
