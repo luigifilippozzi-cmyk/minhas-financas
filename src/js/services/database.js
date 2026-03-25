@@ -200,6 +200,55 @@ export async function garantirCategoriasReceita(grupoId, categoriasPadrao) {
   ));
 }
 
+// ── NRF-004: Contas (Banco / Cartão) ─────────────────────────
+
+/**
+ * Cria uma nova conta no grupo.
+ */
+export async function criarConta(dados) {
+  return addDoc(collection(db, 'contas'), {
+    ...dados,
+    dataCriacao: serverTimestamp(),
+  });
+}
+
+/**
+ * Listener em tempo real de todas as contas ativas do grupo.
+ */
+export function ouvirContas(grupoId, callback) {
+  const q = query(
+    collection(db, 'contas'),
+    where('grupoId', '==', grupoId),
+    where('ativa',   '==', true),
+  );
+  return onSnapshot(q,
+    (snap) => { callback(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); },
+    (err)  => { console.error('[ouvirContas] Erro no listener:', err); },
+  );
+}
+
+export async function atualizarConta(contaId, dados) {
+  return updateDoc(doc(db, 'contas', contaId), dados);
+}
+
+export async function excluirConta(contaId) {
+  return updateDoc(doc(db, 'contas', contaId), { ativa: false });
+}
+
+/**
+ * Cria as contas padrão (bancos/cartões) caso o grupo ainda não tenha nenhuma.
+ * @param {string} grupoId
+ * @param {Array}  contasPadrao  — importar de models/Conta.js
+ */
+export async function garantirContasPadrao(grupoId, contasPadrao) {
+  const q    = query(collection(db, 'contas'), where('grupoId', '==', grupoId));
+  const snap = await getDocs(q);
+  if (!snap.empty) return; // já existem
+  await Promise.all(contasPadrao.map((c) =>
+    addDoc(collection(db, 'contas'), { ...c, grupoId, ativa: true })
+  ));
+}
+
 // ── RF-014: Deduplicação ──────────────────────────────────────
 
 /**

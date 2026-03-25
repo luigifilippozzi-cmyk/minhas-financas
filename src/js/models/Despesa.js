@@ -26,6 +26,7 @@ export function modelDespesa(dados) {
   const opcionais = [
     'origem', 'portador', 'parcela', 'responsavel',
     'tipo', 'chave_dedup', 'parcelamento_id', 'importadoEm', 'status',
+    'contaId', // NRF-004: conta/banco de origem
   ];
   opcionais.forEach((k) => { if (dados[k] !== undefined) obj[k] = dados[k]; });
   return obj;

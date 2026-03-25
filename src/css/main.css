@@ -280,6 +280,8 @@ a:hover { text-decoration: underline; }
 .desp-item-meta { display: flex; align-items: center; flex-wrap: wrap; gap: .35rem; margin-top: .2rem; }
 .desp-resp-badge { font-size: .72rem; font-weight: 600; padding: .1rem .45rem; border-radius: 99px; background: #e3f2fd; color: #1565c0; border: 1px solid #bbdefb; }
 .desp-resp-badge--conjunta { background: #f3e5f5; color: #7b1fa2; border-color: #ce93d8; }
+/* NRF-004: badge de conta/banco — cor dinâmica via inline style */
+.desp-conta-badge { font-size: .72rem; font-weight: 600; padding: .1rem .5rem; border-radius: 99px; border: 1px solid; letter-spacing: .01em; }
 .desp-parcela-badge { font-size: .72rem; font-weight: 700; padding: .1rem .45rem; border-radius: 99px; background: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; }
 .desp-proj-badge { font-size: .72rem; padding: .1rem .45rem; border-radius: 99px; background: #f3e5f5; color: #7b1fa2; border: 1px solid #e1bee7; }
 .desp-item--proj { opacity: .85; border-left: 3px solid #ab47bc !important; background: #faf4ff !important; }

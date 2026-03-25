@@ -66,7 +66,7 @@ export async function salvarDespesa(dados, grupoId, usuarioId, despesaId = null)
     // Fix #49: incluído responsavel no update (estava ausente)
     // NRF-001 fix: usa dadosNormalizados diretamente para isConjunta/valorAlocado
     // pois modelDespesa trata esses campos como opcionais e pode retornar undefined
-    await atualizarDespesa(despesaId, {
+    const updatePayload = {
       descricao:    despesa.descricao,
       valor:        despesa.valor,
       categoriaId:  despesa.categoriaId,
@@ -74,15 +74,21 @@ export async function salvarDespesa(dados, grupoId, usuarioId, despesaId = null)
       responsavel:  dados.responsavel ?? '',
       isConjunta:   dadosNormalizados.isConjunta ?? false,
       valorAlocado: dadosNormalizados.valorAlocado ?? null,
-    });
+    };
+    // NRF-004: inclui contaId se informado; remove se limpo
+    if (dadosNormalizados.contaId) updatePayload.contaId = dadosNormalizados.contaId;
+    await atualizarDespesa(despesaId, updatePayload);
   } else {
     // Fix #49: responsavel incluído no documento criado
-    await criarDespesaDB({
+    const createPayload = {
       ...despesa,
       responsavel:  dados.responsavel ?? '',
       isConjunta:   dadosNormalizados.isConjunta ?? false,
       valorAlocado: dadosNormalizados.valorAlocado ?? null,
-    });
+    };
+    // NRF-004: inclui contaId se informado
+    if (dadosNormalizados.contaId) createPayload.contaId = dadosNormalizados.contaId;
+    await criarDespesaDB(createPayload);
   }
 }
 

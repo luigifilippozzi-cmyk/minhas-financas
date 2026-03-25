@@ -17,6 +17,7 @@ export function modelReceita(dados) {
     data:        dados.data instanceof Date ? dados.data : new Date(dados.data),
   };
   if (dados.responsavel !== undefined) obj.responsavel = dados.responsavel;
+  if (dados.contaId     !== undefined) obj.contaId     = dados.contaId; // NRF-004
   return obj;
 }
 

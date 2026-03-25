@@ -102,6 +102,10 @@
       <select id="filtro-responsavel" class="select-input">
         <option value="">Todos os responsáveis</option>
       </select>
+      <!-- NRF-004: filtro por conta/banco -->
+      <select id="filtro-conta" class="select-input">
+        <option value="">Todas as contas</option>
+      </select>
       <input
         type="text"
         id="filtro-texto"
@@ -171,6 +175,14 @@
             <!-- Preenchido dinamicamente com os membros do grupo -->
           </select>
           <span class="form-help">Obrigatório: informe quem realizou a despesa.</span>
+        </div>
+
+        <!-- NRF-004: conta de origem (banco/cartão) -->
+        <div class="form-group">
+          <label for="despesa-conta">Conta / Banco</label>
+          <select id="despesa-conta">
+            <option value="">Selecione a conta (opcional)</option>
+          </select>
         </div>
 
         <!-- NRF-001: seleção obrigatória individual/conjunta (fix #72) -->
