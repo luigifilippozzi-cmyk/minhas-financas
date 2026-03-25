@@ -5,6 +5,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Firebase](https://img.shields.io/badge/Firebase-Firestore-orange)](https://firebase.google.com)
 [![Status](https://img.shields.io/badge/status-em%20desenvolvimento-blue)]()
+[![Font: Inter](https://img.shields.io/badge/Font-Inter-informational)](https://github.com/rsms/inter)
+[![Design: shadcn/ui](https://img.shields.io/badge/Design-shadcn%2Fui-black)](https://github.com/shadcn-ui/ui)
 
 ## 📋 Sobre
 
@@ -58,6 +60,8 @@ npm start
 | Banco de Dados | Cloud Firestore |
 | Hospedagem | Firebase Hosting |
 | Gráficos | [Chart.js v4](https://github.com/chartjs/Chart.js) (MIT) |
+| Tipografia | [Inter](https://github.com/rsms/inter) via Google Fonts (SIL OFL) |
+| Design System | Inspirado em [shadcn/ui](https://github.com/shadcn-ui/ui) (MIT) + [Tremor](https://github.com/tremorlabs/tremor) (Apache 2.0) |
 
 ## 📁 Estrutura do Projeto
 
@@ -87,7 +91,8 @@ minhas-financas/
 - [x] v1.2.0 — Contas conjuntas (NRF-001), chips por usuário, correção bug #90
 - [x] v1.3.0 — Módulo de Receitas (RF-016) com dashboard e página de gestão
 - [x] v1.4.0 — Fluxo de Caixa anual (NRF-003) com Chart.js, tabela e badges de situação
-- [ ] v1.5.0 — Notificações de orçamento e alertas de saldo
+- [x] v1.5.0 — Redesign visual completo: Inter font, shadcn/ui + Tremor design system, navbar blur, modais animados
+- [ ] v1.6.0 — Notificações de orçamento e alertas de saldo
 - [ ] v2.0.0 — App iOS via Capacitor
 
 ## 🤝 Contribuindo
