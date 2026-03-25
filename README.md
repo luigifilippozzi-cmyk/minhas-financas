@@ -18,6 +18,7 @@
 - 💸 Registro e gestão de despesas (CRUD + exportação CSV)
 - 📥 Registro e gestão de **receitas** por categoria (Salário, Freelance, Rendimentos…)
 - 📊 Dashboard com orçamentos, receitas, saldo e alertas visuais
+- 📈 Fluxo de Caixa anual com gráfico combinado (Chart.js) e visão orçamentária mês a mês
 - 👫 Divisão de contas conjuntas com chips por usuário
 - 📤 Importação de extratos Excel com deduplicação e projeção de parcelas
 - 🔄 Sincronização em tempo real entre membros (Firestore onSnapshot)
@@ -56,6 +57,7 @@ npm start
 | Autenticação | Firebase Authentication |
 | Banco de Dados | Cloud Firestore |
 | Hospedagem | Firebase Hosting |
+| Gráficos | [Chart.js v4](https://github.com/chartjs/Chart.js) (MIT) |
 
 ## 📁 Estrutura do Projeto
 
@@ -84,7 +86,8 @@ minhas-financas/
 - [x] v1.1.0 — Importação de extratos, Recuperação de senha, Reconciliação fuzzy
 - [x] v1.2.0 — Contas conjuntas (NRF-001), chips por usuário, correção bug #90
 - [x] v1.3.0 — Módulo de Receitas (RF-016) com dashboard e página de gestão
-- [ ] v1.4.0 — Relatórios mensais / gráficos históricos
+- [x] v1.4.0 — Fluxo de Caixa anual (NRF-003) com Chart.js, tabela e badges de situação
+- [ ] v1.5.0 — Notificações de orçamento e alertas de saldo
 - [ ] v2.0.0 — App iOS via Capacitor
 
 ## 🤝 Contribuindo

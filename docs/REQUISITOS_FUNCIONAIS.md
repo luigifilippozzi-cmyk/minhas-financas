@@ -20,6 +20,7 @@
 | RF-016 | Gestão de Receitas | Alta | ✅ Implementado |
 | NRF-001 | Contas Compartilhadas (divisão conjunta) | Alta | ✅ Implementado |
 | NRF-002 | Reconciliação Fuzzy de Parcelas | Média | ✅ Implementado |
+| NRF-003 | Fluxo de Caixa — Visão Orçamentária Anual | Alta | ✅ Implementado |
 
 ---
 
@@ -191,3 +192,87 @@
 - Match confirmado: despesa real substitui a projeção (status `projecao_paga`)
 - Badge âmbar "~Reconciliada" nas linhas de preview do import
 - `parcelamentos` coleção mestre para rastrear qtd de parcelas pagas vs. total
+
+---
+
+## NRF-003: Fluxo de Caixa — Visão Orçamentária Anual
+**Prioridade:** Alta | **Versão:** v1.4.0 | **Status:** ✅ Implementado
+
+### Descrição
+Página dedicada (`fluxo-caixa.html`) que oferece visão consolidada do fluxo financeiro anual do grupo, combinando receitas realizadas, despesas realizadas, projeções de parcelas e limites orçamentários mês a mês. Projetada para apoiar decisões de planejamento financeiro dos meses futuros.
+
+### Funcionalidades
+
+#### Gráfico de Evolução Mensal
+- Gráfico combinado (Chart.js v4 — open source, github.com/chartjs/Chart.js, licença MIT) com dois eixos Y:
+  - **Eixo esquerdo (R$/mês):** barras agrupadas por mês — Receitas (verde), Despesas (vermelho), Orçado (cinza)
+  - **Eixo direito (Acumulado):** linha azul do Saldo Acumulado com pontos coloridos (azul = positivo, vermelho = negativo)
+- Tooltip interativo ao passar o cursor: exibe todos os valores do mês selecionado
+- Meses futuros com despesas em tom mais claro para distinguir realizadas de projetadas
+
+#### Cards de Resumo Anual
+| Card | Conteúdo |
+|------|---------|
+| 📥 Total Receitas | Soma de todas as receitas realizadas no ano |
+| 💸 Total Despesas | Soma de despesas realizadas (exclui projeções) |
+| ⚖️ Saldo do Ano | Receitas − Despesas; cor verde (positivo) ou vermelho (negativo) |
+| 🎯 Total Orçado | Soma de todos os limites orçamentários definidos no ano |
+
+#### Tabela Mensal Detalhada
+Colunas exibidas para cada um dos 12 meses:
+- **Receitas** — valor total de receitas do mês
+- **Despesas** — valor total de despesas realizadas
+- **Orçado** — limite orçamentário total do mês (exibe "—" se não definido)
+- **Saldo Mês** — Receitas − Despesas do mês (verde/vermelho)
+- **Saldo Acumulado** — saldo corrido desde janeiro (azul/vermelho)
+- **Situação** — badge de classificação automática
+
+#### Badges de Situação
+| Badge | Condição |
+|-------|---------|
+| ✅ Positivo | Saldo do mês ≥ 0 |
+| ❌ Negativo | Saldo do mês < 0 |
+| ⚠️ Acima orç. | Despesas > Orçado definido |
+| 🔵 Previsto | Meses futuros ao mês atual |
+| — Sem dados | Nenhuma receita nem despesa registrada |
+
+#### Navegação e UX
+- Seletor de ano (ano anterior, atual, próximo) com recarga automática dos dados
+- Mês atual destacado com borda azul e ícone ▶
+- Meses futuros em itálico suave, badge azul "Previsto"
+- Botão "🔄 Atualizar" para recarregar dados manualmente
+- Link "📈 Fluxo de Caixa" na navbar de todas as páginas da aplicação
+- Tabela com scroll horizontal em telas pequenas
+
+### Arquitetura Técnica
+
+#### Novos arquivos
+| Arquivo | Descrição |
+|---------|---------|
+| `src/fluxo-caixa.html` | Página principal com estrutura HTML + integração Chart.js |
+| `src/js/pages/fluxo-caixa.js` | Lógica da página: auth, carregamento, agregação, renderização |
+
+#### Funções adicionadas em `database.js`
+| Função | Descrição |
+|--------|---------|
+| `buscarDespesasAno(grupoId, ano)` | Busca todas as despesas do grupo no ano (getDocs, range de data) |
+| `buscarReceitasAno(grupoId, ano)` | Busca todas as receitas do grupo no ano |
+| `buscarOrcamentosAno(grupoId, ano)` | Busca todos os orçamentos do grupo no ano (query por `ano`) |
+
+#### Tratamento de projeções
+- Despesas com `tipo: 'projecao'` (parcelas futuras do RF-014) são agregadas separadamente
+- No gráfico, são somadas às despesas reais para mostrar o comprometimento total do mês
+- Na tabela, somente despesas realizadas entram na coluna "Despesas" (projeções não inflacionam o realizado)
+
+#### Biblioteca externa
+- **Chart.js v4.4.6** — licença MIT, importado via CDN `cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js`
+- Não requer instalação de pacote; carregado no `<head>` da página
+
+### Critérios de Aceitação
+- [x] Gráfico renderiza corretamente para um ano com dados reais
+- [x] Meses sem dados exibem valores zerados sem erros
+- [x] Saldo acumulado reflete corretamente a evolução mês a mês
+- [x] Badge "Previsto" aparece apenas em meses futuros ao mês atual
+- [x] Trocar de ano recarrega todos os dados e atualiza gráfico + tabela
+- [x] Página redireciona para `login.html` se usuário não estiver autenticado
+- [x] Redirecionamento para `grupo.html` se usuário não tiver grupo associado
