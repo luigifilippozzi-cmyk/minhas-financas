@@ -49,9 +49,136 @@
         <span>Sincronizado com o grupo</span>
       </div>
 
-      <div>
+      <div style="display:flex;gap:.5rem;">
+        <button id="btn-importar-receitas" class="btn btn-outline" title="Importar receitas via planilha">📤 Importar</button>
         <button id="btn-nova-receita" class="btn btn-success">+ Nova Receita</button>
       </div>
+    </div>
+
+    <!-- ═══ SEÇÃO: IMPORTAR RECEITAS (colapsável) ═══ -->
+    <div id="sec-import-rec" class="card imp-card hidden" style="margin-bottom:1.25rem;">
+
+      <!-- Cabeçalho colapsável -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+        <div>
+          <div class="imp-step-badge" style="background:#e8f5e9;color:#2e7d32;">Importar Receitas</div>
+          <h3 class="imp-step-titulo" style="margin:.4rem 0 .2rem;">Importe receitas via planilha</h3>
+          <p class="imp-step-desc" style="margin:0;">Template: Data · Descrição · Valor · Categoria (opcional) · Conta (opcional)</p>
+        </div>
+        <button id="btn-fechar-import-rec" class="btn btn-outline btn-sm" title="Fechar">✕</button>
+      </div>
+
+      <!-- Passo 1: download template -->
+      <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem;padding:.75rem 1rem;background:#f9fbe7;border-radius:8px;border:1px solid #c5e1a5;">
+        <span style="font-size:.88rem;color:#558b2f;font-weight:600;">📋 Passo 1 — Baixe o template ou use sua planilha no formato correto</span>
+        <button id="btn-baixar-template-rec" class="btn btn-outline btn-sm">⬇️ Baixar Template</button>
+      </div>
+
+      <!-- Passo 2: conta global + upload -->
+      <div class="imp-conta-selector" style="margin-bottom:1rem;">
+        <label for="sel-conta-global-rec" class="imp-conta-label">🏦 De qual banco/conta é este extrato?</label>
+        <select id="sel-conta-global-rec" class="select-input imp-conta-select">
+          <option value="">— Selecione a conta (opcional) —</option>
+        </select>
+        <span class="imp-conta-hint">Aplicado a todas as receitas. Pode ajustar por linha no preview.</span>
+      </div>
+
+      <div class="imp-drop-area" id="drop-area-rec">
+        <div class="imp-drop-icon">📂</div>
+        <p class="imp-drop-texto">Arraste o arquivo aqui</p>
+        <p class="imp-drop-sub">ou</p>
+        <label for="file-input-rec" class="btn btn-outline imp-btn-select">Selecionar arquivo</label>
+        <input type="file" id="file-input-rec" accept=".xlsx,.xls,.csv" style="display:none;" />
+        <p class="imp-drop-hint">Planilha Excel (.xlsx) ou CSV no formato do template</p>
+      </div>
+
+      <div class="imp-arquivo-selecionado hidden" id="arquivo-info-rec">
+        <span class="imp-arquivo-icon">📄</span>
+        <span id="arquivo-nome-rec">—</span>
+        <button id="btn-trocar-arquivo-rec" class="btn btn-outline btn-sm">Trocar</button>
+      </div>
+
+      <div class="form-erro hidden" id="erro-leitura-rec" style="margin-top:.75rem;"></div>
+
+      <!-- Passo 3: preview -->
+      <div id="sec-preview-rec" class="hidden" style="margin-top:1.25rem;">
+
+        <!-- Chips de resumo -->
+        <div class="imp-resumo-chips" style="margin-bottom:.75rem;">
+          <div class="imp-chip imp-chip--verde">
+            <span class="imp-chip-label">Lidas</span>
+            <span class="imp-chip-valor" id="chip-lidas-rec">0</span>
+          </div>
+          <div class="imp-chip imp-chip--verde">
+            <span class="imp-chip-label">Selecionadas</span>
+            <span class="imp-chip-valor" id="chip-sel-rec">0</span>
+          </div>
+          <div class="imp-chip imp-chip--azul">
+            <span class="imp-chip-label">Total</span>
+            <span class="imp-chip-valor" id="chip-total-imp-rec">R$ 0,00</span>
+          </div>
+          <div class="imp-chip imp-chip--dup hidden" id="chip-dup-rec-wrap">
+            <span class="imp-chip-label">Duplicados</span>
+            <span class="imp-chip-valor" id="chip-dup-rec">0</span>
+          </div>
+          <div class="imp-chip imp-chip--aviso hidden" id="chip-erro-rec-wrap">
+            <span class="imp-chip-label">Com erro</span>
+            <span class="imp-chip-valor" id="chip-erro-rec">0</span>
+          </div>
+        </div>
+
+        <!-- Ações em lote -->
+        <div class="imp-acoes-lote" style="margin-bottom:.75rem;">
+          <button id="btn-sel-todos-rec"   class="btn btn-outline btn-sm">☑ Selecionar todos</button>
+          <button id="btn-desel-todos-rec" class="btn btn-outline btn-sm">☐ Desmarcar todos</button>
+          <span style="flex:1;"></span>
+          <label class="imp-label-cat-lote">Categoria:</label>
+          <select id="sel-cat-lote-rec" class="select-input imp-sel-lote">
+            <option value="">— manter individual —</option>
+          </select>
+          <label class="imp-label-cat-lote" style="margin-left:.5rem;">Conta:</label>
+          <select id="sel-conta-lote-rec" class="select-input imp-sel-lote">
+            <option value="">— manter individual —</option>
+          </select>
+        </div>
+
+        <!-- Tabela de preview -->
+        <div class="imp-table-wrap">
+          <table class="imp-table" id="tabela-preview-rec">
+            <thead>
+              <tr>
+                <th style="width:40px;"><input type="checkbox" id="chk-all-rec" /></th>
+                <th style="width:90px;">Data</th>
+                <th>Descrição</th>
+                <th style="width:100px;">Valor</th>
+                <th style="width:160px;">Categoria</th>
+                <th style="width:140px;">Conta / Banco</th>
+                <th style="width:60px;">Status</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-preview-rec"></tbody>
+          </table>
+        </div>
+
+        <!-- Botão importar -->
+        <div class="imp-footer-acao" style="margin-top:1rem;">
+          <span id="imp-aviso-zero-rec" class="hidden" style="color:var(--danger);font-size:.9rem;">
+            ⚠️ Selecione ao menos uma receita para importar.
+          </span>
+          <button id="btn-importar-rec" class="btn btn-success imp-btn-importar">
+            📥 Importar <span id="btn-imp-count-rec">0</span> receitas
+          </button>
+        </div>
+      </div>
+
+      <!-- Resultado -->
+      <div id="sec-resultado-rec" class="hidden" style="text-align:center;padding:1.5rem 0;">
+        <div style="font-size:2.5rem;" id="resultado-icon-rec">✅</div>
+        <h3 id="resultado-titulo-rec" style="margin:.5rem 0 .25rem;">Importação concluída!</h3>
+        <p  id="resultado-msg-rec" style="color:var(--text-muted);margin:0 0 1rem;">—</p>
+        <button id="btn-nova-importacao-rec" class="btn btn-outline">Nova Importação</button>
+      </div>
+
     </div>
 
     <!-- ═══ CHIPS DE RESUMO ═══ -->
@@ -132,6 +259,8 @@
     </div>
   </div>
 
+  <!-- SheetJS — necessário para leitura e geração do template xlsx -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script type="module" src="js/pages/receitas.js"></script>
 
 </body>
