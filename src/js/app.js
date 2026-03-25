@@ -11,6 +11,7 @@ import {
   ouvirReceitas,
   ouvirCategoriasReceita,
   garantirCategoriasReceita,
+  garantirContasPadrao,       // NRF-004
 } from './services/database.js';
 import { iniciarListenerCategorias } from './controllers/categorias.js';
 import {
@@ -22,6 +23,7 @@ import { iniciarListenerOrcamentos } from './controllers/orcamentos.js';
 import { renderizarDashboard } from './controllers/dashboard.js';
 import { renderizarDashboardReceitas } from './controllers/receitas-dashboard.js';
 import { CATEGORIAS_RECEITA_PADRAO } from './models/Receita.js';
+import { CONTAS_PADRAO } from './models/Conta.js';            // NRF-004
 import { mesAnoAtual, dataHoje, definirTexto } from './utils/helpers.js';
 import { nomeMes } from './utils/formatters.js';
 
@@ -80,6 +82,7 @@ onAuthChange(async (user) => {
   iniciarListenerParcelamentos(estadoApp.perfil.grupoId); // RF-014
   iniciarListenerCategoriasReceita(estadoApp.perfil.grupoId);
   garantirCategoriasReceita(estadoApp.perfil.grupoId, CATEGORIAS_RECEITA_PADRAO).catch(() => {});
+  garantirContasPadrao(estadoApp.perfil.grupoId, CONTAS_PADRAO).catch(() => {}); // NRF-004
   configurarEventos();
 });
 

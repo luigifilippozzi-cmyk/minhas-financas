@@ -11,7 +11,7 @@
 
 import { onAuthChange, logout } from '../services/auth.js';
 import { buscarPerfil, buscarGrupo } from '../services/database.js';
-import { ouvirCategorias, ouvirParcelamentosAbertos } from '../services/database.js';
+import { ouvirCategorias, ouvirParcelamentosAbertos, ouvirContas } from '../services/database.js';
 import {
   iniciarListenerDespesas,
   salvarDespesa,
@@ -31,9 +31,13 @@ let _categorias = [];
 let _catMap     = {};
 let _projecoes  = [];       // RF-014: parcelas futuras em aberto
 
+let _contas     = [];       // NRF-004: contas/bancos do grupo
+let _contaMap   = {};       // NRF-004: id → conta
+
 let _unsubDesp  = null;
 let _unsubCats  = null;
 let _unsubProj  = null;     // RF-014: listener de projeções
+let _unsubContas = null;    // NRF-004: listener de contas
 let _idParaExcluir = null;
 
 // Atalhos de abertura automática do modal (via URL params do dashboard)
@@ -74,6 +78,7 @@ onAuthChange(async (user) => {
   atualizarTituloMes();
   iniciarListeners();
   iniciarListenerProjecoes();
+  iniciarListenerContas(); // NRF-004
 });
 
 // ── Listener de Projeções (RF-014) ────────────────────────────
@@ -82,6 +87,18 @@ function iniciarListenerProjecoes() {
   _unsubProj = ouvirParcelamentosAbertos(_grupoId, (projecoes) => {
     _projecoes = projecoes;
     renderizarPainelParcelamentos();
+  });
+}
+
+// ── NRF-004: Listener de Contas ───────────────────────────────
+function iniciarListenerContas() {
+  if (_unsubContas) _unsubContas();
+  _unsubContas = ouvirContas(_grupoId, (contas) => {
+    _contas   = contas.sort((a, b) => a.nome.localeCompare(b.nome));
+    _contaMap = Object.fromEntries(_contas.map((c) => [c.id, c]));
+    preencherSelectContas(_contas);
+    preencherFiltroContas(_contas);
+    renderizarLista();
   });
 }
 
@@ -293,10 +310,12 @@ function renderizarLista() {
   const filtroTexto = (document.getElementById('filtro-texto')?.value ?? '').toLowerCase().trim();
   const filtroCat   = document.getElementById('filtro-categoria')?.value  ?? '';
   const filtroResp  = document.getElementById('filtro-responsavel')?.value ?? '';
+  const filtroConta = document.getElementById('filtro-conta')?.value ?? '';   // NRF-004
 
   let filtradas = _despesas;
-  if (filtroCat)   filtradas = filtradas.filter(d => d.categoriaId === filtroCat);
-  if (filtroTexto) filtradas = filtradas.filter(d => d.descricao.toLowerCase().includes(filtroTexto));
+  if (filtroCat)    filtradas = filtradas.filter(d => d.categoriaId === filtroCat);
+  if (filtroConta)  filtradas = filtradas.filter(d => d.contaId === filtroConta); // NRF-004
+  if (filtroTexto)  filtradas = filtradas.filter(d => d.descricao.toLowerCase().includes(filtroTexto));
   // RF-014: filtro por responsável (primeiro nome, case-insensitive)
   if (filtroResp)  filtradas = filtradas.filter(d => {
     const resp = (d.responsavel || d.portador || '').split(' ')[0].toLowerCase();
@@ -333,6 +352,11 @@ function renderizarLista() {
     const projBadge = isProj
       ? '<span class="desp-proj-badge" title="Parcela projetada — ainda não confirmada pela fatura">📋 projeção</span>'
       : '';
+    // NRF-004: badge conta/banco
+    const conta = _contaMap[d.contaId];
+    const contaBadge = conta
+      ? `<span class="desp-conta-badge" style="background:${conta.cor}18;color:${conta.cor};border-color:${conta.cor}44;" title="${conta.nome}">${conta.emoji} ${conta.nome}</span>`
+      : '';
     // NRF-001: badge conjunta
     const conjuntaBadge = d.isConjunta
       ? `<span class="desp-conjunta-badge" title="Dividida 50/50 — Meu Bolso: ${formatarMoeda(d.valorAlocado ?? d.valor / 2)}">👫 conjunta</span>`
@@ -345,7 +369,7 @@ function renderizarLista() {
         <span class="desp-item-descricao">${d.descricao}</span>
         <div class="desp-item-meta">
           <span class="desp-item-data">${dataFmt}</span>
-          ${portBadge}${parcelaBadge}${projBadge}${conjuntaBadge}
+          ${contaBadge}${portBadge}${parcelaBadge}${projBadge}${conjuntaBadge}
         </div>
       </div>
       <div class="desp-item-right">
@@ -428,15 +452,38 @@ function preencherFiltroCategorias(cats) {
   if (atual) sel.value = atual;
 }
 
+// NRF-004: Contas
+function preencherSelectContas(contas) {
+  const sel = document.getElementById('despesa-conta');
+  if (!sel) return;
+  const atual = sel.value;
+  sel.innerHTML = '<option value="">Selecione a conta (opcional)</option>' +
+    contas.map(c => `<option value="${c.id}">${c.emoji} ${c.nome}</option>`).join('');
+  if (atual) sel.value = atual;
+}
+
+function preencherFiltroContas(contas) {
+  const sel = document.getElementById('filtro-conta');
+  if (!sel) return;
+  const atual = sel.value;
+  sel.innerHTML = '<option value="">Todas as contas</option>' +
+    contas.map(c => `<option value="${c.id}">${c.emoji} ${c.nome}</option>`).join('');
+  if (atual) sel.value = atual;
+}
+
 // ── Modal de Despesa ─────────────────────────────────────────
 function abrirModalDespesa(despesa = null) {
   preencherSelectCategorias(_categorias);
   preencherDropdownResponsavel();
+  preencherSelectContas(_contas); // NRF-004
 
   document.getElementById('despesa-id').value        = despesa?.id ?? '';
   document.getElementById('despesa-descricao').value = despesa?.descricao ?? '';
   document.getElementById('despesa-valor').value     = despesa?.valor ?? '';
   document.getElementById('despesa-categoria').value = despesa?.categoriaId ?? '';
+  // NRF-004: pré-seleciona a conta ao editar
+  const selConta = document.getElementById('despesa-conta');
+  if (selConta) selConta.value = despesa?.contaId ?? '';
   document.getElementById('despesa-data').value      = despesa
     ? (despesa.data?.toDate?.() ?? new Date(despesa.data)).toISOString().slice(0, 10)
     : dataHoje();
@@ -545,6 +592,7 @@ function configurarEventos() {
       return;
     }
     const isConjunta = tipoSelecionado === 'conjunta';
+    const contaIdSel = document.getElementById('despesa-conta')?.value || undefined;
     const dados = {
       descricao:    document.getElementById('despesa-descricao').value.trim(),
       valor,
@@ -554,6 +602,7 @@ function configurarEventos() {
       // NRF-001: divisão conjunta
       isConjunta,
       valorAlocado: isConjunta ? Math.round(valor * 100 / 2) / 100 : undefined,
+      contaId: contaIdSel,  // NRF-004
     };
     const despesaId = document.getElementById('despesa-id').value || null;
 
@@ -598,6 +647,7 @@ function configurarEventos() {
   document.getElementById('filtro-texto')?.addEventListener('input',  () => renderizarLista());
   document.getElementById('filtro-categoria')?.addEventListener('change',   () => renderizarLista());
   document.getElementById('filtro-responsavel')?.addEventListener('change', () => renderizarLista());  // RF-014
+  document.getElementById('filtro-conta')?.addEventListener('change',       () => renderizarLista());  // NRF-004
 
   // NRF-001: auto-toggle conjunta ao mudar categoria no modal
   document.getElementById('despesa-categoria')?.addEventListener('change', () => {
