@@ -11,6 +11,43 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [1.7.1] - 2026-03-25
+
+### Corrigido
+
+#### 🐛 Parcelas em Aberto — widget nunca exibia dados
+**Arquivo:** `src/js/services/database.js` → `ouvirParcelamentosAbertos()`
+
+**Causa raiz (3 camadas):**
+1. A query `where('tipo','==','projecao') + orderBy('data','asc')` exigia o índice composto `(grupoId, tipo, data ASC)` no Firestore
+2. O índice existia no `firestore.indexes.json` local mas **nunca havia sido deploiado** — portanto nunca foi construído na instância de produção do Firestore
+3. A falha era silenciosa: `onSnapshot` capturava o erro "FAILED_PRECONDITION: The query requires an index" apenas com `console.error`, mantendo o widget oculto indefinidamente
+
+**Fix:** Query reescrita para usar o índice `(grupoId, data DESC)` — já existente e construído desde o início do projeto. O filtro `tipo === 'projecao'` passou a ser aplicado client-side após receber os resultados:
+```js
+// Antes — dependia de índice nunca construído
+where('grupoId','==', grupoId), where('tipo','==','projecao'), orderBy('data','asc')
+
+// Depois — usa índice (grupoId, data DESC) já existente
+where('grupoId','==', grupoId), where('data','>=', hoje), orderBy('data','desc')
+// + .filter(d => d.tipo === 'projecao') client-side
+```
+
+#### 🐛 Coleções `contas` e `receitas` sem acesso no Firestore
+**Arquivos:** `firestore.rules`, `firestore.indexes.json`
+
+**Causa raiz:**
+- As coleções `contas` (NRF-004) e `receitas` (RF-016) foram implementadas no código mas as regras de segurança do Firestore **nunca foram atualizadas** para permitir acesso a elas
+- Firestore nega todas as operações por padrão quando não há regra definida
+- O erro era silencioso: `garantirContasPadrao` usava `.catch(() => {})` e `ouvirContas` apenas logava no console
+- Resultado: seletores de banco/conta vazios em todas as páginas (Fatura, Importar, Despesas)
+
+**Fix:**
+- `firestore.rules`: adicionadas regras `allow read/write/create` para `/contas/{id}` e `/receitas/{id}` com `isMemberOfGroup` igual às demais coleções
+- `firestore.indexes.json`: adicionados índices compostos `contas(grupoId, ativa)` e `receitas(grupoId, data)`
+
+---
+
 ## [1.7.0] - 2026-03-25
 
 ### Adicionado — NRF-005: Fatura do Cartão de Crédito
