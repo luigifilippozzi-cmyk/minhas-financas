@@ -370,3 +370,6 @@ Permite identificar em qual conta financeira (banco ou cartão de crédito) cada
 - [x] Parser de receitas detecta coluna "Conta / Banco" no CSV/XLSX e resolve para `contaId`
 - [x] Template de despesas gerado dinamicamente com coluna "Conta / Banco" e aba "Instruções"
 - [x] Template de receitas gerado dinamicamente com coluna "Conta / Banco" e aba "Instruções"
+- [x] Inferência automática de banco pela descrição da transação (3 níveis: coluna do arquivo → palavras-chave na descrição → seletor global)
+- [x] Valores negativos de extrato bancário aceitos e convertidos para positivo via `Math.abs` ao importar despesas
+- [x] Receitas importadas com `Math.abs` — sempre positivas, efeito contábil correto nos relatórios
