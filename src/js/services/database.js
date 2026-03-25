@@ -236,15 +236,19 @@ export async function excluirConta(contaId) {
 }
 
 /**
- * Cria as contas padrão (bancos/cartões) caso o grupo ainda não tenha nenhuma.
+ * Garante que todas as contas padrão existam para o grupo (upsert por nome).
+ * Novos bancos adicionados ao CONTAS_PADRAO serão inseridos automaticamente
+ * mesmo em grupos que já possuem contas.
  * @param {string} grupoId
  * @param {Array}  contasPadrao  — importar de models/Conta.js
  */
 export async function garantirContasPadrao(grupoId, contasPadrao) {
   const q    = query(collection(db, 'contas'), where('grupoId', '==', grupoId));
   const snap = await getDocs(q);
-  if (!snap.empty) return; // já existem
-  await Promise.all(contasPadrao.map((c) =>
+  const existentes = new Set(snap.docs.map(d => d.data().nome?.toLowerCase().trim()));
+  const faltando   = contasPadrao.filter(c => !existentes.has(c.nome.toLowerCase().trim()));
+  if (!faltando.length) return;
+  await Promise.all(faltando.map((c) =>
     addDoc(collection(db, 'contas'), { ...c, grupoId, ativa: true })
   ));
 }

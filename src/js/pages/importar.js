@@ -261,11 +261,17 @@ function parsearLinhasExtrato(rows) {
     const valorRaw = String(row[idxValor]    ?? '').trim();
     const parcela  = idxParcela >= 0 ? String(row[idxParcela] ?? '').trim() : '-';
     // NRF-004: resolve conta/banco column → contaId
-    const contaNome = idxConta >= 0 ? String(row[idxConta] ?? '').trim() : '';
-    const contaObj  = contaNome ? _contas.find(c =>
-      c.nome.toLowerCase().includes(contaNome.toLowerCase()) ||
-      contaNome.toLowerCase().includes(c.nome.toLowerCase())) : null;
-    const contaId   = contaObj?.id || inferirContaDaDescricao(estab, _contas);
+    const contaNome  = idxConta >= 0 ? String(row[idxConta] ?? '').trim() : '';
+    const _norm      = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const contaNomeN = _norm(contaNome);
+    const contaObj   = contaNome ? _contas.find(c => {
+      const n = _norm(c.nome);
+      return n.includes(contaNomeN) || contaNomeN.includes(n);
+    }) : null;
+    // Prioridade: coluna Conta → inferência pelo valor da coluna → inferência pela descrição
+    const contaId = contaObj?.id
+      || inferirContaDaDescricao(contaNome, _contas)
+      || inferirContaDaDescricao(estab, _contas);
     if (!dataRaw && !estab && !valorRaw) continue;
     const estabLow = estab.toLowerCase();
     if (/pagamento de fatura|inclusao de pagamento|inclusão de pagamento|parcela de fatura rotativo/i.test(estabLow)) continue;

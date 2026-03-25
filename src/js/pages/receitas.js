@@ -478,9 +478,16 @@ function _parsearLinhasRec(rows) {
     // Resolve categoria por nome (match case-insensitive)
     const catObj  = catNome ? _categorias.find(c => c.nome.toLowerCase().includes(catNome.toLowerCase()) || catNome.toLowerCase().includes(c.nome.toLowerCase())) : null;
     const catId   = catObj?.id ?? '';
-    // Resolve conta por nome
-    const contaObj = contaNome ? _contas.find(c => c.nome.toLowerCase().includes(contaNome.toLowerCase()) || contaNome.toLowerCase().includes(c.nome.toLowerCase())) : null;
-    const contaId  = contaObj?.id
+    // Resolve conta por nome (normalização de acentos para cobrir "Itau" → "Banco Itaú")
+    const _norm      = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const contaNomeN = _norm(contaNome);
+    const contaObj   = contaNome ? _contas.find(c => {
+      const n = _norm(c.nome);
+      return n.includes(contaNomeN) || contaNomeN.includes(n);
+    }) : null;
+    // Prioridade: coluna Conta → inferência pelo valor da coluna → inferência pela descrição → seletor global
+    const contaId = contaObj?.id
+      || _inferirContaDaDescricao(contaNome, _contas)
       || _inferirContaDaDescricao(desc, _contas)
       || (document.getElementById('sel-conta-global-rec')?.value ?? '');
     const chave    = erros.length ? null : _chaveDedup(data, desc, valor);
