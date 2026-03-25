@@ -28,8 +28,13 @@ export function modelConta(dados) {
 export const CONTAS_PADRAO = [
   { nome: 'Cartão de Crédito', emoji: '💳', cor: '#7B1FA2', tipo: 'cartao'   },
   { nome: 'Banco Itaú',        emoji: '🟠', cor: '#EC6600', tipo: 'banco'    },
+  { nome: 'Banco Bradesco',    emoji: '🔴', cor: '#D32F2F', tipo: 'banco'    },
   { nome: 'Banco XP',          emoji: '📊', cor: '#1565C0', tipo: 'banco'    },
   { nome: 'Banco Santander',   emoji: '🔴', cor: '#CC0000', tipo: 'banco'    },
   { nome: 'Banco BTG',         emoji: '💼', cor: '#B8860B', tipo: 'banco'    },
+  { nome: 'Nubank',            emoji: '💜', cor: '#820AD1', tipo: 'banco'    },
+  { nome: 'Banco Inter',       emoji: '🟡', cor: '#FF6B00', tipo: 'banco'    },
+  { nome: 'Caixa Econômica',   emoji: '🏛️', cor: '#003399', tipo: 'banco'    },
+  { nome: 'Banco do Brasil',   emoji: '💛', cor: '#FFCC00', tipo: 'banco'    },
   { nome: 'Dinheiro',          emoji: '💵', cor: '#2E7D32', tipo: 'dinheiro' },
 ];
