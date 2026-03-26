@@ -795,6 +795,21 @@ a:hover { text-decoration: underline; }
 /* Projeções */
 .fat-loading { text-align: center; color: #9e9e9e; padding: 1.5rem; font-style: italic; }
 
+/* ── RF-019: Badge de conta aplicada automaticamente ── */
+.imp-conta-auto-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .82rem;
+  font-weight: 600;
+  color: #166534;
+  background: #dcfce7;
+  border: 1px solid #86efac;
+  border-radius: 6px;
+  padding: .35rem .75rem;
+  margin-bottom: .75rem;
+}
+
 /* ============================================================
    RF-018 — BASE DE DADOS (tabs + gerenciar + limpeza)
    ============================================================ */
