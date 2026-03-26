@@ -11,6 +11,35 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [2.3.0] - 2026-03-26
+
+### Corrigido — RF-019: Preenchimento Automático de Conta/Banco no Preview
+
+Bug onde o seletor global "De qual banco é este extrato?" não era aplicado às linhas do preview ao carregar o arquivo.
+
+#### Causa Raiz
+`renderizarPreview()` usava o operador `??` para decidir entre `l.contaId` e `contaGlobal`. Como `inferirContaDaDescricao()` retorna `''` (string vazia) quando não encontra nenhuma conta, `'' ?? contaGlobal` retornava `''` — nunca aplicando o seletor global.
+
+#### Correção (`src/js/pages/importar.js`)
+- **Linha 795**: `l.contaId ?? contaGlobal` → `contaGlobal || l.contaId || ''` — o seletor global agora tem prioridade sobre a coluna do arquivo e sobre a inferência automática
+- **Nova função `_atualizarBadgeConta()`**: exibe badge `✅ Conta aplicada automaticamente: [Nome]` no topo do preview quando o seletor global está preenchido
+- **Handler `sel-conta-global`**: agora também chama `_atualizarBadgeConta()` ao trocar a conta — badge atualiza em tempo real
+- **`renderizarPreview()`**: chama `_atualizarBadgeConta()` sempre que o preview é renderizado
+
+#### HTML + CSS
+- **`src/base-dados.html`**: `<div id="conta-auto-badge">` adicionado na seção de preview (Passo 3)
+- **`src/css/main.css`**: `.imp-conta-auto-badge` — badge verde com borda, font 0.82rem
+
+#### Comportamento após correção
+| Cenário | Resultado |
+|---------|-----------|
+| Seletor global preenchido → arquivo carregado | Todas as linhas já chegam com a conta; badge aparece |
+| Seletor global vazio → arquivo com coluna "Conta" | Conta inferida do arquivo (comportamento anterior preservado) |
+| Altera seletor global após preview carregado | Todas as linhas atualizam em tempo real; badge atualiza |
+| Override manual por linha | Funciona normalmente; não é sobrescrito pelo global |
+
+---
+
 ## [2.2.0] - 2026-03-26
 
 ### Adicionado — RF-018: Centralização da Base de Dados

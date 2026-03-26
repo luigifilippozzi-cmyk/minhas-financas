@@ -127,13 +127,14 @@ function configurarEventos() {
       _linhas[+sel.dataset.idx].contaId = e.target.value;
     });
   });
-  // NRF-004: quando o usuário muda a conta global, aplica a todas as linhas do preview
+  // NRF-004 + RF-019: quando o usuário muda a conta global, aplica a todas as linhas do preview
   document.getElementById('sel-conta-global')?.addEventListener('change', (e) => {
     const contaId = e.target.value;
     document.querySelectorAll('.sel-conta-linha').forEach((sel) => {
       sel.value = contaId;
       _linhas[+sel.dataset.idx].contaId = contaId;
     });
+    _atualizarBadgeConta();  // RF-019
   });
   document.getElementById('btn-importar')?.addEventListener('click', () => executarImportacao());
   document.getElementById('btn-nova-importacao')?.addEventListener('click', resetarTudo);
@@ -790,9 +791,9 @@ function renderizarPreview() {
     selConta.dataset.idx = l._idx;
     selConta.innerHTML = '<option value="">— sem conta —</option>' +
       _contas.map(c => '<option value="' + c.id + '">' + c.emoji + ' ' + c.nome + '</option>').join('');
-    // Pré-seleciona: conta da linha > conta global > vazio
+    // RF-019: global tem prioridade → arquivo → inferência → vazio
     const contaGlobal = document.getElementById('sel-conta-global')?.value ?? '';
-    selConta.value = l.contaId ?? contaGlobal;
+    selConta.value = contaGlobal || l.contaId || '';
     if (selConta.value) _linhas[l._idx].contaId = selConta.value;
     selConta.addEventListener('change', (e) => { _linhas[l._idx].contaId = e.target.value; });
     tdConta.appendChild(selConta);
@@ -822,7 +823,23 @@ function renderizarPreview() {
     tbody.appendChild(tr);
   });
   document.getElementById('sec-preview').classList.remove('hidden');
+  _atualizarBadgeConta();  // RF-019
   atualizarChipsPreview();
+}
+
+// RF-019: mostra badge informativo quando conta global está aplicada ao preview
+function _atualizarBadgeConta() {
+  const badge = document.getElementById('conta-auto-badge');
+  if (!badge) return;
+  const contaId = document.getElementById('sel-conta-global')?.value ?? '';
+  if (!contaId || !_linhas.length) {
+    badge.classList.add('hidden');
+    return;
+  }
+  const conta = _contaMap[contaId];
+  const nome = conta ? `${conta.emoji ?? ''} ${conta.nome}`.trim() : contaId;
+  badge.textContent = `✅ Conta aplicada automaticamente: ${nome}`;
+  badge.classList.remove('hidden');
 }
 
 function criarTd(texto, fontSize, color) {

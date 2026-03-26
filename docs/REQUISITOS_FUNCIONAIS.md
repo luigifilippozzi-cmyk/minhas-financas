@@ -27,6 +27,7 @@
 | NRF-005 | Fatura do Cartão de Crédito | Alta | ✅ Implementado |
 | NRF-006 | Detecção Automática de Tipo de Extrato | Alta | ✅ Implementado |
 | NRF-008 | Deduplicação de Transações | Alta | ✅ Implementado |
+| RF-019 | Correção: Preenchimento Automático de Conta/Banco no Preview | Alta | ✅ Implementado |
 
 ---
 
@@ -680,3 +681,35 @@ Unificar em uma única tela (`base-dados.html`) toda a gestão da base de dados 
 - [x] Purge exige "PURGAR" + checkbox antes de habilitar o botão
 - [x] `importar.html` redireciona automaticamente para `base-dados.html`
 - [x] Todos os links da navbar apontam para `base-dados.html`
+
+---
+
+## RF-019: Correção — Preenchimento Automático de Conta/Banco no Preview
+**Prioridade:** Alta | **Versão:** v2.3.0 | **Status:** ✅ Implementado
+
+### Motivação (Bug Report)
+Ao selecionar o seletor global "🏦 De qual banco é este extrato?" **antes** de carregar o arquivo, as linhas do preview não recebiam o `contaId` escolhido. O campo ficava vazio.
+
+### Causa Raiz
+`renderizarPreview()` usava `l.contaId ?? contaGlobal`. O operador `??` só trata `null`/`undefined` — como `inferirContaDaDescricao()` retorna `''` (string vazia) quando falha, `'' ?? contaGlobal` = `''`, nunca aplicando o global.
+
+### Correção
+
+**Prioridade após fix:** seletor global › coluna do arquivo › inferência da descrição › vazio
+
+| Arquivo | Alteração |
+|---------|-----------|
+| `src/js/pages/importar.js` | `l.contaId ?? contaGlobal` → `contaGlobal \|\| l.contaId \|\| ''` |
+| `src/js/pages/importar.js` | Nova função `_atualizarBadgeConta()` |
+| `src/js/pages/importar.js` | Handler `sel-conta-global` chama `_atualizarBadgeConta()` |
+| `src/base-dados.html` | `<div id="conta-auto-badge">` no Passo 3 (preview) |
+| `src/css/main.css` | `.imp-conta-auto-badge` — badge verde |
+
+### Critérios de Aceitação
+- [x] Seletor global preenchido → arquivo carregado → todas as linhas já mostram a conta correta
+- [x] Badge "✅ Conta aplicada automaticamente: [Nome]" visível no preview
+- [x] Altera seletor global após preview → todas as linhas atualizam em tempo real
+- [x] Badge atualiza em tempo real ao trocar o seletor global
+- [x] Arquivo com coluna "Conta / Banco": seletor global tem prioridade
+- [x] Override manual por linha continua funcionando
+- [x] Funciona para fatura de cartão, extrato bancário, despesas e receitas
