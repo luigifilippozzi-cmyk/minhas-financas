@@ -121,8 +121,8 @@
           <p class="imp-drop-texto">Arraste o arquivo aqui</p>
           <p class="imp-drop-sub">ou</p>
           <label for="file-input" class="btn btn-outline imp-btn-select">Selecionar arquivo</label>
-          <input type="file" id="file-input" accept=".xlsx,.xls,.csv" style="display:none;" />
-          <p class="imp-drop-hint">Extrato CSV do banco ou planilha Excel (.xlsx)</p>
+          <input type="file" id="file-input" accept=".xlsx,.xls,.csv,.pdf" style="display:none;" />
+          <p class="imp-drop-hint">Extrato CSV, planilha Excel (.xlsx) ou PDF bancário</p>
         </div>
 
         <div class="imp-arquivo-selecionado hidden" id="arquivo-info">
@@ -151,6 +151,13 @@
               <input type="month" id="inp-mes-fatura" class="select-input" style="width:auto;" />
             </div>
             <span id="banco-hint" class="hidden" style="font-size:.8rem;color:#6b7280;">valor positivo → Receita &nbsp;·&nbsp; valor negativo → Despesa</span>
+            <!-- RF-020: toggle inversão de sinais (só para PDF) -->
+            <div id="inverter-sinais-wrap" class="hidden imp-inverter-sinais-wrap">
+              <label style="display:flex;align-items:center;gap:.4rem;font-size:.85rem;font-weight:600;color:#374151;cursor:pointer;">
+                <input type="checkbox" id="chk-inverter-sinais" />
+                Inverter sinais <span style="font-size:.75rem;color:#6b7280;font-weight:400;">(positivo = despesa)</span>
+              </label>
+            </div>
           </div>
         </div>
       </div>
@@ -200,6 +207,14 @@
 
         <!-- RF-019: badge de conta aplicada automaticamente -->
         <div id="conta-auto-badge" class="hidden imp-conta-auto-badge"></div>
+
+        <!-- RF-020: legenda de confiança de extração PDF (só visível em PDFs) -->
+        <div id="pdf-conf-legenda" class="hidden imp-pdf-conf-legenda">
+          <span style="font-size:.78rem;color:var(--text-muted);font-weight:600;">Confiança PDF:</span>
+          <span class="imp-badge imp-badge--conf-alta">✓ Alta</span>
+          <span class="imp-badge imp-badge--conf-media">~ Média</span>
+          <span class="imp-badge imp-badge--conf-baixa">⚠ Baixa — revise</span>
+        </div>
 
         <div class="imp-acoes-lote">
           <button id="btn-sel-todos"   class="btn btn-outline btn-sm">☑ Selecionar todos</button>
@@ -512,6 +527,8 @@
 
   </main>
 
+  <!-- PDF.js — RF-020: extração de texto de extratos PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <!-- SheetJS — carregado antes dos módulos -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <!-- importar.js: lógica das abas Importar e Duplicatas -->

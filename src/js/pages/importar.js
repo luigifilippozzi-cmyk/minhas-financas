@@ -1,11 +1,12 @@
 // ============================================================
-// PAGE: Importar — RF-013 + RF-014 + NRF-002 + NRF-002.1 + NRF-008
-// Importação de transações de cartão de crédito.
+// PAGE: Importar — RF-013 + RF-014 + NRF-002 + NRF-002.1 + NRF-008 + RF-020
+// Importação de transações de cartão de crédito e extratos bancários.
 //
 // FORMATOS SUPORTADOS:
 // • CSV do extrato bancário (separador ";")
 //   Layout: Data;Estabelecimento;Portador;Valor;Parcela
 // • Excel (.xlsx) com o mesmo layout (template disponível)
+// • PDF de extrato bancário (via PDF.js — RF-020)
 //
 // RF-014 — Funcionalidades:
 // • Deduplicação: chave única por transação, evita duplicatas
@@ -26,6 +27,12 @@
 // • dataOriginal salvo no Firestore para rastreabilidade
 //
 // NRF-008 — Purga de duplicatas
+//
+// RF-020 — Classificação automática por sinal + importação PDF:
+// • PDF de extrato bancário: extrai transações via PDF.js
+// • Sinal do valor determina tipo: positivo=receita, negativo=despesa
+// • Toggle para inverter sinais (bancos que usam convenção oposta)
+// • Badge de confiança (alta/média/baixa) para linhas de PDF
 // ============================================================
 import { onAuthChange, logout } from '../services/auth.js';
 import {
@@ -42,6 +49,7 @@ import { modelDespesa } from '../models/Despesa.js';
 import { modelReceita } from '../models/Receita.js';  // NRF-006
 import { formatarMoeda, formatarData } from '../utils/formatters.js';
 import { normalizarStr, similaridade } from '../utils/helpers.js';
+import { extrairTransacoesPDF } from '../utils/pdfParser.js';  // RF-020
 
 // ── Estado ─────────────────────────────────────────────────────
 let _usuario = null;
@@ -60,6 +68,9 @@ let _projecoesDetalhadas = [];  // NRF-002: dados completos para fuzzy matching
 let _tipoExtrato = 'despesa';
 let _mesFatura = '';            // NRF-002.1: "YYYY-MM" selecionado pelo usuário
 let _chavesExistentesRec = new Set(); // NRF-006: dedup receitas (modo banco)
+// RF-020: estado específico de PDF
+let _origemPDF = false;         // true quando o arquivo carregado é PDF
+let _sinaisInvertidos = false;  // toggle: inverte a convenção de sinal do banco
 
 // ── Inicialização ───────────────────────────────────────────────
 onAuthChange(async (user) => {
@@ -159,6 +170,16 @@ function configurarEventos() {
     }
   });
 
+  // RF-020: toggle inversão de sinais (PDF de extrato bancário)
+  document.getElementById('chk-inverter-sinais')?.addEventListener('change', async (e) => {
+    _sinaisInvertidos = e.target.checked;
+    if (_tipoExtrato === 'banco' && _linhas.length) {
+      _aplicarTipo('banco');
+      await marcarDuplicatas();
+      renderizarPreview();
+    }
+  });
+
   // NRF-008: Purga de duplicatas
   document.getElementById('btn-analisar-dup')?.addEventListener('click', analisarDuplicatas);
   document.getElementById('btn-purgar-dup')?.addEventListener('click', abrirModalPurga);
@@ -171,10 +192,34 @@ async function processarArquivo(file) {
   document.getElementById('erro-leitura').classList.add('hidden');
   const isCSV  = /\.csv$/i.test(file.name);
   const isXLSX = /\.(xlsx|xls)$/i.test(file.name);
-  if (!isCSV && !isXLSX) {
-    mostrarErroLeitura('Formato não suportado. Use o extrato CSV do banco ou o template Excel (.xlsx).');
+  const isPDF  = /\.pdf$/i.test(file.name);
+  if (!isCSV && !isXLSX && !isPDF) {
+    mostrarErroLeitura('Formato não suportado. Use extrato CSV, Excel (.xlsx) ou PDF bancário.');
     return;
   }
+  // RF-020: pipeline PDF
+  if (isPDF) {
+    _origemPDF = true;
+    _sinaisInvertidos = false;
+    try {
+      const raw = await extrairTransacoesPDF(file);
+      if (!raw.length) { mostrarErroLeitura('Nenhuma transação encontrada no PDF. Verifique se é um extrato bancário com texto selecionável.'); return; }
+      _linhas = parsearLinhasPDF(raw);
+      if (!_linhas.length) { mostrarErroLeitura('Nenhuma linha válida extraída do PDF.'); return; }
+      _aplicarTipo('banco');
+      _atualizarUITipo();
+      _atualizarUIInverterSinais(true);
+      await marcarDuplicatas();
+      mostrarArquivoSelecionado(file.name);
+      renderizarPreview();
+    } catch (err) {
+      mostrarErroLeitura('Erro ao ler o PDF: ' + err.message);
+    }
+    return;
+  }
+  _origemPDF = false;
+  _sinaisInvertidos = false;
+  _atualizarUIInverterSinais(false);
   if (isCSV) {
     const reader = new FileReader();
     reader.onload = async (e) => {
@@ -343,7 +388,13 @@ function _aplicarTipo(tipo) {
     _linhas.forEach((l) => { if (l.isCredito && !l.erro) l.erro = 'Crédito/estorno — não importado'; });
     if (_mesFatura) aplicarMesFatura(_mesFatura);
   } else if (tipo === 'banco') {
-    _linhas.forEach((l) => { if (!l.erro) l.tipoLinha = l.isCredito ? 'despesa' : 'receita'; });
+    // RF-020: _sinaisInvertidos troca a convenção (alguns bancos: positivo=despesa)
+    _linhas.forEach((l) => {
+      if (!l.erro) {
+        const isDebt = _sinaisInvertidos ? !l.isCredito : l.isCredito;
+        l.tipoLinha = isDebt ? 'despesa' : 'receita';
+      }
+    });
   } else if (tipo === 'receita') {
     _linhas.forEach((l) => { if (!l.erro) l.tipoLinha = 'receita'; });
   }
@@ -363,6 +414,8 @@ function _atualizarUITipo() {
   document.getElementById('sel-tipo-extrato').value = _tipoExtrato;
   document.getElementById('fatura-mes-sub').classList.toggle('hidden', _tipoExtrato !== 'cartao');
   document.getElementById('banco-hint').classList.toggle('hidden', _tipoExtrato !== 'banco');
+  // RF-020: toggle de inversão de sinais só aparece em modo banco (e só quando relevante para PDF)
+  _atualizarUIInverterSinais(_tipoExtrato === 'banco' && _origemPDF);
   if (_tipoExtrato === 'cartao') {
     const inp = document.getElementById('inp-mes-fatura');
     if (!inp.value) {
@@ -371,6 +424,63 @@ function _atualizarUITipo() {
     }
     _mesFatura = inp.value;
   }
+}
+
+// ── RF-020: Mostra/oculta toggle de inversão de sinais ──────────
+function _atualizarUIInverterSinais(visivel) {
+  const wrap = document.getElementById('inverter-sinais-wrap');
+  if (!wrap) return;
+  wrap.classList.toggle('hidden', !visivel);
+  if (!visivel) {
+    const chk = document.getElementById('chk-inverter-sinais');
+    if (chk) chk.checked = false;
+    _sinaisInvertidos = false;
+  }
+}
+
+// ── RF-020: Converte resultado do pdfParser para _linhas ────────
+// raw: [{dataStr, desc, valor, confianca}]
+// valor negativo = débito (despesa), positivo = crédito (receita)
+function parsearLinhasPDF(raw) {
+  const contaGlobal = document.getElementById('sel-conta-global')?.value ?? '';
+  return raw.map((item, idx) => {
+    const data  = _normalizarDataPDF(item.dataStr);
+    const valor = Math.abs(item.valor);
+    const isCredito = item.valor < 0;  // negativo = débito = isCredito para compatibilidade com o pipeline
+    const erros = [];
+    if (!data)                         erros.push('Data inválida');
+    if (!item.desc || item.desc.length < 2) erros.push('Descrição vazia');
+    if (isNaN(valor) || valor <= 0)    erros.push('Valor inválido');
+    const chave = erros.length ? null : gerarChaveDedup(data, item.desc, valor, '', '-');
+    return {
+      _idx: idx,
+      data, dataOriginal: data,
+      descricao: item.desc, portador: '', parcela: '-', valor, isCredito,
+      categoriaId: mapearCategoria(item.desc),
+      contaId: contaGlobal || inferirContaDaDescricao(item.desc, _contas),
+      erro: erros.length ? erros.join(', ') : null,
+      _erroOriginal: erros.length ? erros.join(', ') : null,
+      chave_dedup: chave, duplicado: false, tipoLinha: null,
+      _confiancaPDF: item.confianca,   // 'alta' | 'media' | 'baixa'
+    };
+  });
+}
+
+// ── RF-020: Normaliza string de data do PDF para Date ───────────
+// Suporta: DD/MM/YYYY, DD/MM/YY, DD/MM, DD-MM-YYYY, DD.MM.YYYY
+function _normalizarDataPDF(dataStr) {
+  if (!dataStr) return null;
+  // Normaliza separadores para /
+  let s = dataStr.replace(/[-\.]/g, '/');
+  const parts = s.split('/');
+  if (parts.length === 2) {
+    // DD/MM → assume ano corrente
+    s = parts[0].padStart(2,'0') + '/' + parts[1].padStart(2,'0') + '/' + new Date().getFullYear();
+  } else if (parts.length === 3 && parts[2].length === 2) {
+    // DD/MM/YY → DD/MM/20YY
+    s = parts[0].padStart(2,'0') + '/' + parts[1].padStart(2,'0') + '/20' + parts[2];
+  }
+  return normalizarData(s);
 }
 
 // ── NRF-002.1: Ajusta datas de parceladas para o mês da fatura ──
@@ -816,6 +926,11 @@ function renderizarPreview() {
     } else if (l.tipoLinha === 'despesa' && _tipoExtrato === 'banco') {
       // NRF-006: modo banco — badge de despesa
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok" style="background:#fee2e2;color:#991b1b;" title="Será salva como Despesa' + chaveInfo + '">💸 Despesa</span>';
+    } else if (_origemPDF && l._confiancaPDF) {
+      // RF-020: badge de confiança da extração PDF
+      const confLabel = { alta: '✓ Alta', media: '~ Média', baixa: '⚠ Baixa' }[l._confiancaPDF] ?? '✓';
+      const confTitle = { alta: 'Extração de alta confiança', media: 'Extração de confiança média — revise', baixa: 'Extração de baixa confiança — verifique dados' }[l._confiancaPDF] ?? '';
+      tdStatus.innerHTML = '<span class="imp-badge imp-badge--conf-' + l._confiancaPDF + '" title="' + confTitle + chaveInfo + '">' + confLabel + '</span>';
     } else {
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok" title="Pronto para importar' + chaveInfo + '">✓</span>';
     }
@@ -823,6 +938,8 @@ function renderizarPreview() {
     tbody.appendChild(tr);
   });
   document.getElementById('sec-preview').classList.remove('hidden');
+  // RF-020: mostra/oculta legenda de confiança PDF
+  document.getElementById('pdf-conf-legenda')?.classList.toggle('hidden', !_origemPDF);
   _atualizarBadgeConta();  // RF-019
   atualizarChipsPreview();
 }
@@ -1087,9 +1204,12 @@ function resetarUpload() {
   document.getElementById('sec-preview').classList.add('hidden');
   document.getElementById('tipo-extrato-wrap')?.classList.add('hidden'); // NRF-006
   _linhas = [];
-  _tipoExtrato = 'despesa';   // NRF-006
-  _mesFatura   = '';          // NRF-002.1
+  _tipoExtrato = 'despesa';         // NRF-006
+  _mesFatura   = '';                // NRF-002.1
   _chavesExistentesRec = new Set(); // NRF-006
+  _origemPDF       = false;         // RF-020
+  _sinaisInvertidos = false;        // RF-020
+  _atualizarUIInverterSinais(false);
 }
 function resetarTudo() {
   resetarUpload();

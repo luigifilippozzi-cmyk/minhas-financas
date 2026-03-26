@@ -34,31 +34,45 @@ Formato: `MAJOR.MINOR.PATCH` — ex: `v1.2.3`
 | MINOR | Nova funcionalidade compatível com versões anteriores |
 | PATCH | Correção de bug compatível com versões anteriores |
 
-### Roadmap de Versões
+### Histórico de Versões
 
-| Versão | Milestone |
-|--------|-----------|
-| v0.1.0 | Autenticação Firebase |
-| v0.2.0 | Sistema de Grupos |
-| v0.3.0 | Categorias Editáveis |
-| v0.4.0 | CRUD de Despesas |
-| v0.5.0 | Dashboard de Orçamentos |
-| v1.0.0 | Release Oficial |
+| Versão | Data | Milestone |
+|--------|------|-----------|
+| v0.1.0 | 2026-01 | Autenticação Firebase |
+| v0.2.0 | 2026-01 | Sistema de Grupos |
+| v0.3.0 | 2026-01 | Categorias Editáveis |
+| v0.4.0 | 2026-01 | CRUD de Despesas |
+| v0.5.0 | 2026-01 | Dashboard de Orçamentos |
+| v1.0.0 | 2026-02 | Release Oficial — RF-001 a RF-014 completos |
+| v1.5.0 | 2026-02 | NRF-001 Contas Compartilhadas + NRF-003 Fluxo de Caixa |
+| v1.8.0 | 2026-02 | NRF-005 Fatura do Cartão + NRF-004 Identificação de Conta |
+| v1.9.0 | 2026-03 | NRF-002.1 CSV nativo de fatura + Reconciliação fuzzy |
+| v2.0.0 | 2026-03 | NRF-006 Detecção automática de tipo de extrato |
+| v2.1.0 | 2026-03 | RF-017 Dashboard com gráficos Chart.js |
+| v2.2.0 | 2026-03 | RF-018 Base de Dados centralizada (4 abas) |
+| v2.3.0 | 2026-03 | RF-019 Bug fix: Conta/Banco automático no preview |
+| v2.4.0 | 2026-03 | RF-020 Importação PDF + classificação automática por sinal |
+
+### Próximas Versões (Backlog)
+
+| Versão | Milestone Planejado |
+|--------|---------------------|
+| v3.0.0 | App iOS via Capacitor (MILESTONE_iOS_App.md) |
 
 ## Workflow Completo
 
 ```
-1. Criar Issue no GitHub
-2. Mover para "In Progress" no Projects Board
-3. git checkout -b feature/nome-da-feature
-4. Desenvolver (commits frequentes e pequenos)
-5. git push origin feature/nome-da-feature
-6. Criar Pull Request → vincular issue: "Closes #XX"
-7. Self-review
-8. Merge para develop
-9. Atualizar CHANGELOG.md
-10. Fechar Issue
+1. Criar Issue no GitHub (ou especificar RF no doc REQUISITOS_FUNCIONAIS)
+2. Desenvolver diretamente na branch main (projeto pessoal, sem PRs)
+3. git add <arquivos>
+4. git commit -m "feat|fix|docs: descrição (vX.Y.Z)"
+5. git push origin main
+6. firebase deploy --only hosting
+7. Atualizar CHANGELOG.md e REQUISITOS_FUNCIONAIS.md
+8. Fechar Issue
 ```
+
+> **Nota:** O projeto é de uso pessoal/familiar. O workflow simplificado (direto na `main` sem PRs) é intencional — velocidade de iteração tem prioridade sobre processo formal.
 
 ## Comandos Git Essenciais
 

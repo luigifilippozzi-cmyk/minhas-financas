@@ -11,6 +11,56 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [2.4.0] - 2026-03-26
+
+### Adicionado — RF-020: Classificação Automática por Sinal + Importação PDF
+
+Suporte a extratos bancários em PDF e classificação automática de transações pelo sinal do valor.
+
+#### `src/js/utils/pdfParser.js` (novo)
+- Exporta `extrairTransacoesPDF(file)` via PDF.js (`window.pdfjsLib`, CDN UMD)
+- Extrai texto de todas as páginas; agrupa itens por posição Y (tolerância 2,5pt); ordena por X
+- Regex de detecção: `RE_DATA` (DD/MM/YY e variantes), `RE_VALOR_FINAL` (com flag D/C opcional), `RE_IGNORAR` (cabeçalhos/rodapés)
+- Retorna `[{dataStr, desc, valor, confianca}]` — valor já com sinal (negativo=débito)
+- Confiança: `'alta'` (≥80), `'media'` (≥50), `'baixa'` (<50) baseada em qualidade da descrição e valor
+
+#### `src/js/pages/importar.js`
+- **Import**: `import { extrairTransacoesPDF } from '../utils/pdfParser.js'`
+- **Estado**: `let _origemPDF = false; let _sinaisInvertidos = false;`
+- **`processarArquivo()`**: novo branch para `.pdf` — chama `extrairTransacoesPDF()` → `parsearLinhasPDF()` → pipeline `_aplicarTipo('banco')`
+- **`parsearLinhasPDF(raw)`**: converte `[{dataStr, desc, valor, confianca}]` para `_linhas` (mesmo formato CSV/XLSX); popula `_confiancaPDF` em cada linha
+- **`_normalizarDataPDF(str)`**: normaliza DD/MM/YY, DD/MM, DD-MM-YYYY etc. para Date
+- **`_aplicarTipo('banco')`**: respeita `_sinaisInvertidos` — se true, inverte lógica receita/despesa
+- **`_atualizarUIInverterSinais(visivel)`**: mostra/oculta `#inverter-sinais-wrap`; reseta checkbox
+- **`renderizarPreview()`**: badge `imp-badge--conf-alta/media/baixa` na coluna Status para PDFs
+- **`renderizarPreview()`**: mostra `#pdf-conf-legenda` quando `_origemPDF === true`
+- **`resetarUpload()`**: reseta `_origemPDF = false; _sinaisInvertidos = false`
+- **`configurarEventos()`**: handler `#chk-inverter-sinais` re-aplica tipo e re-renderiza preview
+
+#### `src/base-dados.html`
+- **PDF.js CDN**: `<script src=".../pdf.min.js">` carregado antes dos módulos
+- **`file-input`**: `accept` expandido para `.xlsx,.xls,.csv,.pdf`
+- **`#inverter-sinais-wrap`** (oculto por padrão): checkbox "Inverter sinais (positivo = despesa)" — aparece somente em PDFs no modo banco
+- **`#pdf-conf-legenda`** (oculto por padrão): legenda de confiança alta/média/baixa no Passo 3
+
+#### `src/css/main.css`
+- `.imp-badge--conf-alta/media/baixa`: verde/amarelo/vermelho para confiança da extração
+- `.imp-pdf-conf-legenda`: container da legenda (fundo azul-claro, borda índigo)
+- `.imp-inverter-sinais-wrap`: container do toggle (fundo âmbar claro, borda laranja)
+
+#### Comportamento
+| Ação | Resultado |
+|------|-----------|
+| Sobe PDF bancário | Detectado como "Extrato Bancário"; transações extraídas |
+| Valor negativo no PDF | `isCredito=true` → `tipoLinha='despesa'` (padrão) |
+| Valor positivo no PDF | `isCredito=false` → `tipoLinha='receita'` (padrão) |
+| Toggle "Inverter sinais" ativo | Positivo → despesa, negativo → receita |
+| Confiança alta | Badge verde `✓ Alta` |
+| Confiança média | Badge amarelo `~ Média` |
+| Confiança baixa | Badge vermelho `⚠ Baixa` — revisão recomendada |
+
+---
+
 ## [2.3.0] - 2026-03-26
 
 ### Corrigido — RF-019: Preenchimento Automático de Conta/Banco no Preview

@@ -32,3 +32,6 @@ desktop.ini
 # Build
 dist/
 build/
+
+# Claude Code (config local, não vai ao repositório)
+.claude/
