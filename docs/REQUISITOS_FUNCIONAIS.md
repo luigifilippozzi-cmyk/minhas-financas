@@ -187,14 +187,47 @@
 - Cards "Meu Bolso" e "Família" no Dashboard para visualização da divisão
 - Campo visual de seleção Tipo (Individual / Conjunta) com preview do impacto no bolso
 
-## NRF-002: Reconciliação Fuzzy de Parcelas
-**Prioridade:** Média | **Versão:** v1.1.0 | **Status:** ✅ Implementado
+## NRF-002: Reconciliação Fuzzy de Parcelas + CSV Nativo de Cartão
+**Prioridade:** Média | **Versão:** v1.1.0 → v1.9.0 | **Status:** ✅ Implementado
 
+### Funcionalidades originais (v1.1.0)
 - Ao importar extrato, verifica se existe projeção futura para a transação usando fuzzy matching
-- Critérios de match: estabelecimento similar (distância Levenshtein), valor próximo e mês seguinte
+- Critérios de match: estabelecimento similar (distância Levenshtein ≥ 85%), valor próximo (±1% ou ±R$0,50) e mesmo número de parcela (atual/total)
 - Match confirmado: despesa real substitui a projeção (status `projecao_paga`)
-- Badge âmbar "~Reconciliada" nas linhas de preview do import
+- Badge âmbar "🔍 XX%" nas linhas de preview com percentual de similaridade
 - `parcelamentos` coleção mestre para rastrear qtd de parcelas pagas vs. total
+
+### NRF-002.1 — Importação de Fatura CSV Nativa (v1.9.0)
+**Problema:** extratos CSV exportados diretamente pelo cartão de crédito usam o formato `"X de Y"` para parcelas (ex: `"6 de 12"`), enquanto o app sempre gerou projeções no formato `"06/12"`. Essa incompatibilidade impedia que o exact matching e o fuzzy matching funcionassem para esses arquivos.
+
+#### Funcionalidades adicionadas
+
+| Funcionalidade | Descrição |
+|---|---|
+| **Detecção automática de fatura** | Arquivo com colunas `Portador` e `Parcela` é identificado como fatura de cartão |
+| **Banner de mês de vencimento** | Exibe seletor `<input type="month">` para o usuário informar o ciclo de cobrança |
+| **Normalização de parcela** | `"X de Y"` convertido para `"XX/YY"` no momento do parse — dedup e fuzzy matching funcionam com ambos os formatos |
+| **Ajuste de data por mês de fatura** | Parceladas têm `data` substituída pelo 1º dia do mês de vencimento; à vista mantêm data original |
+| **`dataOriginal` preservada** | Data original da compra salva no Firestore; preview mostra badge `📅` com tooltip |
+| **Exclusão automática de créditos** | Linhas com valor negativo (créditos/estornos) recebem `erro` e ficam desmarcadas no preview |
+| **Re-renderização ao trocar mês** | Alterar o seletor de mês re-renderiza o preview imediatamente com novas datas |
+
+#### Arquivos modificados (v1.9.0)
+| Arquivo | Alteração |
+|---|---|
+| `src/importar.html` | Banner `#fatura-mes-wrap` + `#inp-mes-fatura` |
+| `src/js/pages/importar.js` | `normalizarParcela`, `detectarFatura`, `aplicarMesFatura`, `_aplicarDeteccaoFatura`; `parsearParcela` com suporte a `"X de Y"`; state `_isFatura`, `_mesFatura`; `dataOriginal` + `dataAjustada` no payload |
+| `src/js/models/Despesa.js` | `dataOriginal` adicionado à lista de campos opcionais |
+
+### Critérios de Aceitação
+- [x] Fuzzy matching funciona para arquivos com parcela `"X de Y"` (formato CSV do banco)
+- [x] Exact matching por `chave_dedup` funciona para parcelas normalizadas
+- [x] Fatura detectada automaticamente — banner exibido sem intervenção manual
+- [x] Parceladas salvas no mês de vencimento selecionado
+- [x] À vista mantêm data original do extrato
+- [x] Créditos/estornos excluídos automaticamente no modo fatura
+- [x] `dataOriginal` salvo no Firestore e visível no preview
+- [x] Trocar mês de vencimento atualiza o preview em tempo real
 
 ---
 
