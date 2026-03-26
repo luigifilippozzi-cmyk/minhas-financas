@@ -4,10 +4,14 @@
 
 | Camada | Tecnologia | Motivo |
 |--------|-----------|--------|
-| Frontend | HTML5 + CSS3 + JS ES6+ | Sem frameworks — foco no aprendizado base |
+| Frontend | HTML5 + CSS3 + JS ES6+ (módulos nativos) | Sem frameworks — foco no aprendizado base |
 | Autenticação | Firebase Authentication | Solução robusta, sem backend próprio |
 | Banco de Dados | Cloud Firestore | NoSQL em tempo real, escalável |
 | Hospedagem | Firebase Hosting | CDN global, HTTPS automático |
+| Planilhas | SheetJS (XLSX) | Import/export Excel sem backend |
+| Gráficos | Chart.js v4 | Gráficos de fluxo de caixa, licença MIT |
+
+---
 
 ## Estrutura do Firestore
 
@@ -22,7 +26,9 @@ firestore/
 ├── grupos/{grupoId}
 │   ├── nome: string
 │   ├── membros: [userId1, userId2]
+│   ├── nomesMembros: { uid: nome }        ← mapa uid → nome
 │   ├── codigoConvite: string (6 chars)
+│   ├── maxMembros: number (2)
 │   └── dataCriacao: timestamp
 │
 ├── categorias/{categoriaId}
@@ -30,7 +36,7 @@ firestore/
 │   ├── nome: string
 │   ├── emoji: string
 │   ├── cor: string (hex)
-│   ├── orcamentoMensal: number
+│   ├── tipo: 'despesa' | 'receita'
 │   └── ativa: boolean
 │
 ├── despesas/{despesaId}
@@ -40,54 +46,206 @@ firestore/
 │   ├── descricao: string
 │   ├── valor: number
 │   ├── data: timestamp
-│   └── dataCriacao: timestamp
+│   ├── dataCriacao: timestamp
+│   ├── responsavel: string              ← portador (nome do membro)
+│   ├── portador: string                 ← mesmo que responsavel
+│   ├── parcela: string                  ← "X/Y" ou "-"
+│   ├── tipo: 'despesa' | 'projecao' | 'projecao_paga'
+│   ├── status: 'pago' | 'pendente'
+│   ├── origem: 'importacao' | 'manual' | 'projecao'
+│   ├── isConjunta: boolean              ← despesa compartilhada 50/50
+│   ├── valorAlocado: number | null      ← valor por pessoa (conjuntas)
+│   ├── contaId: string | null           ← ref para contas/{id} (NRF-004)
+│   ├── chave_dedup: string | null       ← dedup key (RF-014 / NRF-008)
+│   ├── parcelamento_id: string | null   ← ref para parcelamentos/{id}
+│   ├── despesaRealId: string | null     ← id da despesa real (projecao_paga)
+│   └── importadoEm: timestamp | null
 │
-└── orcamentos/{orcamentoId}
+├── receitas/{receitaId}
+│   ├── grupoId: string
+│   ├── categoriaId: string
+│   ├── usuarioId: string
+│   ├── descricao: string
+│   ├── valor: number
+│   ├── data: timestamp
+│   ├── dataCriacao: timestamp
+│   ├── origem: 'importacao' | 'manual'
+│   ├── contaId: string | null           ← NRF-004
+│   ├── chave_dedup: string | null       ← NRF-008
+│   └── importadoEm: timestamp | null
+│
+├── orcamentos/{grupoId_categoriaId_ano_mes}
+│   ├── grupoId: string
+│   ├── categoriaId: string
+│   ├── mes: number (1–12)
+│   ├── ano: number
+│   └── valorLimite: number
+│
+├── contas/{contaId}                     ← NRF-004
+│   ├── grupoId: string
+│   ├── nome: string
+│   ├── emoji: string
+│   ├── cor: string (hex)
+│   ├── tipo: 'banco' | 'cartao' | 'dinheiro'
+│   └── ativa: boolean
+│
+└── parcelamentos/{parcId}               ← NRF-002
     ├── grupoId: string
-    ├── categoriaId: string
-    ├── mes: number (1-12)
-    ├── ano: number
-    ├── valorLimite: number
-    └── valorGasto: number (calculado)
+    ├── estabelecimento: string
+    ├── valorTotal: number
+    ├── totalParcelas: number
+    ├── parcelasPagas: number
+    ├── portador: string
+    ├── usuarioId: string
+    ├── dataOriginal: timestamp
+    ├── status: 'ativo' | 'quitado'
+    ├── criadoEm: timestamp
+    └── atualizadoEm: timestamp
 ```
 
-## Categorias Padrão
+---
 
-Criadas automaticamente ao criar um novo grupo:
+## Índices Compostos do Firestore
 
-```javascript
-[
-  { nome: 'Alimentação', emoji: '🍔', cor: '#FF6B6B' },
-  { nome: 'Transporte',  emoji: '🚗', cor: '#4ECDC4' },
-  { nome: 'Saúde',       emoji: '🏥', cor: '#45B7D1' },
-  { nome: 'Lazer',       emoji: '🎮', cor: '#FFA07A' },
-  { nome: 'Educação',    emoji: '📚', cor: '#98D8C8' },
-  { nome: 'Outros',      emoji: '📦', cor: '#95A5A6' },
-]
+Definidos em `firestore.indexes.json`:
+
+| Coleção | Campos | Uso |
+|---------|--------|-----|
+| `despesas` | `(grupoId ASC, data DESC)` | Listagem mensal de despesas |
+| `despesas` | `(grupoId ASC, tipo ASC, data ASC)` | Query de projeções (histórico) |
+| `orcamentos` | `(grupoId ASC, mes ASC, ano ASC)` | Orçamentos por período |
+| `categorias` | `(grupoId ASC, ativa ASC)` | Categorias ativas do grupo |
+| `parcelamentos` | `(grupoId ASC, status ASC, criadoEm ASC)` | Widget de parcelas em aberto |
+| `contas` | `(grupoId ASC, ativa ASC)` | Contas ativas do grupo |
+| `receitas` | `(grupoId ASC, data DESC)` | Listagem mensal de receitas |
+
+---
+
+## Estratégia de Deduplicação (NRF-008)
+
+### Chave de dedup para imports
+```
+chave_dedup = data(YYYY-MM-DD) || descricao(lower,trim,50chars) || valor(2dec) || portador(lower,30chars) || parcela
 ```
 
-## Estratégia de Branches
+### Chave simplificada para purga
+```
+chave_simples = data(YYYY-MM-DD) || descricao(lower,trim,60chars) || valor(2dec)
+```
+
+### Fluxo de proteção
+1. **Import**: `buscarChavesDedup(grupoId)` → `Set<chave_dedup>` → skipa linhas já existentes
+2. **Manual (despesas)**: `criarDespesa` recebe `chave_dedup = manual||data||desc||valor`
+3. **Purga**: `purgarDuplicatasDespesas / purgarDuplicatasReceitas` com `dryRun` para análise prévia
+
+---
+
+## Estrutura de Arquivos
 
 ```
-main          → produção (somente código estável)
-└── develop   → desenvolvimento ativo
-    ├── feature/auth-firebase
-    ├── feature/grupos-familiares
-    ├── feature/categorias-editaveis
-    └── feature/sistema-orcamentos
+src/
+├── index.html                  ← Redirect para dashboard.html
+├── dashboard.html
+├── despesas.html
+├── receitas.html
+├── orcamentos.html
+├── categorias.html
+├── fluxo-caixa.html
+├── fatura.html                 ← NRF-005
+├── importar.html
+├── login.html
+├── grupo.html
+│
+├── css/
+│   ├── variables.css           ← Sistema de design: cores, sombras, tipografia
+│   ├── components.css          ← Navbar, botões, modais, inputs, scrollbar
+│   └── main.css                ← Dashboard, imports, fatura, layouts de página
+│
+└── js/
+    ├── app.js                  ← Boot: auth, seed de categorias e contas
+    ├── config/
+    │   └── firebase.js         ← Inicialização Firebase (Auth + Firestore)
+    ├── services/
+    │   ├── auth.js             ← onAuthChange, logout
+    │   └── database.js         ← Todas as operações Firestore (CRUD + listeners)
+    ├── models/
+    │   ├── Despesa.js          ← modelDespesa() — factory com defaults
+    │   ├── Receita.js          ← modelReceita() + CATEGORIAS_RECEITA_PADRAO
+    │   └── Conta.js            ← modelConta() + CONTAS_PADRAO (11 contas)
+    ├── controllers/
+    │   └── despesas.js         ← salvarDespesa, deletarDespesa, renderizarListaDespesas
+    ├── pages/
+    │   ├── despesas.js         ← RF-005–RF-011: CRUD + filtros + contas
+    │   ├── receitas.js         ← RF-016: CRUD + import + dedup
+    │   ├── orcamentos.js       ← RF-004
+    │   ├── categorias.js       ← RF-003
+    │   ├── fluxo-caixa.js      ← NRF-003: gráfico anual Chart.js
+    │   ├── fatura.js           ← NRF-005: fechamento do cartão
+    │   └── importar.js         ← RF-013 + RF-014 + NRF-002 + NRF-008
+    └── utils/
+        ├── formatters.js       ← formatarMoeda, formatarData, nomeMes
+        └── helpers.js          ← dataHoje, normalizarStr, similaridade (Levenshtein)
 ```
+
+---
+
+## Contas Padrão (CONTAS_PADRAO)
+
+Seed automático via `garantirContasPadrao` (upsert — adiciona faltantes sem sobrescrever existentes):
+
+| Emoji | Nome | Cor | Tipo |
+|-------|------|-----|------|
+| 💳 | Cartão de Crédito | `#7B1FA2` | cartao |
+| 🟠 | Banco Itaú | `#EC6600` | banco |
+| 🔴 | Banco Bradesco | `#D32F2F` | banco |
+| 📊 | Banco XP | `#1565C0` | banco |
+| 🔴 | Banco Santander | `#CC0000` | banco |
+| 💼 | Banco BTG | `#B8860B` | banco |
+| 💜 | Nubank | `#820AD1` | banco |
+| 🟡 | Banco Inter | `#FF6B00` | banco |
+| 🏛️ | Caixa Econômica | `#003399` | banco |
+| 💛 | Banco do Brasil | `#FFCC00` | banco |
+| 💵 | Dinheiro | `#2E7D32` | dinheiro |
+
+---
 
 ## Fluxo de Dados
 
-1. Usuário interage com a UI
-2. Controller captura o evento
-3. Service realiza a operação no Firestore
-4. Listener do Firestore detecta mudança
-5. UI é atualizada automaticamente (tempo real)
+```
+UI Event
+  └── Page JS (ex: despesas.js)
+        └── Controller (despesas.js) → gera chave_dedup, normaliza campos
+              └── Service (database.js) → escreve no Firestore
+                    └── onSnapshot → dispara callback
+                          └── Page JS → re-renderiza UI (tempo real)
+```
 
-## Regras de Segurança
+---
 
-Veja `firestore.rules` na raiz do projeto. Princípios:
-- Usuário autenticado só acessa seus próprios dados de perfil
-- Dados do grupo (categorias, despesas, orçamentos) só são acessíveis por membros do grupo
-- Validação tanto no client quanto no servidor (Firestore Rules)
+## Regras de Segurança (firestore.rules)
+
+Princípios:
+- Usuário autenticado acessa apenas o próprio perfil em `/usuarios/{userId}`
+- Dados do grupo (`categorias`, `despesas`, `receitas`, `orcamentos`, `contas`, `parcelamentos`) só são acessíveis por membros do grupo via `isMemberOfGroup(grupoId)`
+- `parcelamentos`: `allow delete: if false` — nunca deletados, apenas quitados por status
+- Coleções `contas` e `receitas` exigem regras explícitas — Firestore nega por padrão qualquer coleção não declarada
+
+---
+
+## Inferência de Banco (NRF-004)
+
+Resolução em 3 níveis ao importar transações:
+
+1. **Coluna "Conta / Banco" do arquivo** → match parcial case-insensitive com NFD (ex: "Bradesco" → "Banco Bradesco")
+2. **Palavras-chave na descrição** → mapa estático de ~16 bancos brasileiros (Itaú, Bradesco, Santander, BTG, XP, Nubank, Inter, C6, Caixa, BB, Sicoob…)
+3. **Seletor global da tela** → fallback para a conta selecionada pelo usuário antes do upload
+
+---
+
+## Reconciliação de Parcelas (NRF-002)
+
+Ao importar uma despesa parcelada já projetada:
+
+1. **Match exato**: `chave_dedup` idêntica → `status: 'pago'` na projeção + `tipo: 'projecao_paga'`
+2. **Fuzzy matching**: Similaridade Levenshtein ≥ 85% entre `descricao` + mesma faixa de valor (±5%) + mesmo mês → reconcilia mesmo sem chave exata
+3. Projeção mantida no Firestore com `despesaRealId` apontando para a despesa importada
