@@ -28,6 +28,7 @@
 | NRF-006 | Detecção Automática de Tipo de Extrato | Alta | ✅ Implementado |
 | NRF-008 | Deduplicação de Transações | Alta | ✅ Implementado |
 | RF-019 | Correção: Preenchimento Automático de Conta/Banco no Preview | Alta | ✅ Implementado |
+| RF-020 | Classificação Automática por Sinal + Importação PDF | Alta | ✅ Implementado |
 
 ---
 
@@ -713,3 +714,51 @@ Ao selecionar o seletor global "🏦 De qual banco é este extrato?" **antes** d
 - [x] Arquivo com coluna "Conta / Banco": seletor global tem prioridade
 - [x] Override manual por linha continua funcionando
 - [x] Funciona para fatura de cartão, extrato bancário, despesas e receitas
+
+---
+
+## RF-020: Classificação Automática por Sinal + Importação PDF
+**Prioridade:** Alta | **Versão:** v2.4.0 | **Status:** ✅ Implementado
+
+### Motivação
+Usuários com extratos bancários em PDF não conseguiam importar diretamente. Além disso, a classificação receita/despesa para extratos com sinal precisava ser automática e reversível.
+
+### Funcionalidades
+
+#### Importação de PDF bancário
+- Arrastar/selecionar arquivo `.pdf` na tela Base de Dados → Importar
+- PDF.js (CDN v3.11.174 UMD) extrai texto de todas as páginas
+- Agrupa itens por linha (posição Y com tolerância 2,5pt), ordena por X
+- Detecta automaticamente como "🏦 Extrato Bancário"
+
+#### Classificação por sinal
+- Valor negativo → `tipoLinha = 'despesa'`
+- Valor positivo → `tipoLinha = 'receita'`
+- Toggle "Inverter sinais": aparece somente em PDFs, permite trocar a convenção
+- Re-classifica todas as linhas em tempo real ao ativar/desativar
+
+#### Badge de confiança
+- Cada linha de PDF recebe badge: `✓ Alta`, `~ Média` ou `⚠ Baixa`
+- Legenda visível no topo do preview (somente em PDFs)
+- Confiança baseada em: qualidade da descrição, valor plausível, comprimento da linha
+
+### Arquivos Modificados
+
+| Arquivo | Alteração |
+|---------|-----------|
+| `src/js/utils/pdfParser.js` | **Novo** — `extrairTransacoesPDF(file)` |
+| `src/js/pages/importar.js` | Pipeline PDF, `parsearLinhasPDF()`, toggle, badges |
+| `src/base-dados.html` | PDF.js CDN, accept=".pdf", toggle UI, legenda |
+| `src/css/main.css` | `.imp-badge--conf-alta/media/baixa`, `.imp-pdf-conf-legenda`, `.imp-inverter-sinais-wrap` |
+
+### Critérios de Aceitação
+- [x] Arquivo PDF é aceito no input de arquivo (accept inclui `.pdf`)
+- [x] PDF com texto selecionável extrai transações corretamente
+- [x] Valores negativos no PDF → despesa; positivos → receita
+- [x] Toggle "Inverter sinais" inverte a classificação em tempo real
+- [x] Badge de confiança (alta/média/baixa) exibido por linha no preview
+- [x] Legenda de confiança visível somente quando arquivo é PDF
+- [x] Toggle de inversão visível somente em PDFs no modo banco
+- [x] PDF sem texto selecionável exibe mensagem de erro amigável
+- [x] Reset (trocar arquivo) limpa `_origemPDF` e `_sinaisInvertidos`
+- [x] Pipeline de deduplicação, categorização e importação funciona igual ao CSV/XLSX

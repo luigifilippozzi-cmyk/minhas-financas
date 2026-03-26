@@ -1,9 +1,10 @@
 # Milestone: App Mobile iOS — Minhas Finanças
 
-> **Status:** Planejamento
-> **Tipo:** Nova Funcionalidade (paralela às NRFs em andamento)
+> **Status:** ✅ Pronto para iniciar — Web estável em v2.3.0
+> **Tipo:** Nova Funcionalidade (branch dedicado: `feat/ios-capacitor`)
 > **Distribuição:** Privada via TestFlight → App Store (fase futura)
 > **Stack:** Capacitor (Ionic) + Firebase JS SDK + capawesome-team/capacitor-firebase
+> **Web base:** https://minhas-financas-285da.web.app (v2.3.0 — RF-001 a RF-019 implementados)
 
 ---
 
@@ -181,7 +182,7 @@ Branch: feat/ios-app   ───────────────────
 
 ## Próximo Passo Imediato
 
-Quando as NRFs atuais estiverem estáveis em produção:
+Web app estável em **v2.3.0** (RF-001 a RF-019 implementados). Milestone iOS pronto para iniciar.
 
 ```bash
 # Criar branch dedicado
@@ -191,6 +192,7 @@ git checkout -b feat/ios-capacitor
 npm install -D vite
 
 # Criar vite.config.js para MPA
+# Ver Fase 0 acima para detalhes
 ```
 
 ---
