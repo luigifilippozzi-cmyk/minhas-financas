@@ -211,6 +211,68 @@
       </div>
     </div>
 
+    <!-- ═══ MANUTENÇÃO: PURGA DE DUPLICATAS ═══ -->
+    <div class="card imp-card" id="sec-manutencao">
+      <h3 class="imp-step-titulo" style="display:flex;align-items:center;gap:.5rem;">
+        🧹 Manutenção da Base
+      </h3>
+      <p class="imp-step-desc">
+        Detecta e remove transações duplicadas (mesmo dia + estabelecimento + valor).
+        Mantém sempre a versão mais antiga de cada transação.
+      </p>
+
+      <!-- Resultado da análise -->
+      <div id="purga-stats" class="hidden" style="display:flex;gap:1rem;flex-wrap:wrap;margin:.75rem 0;padding:.75rem 1rem;background:var(--surface-alt,#f8f9fa);border-radius:8px;border:1px solid var(--border);">
+        <div style="text-align:center;">
+          <div id="purga-total-desp" style="font-size:1.5rem;font-weight:800;color:var(--text);">—</div>
+          <div style="font-size:.75rem;color:var(--text-muted);">Despesas na base</div>
+        </div>
+        <div style="text-align:center;">
+          <div id="purga-dup-desp" style="font-size:1.5rem;font-weight:800;color:var(--danger);">—</div>
+          <div style="font-size:.75rem;color:var(--text-muted);">Despesas duplicadas</div>
+        </div>
+        <div style="text-align:center;">
+          <div id="purga-total-rec" style="font-size:1.5rem;font-weight:800;color:var(--text);">—</div>
+          <div style="font-size:.75rem;color:var(--text-muted);">Receitas na base</div>
+        </div>
+        <div style="text-align:center;">
+          <div id="purga-dup-rec" style="font-size:1.5rem;font-weight:800;color:var(--danger);">—</div>
+          <div style="font-size:.75rem;color:var(--text-muted);">Receitas duplicadas</div>
+        </div>
+      </div>
+
+      <!-- Resultado da purga -->
+      <div id="purga-resultado" class="hidden" style="margin:.75rem 0;padding:.75rem 1rem;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;color:#166534;font-size:.9rem;"></div>
+
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.5rem;">
+        <button id="btn-analisar-dup" class="btn btn-outline btn-sm">🔍 Analisar Duplicatas</button>
+        <button id="btn-purgar-dup" class="btn btn-sm hidden" style="background:var(--danger,#dc2626);color:#fff;border:none;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-weight:600;">
+          🗑️ Remover Duplicatas
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal confirmação de purga -->
+    <div id="modal-purga" class="modal-overlay hidden">
+      <div class="modal-box" style="max-width:420px;">
+        <div class="modal-header">
+          <h3 class="modal-titulo">⚠️ Confirmar Purga</h3>
+        </div>
+        <div class="modal-body">
+          <p id="modal-purga-msg" style="margin-bottom:.5rem;"></p>
+          <p style="font-size:.85rem;color:var(--text-muted);">
+            Essa ação não pode ser desfeita. Apenas cópias duplicadas serão removidas — a versão mais antiga de cada transação será mantida.
+          </p>
+        </div>
+        <div class="modal-footer" style="display:flex;gap:.75rem;justify-content:flex-end;">
+          <button id="btn-purga-cancelar" class="btn btn-outline btn-sm">Cancelar</button>
+          <button id="btn-purga-confirmar" class="btn btn-sm" style="background:var(--danger,#dc2626);color:#fff;border:none;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-weight:600;">
+            Sim, remover duplicatas
+          </button>
+        </div>
+      </div>
+    </div>
+
   </main>
 
   <!-- SheetJS — carregado antes do módulo para ficar disponível como XLSX global -->
