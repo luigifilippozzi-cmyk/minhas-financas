@@ -29,6 +29,7 @@ firestore/
 │   ├── nomesMembros: { uid: nome }        ← mapa uid → nome
 │   ├── codigoConvite: string (6 chars)
 │   ├── maxMembros: number (2)
+│   ├── criadoPor: string (userId)         ← RF-018: identifica o mestre do grupo (admin)
 │   └── dataCriacao: timestamp
 │
 ├── categorias/{categoriaId}
@@ -113,11 +114,13 @@ Definidos em `firestore.indexes.json`:
 |---------|--------|-----|
 | `despesas` | `(grupoId ASC, data DESC)` | Listagem mensal de despesas |
 | `despesas` | `(grupoId ASC, tipo ASC, data ASC)` | Query de projeções (histórico) |
+| `despesas` | `(grupoId ASC, data ASC)` | RF-017/RF-018: busca por intervalo de datas |
 | `orcamentos` | `(grupoId ASC, mes ASC, ano ASC)` | Orçamentos por período |
 | `categorias` | `(grupoId ASC, ativa ASC)` | Categorias ativas do grupo |
 | `parcelamentos` | `(grupoId ASC, status ASC, criadoEm ASC)` | Widget de parcelas em aberto |
 | `contas` | `(grupoId ASC, ativa ASC)` | Contas ativas do grupo |
 | `receitas` | `(grupoId ASC, data DESC)` | Listagem mensal de receitas |
+| `receitas` | `(grupoId ASC, data ASC)` | RF-017/RF-018: busca por intervalo de datas |
 
 ---
 
@@ -144,30 +147,32 @@ chave_simples = data(YYYY-MM-DD) || descricao(lower,trim,60chars) || valor(2dec)
 
 ```
 src/
-├── index.html                  ← Redirect para dashboard.html
-├── dashboard.html
+├── index.html                  ← Redirect auth-aware: dashboard.html / grupo.html / login.html
+├── dashboard.html              ← RF-017: gráficos + KPI cards + parcelamentos
 ├── despesas.html
 ├── receitas.html
 ├── orcamentos.html
 ├── categorias.html
 ├── fluxo-caixa.html
 ├── fatura.html                 ← NRF-005
-├── importar.html
+├── base-dados.html             ← RF-018: 4 abas — Importar · Duplicatas · Gerenciar · Limpeza
+├── importar.html               ← Redirect para base-dados.html (backward compat)
 ├── login.html
 ├── grupo.html
 │
 ├── css/
 │   ├── variables.css           ← Sistema de design: cores, sombras, tipografia
 │   ├── components.css          ← Navbar, botões, modais, inputs, scrollbar
-│   └── main.css                ← Dashboard, imports, fatura, layouts de página
+│   ├── main.css                ← Dashboard, imports, fatura, base-dados, layouts de página
+│   └── dashboard.css           ← RF-017: cards KPI, gráficos, filtros de período
 │
 └── js/
-    ├── app.js                  ← Boot: auth, seed de categorias e contas
+    ├── app.js                  ← Boot: auth, seed de categorias e contas; RF-017 gráficos
     ├── config/
     │   └── firebase.js         ← Inicialização Firebase (Auth + Firestore)
     ├── services/
     │   ├── auth.js             ← onAuthChange, logout
-    │   └── database.js         ← Todas as operações Firestore (CRUD + listeners)
+    │   └── database.js         ← Todas as operações Firestore (CRUD + listeners + batch ops)
     ├── models/
     │   ├── Despesa.js          ← modelDespesa() — factory com defaults
     │   ├── Receita.js          ← modelReceita() + CATEGORIAS_RECEITA_PADRAO
@@ -181,7 +186,8 @@ src/
     │   ├── categorias.js       ← RF-003
     │   ├── fluxo-caixa.js      ← NRF-003: gráfico anual Chart.js
     │   ├── fatura.js           ← NRF-005: fechamento do cartão
-    │   └── importar.js         ← RF-013 + RF-014 + NRF-002 + NRF-008
+    │   ├── importar.js         ← RF-013 + RF-014 + NRF-002 + NRF-006 + NRF-008 (abas Importar + Duplicatas)
+    │   └── base-dados.js       ← RF-018: tab switching + Gerenciar (paginação/filtros/exclusão) + Limpeza (purge)
     └── utils/
         ├── formatters.js       ← formatarMoeda, formatarData, nomeMes
         └── helpers.js          ← dataHoje, normalizarStr, similaridade (Levenshtein)
