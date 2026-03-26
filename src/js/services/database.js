@@ -626,3 +626,71 @@ export async function atualizarStatusParcela(despesaId, despesaRealId) {
     tipo: 'projecao_paga',   // distingue de projecoes pendentes nos listeners
   });
 }
+
+// ── RF-018: Base de Dados — Gerenciar / Limpeza ───────────────
+
+/**
+ * Busca todas as transações reais do grupo (despesas + receitas),
+ * ordenadas por data descendente. Filtros opcionais aplicados client-side.
+ * @param {string} grupoId
+ * @returns {Promise<Array>}  Array de { id, _tipo:'despesa'|'receita', ...campos }
+ */
+export async function buscarTodasTransacoes(grupoId) {
+  const [snapDesp, snapRec] = await Promise.all([
+    getDocs(query(
+      collection(db, 'despesas'),
+      where('grupoId', '==', grupoId),
+      orderBy('data', 'desc'),
+    )),
+    getDocs(query(
+      collection(db, 'receitas'),
+      where('grupoId', '==', grupoId),
+      orderBy('data', 'desc'),
+    )),
+  ]);
+
+  const despesas = snapDesp.docs.map(d => ({ id: d.id, _tipo: 'despesa',  ...d.data() }));
+  const receitas = snapRec.docs.map(d => ({ id: d.id, _tipo: 'receita', ...d.data() }));
+
+  // Merge e ordena por data desc
+  return [...despesas, ...receitas].sort((a, b) => {
+    const da = a.data?.toDate?.() ?? new Date(a.data);
+    const db_ = b.data?.toDate?.() ?? new Date(b.data);
+    return db_ - da;
+  });
+}
+
+/**
+ * Exclui em lote uma lista de { id, colecao } em batches de 500.
+ * @param {Array<{id:string, colecao:string}>} items
+ */
+export async function excluirEmMassa(items) {
+  const BATCH = 500;
+  for (let i = 0; i < items.length; i += BATCH) {
+    await Promise.all(
+      items.slice(i, i + BATCH).map(({ id, colecao }) => deleteDoc(doc(db, colecao, id)))
+    );
+  }
+}
+
+/**
+ * Purga COMPLETA do grupo: apaga todas as despesas, receitas e parcelamentos.
+ * NÃO remove categorias, orçamentos, contas, usuários ou o grupo em si.
+ * Executa em batches de 500 para evitar timeout.
+ * @param {string} grupoId
+ * @returns {Promise<{despesas: number, receitas: number, parcelamentos: number}>}
+ */
+export async function purgeGrupoCompleto(grupoId) {
+  const resultado = { despesas: 0, receitas: 0, parcelamentos: 0 };
+  const colecoes  = ['despesas', 'receitas', 'parcelamentos'];
+
+  for (const col of colecoes) {
+    const snap = await getDocs(query(collection(db, col), where('grupoId', '==', grupoId)));
+    const BATCH = 500;
+    for (let i = 0; i < snap.docs.length; i += BATCH) {
+      await Promise.all(snap.docs.slice(i, i + BATCH).map(d => deleteDoc(d.ref)));
+    }
+    resultado[col] = snap.docs.length;
+  }
+  return resultado;
+}

@@ -19,6 +19,7 @@
 | RF-015 | Recuperação de Senha | Média | ✅ Implementado |
 | RF-016 | Gestão de Receitas | Alta | ✅ Implementado |
 | RF-017 | Dashboard como Tela Inicial — Gráficos e Indicadores | Alta | ✅ Implementado |
+| RF-018 | Centralização da Base de Dados — Importação, Deduplicação e Purge | Alta | ✅ Implementado |
 | NRF-001 | Contas Compartilhadas (divisão conjunta) | Alta | ✅ Implementado |
 | NRF-002 | Reconciliação Fuzzy de Parcelas + CSV Nativo de Cartão | Média | ✅ Implementado |
 | NRF-003 | Fluxo de Caixa — Visão Orçamentária Anual | Alta | ✅ Implementado |
@@ -621,3 +622,61 @@ Portador e número de parcela **não** fazem parte da chave — dois registros c
 - [x] Entradas manuais recebem chave_dedup e são detectadas em imports futuros
 - [x] Deduplicação de receitas agora funciona corretamente (coleção correta)
 - [x] Contadores da seção são atualizados após a purga
+
+---
+
+## RF-018: Centralização da Base de Dados — Importação, Deduplicação e Purge
+**Prioridade:** Alta | **Versão:** v2.2.0 | **Status:** ✅ Implementado
+
+### Objetivo
+Unificar em uma única tela (`base-dados.html`) toda a gestão da base de dados do grupo: importação de arquivos, análise de duplicatas, gerenciamento paginado de transações e limpeza total (admin only).
+
+### Estrutura de Abas
+
+| Aba | Ícone | Acesso | Responsável (JS) |
+|-----|-------|--------|-----------------|
+| Importar | 📥 | Todos os membros | `importar.js` |
+| Duplicatas | 🔍 | Todos os membros | `importar.js` |
+| Gerenciar | 🗂️ | Todos os membros | `base-dados.js` |
+| Limpeza | ⚠️ | Mestre do grupo apenas | `base-dados.js` |
+
+### RF-018.1 — Aba Gerenciar
+
+- Botão "🔍 Carregar" dispara `buscarTodasTransacoes(grupoId)` e preenche a tabela
+- Filtros client-side: **tipo** (despesa / receita / projeção / todos), **mês**, **ano**, **categoria**
+- Filtros de anos e categorias preenchidos dinamicamente a partir dos dados carregados
+- Tabela paginada: **50 registros por página**, controles Anterior/Próxima com indicador "Página X de Y (N registros)"
+- Seleção em massa: checkbox individual por linha + "Selecionar todos visíveis"
+- Exclusão em lote: até 500 itens por batch; modal de confirmação antes de deletar
+- Após exclusão: cache local atualizado sem nova consulta ao Firestore
+
+### RF-018.2 — Aba Limpeza (admin only)
+
+- **Visibilidade**: aba oculta por padrão (classe `.hidden`); exibida somente se `grupo.criadoPor === currentUser.uid`
+- **Dupla confirmação**: digitação da palavra `PURGAR` + checkbox de ciência
+- Botão "Purgar agora" habilitado apenas quando ambas as condições são satisfeitas
+- Executa `purgeGrupoCompleto(grupoId)`: apaga despesas, receitas e parcelamentos em batches de 500
+- Exibe resumo pós-purge: contagem por coleção + total
+- Categorias, orçamentos, contas e usuários **não são afetados**
+
+### Arquivos Alterados
+
+| Arquivo | Tipo | Descrição |
+|---------|------|-----------|
+| `src/base-dados.html` | Novo | Página principal com 4 abas |
+| `src/importar.html` | Modificado | Convertido em redirect para `base-dados.html` |
+| `src/js/pages/base-dados.js` | Novo | Tab switching + Gerenciar + Limpeza |
+| `src/js/services/database.js` | Modificado | `buscarTodasTransacoes`, `excluirEmMassa`, `purgeGrupoCompleto` |
+| `src/css/main.css` | Modificado | Estilos das abas, tabela gerenciar, purge box |
+| `src/dashboard.html` + 6 outras | Modificado | Navbar: "📤 Importar" → "📦 Base de Dados" |
+
+### Critérios de Aceitação
+- [x] Aba Importar funciona identicamente ao antigo `importar.html`
+- [x] Aba Duplicatas funciona identicamente à seção de manutenção do antigo `importar.html`
+- [x] Gerenciar carrega todas as transações e aplica filtros client-side corretamente
+- [x] Paginação exibe 50 registros por página
+- [x] Seleção em massa + exclusão em lote funciona com confirmação
+- [x] Aba Limpeza oculta para membros não-mestre
+- [x] Purge exige "PURGAR" + checkbox antes de habilitar o botão
+- [x] `importar.html` redireciona automaticamente para `base-dados.html`
+- [x] Todos os links da navbar apontam para `base-dados.html`

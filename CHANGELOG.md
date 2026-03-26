@@ -11,6 +11,48 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [2.2.0] - 2026-03-26
+
+### Adicionado — RF-018: Centralização da Base de Dados
+
+Importar, deduplicação e gerenciamento unificados em uma única tela `base-dados.html` com 4 abas. O antigo `importar.html` foi convertido em redirect.
+
+#### `src/base-dados.html` (novo)
+- **4 abas** via `.base-tab-nav`: 📥 Importar · 🔍 Duplicatas · 🗂️ Gerenciar · ⚠️ Limpeza
+- **Aba Importar**: conteúdo idêntico ao antigo `importar.html` (DOM IDs preservados, compatível com `importar.js`)
+- **Aba Duplicatas**: seção de manutenção/purga de duplicatas (compatível com `importar.js`)
+- **Aba Gerenciar**: tabela paginada (50/pág) com filtros por tipo · mês · ano · categoria; seleção em massa + exclusão em lote (até 500/batch); modal de confirmação
+- **Aba Limpeza** (admin only): "Purgar Base de Dados" com dupla confirmação — digitação "PURGAR" + checkbox; visível somente para o criador do grupo (`isMestre`)
+- Carrega dois módulos ES independentes: `importar.js` + `base-dados.js`
+
+#### `src/js/pages/base-dados.js` (novo)
+- **Tab switching**: clique em `.base-tab-btn` troca aba ativa e revela `#tab-{nome}`
+- **Auth + isMestre**: `onAuthChange` → busca `buscarGrupo` → compara `grupo.criadoPor === user.uid`; se mestre, remove `.hidden` de `#btn-tab-limpeza`
+- **Gerenciar**: `carregarTransacoes()` chama `buscarTodasTransacoes`; filtros aplicados client-side; paginação com `_paginaAtual`; checkboxes individuais + "selecionar todos visíveis"; `excluirEmMassa()` em batch de 500
+- **Limpeza**: validação em tempo real (texto="PURGAR" AND checkbox); `purgeGrupoCompleto()` com feedback de resultado (contagem por coleção)
+
+#### `src/js/services/database.js`
+- **`buscarTodasTransacoes(grupoId)`**: busca paralela despesas + receitas, merge e sort por data desc; injeta campo `_tipo` para diferenciação
+- **`excluirEmMassa(items)`**: batch delete de `{ id, colecao }[]` em chunks de 500 via `Promise.all`
+- **`purgeGrupoCompleto(grupoId)`**: apaga despesas, receitas e parcelamentos em batches; retorna `{ despesas, receitas, parcelamentos }` com contagem
+
+#### `src/importar.html`
+- Convertido em redirect: `<meta http-equiv="refresh">` + `window.location.replace('base-dados.html')` — backward compatibility para bookmarks/links externos
+
+#### Navbar (8 páginas)
+- `dashboard.html`, `despesas.html`, `receitas.html`, `orcamentos.html`, `fluxo-caixa.html`, `categorias.html`, `fatura.html`: link "📤 Importar" → "📦 Base de Dados" apontando para `base-dados.html`
+
+#### `src/css/main.css`
+- `.base-tab-nav` / `.base-tab-btn` / `.base-tab-btn--ativo` / `.base-tab-btn--admin`
+- `.ger-filtros` / `.ger-fil-select` / `.ger-acoes-lote` / `.ger-contagem` / `.ger-btn-excluir`
+- `.ger-tipo-badge` / `.ger-tipo-despesa` / `.ger-tipo-receita` / `.ger-tipo-projecao`
+- `.ger-paginacao`
+- `.purge-box` / `.purge-box-header` / `.purge-box-titulo` / `.purge-box-desc`
+- `.purge-btn` / `.purge-confirm-label`
+- Responsivo mobile: filtros em coluna, purge-box em coluna
+
+---
+
 ## [2.1.0] - 2026-03-26
 
 ### Adicionado — RF-017: Dashboard como Tela Inicial com Gráficos
