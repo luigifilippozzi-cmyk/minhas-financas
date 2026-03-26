@@ -137,8 +137,9 @@ function configurarEventos() {
   });
   document.getElementById('btn-importar')?.addEventListener('click', () => executarImportacao());
   document.getElementById('btn-nova-importacao')?.addEventListener('click', resetarTudo);
-  document.getElementById('btn-baixar-template')?.addEventListener('click', gerarTemplateDespesas);       // NRF-004
-  document.getElementById('btn-baixar-template-banco')?.addEventListener('click', gerarTemplateBanco);    // NRF-006
+  document.getElementById('btn-baixar-template')?.addEventListener('click', gerarTemplateDespesas);        // NRF-004
+  document.getElementById('btn-baixar-template-banco')?.addEventListener('click', gerarTemplateBanco);     // NRF-006
+  document.getElementById('btn-baixar-template-receita')?.addEventListener('click', gerarTemplateReceitas); // NRF-006
 
   // NRF-006: seletor manual de tipo de extrato
   document.getElementById('sel-tipo-extrato')?.addEventListener('change', async (e) => {
@@ -180,7 +181,9 @@ async function processarArquivo(file) {
         const rows = parsearCSVTexto(e.target.result);
         _linhas = parsearLinhasExtrato(rows);
         if (!_linhas.length) { mostrarErroLeitura('Nenhuma transação encontrada. Verifique se o arquivo està no formato correto.'); return; }
-        _aplicarTipo(detectarTipoExtrato(rows));
+        const det1 = detectarTipoExtrato(rows);
+        const tipo1 = det1.confianca === 'baixa' ? await _mostrarModalConfirmacaoTipo(det1) : det1.tipo;
+        _aplicarTipo(tipo1);
         _atualizarUITipo();
         await marcarDuplicatas();
         mostrarArquivoSelecionado(file.name);
@@ -200,8 +203,10 @@ async function processarArquivo(file) {
       const rows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, dateNF: 'DD/MM/YYYY' });
       _linhas = parsearLinhasExtrato(rows);
       if (!_linhas.length) { mostrarErroLeitura('Nenhuma transação encontrada no arquivo.'); return; }
-      _aplicarTipo(detectarTipoExtrato(rows));
-        _atualizarUITipo();
+      const det2 = detectarTipoExtrato(rows);
+      const tipo2 = det2.confianca === 'baixa' ? await _mostrarModalConfirmacaoTipo(det2) : det2.tipo;
+      _aplicarTipo(tipo2);
+      _atualizarUITipo();
       await marcarDuplicatas();
       mostrarArquivoSelecionado(file.name);
       renderizarPreview();
@@ -278,23 +283,48 @@ async function marcarDuplicatas() {
 }
 
 // ── NRF-006: Detecta o tipo do extrato pelas colunas do cabeçalho ──
-// Retorna: 'cartao' | 'banco' | 'receita' | 'despesa'
+// Retorna: { tipo: 'cartao'|'banco'|'receita'|'despesa', confianca: 'alta'|'baixa', colunas: string[] }
+// confianca 'baixa' → exibe modal de confirmação antes de prosseguir
 function detectarTipoExtrato(rows) {
   const norm = s => String(s ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
   for (let i = 0; i < Math.min(rows.length, 5); i++) {
-    const h = rows[i].map(norm);
+    const h     = rows[i].map(norm);
+    const hOrig = rows[i].map(c => String(c ?? '').trim()).filter(Boolean);
     const temData      = h.some(c => c === 'data');
     const temValor     = h.some(c => c === 'valor' || c.startsWith('valor'));
     if (!temData || !temValor) continue;  // linha não é cabeçalho
     const temPortador  = h.some(c => c.includes('portador') || c.includes('titular'));
     const temParcela   = h.some(c => c === 'parcela');
     const temCategoria = h.some(c => c.startsWith('categor'));
-    if (temPortador && temParcela) return 'cartao';            // Fatura de cartão ou template despesas
-    if (temCategoria && !temPortador && !temParcela) return 'receita'; // Template receitas
-    if (!temPortador && !temParcela) return 'banco';           // Extrato bancário puro
-    return 'despesa';
+    if (temPortador && temParcela)                   return { tipo: 'cartao',  confianca: 'alta',  colunas: hOrig };
+    if (temCategoria && !temPortador && !temParcela) return { tipo: 'receita', confianca: 'alta',  colunas: hOrig };
+    if (!temPortador && !temParcela)                 return { tipo: 'banco',   confianca: 'baixa', colunas: hOrig };
+    return { tipo: 'despesa', confianca: 'baixa', colunas: hOrig };
   }
-  return 'despesa';
+  return { tipo: 'despesa', confianca: 'baixa', colunas: [] };
+}
+
+// ── NRF-006: Modal de confirmação de tipo (baixa confiança) ──────
+// Exibe modal com sugestão de tipo e permite alteração antes de prosseguir.
+// Retorna Promise<string> com o tipo confirmado pelo usuário.
+function _mostrarModalConfirmacaoTipo(deteccao) {
+  return new Promise((resolve) => {
+    const labels = {
+      cartao: '💳 Fatura de Cartão', banco: '🏦 Extrato Bancário',
+      receita: '📥 Receitas',        despesa: '💸 Despesas',
+    };
+    document.getElementById('modal-tipo-sugestao').innerHTML =
+      'Detectamos um(a) <strong>' + (labels[deteccao.tipo] ?? deteccao.tipo) + '</strong> com base nas colunas encontradas.';
+    document.getElementById('modal-tipo-colunas').textContent =
+      deteccao.colunas.length ? deteccao.colunas.join(', ') : '(colunas não identificadas)';
+    document.getElementById('modal-sel-tipo-confirm').value = deteccao.tipo;
+    document.getElementById('modal-confirmacao-tipo').classList.remove('hidden');
+    document.getElementById('modal-tipo-confirmar').onclick = () => {
+      const tipo = document.getElementById('modal-sel-tipo-confirm').value;
+      document.getElementById('modal-confirmacao-tipo').classList.add('hidden');
+      resolve(tipo);
+    };
+  });
 }
 
 // ── NRF-006: Aplica lógica específica do tipo ao _linhas ────────
@@ -571,6 +601,36 @@ function gerarTemplateBanco() {
   XLSX.writeFile(wb, 'template-extrato-bancario.xlsx');
 }
 
+// ── NRF-006: Template Receitas ───────────────────────────────────
+function gerarTemplateReceitas() {
+  if (typeof XLSX === 'undefined') { alert('SheetJS não carregado. Tente recarregar a página.'); return; }
+  const wb = XLSX.utils.book_new();
+  const catsReceita = _categorias.filter(c => c.tipo === 'receita').map(c => c.nome);
+  const header = ['Data', 'Descrição', 'Categoria', 'Valor'];
+  const exemplos = [
+    ['15/03/2026', 'Salário',              catsReceita[0] ?? 'Salário',   '5000,00'],
+    ['20/03/2026', 'Freelance Projeto Web', catsReceita[1] ?? 'Freelance', '1200,00'],
+    ['25/03/2026', 'Rendimento Fundo CDB', catsReceita[2] ?? 'Rendimentos', '350,00'],
+    ['28/03/2026', 'Aluguel Recebido',     catsReceita[3] ?? 'Aluguel Recebido', '2500,00'],
+  ];
+  const ws = XLSX.utils.aoa_to_sheet([header, ...exemplos]);
+  ws['!cols'] = [{ wch: 12 }, { wch: 38 }, { wch: 22 }, { wch: 14 }];
+  XLSX.utils.book_append_sheet(wb, ws, 'Receitas');
+  const instrucoes = [
+    ['Campo',      'Formato / Valores aceitos',                                       'Obrigatório?'],
+    ['Data',       'DD/MM/AAAA',                                                      'Sim'],
+    ['Descrição',  'Texto livre (máx. 100 car.)',                                     'Sim'],
+    ['Categoria',  catsReceita.length ? 'Valores aceitos: ' + catsReceita.join(' | ') : 'Nome da categoria de receita', 'Não'],
+    ['Valor',      'Valor positivo sem símbolo R$ (ex: 5000,00)',                     'Sim'],
+    [],
+    ['Dica:', 'O sistema detecta automaticamente este arquivo como "Receitas" pela presença da coluna Categoria.'],
+  ];
+  const wsI = XLSX.utils.aoa_to_sheet(instrucoes);
+  wsI['!cols'] = [{ wch: 12 }, { wch: 60 }, { wch: 14 }];
+  XLSX.utils.book_append_sheet(wb, wsI, 'Instruções');
+  XLSX.writeFile(wb, 'template-receitas.xlsx');
+}
+
 // ── NRF-004: Infere conta/banco a partir de palavras-chave na descrição ─────
 // Prioridade: match direto contra nome das contas do grupo → então mapa de
 // palavras-chave de bancos brasileiros mais comuns.
@@ -739,23 +799,24 @@ function renderizarPreview() {
 
     const tdStatus = document.createElement('td');
     tdStatus.style.textAlign = 'center';
+    const chaveInfo = l.chave_dedup ? '\nchave: ' + l.chave_dedup : '';
     if (l.substitui_projecao_fuzzy) {
       // NRF-002: badge de reconciliação fuzzy com % de similaridade
-      tdStatus.innerHTML = '<span class="imp-badge imp-badge--fuzzy" title="Reconciliação fuzzy — similaridade ' + l.projecao_sim + '% com parcela projetada">🔍 ' + l.projecao_sim + '%</span>';
+      tdStatus.innerHTML = '<span class="imp-badge imp-badge--fuzzy" title="Reconciliação fuzzy — similaridade ' + l.projecao_sim + '% com parcela projetada' + chaveInfo + '">🔍 ' + l.projecao_sim + '%</span>';
     } else if (l.substitui_projecao) {
-      tdStatus.innerHTML = '<span class="imp-badge imp-badge--subst" title="Substitui parcela projetada pela despesa real — a projeção será marcada como paga">🔄 Real</span>';
+      tdStatus.innerHTML = '<span class="imp-badge imp-badge--subst" title="Substitui parcela projetada — será marcada como paga' + chaveInfo + '">🔄 Real</span>';
     } else if (l.duplicado) {
-      tdStatus.innerHTML = '<span class="imp-badge imp-badge--dup" title="Já importado anteriormente">🔄</span>';
+      tdStatus.innerHTML = '<span class="imp-badge imp-badge--dup" title="Já importado anteriormente' + chaveInfo + '">🔄</span>';
     } else if (l.erro) {
-      tdStatus.innerHTML = '<span class="imp-badge imp-badge--erro" title="' + l.erro + '">⚠️</span>';
+      tdStatus.innerHTML = '<span class="imp-badge imp-badge--erro" title="' + l.erro + chaveInfo + '">⚠️</span>';
     } else if (l.tipoLinha === 'receita') {
       // NRF-006: modo banco — badge de receita
-      tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok" style="background:#dcfce7;color:#166534;" title="Será salva como Receita">📥 Receita</span>';
+      tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok" style="background:#dcfce7;color:#166534;" title="Será salva como Receita' + chaveInfo + '">📥 Receita</span>';
     } else if (l.tipoLinha === 'despesa' && _tipoExtrato === 'banco') {
       // NRF-006: modo banco — badge de despesa
-      tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok" style="background:#fee2e2;color:#991b1b;" title="Será salva como Despesa">💸 Despesa</span>';
+      tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok" style="background:#fee2e2;color:#991b1b;" title="Será salva como Despesa' + chaveInfo + '">💸 Despesa</span>';
     } else {
-      tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok">✓</span>';
+      tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok" title="Pronto para importar' + chaveInfo + '">✓</span>';
     }
     tr.append(tdChk, tdData, tdEstab, tdPortador, tdParcela, tdVal, tdCat, tdConta, tdStatus);
     tbody.appendChild(tr);
