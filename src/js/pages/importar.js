@@ -1,5 +1,5 @@
 // ============================================================
-// PAGE: Importar — RF-013 + RF-014 + NRF-002
+// PAGE: Importar — RF-013 + RF-014 + NRF-002 + NRF-002.1 + NRF-008
 // Importação de transações de cartão de crédito.
 //
 // FORMATOS SUPORTADOS:
@@ -17,6 +17,15 @@
 // • Coleção 'parcelamentos' — registro mestre por série
 // • Status 'pago' em projeções reconciliadas (não deleta mais)
 // • Counters no preview: novas / reconciliadas exatas / fuzzy
+//
+// NRF-002.1 — Fatura de cartão (CSV com Portador+Parcela):
+// • Detecta arquivo de fatura automaticamente
+// • Normaliza parcela "X de Y" → "XX/YY" para compatibilidade com projeções
+// • Seletor de mês de vencimento — parceladas salvam com data do mês da fatura
+// • Créditos/estornos (valor negativo) excluídos automaticamente em modo fatura
+// • dataOriginal salvo no Firestore para rastreabilidade
+//
+// NRF-008 — Purga de duplicatas
 // ============================================================
 import { onAuthChange, logout } from '../services/auth.js';
 import {
@@ -44,6 +53,8 @@ let _chavesExistentes = new Set();
 let _projecaoDocMap = new Map();
 let _mapaCategoriasHist = {};
 let _projecoesDetalhadas = [];  // NRF-002: dados completos para fuzzy matching
+let _isFatura = false;          // NRF-002.1: true quando arquivo tem Portador+Parcela (fatura de cartão)
+let _mesFatura = '';            // NRF-002.1: "YYYY-MM" selecionado pelo usuário
 
 // ── Inicialização ───────────────────────────────────────────────
 onAuthChange(async (user) => {
@@ -123,6 +134,15 @@ function configurarEventos() {
   document.getElementById('btn-nova-importacao')?.addEventListener('click', resetarTudo);
   document.getElementById('btn-baixar-template')?.addEventListener('click', gerarTemplateDespesas); // NRF-004
 
+  // NRF-002.1: mês de vencimento da fatura
+  document.getElementById('inp-mes-fatura')?.addEventListener('change', (e) => {
+    _mesFatura = e.target.value;
+    if (_mesFatura && _linhas.length) {
+      aplicarMesFatura(_mesFatura);
+      renderizarPreview();
+    }
+  });
+
   // NRF-008: Purga de duplicatas
   document.getElementById('btn-analisar-dup')?.addEventListener('click', analisarDuplicatas);
   document.getElementById('btn-purgar-dup')?.addEventListener('click', abrirModalPurga);
@@ -146,6 +166,7 @@ async function processarArquivo(file) {
         const rows = parsearCSVTexto(e.target.result);
         _linhas = parsearLinhasExtrato(rows);
         if (!_linhas.length) { mostrarErroLeitura('Nenhuma transação encontrada. Verifique se o arquivo està no formato correto.'); return; }
+        _aplicarDeteccaoFatura(rows);
         await marcarDuplicatas();
         mostrarArquivoSelecionado(file.name);
         renderizarPreview();
@@ -164,12 +185,33 @@ async function processarArquivo(file) {
       const rows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, dateNF: 'DD/MM/YYYY' });
       _linhas = parsearLinhasExtrato(rows);
       if (!_linhas.length) { mostrarErroLeitura('Nenhuma transação encontrada no arquivo.'); return; }
+      _aplicarDeteccaoFatura(rows);
       await marcarDuplicatas();
       mostrarArquivoSelecionado(file.name);
       renderizarPreview();
     } catch (err) { mostrarErroLeitura('Erro ao ler o Excel: ' + err.message); }
   };
   reader.readAsArrayBuffer(file);
+}
+
+// ── NRF-002.1: Detecta fatura, exibe banner e aplica mês ────────
+function _aplicarDeteccaoFatura(rows) {
+  _isFatura = detectarFatura(rows);
+  const wrap = document.getElementById('fatura-mes-wrap');
+  wrap.classList.toggle('hidden', !_isFatura);
+  if (!_isFatura) return;
+  // Define mês padrão = mês atual se não preenchido
+  const inp = document.getElementById('inp-mes-fatura');
+  if (!inp.value) {
+    const hoje = new Date();
+    inp.value = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+  }
+  _mesFatura = inp.value;
+  // Marca créditos/estornos (valores negativos) como não importáveis
+  _linhas.forEach((l) => {
+    if (l.isCredito && !l.erro) l.erro = 'Crédito/estorno — não importado';
+  });
+  aplicarMesFatura(_mesFatura);
 }
 
 // ── RF-014 + NRF-002: Marca duplicatas e reconciliações ─────────
@@ -228,6 +270,35 @@ async function marcarDuplicatas() {
   });
 }
 
+// ── NRF-002.1: Detecta se arquivo é fatura de cartão ───────────
+// Critério: header contém colunas "portador" e "parcela"
+function detectarFatura(rows) {
+  for (let i = 0; i < Math.min(rows.length, 5); i++) {
+    const h = rows[i].map(c => String(c ?? '').toLowerCase().trim());
+    if (h.some(c => c.includes('portador') || c.includes('titular')) && h.some(c => c.includes('parcela'))) return true;
+  }
+  return false;
+}
+
+// ── NRF-002.1: Ajusta datas de parceladas para o mês da fatura ──
+// Para à vista: mantém a data original do CSV.
+// Para parceladas: substitui por 01/mês-fatura.
+function aplicarMesFatura(mesFatura) {
+  if (!mesFatura || !_linhas.length) return;
+  const [ano, mes] = mesFatura.split('-').map(Number);
+  const dataFatura = new Date(ano, mes - 1, 1);
+  _linhas.forEach((l) => {
+    // Restaura data original antes de aplicar (permite trocar de mês)
+    l.data = l.dataOriginal instanceof Date ? l.dataOriginal : new Date(l.dataOriginal);
+    if (!l.erro && l.parcela && l.parcela !== '-') {
+      l.data = new Date(dataFatura);
+      l.dataAjustada = true;
+    } else {
+      l.dataAjustada = false;
+    }
+  });
+}
+
 // ── Parser CSV com separador ";" ────────────────────────────────
 function parsearCSVTexto(content) {
   const texto = content.replace(/^\uFEFF/, '');
@@ -266,7 +337,8 @@ function parsearLinhasExtrato(rows) {
     const estab    = String(row[idxEstab]    ?? '').trim();
     const portador = String(row[idxPortador] ?? '').trim();
     const valorRaw = String(row[idxValor]    ?? '').trim();
-    const parcela  = idxParcela >= 0 ? String(row[idxParcela] ?? '').trim() : '-';
+    // NRF-002.1: normaliza "X de Y" → "XX/YY" para compatibilidade com projeções
+    const parcela  = idxParcela >= 0 ? normalizarParcela(String(row[idxParcela] ?? '').trim()) : '-';
     // NRF-004: resolve conta/banco column → contaId
     const contaNome  = idxConta >= 0 ? String(row[idxConta] ?? '').trim() : '';
     const _norm      = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
@@ -281,10 +353,12 @@ function parsearLinhasExtrato(rows) {
       || inferirContaDaDescricao(estab, _contas);
     if (!dataRaw && !estab && !valorRaw) continue;
     const estabLow = estab.toLowerCase();
-    if (/pagamento de fatura|inclusao de pagamento|inclusão de pagamento|parcela de fatura rotativo/i.test(estabLow)) continue;
+    if (/pagamento de fatura|inclusao de pagamento|inclusão de pagamento|parcela de fatura rotativo|credito de refinanciamento/i.test(estabLow)) continue;
     // Aceita valores negativos (extrato bancário) e positivos (cartão de crédito)
     // Sempre armazena como positivo — a direção contábil é despesa pelo contexto da importação
-    const valor = Math.abs(normalizarValorXP(valorRaw));
+    const valorBruto = normalizarValorXP(valorRaw);
+    const valor = Math.abs(valorBruto);
+    const isCredito = valorBruto < 0;  // NRF-002.1: crédito/estorno em fatura
     const dataFmt = normalizarData(dataRaw);
     const erros = [];
     if (!dataFmt) erros.push('Data inválida');
@@ -293,7 +367,8 @@ function parsearLinhasExtrato(rows) {
     const chave = (!erros.length) ? gerarChaveDedup(dataFmt, estab, valor, portador, parcela) : null;
     resultado.push({
       _idx: resultado.length,
-      data: dataFmt, descricao: estab, portador, parcela, valor,
+      data: dataFmt, dataOriginal: dataFmt,  // NRF-002.1: dataOriginal preservada para ajuste de mês
+      descricao: estab, portador, parcela, valor, isCredito,
       categoriaId: mapearCategoria(estab),
       contaId,  // NRF-004: conta detectada do arquivo (pode ser '' se coluna ausente)
       erro: erros.length ? erros.join(', ') : null,
@@ -314,10 +389,23 @@ function gerarChaveDedup(data, estab, valor, portador, parcela) {
   return dataISO + '||' + estabNorm + '||' + Number(valor).toFixed(2) + '||' + portNorm;
 }
 
-// ── RF-014: Interpreta campo Parcela "02/06" ────────────────────
+// ── NRF-002.1: Normaliza parcela para formato canônico "XX/YY" ──
+// Aceita "X/Y", "X de Y" (CSV fatura) ou "-"
+function normalizarParcela(str) {
+  if (!str || String(str).trim() === '-') return '-';
+  const s = String(str).trim();
+  const m = s.match(/^(\d+)\s+de\s+(\d+)$/i) || s.match(/^(\d+)\/(\d+)$/);
+  if (!m) return '-';
+  const a = parseInt(m[1], 10), t = parseInt(m[2], 10);
+  if (a <= 0 || t <= 0 || a > t) return '-';
+  return String(a).padStart(2, '0') + '/' + String(t).padStart(2, '0');
+}
+
+// ── RF-014: Interpreta campo Parcela "02/06" ou "2 de 6" ────────
 function parsearParcela(str) {
   if (!str || String(str).trim() === '-' || !String(str).trim()) return null;
-  const m = String(str).trim().match(/^(\d+)\/(\d+)$/);
+  const s = String(str).trim();
+  const m = s.match(/^(\d+)\/(\d+)$/) || s.match(/^(\d+)\s+de\s+(\d+)$/i);
   if (!m) return null;
   const atual = parseInt(m[1], 10);
   const total = parseInt(m[2], 10);
@@ -503,7 +591,14 @@ function renderizarPreview() {
     chk.checked = !l.erro && !l.duplicado;
     chk.addEventListener('change', () => atualizarChipsPreview());
     tdChk.appendChild(chk);
-    const tdData     = criarTd(l.data ? formatarData(l.data) : '—');
+    // NRF-002.1: mostra data ajustada (mês da fatura) com indicador visual para parceladas
+    const tdData = document.createElement('td');
+    if (l.dataAjustada && l.dataOriginal) {
+      const origStr = formatarData(l.dataOriginal instanceof Date ? l.dataOriginal : new Date(l.dataOriginal));
+      tdData.innerHTML = `<span title="Data original: ${origStr} · ajustada para mês da fatura">${l.data ? formatarData(l.data) : '—'} <span style="color:#7c3aed;font-size:.7rem;font-weight:700;">📅</span></span>`;
+    } else {
+      tdData.textContent = l.data ? formatarData(l.data) : '—';
+    }
     const tdEstab    = criarTd(l.descricao || '—');
     const portCurto  = l.portador ? l.portador.split(' ').slice(0, 2).join(' ') : '—';
     const tdPortador = criarTd(portCurto, '.82rem', 'var(--text-muted)');
@@ -646,6 +741,10 @@ async function executarImportacao() {
         isConjunta: isConj, valorAlocado,
         contaId,  // NRF-004
         status: 'pago',
+        // NRF-002.1: salva data original quando parcelada teve data ajustada para mês da fatura
+        ...(l.dataAjustada && l.dataOriginal ? {
+          dataOriginal: l.dataOriginal instanceof Date ? l.dataOriginal : new Date(l.dataOriginal),
+        } : {}),
       }));
       // NRF-002: reconciliação por matching exato
       if (l.substitui_projecao && l.chave_dedup && _projecaoDocMap.has(l.chave_dedup)) {
@@ -784,7 +883,10 @@ function resetarUpload() {
   document.getElementById('arquivo-info').classList.add('hidden');
   document.getElementById('erro-leitura').classList.add('hidden');
   document.getElementById('sec-preview').classList.add('hidden');
+  document.getElementById('fatura-mes-wrap')?.classList.add('hidden'); // NRF-002.1
   _linhas = [];
+  _isFatura = false;  // NRF-002.1
+  _mesFatura = '';    // NRF-002.1
 }
 function resetarTudo() {
   resetarUpload();

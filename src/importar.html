@@ -113,6 +113,16 @@
 
       <!-- Mensagem de erro de leitura -->
       <div class="form-erro hidden" id="erro-leitura"></div>
+
+      <!-- NRF-002.1: Banner de fatura detectada + seletor de mês -->
+      <div id="fatura-mes-wrap" class="hidden" style="margin-top:1rem;">
+        <div style="background:#f0f4ff;border:1px solid #c7d2fe;border-radius:10px;padding:.9rem 1.1rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+          <span style="font-size:.95rem;font-weight:700;color:#3730a3;">📅 Fatura de cartão detectada</span>
+          <label for="inp-mes-fatura" style="font-size:.88rem;color:#374151;font-weight:600;white-space:nowrap;">Mês de vencimento:</label>
+          <input type="month" id="inp-mes-fatura" class="select-input" style="width:auto;" />
+          <span style="font-size:.8rem;color:#6b7280;">Datas das parcelas serão ajustadas para este mês · créditos e estornos são excluídos automaticamente</span>
+        </div>
+      </div>
     </div>
 
     <!-- ═══ PASSO 3: PREVIEW E CONFIRMAÇÃO ═══ -->
