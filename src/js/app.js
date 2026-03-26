@@ -1,6 +1,6 @@
 // ============================================================
 // ENTRY POINT — Minhas Finanças
-// Ponto de entrada do dashboard (index.html)
+// Ponto de entrada do dashboard (dashboard.html)
 // ============================================================
 
 import { onAuthChange, logout } from './services/auth.js';
@@ -12,19 +12,21 @@ import {
   ouvirCategoriasReceita,
   garantirCategoriasReceita,
   garantirContasPadrao,       // NRF-004
+  buscarDespesasPeriodo,      // RF-017: gráficos
+  buscarReceitasPeriodo,      // RF-017: gráficos
+  buscarDespesasAno,          // RF-017: filtro anual
+  buscarReceitasAno,          // RF-017: filtro anual
 } from './services/database.js';
 import { iniciarListenerCategorias } from './controllers/categorias.js';
 import {
   iniciarListenerDespesas,
-  deletarDespesa,
-  renderizarListaDespesas,
 } from './controllers/despesas.js';
 import { iniciarListenerOrcamentos } from './controllers/orcamentos.js';
 import { renderizarDashboard } from './controllers/dashboard.js';
 import { renderizarDashboardReceitas } from './controllers/receitas-dashboard.js';
 import { CATEGORIAS_RECEITA_PADRAO } from './models/Receita.js';
 import { CONTAS_PADRAO } from './models/Conta.js';            // NRF-004
-import { mesAnoAtual, dataHoje, definirTexto } from './utils/helpers.js';
+import { mesAnoAtual, definirTexto } from './utils/helpers.js';
 import { nomeMes } from './utils/formatters.js';
 
 // ── Estado Global ─────────────────────────────────────────────
@@ -48,6 +50,27 @@ let _unsubOrc     = null;
 let _unsubProj    = null; // RF-014: parcelamentos em aberto
 let _unsubRec     = null; // receitas do mês
 let _unsubCatRec  = null; // categorias de receita
+
+// ── RF-017: Gráficos ──────────────────────────────────────────
+const MESES_ABREV = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const fmt  = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v ?? 0);
+const fmtC = (v) => new Intl.NumberFormat('pt-BR', { notation: 'compact', style: 'currency', currency: 'BRL' }).format(v ?? 0);
+
+let _chartCat    = null;  // Chart.js instance: categorias
+let _chartEvol   = null;  // Chart.js instance: evolução mensal
+let _filtroCat   = 'mes'; // 'mes' | '3meses' | 'ano'
+let _dadosMeses  = null;  // cache: { despesas, receitas, meses } — últimos 6 meses
+let _dadosAno    = null;  // cache: { despesas, receitas, ano } — ano completo
+
+function _ultimos6Meses(mesAtual, anoAtual) {
+  const r = [];
+  for (let i = 5; i >= 0; i--) {
+    let m = mesAtual - i, a = anoAtual;
+    while (m <= 0) { m += 12; a--; }
+    r.push({ mes: m, ano: a });
+  }
+  return r;
+}
 
 // ── Inicialização ─────────────────────────────────────────────
 
@@ -84,6 +107,7 @@ onAuthChange(async (user) => {
   garantirCategoriasReceita(estadoApp.perfil.grupoId, CATEGORIAS_RECEITA_PADRAO).catch(() => {});
   garantirContasPadrao(estadoApp.perfil.grupoId, CONTAS_PADRAO).catch(() => {}); // NRF-004
   configurarEventos();
+  carregarDadosMeses(); // RF-017: carrega dados para gráficos (assíncrono)
 });
 
 // ── Listeners em tempo real ────────────────────────────────────
@@ -101,9 +125,8 @@ function iniciarListeners() {
   // Categorias — não filtram por mês
   _unsubCats = iniciarListenerCategorias(grupoId, (cats) => {
     estadoApp.categorias = cats;
-    preencherSelectCategorias(cats);
     renderizarDashboard(estadoApp.categorias, estadoApp.despesas, estadoApp.orcamentos, estadoApp.nomeAtual);
-    renderizarListaDespesas(estadoApp.despesas, estadoApp.categorias);
+    if (_filtroCat === 'mes') renderizarGraficoCategorias(); // RF-017
   });
 
   // Despesas do mês — sync bidirecional: qualquer escrita de qualquer membro
@@ -111,13 +134,14 @@ function iniciarListeners() {
   _unsubDesp = iniciarListenerDespesas(grupoId, mes, ano, (desp) => {
     estadoApp.despesas = desp;
     renderizarDashboard(estadoApp.categorias, estadoApp.despesas, estadoApp.orcamentos, estadoApp.nomeAtual);
-    renderizarListaDespesas(estadoApp.despesas, estadoApp.categorias);
     // Re-render receitas so saldo stays in sync when despesas change
     renderizarDashboardReceitas(
       estadoApp.categoriasReceita,
       estadoApp.receitas,
       estadoApp.despesas.filter(d => d.tipo !== 'projecao').reduce((s, d) => s + (d.valor ?? 0), 0),
     );
+    if (_filtroCat === 'mes') renderizarGraficoCategorias(); // RF-017
+    renderizarGraficoEvolucao(); // RF-017
   });
 
   // Orçamentos do mês
@@ -135,6 +159,8 @@ function iniciarListeners() {
       estadoApp.receitas,
       estadoApp.despesas.filter(d => d.tipo !== 'projecao').reduce((s, d) => s + (d.valor ?? 0), 0),
     );
+    if (_filtroCat === 'mes') renderizarGraficoCategorias(); // RF-017
+    renderizarGraficoEvolucao(); // RF-017
   });
 }
 
@@ -149,6 +175,7 @@ function iniciarListenerCategoriasReceita(grupoId) {
       estadoApp.receitas,
       estadoApp.despesas.filter(d => d.tipo !== 'projecao').reduce((s, d) => s + (d.valor ?? 0), 0),
     );
+    if (_filtroCat === 'mes') renderizarGraficoCategorias(); // RF-017
   });
 }
 
@@ -157,19 +184,241 @@ function atualizarTituloReceitas() {
   if (el) el.textContent = `${nomeMes(estadoApp.mes)} ${estadoApp.ano}`;
 }
 
-// ── Categorias no select ───────────────────────────────────────
+// ── RF-017: Carregar dados dos gráficos ───────────────────────
 
-function preencherSelectCategorias(categorias) {
-  const sel = document.getElementById('despesa-categoria');
-  if (!sel) return;
-  const valorAtual = sel.value;
-  sel.innerHTML = '<option value="">Selecione uma categoria</option>' +
-    categorias
-      .sort((a, b) => a.nome.localeCompare(b.nome))
-      .map((c) => `<option value="${c.id}">${c.emoji} ${c.nome}</option>`)
-      .join('');
-  // Preserva seleção ao recarregar (ex: ao editar)
-  if (valorAtual) sel.value = valorAtual;
+async function carregarDadosMeses() {
+  const { grupoId } = estadoApp.perfil;
+  const { mes, ano } = estadoApp;
+  const meses6 = _ultimos6Meses(mes, ano);
+  const inicio = new Date(meses6[0].ano, meses6[0].mes - 1, 1);
+  const fim    = new Date(ano, mes, 0, 23, 59, 59); // último dia do mês selecionado
+  try {
+    const [desp, rec] = await Promise.all([
+      buscarDespesasPeriodo(grupoId, inicio, fim),
+      buscarReceitasPeriodo(grupoId, inicio, fim),
+    ]);
+    _dadosMeses = { despesas: desp, receitas: rec, meses: meses6 };
+    renderizarGraficoEvolucao();
+    if (_filtroCat === '3meses') renderizarGraficoCategorias();
+  } catch (err) {
+    console.error('[dashboard] Erro ao carregar dados de gráficos:', err);
+  }
+}
+
+async function carregarDadosAno() {
+  const { grupoId } = estadoApp.perfil;
+  const { ano } = estadoApp;
+  if (_dadosAno?.ano === ano) { renderizarGraficoCategorias(); return; }
+  try {
+    const [desp, rec] = await Promise.all([
+      buscarDespesasAno(grupoId, ano),
+      buscarReceitasAno(grupoId, ano),
+    ]);
+    _dadosAno = { despesas: desp, receitas: rec, ano };
+    renderizarGraficoCategorias();
+  } catch (err) {
+    console.error('[dashboard] Erro ao carregar dados anuais:', err);
+  }
+}
+
+// ── RF-017: Gráfico 1 — Receitas × Despesas por Categoria ────
+
+function renderizarGraficoCategorias() {
+  const canvas = document.getElementById('dash-chart-categorias');
+  if (!canvas || typeof Chart === 'undefined') return;
+
+  let despFiltradas, recFiltradas;
+
+  if (_filtroCat === 'mes') {
+    despFiltradas = estadoApp.despesas.filter(d => d.tipo !== 'projecao');
+    recFiltradas  = estadoApp.receitas;
+  } else if (_filtroCat === '3meses') {
+    if (!_dadosMeses) return;
+    const meses3 = _dadosMeses.meses.slice(-3);
+    despFiltradas = _dadosMeses.despesas.filter(d => {
+      if (d.tipo === 'projecao') return false;
+      const dt = d.data?.toDate?.() ?? new Date(d.data);
+      return meses3.some(m => dt.getFullYear() === m.ano && dt.getMonth() + 1 === m.mes);
+    });
+    recFiltradas = _dadosMeses.receitas.filter(r => {
+      const dt = r.data?.toDate?.() ?? new Date(r.data);
+      return meses3.some(m => dt.getFullYear() === m.ano && dt.getMonth() + 1 === m.mes);
+    });
+  } else { // 'ano'
+    if (!_dadosAno) return;
+    despFiltradas = _dadosAno.despesas.filter(d => d.tipo !== 'projecao');
+    recFiltradas  = _dadosAno.receitas;
+  }
+
+  // Agregação por categoria
+  const despMap = {}, recMap = {};
+  despFiltradas.forEach(d => { despMap[d.categoriaId] = (despMap[d.categoriaId] ?? 0) + (d.valor ?? 0); });
+  recFiltradas.forEach(r => { recMap[r.categoriaId]   = (recMap[r.categoriaId]   ?? 0) + (r.valor ?? 0); });
+
+  // Mapa de todas as categorias (despesa + receita)
+  const todasCats = [...estadoApp.categorias, ...estadoApp.categoriasReceita];
+  const catMap    = Object.fromEntries(todasCats.map(c => [c.id, c]));
+  const catIds    = new Set([...Object.keys(despMap), ...Object.keys(recMap)]);
+
+  const cats = [...catIds]
+    .map(id => catMap[id])
+    .filter(Boolean)
+    .sort((a, b) =>
+      ((despMap[b.id] ?? 0) + (recMap[b.id] ?? 0)) -
+      ((despMap[a.id] ?? 0) + (recMap[a.id] ?? 0))
+    );
+
+  if (_chartCat) { _chartCat.destroy(); _chartCat = null; }
+  if (!cats.length) return;
+
+  const labels    = cats.map(c => `${c.emoji} ${c.nome}`);
+  const recData   = cats.map(c => recMap[c.id]  ?? 0);
+  const despData  = cats.map(c => despMap[c.id] ?? 0);
+  const totalRec  = recData.reduce((a, b) => a + b, 0);
+  const totalDesp = despData.reduce((a, b) => a + b, 0);
+
+  _chartCat = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Receitas',
+          data: recData,
+          backgroundColor: 'rgba(46,125,50,0.75)',
+          borderColor: '#2e7d32',
+          borderWidth: 1,
+        },
+        {
+          label: 'Despesas',
+          data: despData,
+          backgroundColor: 'rgba(198,40,40,0.75)',
+          borderColor: '#c62828',
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: true, position: 'top', labels: { font: { size: 12 }, boxWidth: 14 } },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => {
+              const total = ctx.datasetIndex === 0 ? totalRec : totalDesp;
+              const pct   = total > 0 ? ((ctx.parsed.y / total) * 100).toFixed(1) : '0.0';
+              return ` ${ctx.dataset.label}: ${fmt(ctx.parsed.y)} (${pct}%)`;
+            },
+          },
+        },
+      },
+      scales: {
+        x: { grid: { color: 'rgba(0,0,0,.04)' }, ticks: { font: { size: 11 } } },
+        y: {
+          beginAtZero: true,
+          ticks: { callback: (v) => fmtC(v), font: { size: 11 } },
+        },
+      },
+    },
+  });
+}
+
+// ── RF-017: Gráfico 2 — Evolução Mensal (últimos 6 meses) ─────
+
+function renderizarGraficoEvolucao() {
+  const canvas = document.getElementById('dash-chart-evolucao');
+  if (!canvas || typeof Chart === 'undefined' || !_dadosMeses) return;
+
+  const meses6   = _dadosMeses.meses;
+  const hoje     = new Date();
+  const mesHoje  = hoje.getMonth() + 1;
+  const anoHoje  = hoje.getFullYear();
+
+  const dados = meses6.map(({ mes, ano: mAno }) => {
+    const isFuturo = mAno > anoHoje || (mAno === anoHoje && mes > mesHoje);
+    const isAtual  = mAno === estadoApp.ano && mes === estadoApp.mes;
+
+    let totalDesp, totalRec;
+    if (isAtual) {
+      // Usa dados do onSnapshot (mais recentes)
+      totalDesp = estadoApp.despesas.filter(d => d.tipo !== 'projecao').reduce((s, d) => s + (d.valor ?? 0), 0);
+      totalRec  = estadoApp.receitas.reduce((s, r) => s + (r.valor ?? 0), 0);
+    } else {
+      totalDesp = _dadosMeses.despesas.filter(d => {
+        if (d.tipo === 'projecao') return false;
+        const dt = d.data?.toDate?.() ?? new Date(d.data);
+        return dt.getFullYear() === mAno && dt.getMonth() + 1 === mes;
+      }).reduce((s, d) => s + (d.valor ?? 0), 0);
+      totalRec = _dadosMeses.receitas.filter(r => {
+        const dt = r.data?.toDate?.() ?? new Date(r.data);
+        return dt.getFullYear() === mAno && dt.getMonth() + 1 === mes;
+      }).reduce((s, r) => s + (r.valor ?? 0), 0);
+    }
+    return { mes, ano: mAno, totalDesp, totalRec, saldo: totalRec - totalDesp, isFuturo };
+  });
+
+  // Saldo acumulado
+  let acum = 0;
+  const dadosAcum = dados.map(d => { acum += d.saldo; return { ...d, acum }; });
+
+  const labels   = meses6.map(({ mes, ano: a }) => `${MESES_ABREV[mes - 1]}/${String(a).slice(-2)}`);
+  const recData  = dadosAcum.map(d => d.totalRec);
+  const despData = dadosAcum.map(d => d.totalDesp);
+  const acumData = dadosAcum.map(d => d.acum);
+
+  if (_chartEvol) { _chartEvol.destroy(); _chartEvol = null; }
+
+  _chartEvol = new Chart(canvas, {
+    data: {
+      labels,
+      datasets: [
+        {
+          type: 'bar', label: 'Receitas', data: recData, order: 2,
+          backgroundColor: dadosAcum.map(d => d.isFuturo ? 'rgba(46,125,50,0.3)' : 'rgba(46,125,50,0.7)'),
+          borderColor: '#2e7d32', borderWidth: 1,
+        },
+        {
+          type: 'bar', label: 'Despesas', data: despData, order: 2,
+          backgroundColor: dadosAcum.map(d => d.isFuturo ? 'rgba(198,40,40,0.3)' : 'rgba(198,40,40,0.7)'),
+          borderColor: '#c62828', borderWidth: 1,
+        },
+        {
+          type: 'line', label: 'Saldo Acumulado', data: acumData, order: 1,
+          borderColor: '#1565c0', backgroundColor: 'rgba(21,101,192,0.08)',
+          borderWidth: 2.5, tension: 0.35, fill: true, pointRadius: 4,
+          pointBackgroundColor: acumData.map(v => v >= 0 ? '#1565c0' : '#c62828'),
+          pointBorderColor: '#fff', pointBorderWidth: 1.5,
+          yAxisID: 'yAcum',
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: true, position: 'top', labels: { font: { size: 12 }, boxWidth: 14 } },
+        tooltip: { callbacks: { label: (ctx) => ` ${ctx.dataset.label}: ${fmt(ctx.parsed.y)}` } },
+      },
+      scales: {
+        x: { grid: { color: 'rgba(0,0,0,.04)' }, ticks: { font: { size: 12 } } },
+        y: {
+          beginAtZero: true,
+          grid: { color: 'rgba(0,0,0,.04)' },
+          ticks: { callback: (v) => fmtC(v), font: { size: 11 } },
+          title: { display: true, text: 'R$ / mês', font: { size: 11 } },
+        },
+        yAcum: {
+          position: 'right',
+          grid: { drawOnChartArea: false },
+          ticks: { callback: (v) => fmtC(v), font: { size: 11 } },
+          title: { display: true, text: 'Acumulado', font: { size: 11 } },
+        },
+      },
+    },
+  });
 }
 
 // ── Eventos de UI ─────────────────────────────────────────────
@@ -220,25 +469,38 @@ function configurarEventos() {
     widget.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
 
-  // Filtro de período
+  // RF-017: Filtros do gráfico de categorias
+  document.querySelectorAll('.dash-filtro-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      document.querySelectorAll('.dash-filtro-btn').forEach(b => b.classList.remove('dash-filtro-btn--ativo'));
+      btn.classList.add('dash-filtro-btn--ativo');
+      _filtroCat = btn.dataset.periodo;
+      if (_filtroCat === 'ano') {
+        await carregarDadosAno();
+      } else {
+        renderizarGraficoCategorias();
+      }
+    });
+  });
+
+  // Filtro de período (mês/ano do dashboard)
   document.getElementById('select-mes')?.addEventListener('change', (e) => {
     estadoApp.mes = Number(e.target.value);
+    _dadosMeses = null; // invalida cache de gráficos
+    _dadosAno   = null;
     atualizarTituloPeriodo();
     iniciarListeners();
+    carregarDadosMeses(); // RF-017
   });
   document.getElementById('select-ano')?.addEventListener('change', (e) => {
     estadoApp.ano = Number(e.target.value);
+    _dadosMeses = null;
+    _dadosAno   = null;
     atualizarTituloPeriodo();
     iniciarListeners();
+    carregarDadosMeses(); // RF-017
   });
 }
-
-// Expõe funções para os botões inline na lista de despesas
-window.editarDespesa = (id) => {
-  // Redireciona para despesas.html onde o formulário completo está disponível
-  window.location.href = `despesas.html?editar=${id}`;
-};
-
 
 // ── RF-014: Parcelamentos em Aberto ──────────────────────────
 

@@ -322,6 +322,59 @@
 .parc-compra-valor { font-weight: 700; color: var(--color-text); white-space: nowrap; }
 
 /* ══════════════════════════════════════════════════════════════
+   RF-017: GRÁFICOS DO DASHBOARD
+   ══════════════════════════════════════════════════════════════ */
+
+.dash-graficos-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.dash-grafico-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.dash-grafico-titulo {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  padding-bottom: var(--space-1);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dash-chart-wrap {
+  position: relative;
+  height: 280px;
+}
+
+/* Botões de filtro de período */
+.dash-filtro-btn {
+  background: transparent;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  transition: all var(--transition);
+}
+
+.dash-filtro-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.dash-filtro-btn--ativo {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+
+.dash-filtro-btn--ativo:hover {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+/* ══════════════════════════════════════════════════════════════
    RESPONSIVO
    ══════════════════════════════════════════════════════════════ */
 
@@ -345,7 +398,8 @@
   .section-header { flex-direction: column; align-items: flex-start; }
   .section-title  { font-size: var(--font-size-lg); }
 
-  .despesa-acoes .btn-sm { padding: 3px 7px; font-size: 0.7rem; }
+  .dash-graficos-row { grid-template-columns: 1fr; }
+  .dash-chart-wrap  { height: 240px; }
 
   .navbar { padding: 0 var(--space-4); gap: var(--space-2); }
   .navbar-brand span:last-child { display: none; }
