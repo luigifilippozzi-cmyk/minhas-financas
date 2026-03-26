@@ -23,6 +23,7 @@
 | NRF-003 | Fluxo de Caixa — Visão Orçamentária Anual | Alta | ✅ Implementado |
 | NRF-004 | Identificação de Conta/Banco por Transação | Alta | ✅ Implementado |
 | NRF-005 | Fatura do Cartão de Crédito | Alta | ✅ Implementado |
+| NRF-008 | Deduplicação de Transações | Alta | ✅ Implementado |
 
 ---
 
@@ -292,12 +293,17 @@ Permite identificar em qual conta financeira (banco ou cartão de crédito) cada
 #### Coleção `contas` (Firestore)
 - Coleção independente, com escopo por `grupoId` — mesmo padrão das `categorias`
 - Campos por documento: `nome`, `emoji`, `cor` (hex), `tipo` (`banco` | `cartao` | `dinheiro`), `ativa`, `grupoId`
-- Seed automático disparado no boot do app via `garantirContasPadrao`:
+- Seed automático via `garantirContasPadrao` (upsert — adiciona contas faltantes sem remover existentes):
   - 💳 Cartão de Crédito (`#7B1FA2`, tipo: cartao)
   - 🟠 Banco Itaú (`#EC6600`, tipo: banco)
+  - 🔴 Banco Bradesco (`#D32F2F`, tipo: banco)
   - 📊 Banco XP (`#1565C0`, tipo: banco)
   - 🔴 Banco Santander (`#CC0000`, tipo: banco)
   - 💼 Banco BTG (`#B8860B`, tipo: banco)
+  - 💜 Nubank (`#820AD1`, tipo: banco)
+  - 🟡 Banco Inter (`#FF6B00`, tipo: banco)
+  - 🏛️ Caixa Econômica (`#003399`, tipo: banco)
+  - 💛 Banco do Brasil (`#FFCC00`, tipo: banco)
   - 💵 Dinheiro (`#2E7D32`, tipo: dinheiro)
 
 #### Despesas — formulário e lista
@@ -342,7 +348,7 @@ Permite identificar em qual conta financeira (banco ou cartão de crédito) cada
 | `criarConta(dados)` | Cria nova conta no Firestore |
 | `atualizarConta(id, dados)` | Atualiza campos de uma conta |
 | `excluirConta(id)` | Soft-delete: seta `ativa: false` |
-| `garantirContasPadrao(grupoId, padrao)` | Cria contas padrão se o grupo ainda não tiver nenhuma |
+| `garantirContasPadrao(grupoId, padrao)` | Upsert: adiciona contas padrão faltantes (por nome, case-insensitive com NFD) sem sobrescrever existentes |
 
 #### Arquivos modificados
 | Arquivo | Alteração |
@@ -462,3 +468,67 @@ Arquivo gerado com SheetJS contendo 3 abas:
 - [x] Exportação Excel gera arquivo com 3 abas (Transações, Resumo, Conjuntas)
 - [x] Link no navbar visível em todas as páginas da aplicação
 - [x] Auto-seleciona o primeiro cartão de crédito cadastrado ao entrar na página
+
+---
+
+## NRF-008: Deduplicação de Transações
+**Prioridade:** Alta | **Versão:** v1.8.0 | **Status:** ✅ Implementado
+
+### Descrição
+Ferramenta completa para eliminar duplicatas existentes na base e impedir que uploads repetidos do mesmo extrato gerem lançamentos duplicados. Detecta transações idênticas pelo critério: mesma data + mesmo estabelecimento + mesmo valor.
+
+### Problema resolvido
+Uploads repetidos do mesmo extrato bancário (ou importações feitas antes da implementação do dedup) podiam gerar transações duplicadas na base. Além disso, a proteção de deduplicação de receitas nunca funcionava porque o código consultava a coleção errada (`despesas` em vez de `receitas`).
+
+### Funcionalidades
+
+#### Ferramenta de Purga — `importar.html`
+- Seção "🧹 Manutenção da Base" no final da página de Importação (sempre visível)
+- **"🔍 Analisar Duplicatas"**: varre o grupo inteiro em modo dry-run (sem deletar), exibe:
+  - Total de despesas na base / duplicatas de despesas encontradas
+  - Total de receitas na base / duplicatas de receitas encontradas
+- **"🗑️ Remover Duplicatas"**: aparece somente se houver duplicatas; abre modal de confirmação antes de agir
+- **Modal de confirmação**: descreve quantas serão removidas e avisa sobre irreversibilidade
+- Após a purga: recarrega `_chavesExistentes` para que o próximo import use a base limpa
+
+#### Critério de detecção de duplicatas
+```
+chave = data (YYYY-MM-DD) + descrição (lowercase, trim, max 60 chars) + valor (2 casas decimais)
+```
+Portador e número de parcela **não** fazem parte da chave — dois registros com a mesma compra em datas/valores idênticos são considerados duplicatas independentemente do responsável.
+
+#### Proteção por `chave_dedup` em entradas manuais
+- Formulário de nova despesa agora gera `chave_dedup` automático antes de salvar (`manual||data||desc||valor`)
+- Garante que despesas lançadas manualmente sejam reconhecidas como existentes em imports futuros do mesmo extrato, evitando lançamentos duplos
+
+#### Correção do bug de dedup em receitas
+- `receitas.js` chamava `buscarChavesDedup()` que consulta a coleção `despesas` — portanto o dedup de receitas nunca funcionou
+- Corrigido: nova função `buscarChavesDedupReceitas(grupoId)` consulta a coleção `receitas`
+
+### Arquitetura Técnica
+
+#### Funções adicionadas em `database.js`
+| Função | Descrição |
+|---|---|
+| `buscarChavesDedupReceitas(grupoId)` | Retorna `Set<chave_dedup>` da coleção `receitas` |
+| `purgarDuplicatasDespesas(grupoId, dryRun?)` | Varre despesas, agrupa por chave simplificada, mantém o mais antigo, deleta os demais. `dryRun=true` só conta |
+| `purgarDuplicatasReceitas(grupoId, dryRun?)` | Mesma lógica para receitas |
+
+#### Arquivos modificados
+| Arquivo | Alteração |
+|---|---|
+| `src/js/services/database.js` | +`buscarChavesDedupReceitas`, +`purgarDuplicatasDespesas`, +`purgarDuplicatasReceitas`, +`_chaveSimplificada` |
+| `src/js/pages/importar.js` | Import das funções de purga; listeners dos botões; funções `analisarDuplicatas`, `abrirModalPurga`, `fecharModalPurga`, `executarPurga` |
+| `src/js/pages/receitas.js` | `buscarChavesDedup` → `buscarChavesDedupReceitas` (correção de bug) |
+| `src/js/controllers/despesas.js` | Geração automática de `chave_dedup` para entradas manuais |
+| `src/importar.html` | Seção "Manutenção da Base" + modal de confirmação de purga |
+
+### Critérios de Aceitação
+- [x] "Analisar Duplicatas" exibe contadores corretos sem deletar nada
+- [x] "Remover Duplicatas" aparece somente quando há duplicatas
+- [x] Modal exige confirmação explícita antes de deletar
+- [x] Após a purga, a base não contém mais transações com mesma data+desc+valor
+- [x] Upload repetido do mesmo extrato não gera novas despesas (chave_dedup já existe)
+- [x] Entradas manuais recebem chave_dedup e são detectadas em imports futuros
+- [x] Deduplicação de receitas agora funciona corretamente (coleção correta)
+- [x] Contadores da seção são atualizados após a purga
