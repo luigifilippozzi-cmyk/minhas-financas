@@ -57,11 +57,13 @@ service cloud.firestore {
     }
 
     // Parcelamentos: apenas membros do grupo
+    // delete liberado para membros — operação normal é reconciliar (update status),
+    // mas o admin pode purgar via RF-018 (proteção feita na camada de aplicação)
     match /parcelamentos/{parcId} {
       allow read: if isSignedIn() && isMemberOfGroup(resource.data.grupoId);
       allow create: if isSignedIn() && isMemberOfGroup(request.resource.data.grupoId);
       allow update: if isSignedIn() && isMemberOfGroup(resource.data.grupoId);
-      allow delete: if false;
+      allow delete: if isSignedIn() && isMemberOfGroup(resource.data.grupoId);
     }
 
     // Contas/Bancos: apenas membros do grupo (NRF-004)

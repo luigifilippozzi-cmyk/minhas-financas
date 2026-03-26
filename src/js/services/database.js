@@ -12,6 +12,7 @@ import {
   setDoc,
   updateDoc,
   deleteDoc,
+  writeBatch,
   query,
   where,
   orderBy,
@@ -667,9 +668,9 @@ export async function buscarTodasTransacoes(grupoId) {
 export async function excluirEmMassa(items) {
   const BATCH = 500;
   for (let i = 0; i < items.length; i += BATCH) {
-    await Promise.all(
-      items.slice(i, i + BATCH).map(({ id, colecao }) => deleteDoc(doc(db, colecao, id)))
-    );
+    const batch = writeBatch(db);
+    items.slice(i, i + BATCH).forEach(({ id, colecao }) => batch.delete(doc(db, colecao, id)));
+    await batch.commit();
   }
 }
 
@@ -688,7 +689,9 @@ export async function purgeGrupoCompleto(grupoId) {
     const snap = await getDocs(query(collection(db, col), where('grupoId', '==', grupoId)));
     const BATCH = 500;
     for (let i = 0; i < snap.docs.length; i += BATCH) {
-      await Promise.all(snap.docs.slice(i, i + BATCH).map(d => deleteDoc(d.ref)));
+      const batch = writeBatch(db);
+      snap.docs.slice(i, i + BATCH).forEach(d => batch.delete(d.ref));
+      await batch.commit();
     }
     resultado[col] = snap.docs.length;
   }
