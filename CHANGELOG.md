@@ -11,6 +11,51 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [2.1.0] - 2026-03-26
+
+### Adicionado — RF-017: Dashboard como Tela Inicial com Gráficos
+
+Transformação do Dashboard em visão estratégica de alto nível: lista de despesas removida, dois novos gráficos interativos adicionados com Chart.js e fluxo de autenticação corrigido.
+
+#### `dashboard.html`
+- **Lista detalhada de despesas removida**: seção `#section-despesas` eliminada — lista completa continua disponível apenas em `despesas.html`
+- **Seção `#section-graficos`**: dois `<canvas>` lado a lado — `dash-chart-categorias` e `dash-chart-evolucao`
+- **Filtros de período**: botões **Mês atual / Últimos 3 meses / Ano atual** atualizam o gráfico de categorias em tempo real
+- **Chart.js v4.4.6** carregado via CDN (mesmo usado no Fluxo de Caixa)
+- **"Ver projeções →"** link direto para `fatura.html` no widget de Parcelamentos em Aberto
+
+#### `app.js`
+- **`carregarDadosMeses()`**: busca os últimos 6 meses via `buscarDespesasPeriodo` / `buscarReceitasPeriodo`; executado no init e ao trocar período; invalida cache ao mudar mês/ano
+- **`carregarDadosAno()`**: lazy, com cache por ano; disparado ao clicar "Ano atual"
+- **`renderizarGraficoCategorias()`**: barras verdes (Receitas) e vermelhas (Despesas) lado a lado por categoria; tooltip com valor exato + % do total; responde a filtro de período
+- **`renderizarGraficoEvolucao()`**: mixed chart — barras mensais de Receitas/Despesas + linha de Saldo Acumulado; meses futuros em tom claro; dados do mês atual sincronizados com `onSnapshot`
+- Removidos: `renderizarListaDespesas`, `preencherSelectCategorias`, `window.editarDespesa`
+- Handlers de `select-mes` / `select-ano` invalidam caches de gráficos ao trocar período
+
+#### `database.js`
+- **`buscarDespesasPeriodo(grupoId, inicio, fim)`**: query por intervalo de datas para despesas (suporta cross-year)
+- **`buscarReceitasPeriodo(grupoId, inicio, fim)`**: query por intervalo de datas para receitas
+
+#### `index.html`
+- **Bug corrigido**: substituída lógica de `signOut` automático por redirect auth-aware
+  - Autenticado + grupo → `dashboard.html`
+  - Autenticado sem grupo → `grupo.html`
+  - Não autenticado → `login.html`
+
+#### `dashboard.css`
+- `.dash-graficos-row`: grid 2 colunas → 1 coluna em mobile (≤640px)
+- `.dash-grafico-container`: card flexível com altura mínima definida
+- `.dash-chart-wrap`: wrapper com `height: 280px` para Chart.js
+- `.dash-filtro-btn` / `.dash-filtro-btn--ativo`: estilo dos botões de período
+
+#### Comportamento dos gráficos
+| Gráfico | Dados | Filtros | Atualização |
+|---------|-------|---------|-------------|
+| Receitas × Despesas por Categoria | Agrega receitas e despesas por `categoriaId` | Mês atual / Últimos 3 meses / Ano atual | Tempo real (mês atual) ou on-demand |
+| Evolução Mensal | Últimos 6 meses: barras + linha acumulado | Fixo (6 meses a partir do período selecionado) | Tempo real para mês atual |
+
+---
+
 ## [2.0.0] - 2026-03-26
 
 ### Adicionado — NRF-006: Detecção Automática de Tipo de Extrato no Upload

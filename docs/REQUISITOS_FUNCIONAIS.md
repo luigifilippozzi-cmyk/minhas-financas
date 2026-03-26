@@ -18,6 +18,7 @@
 | RF-014 | Gestão Multi-Usuário de Cartão de Crédito | Alta | ✅ Implementado |
 | RF-015 | Recuperação de Senha | Média | ✅ Implementado |
 | RF-016 | Gestão de Receitas | Alta | ✅ Implementado |
+| RF-017 | Dashboard como Tela Inicial — Gráficos e Indicadores | Alta | ✅ Implementado |
 | NRF-001 | Contas Compartilhadas (divisão conjunta) | Alta | ✅ Implementado |
 | NRF-002 | Reconciliação Fuzzy de Parcelas + CSV Nativo de Cartão | Média | ✅ Implementado |
 | NRF-003 | Fluxo de Caixa — Visão Orçamentária Anual | Alta | ✅ Implementado |
@@ -175,9 +176,63 @@
 - Link "📥 Receitas" na navbar em todas as páginas
 
 ### Dashboard — Seção Receitas
-- Seção dedicada entre o Dashboard de Orçamentos e a lista de Despesas
+- Seção dedicada entre o Dashboard de Orçamentos e os gráficos
 - Card **Total Receitas** (verde) e card **Saldo** (Receitas − Despesas, verde/vermelho)
 - Grid de categorias com barra de progresso verde e percentual por categoria
+
+## RF-017: Dashboard como Tela Inicial — Gráficos e Indicadores
+**Prioridade:** Alta | **Versão:** v2.1.0 | **Status:** ✅ Implementado
+
+### Redirecionamento Automático Após Login
+- `index.html` convertido de "logout gate" para redirect auth-aware
+  - Autenticado + grupo familiar → `dashboard.html`
+  - Autenticado sem grupo → `grupo.html`
+  - Não autenticado → `login.html`
+- Login sempre redireciona para `dashboard.html` (comportamento existente mantido)
+
+### Dashboard — Nova Estrutura
+| Seção | Status |
+|-------|--------|
+| Cards de Resumo (Total Orçado, Total Gasto, Disponível, Meu Bolso, Família) | Mantido |
+| Parcelamentos em Aberto (widget colapsável + link "Ver projeções →") | Mantido + aprimorado |
+| Grid de Orçamentos por Categoria | Mantido |
+| Seção de Receitas (Total + Saldo + grid por categoria) | Mantido |
+| **Gráfico Receitas × Despesas por Categoria** | **Novo** |
+| **Gráfico Evolução Mensal — últimos 6 meses** | **Novo** |
+| Lista detalhada de despesas | **Removida** (disponível em `despesas.html`) |
+
+### Gráfico 1 — Receitas × Despesas por Categoria
+- Barras verdes (Receitas) e vermelhas (Despesas) lado a lado por categoria
+- Agrupa categorias de despesa **e** categorias de receita na mesma visualização
+- Tooltip interativo com valor exato e % do total por conjunto
+- Filtro de período com 3 opções:
+  - **Mês atual**: usa dados do `onSnapshot` (tempo real, sem query adicional)
+  - **Últimos 3 meses**: usa cache dos últimos 6 meses (sem query adicional)
+  - **Ano atual**: lazy load de `buscarDespesasAno` / `buscarReceitasAno`, com cache
+- Ordenação por volume decrescente (categorias com mais movimentação no topo)
+
+### Gráfico 2 — Evolução Mensal
+- Mixed chart: barras de Receitas (verde) + Despesas (vermelho) + linha Saldo Acumulado (azul)
+- Sempre exibe os últimos 6 meses a partir do período selecionado (suporta cross-year)
+- Meses futuros exibidos em tom mais claro (opacidade reduzida)
+- Saldo acumulado com ponto azul (positivo) ou vermelho (negativo)
+- Dados do mês atual sincronizados com `onSnapshot` (tempo real)
+- Eixo Y secundário para o saldo acumulado
+
+### Performance
+- `carregarDadosMeses()`: 2 queries por init (6 meses) — substitui N queries mensais
+- Cache por ano (`_dadosAno`) para filtro "Ano atual" — evita re-fetch ao alternar filtros
+- Sem queries desnecessárias: "Mês atual" e "Últimos 3 meses" usam cache já carregado
+- Dashboard mais leve: sem carregamento da lista completa de despesas
+
+### Arquivos alterados
+| Arquivo | Alteração |
+|---------|-----------|
+| `dashboard.html` | Remove `#section-despesas`; adiciona `#section-graficos` com dois `<canvas>`; Chart.js v4.4.6; link "Ver projeções →" |
+| `src/js/app.js` | Adiciona `carregarDadosMeses`, `carregarDadosAno`, `renderizarGraficoCategorias`, `renderizarGraficoEvolucao`; remove `renderizarListaDespesas` |
+| `src/js/services/database.js` | Adiciona `buscarDespesasPeriodo` e `buscarReceitasPeriodo` |
+| `index.html` | Substitui logout automático por redirect auth-aware |
+| `src/css/dashboard.css` | Classes `.dash-graficos-row`, `.dash-chart-wrap`, `.dash-filtro-btn` |
 
 ## NRF-001: Contas Compartilhadas (Divisão Conjunta)
 **Prioridade:** Alta | **Versão:** v1.2.0 | **Status:** ✅ Implementado
