@@ -31,12 +31,15 @@ import { onAuthChange, logout } from '../services/auth.js';
 import {
   buscarPerfil, ouvirCategorias, ouvirContas,
   criarDespesa as criarDespesaDB, excluirDespesa,
-  buscarChavesDedup, buscarMapaProjecoes, buscarMapaCategorias,
+  buscarChavesDedup, buscarChavesDedupReceitas,   // NRF-006
+  buscarMapaProjecoes, buscarMapaCategorias,
   buscarProjecoesDetalhadas, atualizarStatusParcela,
   criarParcelamento, reconciliarParcela,
+  criarReceita,                                    // NRF-006: salvar receitas do extrato bancário
   purgarDuplicatasDespesas, purgarDuplicatasReceitas,
 } from '../services/database.js';
 import { modelDespesa } from '../models/Despesa.js';
+import { modelReceita } from '../models/Receita.js';  // NRF-006
 import { formatarMoeda, formatarData } from '../utils/formatters.js';
 import { normalizarStr, similaridade } from '../utils/helpers.js';
 
@@ -53,8 +56,10 @@ let _chavesExistentes = new Set();
 let _projecaoDocMap = new Map();
 let _mapaCategoriasHist = {};
 let _projecoesDetalhadas = [];  // NRF-002: dados completos para fuzzy matching
-let _isFatura = false;          // NRF-002.1: true quando arquivo tem Portador+Parcela (fatura de cartão)
+// NRF-006: tipo do extrato detectado/selecionado — 'cartao' | 'banco' | 'receita' | 'despesa'
+let _tipoExtrato = 'despesa';
 let _mesFatura = '';            // NRF-002.1: "YYYY-MM" selecionado pelo usuário
+let _chavesExistentesRec = new Set(); // NRF-006: dedup receitas (modo banco)
 
 // ── Inicialização ───────────────────────────────────────────────
 onAuthChange(async (user) => {
@@ -132,12 +137,21 @@ function configurarEventos() {
   });
   document.getElementById('btn-importar')?.addEventListener('click', () => executarImportacao());
   document.getElementById('btn-nova-importacao')?.addEventListener('click', resetarTudo);
-  document.getElementById('btn-baixar-template')?.addEventListener('click', gerarTemplateDespesas); // NRF-004
+  document.getElementById('btn-baixar-template')?.addEventListener('click', gerarTemplateDespesas);       // NRF-004
+  document.getElementById('btn-baixar-template-banco')?.addEventListener('click', gerarTemplateBanco);    // NRF-006
+
+  // NRF-006: seletor manual de tipo de extrato
+  document.getElementById('sel-tipo-extrato')?.addEventListener('change', async (e) => {
+    _aplicarTipo(e.target.value);
+    _atualizarUITipo();
+    await marcarDuplicatas();
+    renderizarPreview();
+  });
 
   // NRF-002.1: mês de vencimento da fatura
   document.getElementById('inp-mes-fatura')?.addEventListener('change', (e) => {
     _mesFatura = e.target.value;
-    if (_mesFatura && _linhas.length) {
+    if (_tipoExtrato === 'cartao' && _mesFatura && _linhas.length) {
       aplicarMesFatura(_mesFatura);
       renderizarPreview();
     }
@@ -166,7 +180,8 @@ async function processarArquivo(file) {
         const rows = parsearCSVTexto(e.target.result);
         _linhas = parsearLinhasExtrato(rows);
         if (!_linhas.length) { mostrarErroLeitura('Nenhuma transação encontrada. Verifique se o arquivo està no formato correto.'); return; }
-        _aplicarDeteccaoFatura(rows);
+        _aplicarTipo(detectarTipoExtrato(rows));
+        _atualizarUITipo();
         await marcarDuplicatas();
         mostrarArquivoSelecionado(file.name);
         renderizarPreview();
@@ -185,7 +200,8 @@ async function processarArquivo(file) {
       const rows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, dateNF: 'DD/MM/YYYY' });
       _linhas = parsearLinhasExtrato(rows);
       if (!_linhas.length) { mostrarErroLeitura('Nenhuma transação encontrada no arquivo.'); return; }
-      _aplicarDeteccaoFatura(rows);
+      _aplicarTipo(detectarTipoExtrato(rows));
+        _atualizarUITipo();
       await marcarDuplicatas();
       mostrarArquivoSelecionado(file.name);
       renderizarPreview();
@@ -194,45 +210,36 @@ async function processarArquivo(file) {
   reader.readAsArrayBuffer(file);
 }
 
-// ── NRF-002.1: Detecta fatura, exibe banner e aplica mês ────────
-function _aplicarDeteccaoFatura(rows) {
-  _isFatura = detectarFatura(rows);
-  const wrap = document.getElementById('fatura-mes-wrap');
-  wrap.classList.toggle('hidden', !_isFatura);
-  if (!_isFatura) return;
-  // Define mês padrão = mês atual se não preenchido
-  const inp = document.getElementById('inp-mes-fatura');
-  if (!inp.value) {
-    const hoje = new Date();
-    inp.value = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
-  }
-  _mesFatura = inp.value;
-  // Marca créditos/estornos (valores negativos) como não importáveis
-  _linhas.forEach((l) => {
-    if (l.isCredito && !l.erro) l.erro = 'Crédito/estorno — não importado';
-  });
-  aplicarMesFatura(_mesFatura);
-}
 
-// ── RF-014 + NRF-002: Marca duplicatas e reconciliações ─────────
+// ── RF-014 + NRF-002 + NRF-006: Marca duplicatas e reconciliações ─
 async function marcarDuplicatas() {
   _chavesExistentes    = await buscarChavesDedup(_grupoId);
+  // NRF-006: carrega chaves de receitas quando em modo banco (mixed credits/debits)
+  _chavesExistentesRec = (_tipoExtrato === 'banco' || _tipoExtrato === 'receita')
+    ? await buscarChavesDedupReceitas(_grupoId)
+    : new Set();
   _projecaoDocMap      = await buscarMapaProjecoes(_grupoId);
   _mapaCategoriasHist  = await buscarMapaCategorias(_grupoId);
-  _projecoesDetalhadas = await buscarProjecoesDetalhadas(_grupoId);  // NRF-002
+  // NRF-002: busca projeções apenas para tipos que geram parcelas
+  if (_tipoExtrato === 'cartao' || _tipoExtrato === 'despesa') {
+    _projecoesDetalhadas = await buscarProjecoesDetalhadas(_grupoId);
+  }
 
   // Fase 1: matching exato por chave_dedup
   _linhas.forEach((l) => {
     if (!l.chave_dedup || l.erro) return;
-    if (_projecaoDocMap.has(l.chave_dedup)) {
+    // NRF-006: usa coleção correta conforme tipo da linha
+    const chavesRef = l.tipoLinha === 'receita' ? _chavesExistentesRec : _chavesExistentes;
+    if (_projecaoDocMap.has(l.chave_dedup) && l.tipoLinha !== 'receita') {
       l.substitui_projecao = true;
       l.duplicado = false;
-    } else if (_chavesExistentes.has(l.chave_dedup)) {
+    } else if (chavesRef.has(l.chave_dedup)) {
       l.duplicado = true;
     }
   });
 
-  // NRF-002 — Fase 2: fuzzy matching para parcelas sem match exato
+  // NRF-002 — Fase 2: fuzzy matching (apenas para cartão/despesas com parcelas)
+  if (_tipoExtrato === 'banco' || _tipoExtrato === 'receita') return;
   _linhas.forEach((l) => {
     if (l.duplicado || l.substitui_projecao || l.erro) return;
     const info = parsearParcela(l.parcela);
@@ -270,14 +277,69 @@ async function marcarDuplicatas() {
   });
 }
 
-// ── NRF-002.1: Detecta se arquivo é fatura de cartão ───────────
-// Critério: header contém colunas "portador" e "parcela"
-function detectarFatura(rows) {
+// ── NRF-006: Detecta o tipo do extrato pelas colunas do cabeçalho ──
+// Retorna: 'cartao' | 'banco' | 'receita' | 'despesa'
+function detectarTipoExtrato(rows) {
+  const norm = s => String(s ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
   for (let i = 0; i < Math.min(rows.length, 5); i++) {
-    const h = rows[i].map(c => String(c ?? '').toLowerCase().trim());
-    if (h.some(c => c.includes('portador') || c.includes('titular')) && h.some(c => c.includes('parcela'))) return true;
+    const h = rows[i].map(norm);
+    const temData      = h.some(c => c === 'data');
+    const temValor     = h.some(c => c === 'valor' || c.startsWith('valor'));
+    if (!temData || !temValor) continue;  // linha não é cabeçalho
+    const temPortador  = h.some(c => c.includes('portador') || c.includes('titular'));
+    const temParcela   = h.some(c => c === 'parcela');
+    const temCategoria = h.some(c => c.startsWith('categor'));
+    if (temPortador && temParcela) return 'cartao';            // Fatura de cartão ou template despesas
+    if (temCategoria && !temPortador && !temParcela) return 'receita'; // Template receitas
+    if (!temPortador && !temParcela) return 'banco';           // Extrato bancário puro
+    return 'despesa';
   }
-  return false;
+  return 'despesa';
+}
+
+// ── NRF-006: Aplica lógica específica do tipo ao _linhas ────────
+// Resets all type-specific state, then applies rules for the given type.
+function _aplicarTipo(tipo) {
+  _tipoExtrato = tipo;
+  // Restaura estado original de cada linha antes de re-aplicar
+  _linhas.forEach((l) => {
+    l.erro       = l._erroOriginal ?? null;
+    l.tipoLinha  = null;
+    l.dataAjustada = false;
+    if (l.dataOriginal) l.data = l.dataOriginal instanceof Date ? l.dataOriginal : new Date(l.dataOriginal);
+  });
+  if (tipo === 'cartao') {
+    _linhas.forEach((l) => { if (l.isCredito && !l.erro) l.erro = 'Crédito/estorno — não importado'; });
+    if (_mesFatura) aplicarMesFatura(_mesFatura);
+  } else if (tipo === 'banco') {
+    _linhas.forEach((l) => { if (!l.erro) l.tipoLinha = l.isCredito ? 'despesa' : 'receita'; });
+  } else if (tipo === 'receita') {
+    _linhas.forEach((l) => { if (!l.erro) l.tipoLinha = 'receita'; });
+  }
+  // 'despesa': comportamento padrão, sem tipoLinha
+}
+
+// ── NRF-006: Atualiza a UI de detecção de tipo ──────────────────
+function _atualizarUITipo() {
+  document.getElementById('tipo-extrato-wrap').classList.remove('hidden');
+  const badges = {
+    cartao:  '💳 Fatura de Cartão detectada',
+    banco:   '🏦 Extrato Bancário detectado',
+    receita: '📥 Receitas detectadas',
+    despesa: '💸 Despesas detectadas',
+  };
+  document.getElementById('tipo-extrato-badge').textContent = badges[_tipoExtrato] ?? '📄 Arquivo detectado';
+  document.getElementById('sel-tipo-extrato').value = _tipoExtrato;
+  document.getElementById('fatura-mes-sub').classList.toggle('hidden', _tipoExtrato !== 'cartao');
+  document.getElementById('banco-hint').classList.toggle('hidden', _tipoExtrato !== 'banco');
+  if (_tipoExtrato === 'cartao') {
+    const inp = document.getElementById('inp-mes-fatura');
+    if (!inp.value) {
+      const hoje = new Date();
+      inp.value = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}`;
+    }
+    _mesFatura = inp.value;
+  }
 }
 
 // ── NRF-002.1: Ajusta datas de parceladas para o mês da fatura ──
@@ -372,7 +434,8 @@ function parsearLinhasExtrato(rows) {
       categoriaId: mapearCategoria(estab),
       contaId,  // NRF-004: conta detectada do arquivo (pode ser '' se coluna ausente)
       erro: erros.length ? erros.join(', ') : null,
-      chave_dedup: chave, duplicado: false,
+      _erroOriginal: erros.length ? erros.join(', ') : null,  // NRF-006: imutável, usado para reset
+      chave_dedup: chave, duplicado: false, tipoLinha: null,
     });
   }
   return resultado;
@@ -476,6 +539,36 @@ function gerarTemplateDespesas() {
   XLSX.utils.book_append_sheet(wb, wsI, 'Instruções');
 
   XLSX.writeFile(wb, 'template-despesas.xlsx');
+}
+
+// ── NRF-006: Template Extrato Bancário ──────────────────────────
+function gerarTemplateBanco() {
+  if (typeof XLSX === 'undefined') { alert('SheetJS não carregado. Tente recarregar a página.'); return; }
+  const wb = XLSX.utils.book_new();
+  const header  = ['Data', 'Descrição', 'Valor'];
+  const exemplos = [
+    ['15/03/2026', 'Salário',                 '5000,00'],
+    ['20/03/2026', 'Supermercado',            '-250,00'],
+    ['25/03/2026', 'Aluguel Recebido',        '2500,00'],
+    ['28/03/2026', 'Conta de Energia ENEL',   '-120,50'],
+    ['30/03/2026', 'Freelance — Projeto Web', '800,00'],
+    ['31/03/2026', 'Spotify',                 '-40,90'],
+  ];
+  const ws = XLSX.utils.aoa_to_sheet([header, ...exemplos]);
+  ws['!cols'] = [{ wch: 12 }, { wch: 38 }, { wch: 14 }];
+  XLSX.utils.book_append_sheet(wb, ws, 'Extrato');
+  const instrucoes = [
+    ['Campo',    'Formato / Valores aceitos',                                          'Obrigatório?'],
+    ['Data',     'DD/MM/AAAA',                                                         'Sim'],
+    ['Descrição','Texto livre (máx. 100 car.)',                                         'Sim'],
+    ['Valor',    'Positivo → Receita  ·  Negativo (use sinal -) → Despesa',            'Sim'],
+    ['',         'Exemplos:  5000,00  (receita)   /   -250,00  (despesa)',             ''],
+    ['',         'Não inclua o símbolo R$ — o sistema reconhece automaticamente.',     ''],
+  ];
+  const wsI = XLSX.utils.aoa_to_sheet(instrucoes);
+  wsI['!cols'] = [{ wch: 12 }, { wch: 55 }, { wch: 14 }];
+  XLSX.utils.book_append_sheet(wb, wsI, 'Instruções');
+  XLSX.writeFile(wb, 'template-extrato-bancario.xlsx');
 }
 
 // ── NRF-004: Infere conta/banco a partir de palavras-chave na descrição ─────
@@ -616,7 +709,8 @@ function renderizarPreview() {
     }
     const tdVal = criarTd(isNaN(l.valor) ? '—' : formatarMoeda(l.valor));
     tdVal.style.textAlign = 'right'; tdVal.style.fontWeight = '600';
-    if (!isNaN(l.valor)) tdVal.style.color = 'var(--danger)';
+    // NRF-006: receitas do extrato bancário em verde, despesas em vermelho
+    if (!isNaN(l.valor)) tdVal.style.color = (l.tipoLinha === 'receita') ? 'var(--success, #166534)' : 'var(--danger)';
     const tdCat  = document.createElement('td');
     const selCat = document.createElement('select');
     selCat.className = 'sel-cat-linha select-input';
@@ -654,6 +748,12 @@ function renderizarPreview() {
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--dup" title="Já importado anteriormente">🔄</span>';
     } else if (l.erro) {
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--erro" title="' + l.erro + '">⚠️</span>';
+    } else if (l.tipoLinha === 'receita') {
+      // NRF-006: modo banco — badge de receita
+      tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok" style="background:#dcfce7;color:#166534;" title="Será salva como Receita">📥 Receita</span>';
+    } else if (l.tipoLinha === 'despesa' && _tipoExtrato === 'banco') {
+      // NRF-006: modo banco — badge de despesa
+      tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok" style="background:#fee2e2;color:#991b1b;" title="Será salva como Despesa">💸 Despesa</span>';
     } else {
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok">✓</span>';
     }
@@ -707,6 +807,18 @@ function atualizarChipsPreview() {
     document.getElementById('chip-fuzzy').textContent = fuzzy;
     fuzzyWrap.classList.toggle('hidden', fuzzy === 0);
   }
+  // NRF-006: chips de receitas/despesas para modo banco
+  const recWrap  = document.getElementById('chip-receitas-wrap');
+  const despWrap = document.getElementById('chip-despesas-wrap');
+  if (recWrap && despWrap) {
+    const isBanco = _tipoExtrato === 'banco';
+    recWrap.classList.toggle('hidden', !isBanco);
+    despWrap.classList.toggle('hidden', !isBanco);
+    if (isBanco) {
+      document.getElementById('chip-receitas').textContent = sel.filter(cb => _linhas[+cb.dataset.idx]?.tipoLinha === 'receita').length;
+      document.getElementById('chip-despesas').textContent = sel.filter(cb => _linhas[+cb.dataset.idx]?.tipoLinha === 'despesa').length;
+    }
+  }
 }
 
 // ── NRF-002 + RF-014: Importação em lote ────────────────────────
@@ -728,6 +840,18 @@ async function executarImportacao() {
     const isConj       = catObj?.isConjuntaPadrao ?? false;
     const valorAlocado = isConj ? Math.round(l.valor * 100 / 2) / 100 : null;
     try {
+      // NRF-006: modo banco — linhas de receita vão para coleção 'receitas'
+      if (l.tipoLinha === 'receita') {
+        await criarReceita(modelReceita({
+          grupoId: _grupoId, usuarioId: _usuario.uid,
+          descricao: l.descricao, valor: l.valor,
+          data: l.data instanceof Date ? l.data : new Date(l.data),
+          categoriaId: cat, contaId,
+          origem: 'importacao', chave_dedup: l.chave_dedup, importadoEm: new Date(),
+        }));
+        sucesso++;
+        continue;
+      }
       // NRF-002: cria a despesa real primeiro (para obter despesaRef.id para reconciliação)
       const despesaRef = await criarDespesaDB(modelDespesa({
         descricao: l.descricao, valor: l.valor, categoriaId: cat,
@@ -883,10 +1007,11 @@ function resetarUpload() {
   document.getElementById('arquivo-info').classList.add('hidden');
   document.getElementById('erro-leitura').classList.add('hidden');
   document.getElementById('sec-preview').classList.add('hidden');
-  document.getElementById('fatura-mes-wrap')?.classList.add('hidden'); // NRF-002.1
+  document.getElementById('tipo-extrato-wrap')?.classList.add('hidden'); // NRF-006
   _linhas = [];
-  _isFatura = false;  // NRF-002.1
-  _mesFatura = '';    // NRF-002.1
+  _tipoExtrato = 'despesa';   // NRF-006
+  _mesFatura   = '';          // NRF-002.1
+  _chavesExistentesRec = new Set(); // NRF-006
 }
 function resetarTudo() {
   resetarUpload();

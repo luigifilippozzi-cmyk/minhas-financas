@@ -16,8 +16,15 @@ export function modelReceita(dados) {
     valor:       Number(dados.valor),
     data:        dados.data instanceof Date ? dados.data : new Date(dados.data),
   };
-  if (dados.responsavel !== undefined) obj.responsavel = dados.responsavel;
-  if (dados.contaId     !== undefined) obj.contaId     = dados.contaId; // NRF-004
+  // Campos opcionais
+  const opcionais = [
+    'responsavel',
+    'contaId',      // NRF-004
+    'origem',       // NRF-006: 'importacao' | 'manual'
+    'chave_dedup',  // NRF-006: deduplicação
+    'importadoEm',  // NRF-006: timestamp de importação
+  ];
+  opcionais.forEach((k) => { if (dados[k] !== undefined) obj[k] = dados[k]; });
   return obj;
 }
 

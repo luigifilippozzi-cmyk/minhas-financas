@@ -11,6 +11,45 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [2.0.0] - 2026-03-26
+
+### Adicionado — NRF-006: Detecção Automática de Tipo de Extrato no Upload
+
+Unificação da página de importação para suportar quatro tipos de arquivo — Fatura de Cartão, Extrato Bancário, Receitas e Despesas — com detecção automática pelo cabeçalho e roteamento correto para as coleções Firestore.
+
+#### `importar.html`
+- **Banner unificado `#tipo-extrato-wrap`**: substitui o antigo `#fatura-mes-wrap`; exibe badge com o tipo detectado e dropdown "Alterar tipo" para sobrescrita manual
+- **Select `#sel-tipo-extrato`**: opções `💸 Despesas · 💳 Fatura de Cartão · 🏦 Extrato Bancário · 📥 Receitas`
+- **Sub-painel `#fatura-mes-sub`**: seletor de mês de vencimento (NRF-002.1), visível apenas no tipo Cartão
+- **`#banco-hint`**: dica "valor positivo → Receita · valor negativo → Despesa", visível apenas no tipo Banco
+- **Chips `#chip-receitas-wrap` / `#chip-despesas-wrap`**: contagem separada de receitas e despesas no preview do modo banco
+- **Botão "⬇️ Template Extrato Bancário"**: baixa template com colunas `Data | Descrição | Valor`
+
+#### `importar.js`
+- **`detectarTipoExtrato(rows)`**: analisa colunas do cabeçalho (case-insensitive, NFD) — `Portador+Parcela → cartao`, `Categoria (sem Portador) → receita`, `sem Portador e sem Parcela → banco`, demais `→ despesa`
+- **`_aplicarTipo(tipo)`**: centraliza toda a lógica de tipo — reseta erros para `_erroOriginal`, aplica marcação de créditos (cartão), `tipoLinha` (banco/receita)
+- **`_atualizarUITipo()`**: atualiza badge, dropdown, visibilidade do mês de fatura e hint do banco
+- **`_erroOriginal`**: novo campo imutável nos objetos de linha — permite re-aplicar tipo sem re-parsear o arquivo
+- **`tipoLinha: null | 'receita' | 'despesa'`**: campo novo em cada linha; alimenta roteamento no import e badges no preview
+- **`marcarDuplicatas`**: carrega `_chavesExistentesRec` (coleção `receitas`) quando `tipo = banco | receita`; checa duplicatas na coleção correta por `tipoLinha`; fuzzy matching ignorado para banco/receita
+- **`executarImportacao`**: linhas com `tipoLinha = 'receita'` são salvas via `criarReceita(modelReceita(...))` (coleção `receitas`); despesas do banco seguem fluxo normal sem projeções/parcelamentos
+- **`atualizarChipsPreview`**: chips de Receitas e Despesas mostrados apenas no modo banco
+- **`gerarTemplateBanco()`**: gera `.xlsx` com aba `Extrato` (Data | Descrição | Valor com exemplos positivos/negativos) e aba `Instruções`
+- **`resetarUpload`**: reseta `_tipoExtrato = 'despesa'` e `_chavesExistentesRec`
+
+#### `models/Receita.js`
+- `modelReceita` agora aceita campos opcionais `origem`, `chave_dedup`, `importadoEm` — necessários para importações via extrato bancário
+
+#### Comportamento por tipo detectado
+| Tipo | Critério | Valores negativos | Dedup | Parcelas/Projeções |
+|------|----------|-------------------|-------|--------------------|
+| Fatura de Cartão | Portador+Parcela no header | Excluídos (crédito) | despesas | Sim |
+| Extrato Bancário | Sem Portador, sem Parcela | → Despesa (abs) | despesas + receitas | Não |
+| Receitas | Categoria no header | Math.abs | receitas | Não |
+| Despesas | Fallback | Math.abs | despesas | Sim |
+
+---
+
 ## [1.9.0] - 2026-03-26
 
 ### Adicionado — NRF-002.1: Importação de Fatura de Cartão (CSV nativo)

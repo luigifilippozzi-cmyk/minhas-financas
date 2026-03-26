@@ -70,9 +70,14 @@
           </span>
         </div>
       </div>
-      <button id="btn-baixar-template" class="btn btn-primary imp-btn-download">
-        ⬇️ Baixar Template Excel
-      </button>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;">
+        <button id="btn-baixar-template" class="btn btn-primary imp-btn-download">
+          ⬇️ Template Despesas / Fatura
+        </button>
+        <button id="btn-baixar-template-banco" class="btn btn-outline imp-btn-download">
+          ⬇️ Template Extrato Bancário
+        </button>
+      </div>
     </div>
 
     <!-- ═══ PASSO 2: UPLOAD DO ARQUIVO ═══ -->
@@ -114,13 +119,26 @@
       <!-- Mensagem de erro de leitura -->
       <div class="form-erro hidden" id="erro-leitura"></div>
 
-      <!-- NRF-002.1: Banner de fatura detectada + seletor de mês -->
-      <div id="fatura-mes-wrap" class="hidden" style="margin-top:1rem;">
+      <!-- NRF-006: Banner unificado de detecção de tipo de extrato -->
+      <div id="tipo-extrato-wrap" class="hidden" style="margin-top:1rem;">
         <div style="background:#f0f4ff;border:1px solid #c7d2fe;border-radius:10px;padding:.9rem 1.1rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
-          <span style="font-size:.95rem;font-weight:700;color:#3730a3;">📅 Fatura de cartão detectada</span>
-          <label for="inp-mes-fatura" style="font-size:.88rem;color:#374151;font-weight:600;white-space:nowrap;">Mês de vencimento:</label>
-          <input type="month" id="inp-mes-fatura" class="select-input" style="width:auto;" />
-          <span style="font-size:.8rem;color:#6b7280;">Datas das parcelas serão ajustadas para este mês · créditos e estornos são excluídos automaticamente</span>
+          <span id="tipo-extrato-badge" style="font-size:.95rem;font-weight:700;color:#3730a3;min-width:14rem;"></span>
+          <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+            <label for="sel-tipo-extrato" style="font-size:.85rem;font-weight:600;color:#374151;white-space:nowrap;">Alterar tipo:</label>
+            <select id="sel-tipo-extrato" class="select-input" style="width:auto;">
+              <option value="despesa">💸 Despesas</option>
+              <option value="cartao">💳 Fatura de Cartão</option>
+              <option value="banco">🏦 Extrato Bancário</option>
+              <option value="receita">📥 Receitas</option>
+            </select>
+          </div>
+          <!-- Visível apenas para Fatura de Cartão (NRF-002.1) -->
+          <div id="fatura-mes-sub" class="hidden" style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+            <label for="inp-mes-fatura" style="font-size:.85rem;font-weight:600;color:#374151;white-space:nowrap;">Mês de vencimento:</label>
+            <input type="month" id="inp-mes-fatura" class="select-input" style="width:auto;" />
+          </div>
+          <!-- Visível apenas para Extrato Bancário -->
+          <span id="banco-hint" class="hidden" style="font-size:.8rem;color:#6b7280;">valor positivo → Receita &nbsp;·&nbsp; valor negativo → Despesa</span>
         </div>
       </div>
     </div>
@@ -158,6 +176,15 @@
         <div class="imp-chip imp-chip--proj hidden" id="chip-proj-wrap">
           <span class="imp-chip-label">Parcelas futuras</span>
           <span class="imp-chip-valor" id="chip-proj">0</span>
+        </div>
+        <!-- NRF-006: chips específicos para modo Extrato Bancário -->
+        <div class="imp-chip imp-chip--verde hidden" id="chip-receitas-wrap">
+          <span class="imp-chip-label">Receitas</span>
+          <span class="imp-chip-valor" id="chip-receitas">0</span>
+        </div>
+        <div class="imp-chip imp-chip--aviso hidden" id="chip-despesas-wrap">
+          <span class="imp-chip-label">Despesas</span>
+          <span class="imp-chip-valor" id="chip-despesas">0</span>
         </div>
       </div>
 

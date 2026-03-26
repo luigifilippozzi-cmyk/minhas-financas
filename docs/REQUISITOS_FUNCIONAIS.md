@@ -23,6 +23,7 @@
 | NRF-003 | Fluxo de Caixa — Visão Orçamentária Anual | Alta | ✅ Implementado |
 | NRF-004 | Identificação de Conta/Banco por Transação | Alta | ✅ Implementado |
 | NRF-005 | Fatura do Cartão de Crédito | Alta | ✅ Implementado |
+| NRF-006 | Detecção Automática de Tipo de Extrato | Alta | ✅ Implementado |
 | NRF-008 | Deduplicação de Transações | Alta | ✅ Implementado |
 
 ---
