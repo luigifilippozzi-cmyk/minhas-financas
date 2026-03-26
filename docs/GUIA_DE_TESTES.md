@@ -11,8 +11,8 @@
 | **URL da aplicação** | https://minhas-financas-285da.web.app |
 | **Repositório** | https://github.com/luigifilippozzi-cmyk/minhas-financas |
 | **Milestone de testes** | [v1.0 — QA & Testes de Aceitação](https://github.com/luigifilippozzi-cmyk/minhas-financas/milestone/7) |
-| **Total de RFs** | 14 (RF-001 a RF-014) |
-| **Casos de teste** | 6 suítes (TC-001 a TC-006) |
+| **Total de RFs** | 18 (RF-001 a RF-018 + NRFs) |
+| **Casos de teste** | 7 suítes (TC-001 a TC-007) |
 
 ---
 
@@ -24,7 +24,7 @@
   - Usuário A: seu perfil principal
   - Usuário B: janela anônima ou outro navegador
 - **Um arquivo de extrato** no formato XP (CSV ou XLSX) para testar a importação
-- **O template** disponível para download em `/importar.html`
+- **O template** disponível para download em `/base-dados.html` (aba Importar)
 
 ### Antes de começar
 
@@ -169,7 +169,7 @@ Cada suíte de testes está em uma issue (#29 a #35). Para marcar itens:
 | 2 | Abra o CSV no Excel | Colunas: Data, Descrição, Categoria, Emoji, Valor, Responsável, Parcela; sem caracteres estranhos |
 | 3 | Exporte de mês sem despesas | Alerta informativo; sem download vazio |
 
-### Importação Excel (`/importar.html`)
+### Importação Excel (`/base-dados.html` — aba Importar)
 
 | # | Ação | Resultado Esperado |
 |---|------|--------------------|
@@ -224,6 +224,46 @@ Cada suíte de testes está em uma issue (#29 a #35). Para marcar itens:
 
 ---
 
+## 📦 TC-007 — Base de Dados (Gerenciar + Limpeza)
+
+**RFs cobertas:** RF-018
+
+### Aba Gerenciar (`/base-dados.html` → aba 🗂️ Gerenciar)
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 1 | Acesse `/base-dados.html` → clique aba "🗂️ Gerenciar" → "🔍 Carregar" | Tabela carrega todas as transações; indicador "Página 1 de N" visível |
+| 2 | Filtre por tipo "💸 Despesas" | Apenas despesas listadas; projeções e receitas ocultas |
+| 3 | Filtre por mês e ano | Tabela mostra apenas transações do período |
+| 4 | Filtre por categoria | Apenas transações da categoria selecionada |
+| 5 | Combine filtros (tipo + mês + categoria) | Filtros aplicados simultaneamente |
+| 6 | Com > 50 registros: clique "Próxima ›" | Página 2 carrega; botão "‹ Anterior" habilitado |
+| 7 | Selecione 3 linhas individualmente | Contagem "3 selecionados" aparece; botão Excluir habilitado |
+| 8 | Marque "Selecionar todos visíveis" | Todos os checkboxes da página marcados |
+| 9 | Clique "🗑️ Excluir selecionados" → modal aparece → "Cancelar" | Nenhuma transação excluída |
+| 10 | Selecione linhas → Excluir → confirme "Excluir permanentemente" | Transações removidas; tabela atualizada sem reload |
+
+### Aba Limpeza (`/base-dados.html` → aba ⚠️ Limpeza)
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 11 | Faça login como **membro não-mestre** do grupo | Aba "⚠️ Limpeza" **não aparece** na navegação |
+| 12 | Faça login como **mestre do grupo** (quem criou) | Aba "⚠️ Limpeza" aparece com cor vermelha |
+| 13 | Clique "⚠️ Purgar Base de Dados" | Modal abre; botão "Purgar agora" **desabilitado** |
+| 14 | Marque o checkbox sem digitar "PURGAR" | Botão permanece desabilitado |
+| 15 | Digite "purgar" (minúsculo) + marque checkbox | Botão permanece desabilitado (texto deve ser exato) |
+| 16 | Digite "PURGAR" + marque checkbox | Botão "Purgar agora" habilitado |
+| 17 | Clique "Cancelar" | Modal fecha; nada é excluído |
+| 18 | Digite "PURGAR" + checkbox + "Purgar agora" | Alerta de confirmação com contagem por coleção; aba Gerenciar fica vazia |
+
+### Redirect de backward compat
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 19 | Acesse `/importar.html` diretamente | Redirecionado automaticamente para `/base-dados.html` |
+
+---
+
 ## 🚦 Critérios de Aprovação
 
 A versão v1.0 está pronta para uso quando:
@@ -231,6 +271,7 @@ A versão v1.0 está pronta para uso quando:
 - [ ] **Todos os casos de TC-001 a TC-004** passam sem erros (fluxo básico)
 - [ ] **TC-005 (importação)** funciona para o formato de extrato XP utilizado
 - [ ] **TC-006 (RF-014)** deduplicação e projeções funcionam corretamente
+- [ ] **TC-007 (RF-018)** Gerenciar carrega, filtra e exclui em lote; Limpeza visível só para o mestre
 - [ ] **Nenhum `blocker`** em aberto no GitHub
 - [ ] **Sync em tempo real** funciona em todos os fluxos testados
 
@@ -245,4 +286,4 @@ O progresso do milestone é atualizado automaticamente conforme os checklists da
 
 ---
 
-*Guia gerado em 2026-03-08 | versão v1.0*
+*Guia gerado em 2026-03-08 | atualizado 2026-03-26 (RF-017 Dashboard + RF-018 Base de Dados) | versão v2.2.0*
