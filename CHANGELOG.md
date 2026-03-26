@@ -11,6 +11,38 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [1.9.0] - 2026-03-26
+
+### Adicionado — NRF-002.1: Importação de Fatura de Cartão (CSV nativo)
+
+Suporte completo ao formato de extrato CSV exportado diretamente pelo cartão de crédito (colunas `Data;Estabelecimento;Portador;Valor;Parcela`), resolvendo incompatibilidades que impediam o fuzzy matching e a reconciliação de parcelas.
+
+#### `importar.html`
+
+- **Banner "📅 Fatura de cartão detectada"**: exibido automaticamente quando o arquivo tem colunas `Portador` e `Parcela`. Inclui seletor de mês de vencimento (`<input type="month">`) para o usuário informar o ciclo de cobrança
+
+#### `importar.js`
+
+- **`normalizarParcela(str)`** — converte `"X de Y"` (formato CSV do banco) para `"XX/YY"` (formato canônico das projeções geradas pelo app). Sem essa normalização, a chave de dedup das parcelas importadas nunca combinava com as chaves das projeções, tornando fuzzy matching e exact matching ineficazes
+- **`parsearParcela(str)`** — corrigido para aceitar ambos os formatos (`"X/Y"` e `"X de Y"`), garantindo que a contagem de parcelas futuras e o fuzzy matching funcionem com arquivos CSV nativos do banco
+- **`detectarFatura(rows)`** — detecta automaticamente se o arquivo é uma fatura de cartão verificando a presença das colunas `portador` e `parcela` no cabeçalho
+- **`aplicarMesFatura(mesFatura)`** — para cada linha parcelada: substitui `data` pelo 1º dia do mês de vencimento selecionado, preservando `dataOriginal` (data da compra original). Linhas à vista mantêm a data do CSV
+- **`_aplicarDeteccaoFatura(rows)`** — orquestrador pós-parse: detecta fatura, exibe banner, define mês padrão (mês atual), marca créditos/estornos como não importáveis, aplica ajuste de datas
+- **Créditos/estornos excluídos automaticamente**: em modo fatura, linhas com `valor < 0` recebem `erro: "Crédito/estorno — não importado"` e ficam desmarcadas no preview
+- **Indicador visual `📅`** na coluna Data do preview: mostra a data do mês da fatura com tooltip exibindo a data original da compra
+- Mês de vencimento sincronizado com `renderizarPreview` — trocar o seletor de mês re-renderiza o preview imediatamente
+
+#### `models/Despesa.js`
+
+- Campo `dataOriginal` adicionado à lista de opcionais do `modelDespesa` — salvo no Firestore quando a despesa é parcelada com data ajustada para o mês da fatura
+
+### Bug corrigido
+
+- Extrato CSV com parcelas no formato `"6 de 12"` nunca gerava projeções nem era reconciliado com parcelas existentes (o parser `parsearParcela` só aceitava `"06/12"` com barra). Corrigido por `normalizarParcela` que unifica os dois formatos antes do processamento
+- Créditos de refinanciamento (`Credito de Refinanciamento...`) não eram filtrados pelo regex de linhas ignoradas. Adicionado ao filtro
+
+---
+
 ## [1.8.0] - 2026-03-26
 
 ### Adicionado — NRF-008: Deduplicação de Transações
