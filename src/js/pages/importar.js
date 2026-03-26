@@ -25,6 +25,7 @@ import {
   buscarChavesDedup, buscarMapaProjecoes, buscarMapaCategorias,
   buscarProjecoesDetalhadas, atualizarStatusParcela,
   criarParcelamento, reconciliarParcela,
+  purgarDuplicatasDespesas, purgarDuplicatasReceitas,
 } from '../services/database.js';
 import { modelDespesa } from '../models/Despesa.js';
 import { formatarMoeda, formatarData } from '../utils/formatters.js';
@@ -121,6 +122,12 @@ function configurarEventos() {
   document.getElementById('btn-importar')?.addEventListener('click', () => executarImportacao());
   document.getElementById('btn-nova-importacao')?.addEventListener('click', resetarTudo);
   document.getElementById('btn-baixar-template')?.addEventListener('click', gerarTemplateDespesas); // NRF-004
+
+  // NRF-008: Purga de duplicatas
+  document.getElementById('btn-analisar-dup')?.addEventListener('click', analisarDuplicatas);
+  document.getElementById('btn-purgar-dup')?.addEventListener('click', abrirModalPurga);
+  document.getElementById('btn-purga-cancelar')?.addEventListener('click', fecharModalPurga);
+  document.getElementById('btn-purga-confirmar')?.addEventListener('click', executarPurga);
 }
 
 // ── Processar arquivo ───────────────────────────────────────────
@@ -784,4 +791,95 @@ function resetarTudo() {
   document.getElementById('sec-upload').classList.remove('hidden');
   document.getElementById('sec-resultado').classList.add('hidden');
   document.getElementById('tbody-preview').innerHTML = '';
+}
+
+// ── NRF-008: Purga de Duplicatas ──────────────────────────────
+
+let _analiseDuplicatas = null; // guarda resultado da análise para a confirmação
+
+async function analisarDuplicatas() {
+  const btn = document.getElementById('btn-analisar-dup');
+  const statsEl = document.getElementById('purga-stats');
+  const resultEl = document.getElementById('purga-resultado');
+  btn.disabled = true; btn.textContent = 'Analisando…';
+  resultEl.classList.add('hidden');
+
+  try {
+    const [resDes, resRec] = await Promise.all([
+      purgarDuplicatasDespesas(_grupoId, true),   // dry-run
+      purgarDuplicatasReceitas(_grupoId, true),   // dry-run
+    ]);
+    _analiseDuplicatas = { desp: resDes, rec: resRec };
+
+    document.getElementById('purga-total-desp').textContent = resDes.total;
+    document.getElementById('purga-dup-desp').textContent   = resDes.encontradas;
+    document.getElementById('purga-total-rec').textContent  = resRec.total;
+    document.getElementById('purga-dup-rec').textContent    = resRec.encontradas;
+    statsEl.style.display = 'flex';
+    statsEl.classList.remove('hidden');
+
+    const btnPurgar = document.getElementById('btn-purgar-dup');
+    if (resDes.encontradas + resRec.encontradas > 0) {
+      btnPurgar.classList.remove('hidden');
+    } else {
+      btnPurgar.classList.add('hidden');
+      resultEl.textContent = '✅ Nenhuma duplicata encontrada. A base está limpa!';
+      resultEl.style.background = '#f0fdf4'; resultEl.style.borderColor = '#86efac'; resultEl.style.color = '#166534';
+      resultEl.classList.remove('hidden');
+    }
+  } catch (err) {
+    console.error('[analisarDuplicatas]', err);
+    resultEl.textContent = '❌ Erro ao analisar: ' + err.message;
+    resultEl.style.background = '#fef2f2'; resultEl.style.borderColor = '#fca5a5'; resultEl.style.color = '#991b1b';
+    resultEl.classList.remove('hidden');
+  }
+  btn.disabled = false; btn.textContent = '🔍 Analisar Duplicatas';
+}
+
+function abrirModalPurga() {
+  if (!_analiseDuplicatas) return;
+  const { desp, rec } = _analiseDuplicatas;
+  const total = desp.encontradas + rec.encontradas;
+  document.getElementById('modal-purga-msg').textContent =
+    `Serão removidas ${total} transação(ões) duplicada(s): ${desp.encontradas} despesa(s) e ${rec.encontradas} receita(s). Deseja continuar?`;
+  document.getElementById('modal-purga').classList.remove('hidden');
+}
+
+function fecharModalPurga() {
+  document.getElementById('modal-purga').classList.add('hidden');
+}
+
+async function executarPurga() {
+  fecharModalPurga();
+  const btnAnalisar = document.getElementById('btn-analisar-dup');
+  const btnPurgar   = document.getElementById('btn-purgar-dup');
+  const resultEl    = document.getElementById('purga-resultado');
+  btnAnalisar.disabled = true; btnPurgar.disabled = true;
+  resultEl.textContent = '⏳ Removendo duplicatas…';
+  resultEl.style.background = '#fffbeb'; resultEl.style.borderColor = '#fcd34d'; resultEl.style.color = '#92400e';
+  resultEl.classList.remove('hidden');
+
+  try {
+    const [resDes, resRec] = await Promise.all([
+      purgarDuplicatasDespesas(_grupoId),
+      purgarDuplicatasReceitas(_grupoId),
+    ]);
+    const totalRem = resDes.deletadas + resRec.deletadas;
+    resultEl.textContent =
+      `✅ Purga concluída! ${totalRem} duplicata(s) removida(s): ${resDes.deletadas} despesa(s) e ${resRec.deletadas} receita(s).`;
+    resultEl.style.background = '#f0fdf4'; resultEl.style.borderColor = '#86efac'; resultEl.style.color = '#166534';
+    // Atualiza stats
+    document.getElementById('purga-total-desp').textContent = resDes.total - resDes.deletadas;
+    document.getElementById('purga-dup-desp').textContent   = 0;
+    document.getElementById('purga-total-rec').textContent  = resRec.total - resRec.deletadas;
+    document.getElementById('purga-dup-rec').textContent    = 0;
+    btnPurgar.classList.add('hidden');
+    // Recarrega chaves de dedup para o próximo import
+    _chavesExistentes = await buscarChavesDedup(_grupoId);
+  } catch (err) {
+    console.error('[executarPurga]', err);
+    resultEl.textContent = '❌ Erro durante a purga: ' + err.message;
+    resultEl.style.background = '#fef2f2'; resultEl.style.borderColor = '#fca5a5'; resultEl.style.color = '#991b1b';
+  }
+  btnAnalisar.disabled = false; btnPurgar.disabled = false;
 }

@@ -12,7 +12,7 @@ import {
   excluirReceita,
   garantirCategoriasReceita,
   ouvirContas,
-  buscarChavesDedup,
+  buscarChavesDedupReceitas,
 } from '../services/database.js';
 import { modelReceita, CATEGORIAS_RECEITA_PADRAO } from '../models/Receita.js';
 import { formatarMoeda, formatarData, nomeMes } from '../utils/formatters.js';
@@ -402,8 +402,8 @@ async function _processarArquivoRec(file) {
     _mostrarErroRec('Formato não suportado. Use o template Excel (.xlsx) ou CSV.');
     return;
   }
-  // Carrega chaves de dedup da coleção receitas
-  _chavesRec = await buscarChavesDedup(_grupoId).catch(() => new Set());
+  // Carrega chaves de dedup da coleção receitas (corrigido: busca em receitas, não despesas)
+  _chavesRec = await buscarChavesDedupReceitas(_grupoId).catch(() => new Set());
 
   const _parse = (rows) => {
     _linhasRec = _parsearLinhasRec(rows);

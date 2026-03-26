@@ -11,6 +11,36 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [1.8.0] - 2026-03-26
+
+### Adicionado — NRF-008: Deduplicação de Transações
+
+Ferramenta completa para eliminar duplicatas da base e impedir que novos uploads gerem lançamentos repetidos.
+
+#### `database.js`
+
+- **`buscarChavesDedupReceitas(grupoId)`** — nova função que busca chaves de dedup na coleção `receitas` (a função anterior `buscarChavesDedup` consultava apenas `despesas`, tornando a proteção de receitas ineficaz)
+- **`purgarDuplicatasDespesas(grupoId, dryRun?)`** — varre toda a coleção `despesas` do grupo, agrupa por chave `data + descrição + valor`, mantém o documento mais antigo e deleta os demais. Suporta modo `dryRun=true` para análise sem deleção
+- **`purgarDuplicatasReceitas(grupoId, dryRun?)`** — mesma lógica para a coleção `receitas`
+
+#### `controllers/despesas.js`
+
+- Entradas manuais agora recebem `chave_dedup` gerada automaticamente (`manual||data||desc||valor`) antes de serem salvas no Firestore. Isso garante que um lançamento manual seja detectado como duplicata em imports futuros do mesmo extrato
+
+#### `pages/receitas.js`
+
+- **Bug corrigido:** `_chavesRec` era carregada via `buscarChavesDedup` (coleção `despesas`), portanto a deduplicação de receitas nunca funcionava. Corrigido para usar `buscarChavesDedupReceitas`
+
+#### `importar.html` + `importar.js`
+
+- Nova seção **"🧹 Manutenção da Base"** no final da página de importação:
+  - **Botão "🔍 Analisar Duplicatas"**: varre todo o grupo em modo dry-run e exibe contadores (Total na base / Duplicatas encontradas) para despesas e receitas, sem deletar nada
+  - **Botão "🗑️ Remover Duplicatas"** (aparece apenas se houver duplicatas): abre modal de confirmação descrevendo quantas serão removidas
+  - **Modal de confirmação** com aviso de irreversibilidade antes de executar a purga
+  - Após a purga, recarrega `_chavesExistentes` para que o próximo import use a base limpa
+
+---
+
 ## [1.7.1] - 2026-03-25
 
 ### Corrigido

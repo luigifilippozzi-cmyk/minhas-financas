@@ -88,6 +88,13 @@ export async function salvarDespesa(dados, grupoId, usuarioId, despesaId = null)
     };
     // NRF-004: inclui contaId se informado
     if (dadosNormalizados.contaId) createPayload.contaId = dadosNormalizados.contaId;
+    // NRF-008: gera chave de deduplicação para entradas manuais (data+descrição+valor)
+    if (!createPayload.chave_dedup) {
+      const dt   = (despesa.data instanceof Date ? despesa.data : new Date(despesa.data)).toISOString().split('T')[0];
+      const desc = String(despesa.descricao ?? '').toLowerCase().trim().replace(/\s+/g, ' ').substring(0, 60);
+      const val  = parseFloat(despesa.valor ?? 0).toFixed(2);
+      createPayload.chave_dedup = `manual||${dt}||${desc}||${val}`;
+    }
     await criarDespesaDB(createPayload);
   }
 }

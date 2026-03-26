@@ -256,13 +256,114 @@ export async function garantirContasPadrao(grupoId, contasPadrao) {
 // ── RF-014: Deduplicação ──────────────────────────────────────
 
 /**
- * Retorna um Set com todas as chave_dedup já gravadas no grupo.
+ * Retorna um Set com todas as chave_dedup já gravadas no grupo (despesas).
  * Usado para detectar duplicatas no import.
  */
 export async function buscarChavesDedup(grupoId) {
   const q    = query(collection(db, 'despesas'), where('grupoId', '==', grupoId));
   const snap = await getDocs(q);
   return new Set(snap.docs.map((d) => d.data().chave_dedup).filter(Boolean));
+}
+
+/**
+ * Retorna um Set com todas as chave_dedup já gravadas na coleção receitas.
+ * Usado para detectar duplicatas no import de receitas.
+ */
+export async function buscarChavesDedupReceitas(grupoId) {
+  const q    = query(collection(db, 'receitas'), where('grupoId', '==', grupoId));
+  const snap = await getDocs(q);
+  return new Set(snap.docs.map((d) => d.data().chave_dedup).filter(Boolean));
+}
+
+// ── NRF-008: Purga de Duplicatas ─────────────────────────────
+
+/**
+ * Gera chave simplificada para detecção de duplicatas: data + descrição + valor.
+ * Independente do portador/parcela, apenas data+estabelecimento+valor.
+ */
+function _chaveSimplificada(dadosDoc) {
+  const raw  = dadosDoc.data;
+  const ts   = raw?.toDate ? raw.toDate() : (raw instanceof Date ? raw : new Date(raw));
+  const dt   = isNaN(ts) ? '0000-00-00' : ts.toISOString().split('T')[0];
+  const desc = String(dadosDoc.descricao ?? '').toLowerCase().trim().replace(/\s+/g, ' ').substring(0, 60);
+  const val  = parseFloat(dadosDoc.valor ?? 0).toFixed(2);
+  return `${dt}||${desc}||${val}`;
+}
+
+/**
+ * Purga (ou apenas analisa) duplicatas na coleção `despesas`.
+ * Critério: mesma data + descrição + valor.
+ * Mantém o documento mais antigo (por dataCriacao); deleta os demais.
+ * @param {string}  grupoId
+ * @param {boolean} [dryRun=false]  — true = só conta, não deleta
+ * @returns {{ total: number, encontradas: number, deletadas: number }}
+ */
+export async function purgarDuplicatasDespesas(grupoId, dryRun = false) {
+  const q    = query(collection(db, 'despesas'), where('grupoId', '==', grupoId));
+  const snap = await getDocs(q);
+
+  const grupos = new Map();
+  snap.docs.forEach((d) => {
+    const chave = _chaveSimplificada(d.data());
+    if (!grupos.has(chave)) grupos.set(chave, []);
+    grupos.get(chave).push(d);
+  });
+
+  let encontradas = 0, deletadas = 0;
+  for (const [, docs] of grupos) {
+    if (docs.length <= 1) continue;
+    encontradas += docs.length - 1;
+    if (!dryRun) {
+      // Mantém o mais antigo (menor dataCriacao ou data)
+      docs.sort((a, b) => {
+        const ta = a.data().dataCriacao?.toMillis?.() ?? a.data().data?.toDate?.()?.getTime?.() ?? 0;
+        const tb = b.data().dataCriacao?.toMillis?.() ?? b.data().data?.toDate?.()?.getTime?.() ?? 0;
+        return ta - tb;
+      });
+      for (let i = 1; i < docs.length; i++) {
+        await deleteDoc(docs[i].ref);
+        deletadas++;
+      }
+    }
+  }
+  return { total: snap.docs.length, encontradas, deletadas };
+}
+
+/**
+ * Purga (ou apenas analisa) duplicatas na coleção `receitas`.
+ * Critério: mesma data + descrição + valor.
+ * @param {string}  grupoId
+ * @param {boolean} [dryRun=false]  — true = só conta, não deleta
+ * @returns {{ total: number, encontradas: number, deletadas: number }}
+ */
+export async function purgarDuplicatasReceitas(grupoId, dryRun = false) {
+  const q    = query(collection(db, 'receitas'), where('grupoId', '==', grupoId));
+  const snap = await getDocs(q);
+
+  const grupos = new Map();
+  snap.docs.forEach((d) => {
+    const chave = _chaveSimplificada(d.data());
+    if (!grupos.has(chave)) grupos.set(chave, []);
+    grupos.get(chave).push(d);
+  });
+
+  let encontradas = 0, deletadas = 0;
+  for (const [, docs] of grupos) {
+    if (docs.length <= 1) continue;
+    encontradas += docs.length - 1;
+    if (!dryRun) {
+      docs.sort((a, b) => {
+        const ta = a.data().dataCriacao?.toMillis?.() ?? a.data().data?.toDate?.()?.getTime?.() ?? 0;
+        const tb = b.data().dataCriacao?.toMillis?.() ?? b.data().data?.toDate?.()?.getTime?.() ?? 0;
+        return ta - tb;
+      });
+      for (let i = 1; i < docs.length; i++) {
+        await deleteDoc(docs[i].ref);
+        deletadas++;
+      }
+    }
+  }
+  return { total: snap.docs.length, encontradas, deletadas };
 }
 
 /**
