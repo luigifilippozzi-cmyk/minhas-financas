@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Base de Dados — Minhas Finanças</title>
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+
+  <!-- Header / Navbar -->
+  <header class="navbar">
+    <div class="navbar-brand">
+      <a href="dashboard.html" style="text-decoration:none;color:inherit;display:flex;gap:.4rem;align-items:center;">
+        <span>💰</span>
+        <span>Minhas Finanças</span>
+      </a>
+    </div>
+    <div class="navbar-user">
+      <span id="usuario-nome">Carregando...</span>
+      <a href="dashboard.html"   class="btn btn-outline btn-sm">🏠 Dashboard</a>
+      <a href="despesas.html"    class="btn btn-outline btn-sm">💸 Despesas</a>
+      <a href="receitas.html"    class="btn btn-outline btn-sm">📥 Receitas</a>
+      <a href="orcamentos.html"  class="btn btn-outline btn-sm">💰 Orçamentos</a>
+      <a href="fluxo-caixa.html" class="btn btn-outline btn-sm">📈 Fluxo de Caixa</a>
+      <a href="categorias.html"  class="btn btn-outline btn-sm">🏷️ Categorias</a>
+      <a href="fatura.html"      class="btn btn-outline btn-sm">💳 Fatura</a>
+      <a href="base-dados.html"  class="btn btn-primary  btn-sm">📦 Base de Dados</a>
+      <button id="btn-logout"    class="btn btn-outline btn-sm">Sair</button>
+    </div>
+  </header>
+
+  <main class="main-content">
+
+    <!-- ═══ CABEÇALHO ═══ -->
+    <div class="imp-page-header">
+      <div>
+        <h2 class="imp-titulo">📦 Base de Dados</h2>
+        <p class="imp-subtitulo">Importação, deduplicação e gerenciamento de transações</p>
+      </div>
+    </div>
+
+    <!-- ═══ NAVEGAÇÃO DE ABAS ═══ -->
+    <div class="base-tab-nav">
+      <button class="base-tab-btn base-tab-btn--ativo" data-tab="importar">📥 Importar</button>
+      <button class="base-tab-btn" data-tab="duplicatas">🔍 Duplicatas</button>
+      <button class="base-tab-btn" data-tab="gerenciar">🗂️ Gerenciar</button>
+      <button class="base-tab-btn base-tab-btn--admin hidden" data-tab="limpeza" id="btn-tab-limpeza">⚠️ Limpeza</button>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+         ABA 1: IMPORTAR
+         Conteúdo idêntico ao importar.html
+         Toda a lógica é tratada por importar.js
+    ══════════════════════════════════════════════════════════ -->
+    <div id="tab-importar" class="base-tab-content">
+
+      <!-- Passo 1: Templates -->
+      <div class="card imp-card" id="sec-template">
+        <div class="imp-step-badge">Passo 1</div>
+        <h3 class="imp-step-titulo">Baixe o template e preencha suas transações</h3>
+        <p class="imp-step-desc">
+          Use o template oficial para garantir que as colunas estejam no formato correto.
+          Preencha com suas transações e salve o arquivo como <strong>.xlsx</strong>.
+        </p>
+        <div class="imp-template-info">
+          <div class="imp-template-cols">
+            <span class="imp-col-badge imp-col-obrig">Data</span>
+            <span class="imp-col-badge imp-col-obrig">Estabelecimento</span>
+            <span class="imp-col-badge imp-col-opcl">Portador</span>
+            <span class="imp-col-badge imp-col-obrig">Valor</span>
+            <span class="imp-col-badge imp-col-opcl">Parcela</span>
+            <span class="imp-col-badge imp-col-opcl">Conta / Banco</span>
+          </div>
+          <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;">
+            <span style="font-size:.8rem;color:var(--text-muted);">
+              <span style="color:var(--primary);">■</span> Obrigatório &nbsp;
+              <span style="color:var(--text-muted);">■</span> Opcional &nbsp;·&nbsp;
+              Coluna "Conta / Banco" reconhecida automaticamente (NRF-004).
+            </span>
+          </div>
+        </div>
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;">
+          <button id="btn-baixar-template" class="btn btn-primary imp-btn-download">
+            ⬇️ Template Despesas / Fatura
+          </button>
+          <button id="btn-baixar-template-banco" class="btn btn-outline imp-btn-download">
+            ⬇️ Template Extrato Bancário
+          </button>
+          <button id="btn-baixar-template-receita" class="btn btn-outline imp-btn-download">
+            ⬇️ Template Receitas
+          </button>
+        </div>
+      </div>
+
+      <!-- Passo 2: Upload -->
+      <div class="card imp-card" id="sec-upload">
+        <div class="imp-step-badge">Passo 2</div>
+        <h3 class="imp-step-titulo">Carregue o arquivo preenchido</h3>
+        <p class="imp-step-desc">
+          Arraste o arquivo <strong>.xlsx</strong> para a área abaixo ou clique para selecionar.
+        </p>
+
+        <div class="imp-conta-selector">
+          <label for="sel-conta-global" class="imp-conta-label">
+            🏦 De qual banco/conta é este extrato?
+          </label>
+          <select id="sel-conta-global" class="select-input imp-conta-select">
+            <option value="">— Selecione a conta (opcional) —</option>
+          </select>
+          <span class="imp-conta-hint">Será aplicado a todas as transações. Você pode ajustar por linha no preview.</span>
+        </div>
+
+        <div class="imp-drop-area" id="drop-area">
+          <div class="imp-drop-icon">📂</div>
+          <p class="imp-drop-texto">Arraste o arquivo aqui</p>
+          <p class="imp-drop-sub">ou</p>
+          <label for="file-input" class="btn btn-outline imp-btn-select">Selecionar arquivo</label>
+          <input type="file" id="file-input" accept=".xlsx,.xls,.csv" style="display:none;" />
+          <p class="imp-drop-hint">Extrato CSV do banco ou planilha Excel (.xlsx)</p>
+        </div>
+
+        <div class="imp-arquivo-selecionado hidden" id="arquivo-info">
+          <span class="imp-arquivo-icon">📄</span>
+          <span id="arquivo-nome">—</span>
+          <button id="btn-trocar-arquivo" class="btn btn-outline btn-sm">Trocar</button>
+        </div>
+
+        <div class="form-erro hidden" id="erro-leitura"></div>
+
+        <!-- NRF-006: Banner de tipo de extrato -->
+        <div id="tipo-extrato-wrap" class="hidden" style="margin-top:1rem;">
+          <div style="background:#f0f4ff;border:1px solid #c7d2fe;border-radius:10px;padding:.9rem 1.1rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+            <span id="tipo-extrato-badge" style="font-size:.95rem;font-weight:700;color:#3730a3;min-width:14rem;"></span>
+            <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+              <label for="sel-tipo-extrato" style="font-size:.85rem;font-weight:600;color:#374151;white-space:nowrap;">Alterar tipo:</label>
+              <select id="sel-tipo-extrato" class="select-input" style="width:auto;">
+                <option value="despesa">💸 Despesas</option>
+                <option value="cartao">💳 Fatura de Cartão</option>
+                <option value="banco">🏦 Extrato Bancário</option>
+                <option value="receita">📥 Receitas</option>
+              </select>
+            </div>
+            <div id="fatura-mes-sub" class="hidden" style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+              <label for="inp-mes-fatura" style="font-size:.85rem;font-weight:600;color:#374151;white-space:nowrap;">Mês de vencimento:</label>
+              <input type="month" id="inp-mes-fatura" class="select-input" style="width:auto;" />
+            </div>
+            <span id="banco-hint" class="hidden" style="font-size:.8rem;color:#6b7280;">valor positivo → Receita &nbsp;·&nbsp; valor negativo → Despesa</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Passo 3: Preview -->
+      <div class="card imp-card hidden" id="sec-preview">
+        <div class="imp-step-badge imp-step-badge--verde">Passo 3</div>
+        <h3 class="imp-step-titulo">Revise e confirme as transações</h3>
+        <p class="imp-step-desc">
+          Verifique as transações lidas, ajuste as categorias e desmarque o que não deseja importar.
+        </p>
+
+        <div class="imp-resumo-chips">
+          <div class="imp-chip">
+            <span class="imp-chip-label">Lidas</span>
+            <span class="imp-chip-valor" id="chip-lidas">0</span>
+          </div>
+          <div class="imp-chip imp-chip--verde">
+            <span class="imp-chip-label">Selecionadas</span>
+            <span class="imp-chip-valor" id="chip-selecionadas">0</span>
+          </div>
+          <div class="imp-chip imp-chip--azul">
+            <span class="imp-chip-label">Total</span>
+            <span class="imp-chip-valor" id="chip-total-imp">R$ 0,00</span>
+          </div>
+          <div class="imp-chip imp-chip--aviso hidden" id="chip-erros-wrap">
+            <span class="imp-chip-label">Com erro</span>
+            <span class="imp-chip-valor" id="chip-erros">0</span>
+          </div>
+          <div class="imp-chip imp-chip--dup hidden" id="chip-dup-wrap">
+            <span class="imp-chip-label">Duplicados</span>
+            <span class="imp-chip-valor" id="chip-dup">0</span>
+          </div>
+          <div class="imp-chip imp-chip--proj hidden" id="chip-proj-wrap">
+            <span class="imp-chip-label">Parcelas futuras</span>
+            <span class="imp-chip-valor" id="chip-proj">0</span>
+          </div>
+          <div class="imp-chip imp-chip--verde hidden" id="chip-receitas-wrap">
+            <span class="imp-chip-label">Receitas</span>
+            <span class="imp-chip-valor" id="chip-receitas">0</span>
+          </div>
+          <div class="imp-chip imp-chip--aviso hidden" id="chip-despesas-wrap">
+            <span class="imp-chip-label">Despesas</span>
+            <span class="imp-chip-valor" id="chip-despesas">0</span>
+          </div>
+        </div>
+
+        <div class="imp-acoes-lote">
+          <button id="btn-sel-todos"   class="btn btn-outline btn-sm">☑ Selecionar todos</button>
+          <button id="btn-desel-todos" class="btn btn-outline btn-sm">☐ Desmarcar todos</button>
+          <span style="flex:1;"></span>
+          <label class="imp-label-cat-lote">Categoria:</label>
+          <select id="sel-cat-lote" class="select-input imp-sel-lote">
+            <option value="">— manter individual —</option>
+          </select>
+          <label class="imp-label-cat-lote" style="margin-left:.5rem;">Conta:</label>
+          <select id="sel-conta-lote" class="select-input imp-sel-lote">
+            <option value="">— manter individual —</option>
+          </select>
+        </div>
+
+        <div class="imp-table-wrap">
+          <table class="imp-table" id="tabela-preview">
+            <thead>
+              <tr>
+                <th style="width:40px;"><input type="checkbox" id="chk-all" title="Marcar/desmarcar todos" /></th>
+                <th style="width:90px;">Data</th>
+                <th>Estabelecimento</th>
+                <th style="width:120px;">Portador</th>
+                <th style="width:90px;">Parcela</th>
+                <th style="width:110px;">Valor</th>
+                <th style="width:160px;">Categoria</th>
+                <th style="width:140px;">Conta / Banco</th>
+                <th style="width:60px;">Status</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-preview"></tbody>
+          </table>
+        </div>
+
+        <div class="imp-footer-acao">
+          <span id="imp-aviso-zero" class="hidden" style="color:var(--danger);font-size:.9rem;">
+            ⚠️ Selecione ao menos uma transação para importar.
+          </span>
+          <button id="btn-importar" class="btn btn-primary imp-btn-importar">
+            📥 Importar <span id="btn-imp-count">0</span> despesas
+          </button>
+        </div>
+      </div>
+
+      <!-- Resultado -->
+      <div class="card imp-card hidden" id="sec-resultado">
+        <div class="imp-resultado-icon" id="resultado-icon">✅</div>
+        <h3 id="resultado-titulo">Importação concluída!</h3>
+        <p  id="resultado-msg">—</p>
+        <p id="resultado-proj" class="hidden" style="margin-top:.75rem;font-size:.9rem;color:var(--primary);"></p>
+        <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:1.25rem;">
+          <a href="despesas.html" class="btn btn-primary">Ver Despesas</a>
+          <a href="dashboard.html"    class="btn btn-outline">Ver Parcelamentos</a>
+          <button id="btn-nova-importacao" class="btn btn-outline">Nova Importação</button>
+        </div>
+      </div>
+
+      <!-- Modal de confirmação de tipo -->
+      <div id="modal-confirmacao-tipo" class="modal-overlay hidden">
+        <div class="modal-box" style="max-width:460px;">
+          <div class="modal-header">
+            <h3 class="modal-titulo">🔍 Tipo de arquivo detectado</h3>
+          </div>
+          <div class="modal-body">
+            <p id="modal-tipo-sugestao" style="margin-bottom:.5rem;font-size:.95rem;"></p>
+            <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:.9rem;">
+              Colunas encontradas: <span id="modal-tipo-colunas" style="font-family:monospace;color:#374151;"></span>
+            </p>
+            <label style="font-size:.85rem;font-weight:600;display:block;margin-bottom:.3rem;">Confirmar como:</label>
+            <select id="modal-sel-tipo-confirm" class="select-input" style="width:100%;">
+              <option value="despesa">💸 Despesas</option>
+              <option value="cartao">💳 Fatura de Cartão</option>
+              <option value="banco">🏦 Extrato Bancário</option>
+              <option value="receita">📥 Receitas</option>
+            </select>
+          </div>
+          <div class="modal-footer" style="display:flex;gap:.75rem;justify-content:flex-end;">
+            <button id="modal-tipo-confirmar" class="btn btn-primary btn-sm">Confirmar tipo</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /tab-importar -->
+
+
+    <!-- ══════════════════════════════════════════════════════════
+         ABA 2: DUPLICATAS
+         Mesma lógica do sec-manutencao de importar.html
+         Tratada por importar.js (mesmo escopo)
+    ══════════════════════════════════════════════════════════ -->
+    <div id="tab-duplicatas" class="base-tab-content hidden">
+      <div class="card imp-card" id="sec-manutencao">
+        <h3 class="imp-step-titulo" style="display:flex;align-items:center;gap:.5rem;">
+          🧹 Análise e Remoção de Duplicatas
+        </h3>
+        <p class="imp-step-desc">
+          Detecta e remove transações duplicadas (mesmo dia + estabelecimento + valor).
+          Mantém sempre a versão mais antiga de cada transação.
+        </p>
+
+        <div id="purga-stats" class="hidden" style="display:flex;gap:1rem;flex-wrap:wrap;margin:.75rem 0;padding:.75rem 1rem;background:var(--surface-alt,#f8f9fa);border-radius:8px;border:1px solid var(--border);">
+          <div style="text-align:center;">
+            <div id="purga-total-desp" style="font-size:1.5rem;font-weight:800;color:var(--text);">—</div>
+            <div style="font-size:.75rem;color:var(--text-muted);">Despesas na base</div>
+          </div>
+          <div style="text-align:center;">
+            <div id="purga-dup-desp" style="font-size:1.5rem;font-weight:800;color:var(--danger);">—</div>
+            <div style="font-size:.75rem;color:var(--text-muted);">Despesas duplicadas</div>
+          </div>
+          <div style="text-align:center;">
+            <div id="purga-total-rec" style="font-size:1.5rem;font-weight:800;color:var(--text);">—</div>
+            <div style="font-size:.75rem;color:var(--text-muted);">Receitas na base</div>
+          </div>
+          <div style="text-align:center;">
+            <div id="purga-dup-rec" style="font-size:1.5rem;font-weight:800;color:var(--danger);">—</div>
+            <div style="font-size:.75rem;color:var(--text-muted);">Receitas duplicadas</div>
+          </div>
+        </div>
+
+        <div id="purga-resultado" class="hidden" style="margin:.75rem 0;padding:.75rem 1rem;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;color:#166534;font-size:.9rem;"></div>
+
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.5rem;">
+          <button id="btn-analisar-dup" class="btn btn-outline btn-sm">🔍 Analisar Duplicatas</button>
+          <button id="btn-purgar-dup" class="btn btn-sm hidden" style="background:var(--danger,#dc2626);color:#fff;border:none;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-weight:600;">
+            🗑️ Remover Duplicatas
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal de confirmação de purga de duplicatas -->
+      <div id="modal-purga" class="modal-overlay hidden">
+        <div class="modal-box" style="max-width:420px;">
+          <div class="modal-header">
+            <h3 class="modal-titulo">⚠️ Confirmar Remoção de Duplicatas</h3>
+          </div>
+          <div class="modal-body">
+            <p id="modal-purga-msg" style="margin-bottom:.5rem;"></p>
+            <p style="font-size:.85rem;color:var(--text-muted);">
+              Essa ação não pode ser desfeita. Apenas cópias duplicadas serão removidas — a versão mais antiga de cada transação será mantida.
+            </p>
+          </div>
+          <div class="modal-footer" style="display:flex;gap:.75rem;justify-content:flex-end;">
+            <button id="btn-purga-cancelar" class="btn btn-outline btn-sm">Cancelar</button>
+            <button id="btn-purga-confirmar" class="btn btn-sm" style="background:var(--danger,#dc2626);color:#fff;border:none;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-weight:600;">
+              Sim, remover duplicatas
+            </button>
+          </div>
+        </div>
+      </div>
+    </div><!-- /tab-duplicatas -->
+
+
+    <!-- ══════════════════════════════════════════════════════════
+         ABA 3: GERENCIAR
+         Tabela completa de transações com filtros e exclusão em massa
+         Tratada por base-dados.js
+    ══════════════════════════════════════════════════════════ -->
+    <div id="tab-gerenciar" class="base-tab-content hidden">
+      <div class="card imp-card">
+        <h3 class="imp-step-titulo">🗂️ Todas as Transações</h3>
+        <p class="imp-step-desc">Filtre, selecione e exclua transações em lote.</p>
+
+        <!-- Filtros -->
+        <div class="ger-filtros">
+          <select id="ger-fil-tipo" class="select-input ger-fil-select">
+            <option value="todos">Todos os tipos</option>
+            <option value="despesa">💸 Despesas</option>
+            <option value="receita">📥 Receitas</option>
+            <option value="projecao">📆 Projeções</option>
+          </select>
+          <select id="ger-fil-mes" class="select-input ger-fil-select">
+            <option value="">Todos os meses</option>
+          </select>
+          <select id="ger-fil-ano" class="select-input ger-fil-select">
+            <option value="">Todos os anos</option>
+          </select>
+          <select id="ger-fil-cat" class="select-input ger-fil-select">
+            <option value="">Todas as categorias</option>
+          </select>
+          <button id="ger-btn-carregar" class="btn btn-primary btn-sm">🔍 Carregar</button>
+        </div>
+
+        <!-- Ações em lote -->
+        <div class="ger-acoes-lote hidden" id="ger-acoes-lote">
+          <label class="ger-sel-todos-label">
+            <input type="checkbox" id="ger-chk-todos" />
+            Selecionar todos visíveis
+          </label>
+          <span class="ger-contagem" id="ger-contagem">0 selecionados</span>
+          <button id="ger-btn-excluir" class="btn btn-sm ger-btn-excluir" disabled>
+            🗑️ Excluir selecionados
+          </button>
+        </div>
+
+        <!-- Loading / Empty states -->
+        <div id="ger-loading" class="hidden" style="text-align:center;padding:2rem;color:var(--text-muted);">⏳ Carregando transações…</div>
+        <div id="ger-empty" class="hidden empty-state">Nenhuma transação encontrada para os filtros selecionados.</div>
+
+        <!-- Tabela -->
+        <div class="imp-table-wrap hidden" id="ger-tabela-wrap">
+          <table class="imp-table ger-tabela" id="ger-tabela">
+            <thead>
+              <tr>
+                <th style="width:40px;"></th>
+                <th style="width:95px;">Data</th>
+                <th>Descrição</th>
+                <th style="width:100px;">Valor</th>
+                <th style="width:80px;">Tipo</th>
+                <th style="width:140px;">Categoria</th>
+                <th style="width:110px;">Responsável</th>
+              </tr>
+            </thead>
+            <tbody id="ger-tbody"></tbody>
+          </table>
+        </div>
+
+        <!-- Paginação -->
+        <div class="ger-paginacao hidden" id="ger-paginacao">
+          <button id="ger-btn-prev" class="btn btn-outline btn-sm">‹ Anterior</button>
+          <span id="ger-pagina-info" style="font-size:.85rem;color:var(--text-muted);">Página 1</span>
+          <button id="ger-btn-next" class="btn btn-outline btn-sm">Próxima ›</button>
+        </div>
+      </div>
+
+      <!-- Modal confirmação exclusão em massa -->
+      <div id="modal-excluir-massa" class="modal-overlay hidden">
+        <div class="modal-box" style="max-width:420px;">
+          <div class="modal-header">
+            <h3 class="modal-titulo">🗑️ Confirmar Exclusão</h3>
+          </div>
+          <div class="modal-body">
+            <p id="modal-excluir-msg"></p>
+            <p style="font-size:.85rem;color:var(--danger);margin-top:.5rem;font-weight:600;">
+              ⚠️ Esta ação não pode ser desfeita.
+            </p>
+          </div>
+          <div class="modal-footer" style="display:flex;gap:.75rem;justify-content:flex-end;">
+            <button id="modal-excluir-cancelar" class="btn btn-outline btn-sm">Cancelar</button>
+            <button id="modal-excluir-confirmar" class="btn btn-sm" style="background:var(--danger,#dc2626);color:#fff;border:none;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-weight:600;">
+              Excluir permanentemente
+            </button>
+          </div>
+        </div>
+      </div>
+    </div><!-- /tab-gerenciar -->
+
+
+    <!-- ══════════════════════════════════════════════════════════
+         ABA 4: LIMPEZA (admin only — visível somente para o mestre)
+         Tratada por base-dados.js
+    ══════════════════════════════════════════════════════════ -->
+    <div id="tab-limpeza" class="base-tab-content hidden">
+      <div class="card imp-card">
+        <h3 class="imp-step-titulo" style="color:var(--danger);">⚠️ Limpeza da Base de Dados</h3>
+        <p class="imp-step-desc">
+          Ferramentas destrutivas de manutenção. Disponível apenas para o administrador do grupo.
+        </p>
+
+        <div class="purge-box">
+          <div class="purge-box-header">
+            <span class="purge-box-icon">🗑️</span>
+            <div>
+              <div class="purge-box-titulo">Purgar Base de Dados</div>
+              <div class="purge-box-desc">
+                Apaga <strong>todas as despesas, receitas e parcelamentos</strong> do grupo permanentemente.
+                Categorias, orçamentos, contas e usuários <strong>não são afetados</strong>.
+              </div>
+            </div>
+          </div>
+          <button id="btn-abrir-purge-total" class="btn btn-sm purge-btn">
+            ⚠️ Purgar Base de Dados
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal de purge total — confirmação extrema -->
+      <div id="modal-purge-total" class="modal-overlay hidden">
+        <div class="modal-box" style="max-width:480px;">
+          <div class="modal-header" style="background:#fef2f2;border-bottom:1px solid #fca5a5;">
+            <h3 class="modal-titulo" style="color:var(--danger);">⚠️ Purgar Base de Dados</h3>
+          </div>
+          <div class="modal-body">
+            <p style="font-weight:700;color:var(--danger);margin-bottom:.75rem;">
+              Esta ação irá apagar TODAS as despesas, receitas e parcelamentos do grupo permanentemente.
+            </p>
+            <p style="font-size:.85rem;color:var(--text-muted);margin-bottom:1rem;">
+              Todos os membros do grupo serão afetados. Esta ação <strong>não pode ser desfeita</strong>.
+            </p>
+
+            <label style="font-size:.85rem;font-weight:600;display:block;margin-bottom:.4rem;">
+              Para confirmar, digite <code style="background:#fef2f2;padding:1px 6px;border-radius:4px;color:var(--danger);">PURGAR</code> abaixo:
+            </label>
+            <input type="text" id="purge-confirm-text" class="form-input" placeholder="Digite PURGAR" autocomplete="off"
+              style="margin-bottom:1rem;border-color:var(--danger);" />
+
+            <label class="purge-confirm-label">
+              <input type="checkbox" id="purge-confirm-chk" />
+              Eu entendo que esta ação é irreversível e afetará todos os membros do grupo.
+            </label>
+          </div>
+          <div class="modal-footer" style="display:flex;gap:.75rem;justify-content:flex-end;">
+            <button id="purge-total-cancelar" class="btn btn-outline btn-sm">Cancelar</button>
+            <button id="purge-total-confirmar" class="btn btn-sm purge-btn" disabled>
+              🗑️ Purgar agora
+            </button>
+          </div>
+        </div>
+      </div>
+    </div><!-- /tab-limpeza -->
+
+  </main>
+
+  <!-- SheetJS — carregado antes dos módulos -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <!-- importar.js: lógica das abas Importar e Duplicatas -->
+  <script type="module" src="js/pages/importar.js"></script>
+  <!-- base-dados.js: tabs + Gerenciar + Limpeza -->
+  <script type="module" src="js/pages/base-dados.js"></script>
+</body>
+</html>

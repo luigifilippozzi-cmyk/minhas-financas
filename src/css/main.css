@@ -794,4 +794,135 @@ a:hover { text-decoration: underline; }
 
 /* Projeções */
 .fat-loading { text-align: center; color: #9e9e9e; padding: 1.5rem; font-style: italic; }
+
+/* ============================================================
+   RF-018 — BASE DE DADOS (tabs + gerenciar + limpeza)
+   ============================================================ */
+
+/* ── Navegação de abas ── */
+.base-tab-nav {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+  border-bottom: 2px solid var(--color-border, #e5e7eb);
+  margin-bottom: 1.5rem;
+  padding-bottom: 0;
+}
+
+.base-tab-btn {
+  padding: .5rem 1rem;
+  font-size: .875rem;
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted, #6b7280);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  border-radius: 4px 4px 0 0;
+  transition: color .15s, border-color .15s;
+}
+.base-tab-btn:hover { color: var(--color-primary, #4f46e5); }
+.base-tab-btn--ativo {
+  color: var(--color-primary, #4f46e5);
+  border-bottom-color: var(--color-primary, #4f46e5);
+  background: transparent;
+}
+.base-tab-btn--admin { color: var(--danger, #dc2626); }
+.base-tab-btn--admin.base-tab-btn--ativo { border-bottom-color: var(--danger, #dc2626); }
+
+/* ── Filtros Gerenciar ── */
+.ger-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.ger-fil-select { min-width: 140px; }
+
+/* ── Ações em lote ── */
+.ger-acoes-lote {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-wrap: wrap;
+  padding: .6rem .75rem;
+  background: var(--color-surface-alt, #f3f4f6);
+  border-radius: 6px;
+  margin-bottom: .75rem;
+  border: 1px solid var(--color-border, #e5e7eb);
+}
+.ger-sel-todos-label { display: flex; align-items: center; gap: .4rem; font-size: .85rem; cursor: pointer; }
+.ger-contagem { font-size: .85rem; color: var(--color-text-muted, #6b7280); flex: 1; }
+.ger-btn-excluir { background: var(--danger, #dc2626) !important; color: #fff !important; border: none !important; }
+.ger-btn-excluir:disabled { opacity: .45; cursor: not-allowed; }
+
+/* ── Tabela Gerenciar ── */
+.ger-tabela th, .ger-tabela td { vertical-align: middle; }
+
+.ger-tipo-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.ger-tipo-despesa  { background: #fee2e2; color: #b91c1c; }
+.ger-tipo-receita  { background: #dcfce7; color: #166534; }
+.ger-tipo-projecao { background: #e0e7ff; color: #4338ca; }
+
+/* ── Paginação ── */
+.ger-paginacao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .75rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+/* ── Purge box (Limpeza) ── */
+.purge-box {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1.25rem;
+  background: #fff5f5;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+.purge-box-header { display: flex; gap: .75rem; align-items: flex-start; flex: 1; }
+.purge-box-icon { font-size: 1.5rem; line-height: 1; }
+.purge-box-titulo { font-weight: 700; color: var(--danger, #dc2626); margin-bottom: .25rem; }
+.purge-box-desc { font-size: .85rem; color: var(--color-text-secondary, #4b5563); }
+
+.purge-btn {
+  background: var(--danger, #dc2626) !important;
+  color: #fff !important;
+  border: none !important;
+  font-weight: 700;
+}
+.purge-btn:disabled { opacity: .45; cursor: not-allowed; }
+
+.purge-confirm-label {
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+  font-size: .85rem;
+  color: var(--color-text-secondary, #4b5563);
+  cursor: pointer;
+  line-height: 1.4;
+}
+.purge-confirm-label input[type="checkbox"] { margin-top: 2px; flex-shrink: 0; }
+
+@media (max-width: 640px) {
+  .ger-filtros { flex-direction: column; align-items: stretch; }
+  .ger-fil-select { min-width: unset; width: 100%; }
+  .purge-box { flex-direction: column; }
+}
 .fat-loading--ok { color: #2e7d32; font-style: normal; }
