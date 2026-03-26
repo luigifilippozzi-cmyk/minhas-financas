@@ -11,6 +11,8 @@
   <link rel="stylesheet" href="css/components.css" />
   <link rel="stylesheet" href="css/dashboard.css" />
   <link rel="stylesheet" href="css/main.css" />
+  <!-- Chart.js v4 — open source (github.com/chartjs/Chart.js) via jsDelivr CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -82,6 +84,7 @@
           <span>💳 Parcelamentos em Aberto</span>
           <div style="display:flex;align-items:center;gap:.75rem;">
             <span class="parc-total-valor" id="parc-total-dash">R$ 0,00</span>
+            <a href="fatura.html" class="btn btn-outline btn-sm" style="font-size:.75rem;">Ver projeções →</a>
             <span class="parc-toggle-icon">▾</span>
           </div>
         </div>
@@ -123,19 +126,36 @@
       </div>
     </section>
 
-    <!-- ═══ SEÇÃO: DESPESAS ═══ -->
-    <section class="section" id="section-despesas">
+    <!-- ═══ SEÇÃO: GRÁFICOS (RF-017) ═══ -->
+    <section class="section" id="section-graficos">
       <div class="section-header">
-        <h2 class="section-title">💸 Despesas</h2>
-        <button id="btn-nova-despesa" class="btn btn-primary">+ Nova Despesa</button>
+        <h2 class="section-title">📈 Análise por Categoria</h2>
+        <div class="section-actions">
+          <button class="btn btn-sm dash-filtro-btn dash-filtro-btn--ativo" data-periodo="mes">Mês atual</button>
+          <button class="btn btn-sm dash-filtro-btn" data-periodo="3meses">Últimos 3 meses</button>
+          <button class="btn btn-sm dash-filtro-btn" data-periodo="ano">Ano atual</button>
+        </div>
       </div>
-
-      <!-- Lista de despesas -->
-      <div class="despesas-lista" id="despesas-lista">
-        <!-- Preenchido dinamicamente via JS -->
-        <p class="empty-state">Nenhuma despesa registrada ainda.</p>
+      <div class="dash-graficos-row">
+        <div class="card dash-grafico-container">
+          <div class="dash-grafico-titulo">Receitas × Despesas por Categoria</div>
+          <div class="dash-chart-wrap">
+            <canvas id="dash-chart-categorias"></canvas>
+          </div>
+        </div>
+        <div class="card dash-grafico-container">
+          <div class="dash-grafico-titulo">Evolução Mensal — Últimos 6 meses</div>
+          <div class="dash-chart-wrap">
+            <canvas id="dash-chart-evolucao"></canvas>
+          </div>
+        </div>
       </div>
     </section>
+
+    <!-- Atalho rápido para nova despesa (mantido para navegação) -->
+    <div style="text-align:right;margin-top:-.5rem;">
+      <button id="btn-nova-despesa" class="btn btn-primary btn-sm">+ Nova Despesa</button>
+    </div>
 
   </main>
 

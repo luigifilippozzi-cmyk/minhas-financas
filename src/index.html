@@ -2,17 +2,13 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!--
-    PORTÃO DE ENTRADA — Minhas Finanças
-    Esta página SEMPRE faz logout do usuário e redireciona para login.html.
-    Garante que acessar a URL raiz do app exige reautenticação.
-    O dashboard real está em dashboard.html.
+    PORTÃO DE ENTRADA — Minhas Finanças (RF-017)
+    Redireciona para o Dashboard se autenticado, ou para Login se não autenticado.
+    Não faz mais logout automático — preserva a sessão do usuário.
   -->
-  <title>Minhas Finanças — Redirecionando…</title>
+  <title>Minhas Finanças — Carregando…</title>
   <style>
     body {
       display: flex;
@@ -31,12 +27,25 @@
 
   <script type="module">
     import { auth } from './js/config/firebase.js';
-    import { signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    import { buscarPerfil } from './js/services/database.js';
 
-    // Sempre faz logout e redireciona para a tela de autenticação.
-    // Qualquer acesso à URL raiz do app (/) reinicia o fluxo de login.
-    signOut(auth).finally(() => {
-      window.location.replace('login.html');
+    // RF-017: redireciona baseado no estado de autenticação (não faz logout)
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.replace('login.html');
+        return;
+      }
+      try {
+        const perfil = await buscarPerfil(user.uid);
+        if (perfil?.grupoId) {
+          window.location.replace('dashboard.html');
+        } else {
+          window.location.replace('grupo.html');
+        }
+      } catch (_) {
+        window.location.replace('login.html');
+      }
     });
   </script>
 </body>

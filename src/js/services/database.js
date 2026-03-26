@@ -471,6 +471,38 @@ export function ouvirOrcamentos(grupoId, mes, ano, callback) {
 }
 
 
+// ── RF-017: Dashboard — consultas por período ─────────────────
+
+/**
+ * Busca despesas em um intervalo de datas (gráficos do dashboard).
+ */
+export async function buscarDespesasPeriodo(grupoId, inicio, fim) {
+  const q = query(
+    collection(db, 'despesas'),
+    where('grupoId', '==', grupoId),
+    where('data', '>=', inicio),
+    where('data', '<=', fim),
+    orderBy('data'),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+/**
+ * Busca receitas em um intervalo de datas (gráficos do dashboard).
+ */
+export async function buscarReceitasPeriodo(grupoId, inicio, fim) {
+  const q = query(
+    collection(db, 'receitas'),
+    where('grupoId', '==', grupoId),
+    where('data', '>=', inicio),
+    where('data', '<=', fim),
+    orderBy('data'),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
 // ── Fluxo de Caixa: consultas anuais ─────────────────────────
 
 export async function buscarDespesasAno(grupoId, ano) {
