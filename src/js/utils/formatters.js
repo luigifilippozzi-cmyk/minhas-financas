@@ -45,3 +45,17 @@ export function nomeMes(mes) {
 export function formatarPercentual(valor) {
   return `${Math.round(valor)}%`;
 }
+
+/**
+ * Escapa caracteres HTML especiais para evitar XSS em innerHTML.
+ * @param {string} str
+ * @returns {string}
+ */
+export function escHTML(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
