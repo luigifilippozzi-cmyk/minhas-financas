@@ -827,9 +827,12 @@ async function executarImportacao() {
     const parc_id = info ? (l.parcelamento_id_proj ?? crypto.randomUUID()) : null;
     // NRF-001: auto-mark isConjunta/valorAlocado from category's isConjuntaPadrao
     // NRF-010: seleção "Conjunto" pelo usuário tem prioridade sobre padrão da categoria
-    const catObj       = _categorias.find(c => c.id === cat);
-    const isConj       = l.isConjunta ?? (catObj?.isConjuntaPadrao ?? false);
-    const valorAlocado = isConj ? Math.round(l.valor * 100 / 2) / 100 : null;
+    // BUG-013: usa valor líquido pós-ajuste parcial (NRF-002.2) se disponível
+    const catObj          = _categorias.find(c => c.id === cat);
+    const isConj          = l.isConjunta ?? (catObj?.isConjuntaPadrao ?? false);
+    const valorBase       = l.valorLiquido ?? l.valor;  // BUG-013: valor real após desconto de ajuste parcial
+    const valorAlocado    = isConj ? Math.round(valorBase  * 100 / 2) / 100 : null; // para a despesa atual
+    const valorAlocadoProj = isConj ? Math.round(l.valor   * 100 / 2) / 100 : null; // para projeções (valor bruto)
     try {
       // NRF-006: modo banco — linhas de receita vão para coleção 'receitas'
       if (l.tipoLinha === 'receita') {
@@ -846,8 +849,9 @@ async function executarImportacao() {
         continue;
       }
       // NRF-002: cria a despesa real primeiro (para obter despesaRef.id para reconciliação)
+      // BUG-013: persiste valorBase (= valorLiquido se houver ajuste parcial, senão valor bruto)
       const despesaRef = await criarDespesaDB(modelDespesa({
-        descricao: l.descricao, valor: l.valor, categoriaId: cat,
+        descricao: l.descricao, valor: valorBase, categoriaId: cat,
         data: l.data instanceof Date ? l.data : new Date(l.data),
         grupoId: _grupoId, usuarioId: _usuario.uid,
         origem: 'importacao', portador: l.portador ?? '', responsavel: l.portador ?? '',
@@ -904,7 +908,7 @@ async function executarImportacao() {
           await criarDespesaDB(modelDespesa({
             ...p, grupoId: _grupoId, usuarioId: _usuario.uid,
             origem: 'projecao', importadoEm: new Date(),
-            isConjunta: isConj, valorAlocado,
+            isConjunta: isConj, valorAlocado: valorAlocadoProj, // BUG-013: projeções usam valor bruto (sem ajuste parcial)
             contaId,  // NRF-004: propaga conta para as projeções de parcelas
             status: 'pendente',
           }));

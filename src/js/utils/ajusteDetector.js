@@ -49,9 +49,18 @@ export function classificarEstabelecimento(descricao) {
  *
  * Condições para considerar como ajuste parcial:
  *   1. Crédito pertence a estabelecimento elegível (marketplace/supermercado/delivery)
- *   2. Similaridade Levenshtein entre descrições ≥ simMinima
+ *   2. Despesa contém a MESMA keyword identificadora do crédito (ex: 'IFOOD')  ← BUG-014 fix
  *   3. Valor do crédito < valor da despesa (parcial, não estorno total)
  *   4. Diferença de data ≤ janelaDias
+ *   Levenshtein é usado somente como critério de desempate quando há múltiplas
+ *   despesas candidatas — NÃO como gate de inclusão (threshold removido).
+ *
+ * Rationale BUG-014: em extratos bancários reais, o crédito/cashback raramente
+ *   tem a mesma descrição da despesa original. Ex:
+ *     despesa  → "IFOOD *RESTAURANTE ABC 01/11"
+ *     crédito  → "IFOOD CREDITO" ou "PIX RECEBIDO IFOOD"
+ *   Levenshtein full-string daria ~0.30, abaixo de qualquer threshold razoável.
+ *   A keyword compartilhada é critério muito mais robusto para esses casos.
  *
  * Campos adicionados ao crédito (linha de ajuste):
  *   { ajuste_parcial: true, ajuste_para_idx, ajuste_sim }
@@ -62,11 +71,9 @@ export function classificarEstabelecimento(descricao) {
  * @param {Array}  linhas
  * @param {Object} opts
  * @param {number} opts.janelaDias — janela máxima entre despesa e crédito (padrão 7)
- * @param {number} opts.simMinima  — similaridade mínima Levenshtein (padrão 0.72)
  */
 export function detectarAjustesParciais(linhas, {
   janelaDias = 7,
-  simMinima  = 0.72,
 } = {}) {
   // Candidatos: despesas não-marcadas (sem erro, sem duplicata, sem ajuste já vinculado)
   const despesas = linhas.filter(l =>
@@ -79,11 +86,18 @@ export function detectarAjustesParciais(linhas, {
 
   for (const cred of creditos) {
     // Só trata créditos de estabelecimentos elegíveis
-    if (!classificarEstabelecimento(cred.descricao)) continue;
+    const tipoEst = classificarEstabelecimento(cred.descricao);
+    if (!tipoEst) continue;
+
+    // BUG-014: extrai a keyword que identificou o estabelecimento no crédito
+    const normCredUpper = cred.descricao.toUpperCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const keyword = PADROES_ESTABELECIMENTO[tipoEst].find(p => normCredUpper.includes(p));
+    if (!keyword) continue;
 
     const normCred = normalizarStr(cred.descricao);
     let melhorDesp = null;
-    let melhorSim  = 0;
+    let melhorSim  = -1;
 
     for (const desp of despesas) {
       // Crédito deve ser menor que a despesa (ajuste parcial, não estorno total)
@@ -97,9 +111,13 @@ export function detectarAjustesParciais(linhas, {
         if (diffDias > janelaDias) continue;
       }
 
-      // Similaridade de descrição
+      // BUG-014: critério principal — despesa deve conter a MESMA keyword do crédito
+      const normDespUpper = desp.descricao.toUpperCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      if (!normDespUpper.includes(keyword)) continue;
+
+      // Levenshtein apenas como desempate entre múltiplas despesas candidatas
       const sim = similaridade(normCred, normalizarStr(desp.descricao));
-      if (sim < simMinima) continue;
       if (sim > melhorSim) { melhorSim = sim; melhorDesp = desp; }
     }
 
@@ -107,11 +125,11 @@ export function detectarAjustesParciais(linhas, {
       // Marcar crédito como ajuste parcial (ficará desmarcado no preview)
       cred.ajuste_parcial  = true;
       cred.ajuste_para_idx = melhorDesp._idx;
-      cred.ajuste_sim      = Math.round(melhorSim * 100);
+      cred.ajuste_sim      = Math.round(Math.max(melhorSim, 0) * 100);
 
       // Atualizar despesa com valor líquido pós-ajuste
-      melhorDesp.valorAjustado    = cred.valor;
-      melhorDesp.valorLiquido     = Math.round((melhorDesp.valor - cred.valor) * 100) / 100;
+      melhorDesp.valorAjustado      = cred.valor;
+      melhorDesp.valorLiquido       = Math.round((melhorDesp.valor - cred.valor) * 100) / 100;
       melhorDesp.ajuste_parcial_idx = cred._idx;
     }
   }
