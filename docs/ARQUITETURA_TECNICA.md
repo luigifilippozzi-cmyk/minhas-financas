@@ -196,7 +196,8 @@ src/
         ├── formatters.js           ← formatarMoeda, formatarData, nomeMes, escHTML
         ├── helpers.js              ← dataHoje, normalizarStr, similaridade (Levenshtein)
         ├── normalizadorTransacoes.js ← RF-013: parsing puro CSV/XLSX; normalização; chave dedup; inferência conta
-        ├── deduplicador.js         ← RF-013: marcarLinhasDuplicatas() — matching exato + fuzzy (sem Firestore)
+        ├── deduplicador.js         ← RF-013: marcarLinhasDuplicatas() — matching exato + fuzzy + ajustes (sem Firestore)
+        ├── ajusteDetector.js       ← NRF-002.2: detectarAjustesParciais() — marketplace/supermercado aware
         ├── categorizer.js          ← RF-022: categorizarTransacao() — por origem + histórico + palavras-chave
         ├── detectorOrigemArquivo.js ← RF-021: detectarOrigemArquivo() — tipo (banco/cartão) + banco/emissor
         └── bankFingerprintMap.js   ← RF-021: 15 bancos/emissores — filePatterns + keywords scoring
