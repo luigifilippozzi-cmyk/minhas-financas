@@ -11,6 +11,25 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [3.5.0] - 2026-03-27
+
+### Corrigido — BUG-013 + BUG-014: NRF-002.2 Ajustes Parciais Marketplace completamente inoperante
+
+Dois bugs críticos tornavam a funcionalidade de detecção de ajustes parciais (iFood, Mambo, etc.) inteiramente ineficaz: o detector nunca encontrava pares e, quando encontrado, o desconto era ignorado ao salvar.
+
+#### `src/js/utils/ajusteDetector.js` — BUG-014
+- **Problema:** Levenshtein full-string com threshold 0.72 nunca detectava pares reais de banco (ex: `"IFOOD *REST ABC"` vs `"IFOOD CREDITO"` → sim ≈ 0.30 → sempre pulava)
+- **Fix:** Substituído por verificação de **keyword compartilhada** — extrai o padrão identificador (ex: `'IFOOD'`) do crédito e verifica se a despesa candidata contém o mesmo padrão. Levenshtein mantido apenas como critério de desempate entre múltiplas despesas candidatas, sem threshold gate
+- Parâmetro `simMinima` removido da assinatura (não mais necessário como gate)
+
+#### `src/js/pages/importar.js` — BUG-013
+- **Problema:** Despesa com `valorLiquido` salva com `l.valor` (bruto) — desconto visível no preview mas nunca persistido no Firestore
+- **Fix:** `valorBase = l.valorLiquido ?? l.valor` — despesa atual salva ao valor líquido pós-ajuste
+- `valorAlocado` (conjunto) usa `valorBase` (correto para a despesa atual)
+- Projeções de parcelas continuam usando `l.valor` com `valorAlocadoProj` separado (parcelas futuras não recebem o ajuste)
+
+---
+
 ## [3.4.0] - 2026-03-27
 
 ### Adicionado — NRF-010: Portador "Conjunto" no Upload de Fatura de Cartão
