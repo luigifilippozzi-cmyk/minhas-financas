@@ -22,6 +22,7 @@
 | RF-018 | Centralização da Base de Dados — Importação, Deduplicação e Purge | Alta | ✅ Implementado |
 | NRF-001 | Contas Compartilhadas (divisão conjunta) | Alta | ✅ Implementado |
 | NRF-002 | Reconciliação Fuzzy de Parcelas + CSV Nativo de Cartão | Média | ✅ Implementado |
+| NRF-002.2 | Ajustes Parciais Marketplace/Supermercado (iFood, Mambo…) | Média | ✅ Implementado |
 | NRF-003 | Fluxo de Caixa — Visão Orçamentária Anual | Alta | ✅ Implementado |
 | NRF-004 | Identificação de Conta/Banco por Transação | Alta | ✅ Implementado |
 | NRF-005 | Fatura do Cartão de Crédito | Alta | ✅ Implementado |
