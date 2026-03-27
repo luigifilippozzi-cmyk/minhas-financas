@@ -34,6 +34,7 @@
 | RF-020 | Classificação Automática por Sinal + Importação PDF | Alta | ✅ Implementado |
 | RF-021 | Motor de Detecção, Roteamento e Identificação de Banco | Alta | ✅ Implementado |
 | RF-022 | Auto Categorização Inteligente Sensível à Origem | Alta | ✅ Implementado |
+| RF-023 | Edição em Massa de Transações — Responsável Dinâmico | Alta | ✅ Implementado |
 
 ---
 
@@ -961,3 +962,42 @@ No modelo de grupo familiar (2 membros), saber quem é o responsável por cada t
 - [x] `criarReceita` recebe `responsavel: l.portador` (receitas do extrato bancário)
 - [x] `criarDespesa` já recebia `responsavel: l.portador` — sem alteração necessária
 - [x] Sem regressão em modos receita/despesa (portador exibido como texto)
+
+---
+
+## RF-023: Edição em Massa de Transações — Responsável Dinâmico
+**Prioridade:** Alta | **Versão:** v3.3.0 | **Status:** ✅ Implementado
+
+### Descrição
+Permite a edição em massa do campo Responsável na aba Gerenciar da página Base de Dados, com atualização sincronizada de `responsavel` + `portador` em batch Firestore (≤ 500 por operação).
+
+### Funcionalidades
+
+| Funcionalidade | Detalhe |
+|----------------|---------|
+| Filtro por Responsável | Novo filtro `ger-fil-resp` na barra de filtros da aba Gerenciar — lista nomes únicos presentes no cache |
+| Seletor de responsável em lote | `ger-sel-resp` populado com `nomesMembros` do grupo (fonte: `grupos/{grupoId}.nomesMembros`) |
+| Botão Aplicar | `ger-btn-resp` habilitado apenas quando há seleção + responsável escolhido |
+| Batch update | `atualizarResponsavelEmMassa(items, responsavel)` em `database.js` — chunks de 500 (límite Firestore) |
+| Atualização local imediata | Cache `_todasTransacoes` e `_filtradas` atualizados sem recarregar do Firestore |
+| Toast de feedback | Aparece por 3,5 s no canto inferior direito: "X transações atualizadas — responsável: Nome" |
+| Integridade | `responsavel` e `portador` atualizados em sincronia (mesma operação de batch) |
+
+### Arquivos
+
+| Arquivo | Mudança |
+|---------|---------|
+| `src/js/services/database.js` | `atualizarResponsavelEmMassa(items, responsavel)` — nova função de batch update |
+| `src/base-dados.html` | Filtro `ger-fil-resp` na barra de filtros; `ger-sel-resp` + `ger-btn-resp` na barra de ações em lote |
+| `src/js/pages/base-dados.js` | `_nomesMembros` state; `preencherSelResp()`; `preencherFiltrosResponsaveis()`; `aplicarFiltros` com filtro por resp; `atualizarContagem` controla `ger-btn-resp`; `confirmarAtualizacaoResp()`; `mostrarToast()` |
+
+### Critérios de Aceitação
+- [x] Filtro "Todos os responsáveis" filtra corretamente a tabela por nome
+- [x] Dropdown `ger-sel-resp` lista membros do grupo (fonte: `nomesMembros`)
+- [x] Botão "Aplicar" desabilitado quando sem seleção ou sem responsável escolhido
+- [x] Batch update persiste `responsavel` e `portador` no Firestore
+- [x] Cache local atualizado imediatamente — tabela reflete a mudança sem reload
+- [x] Toast confirma quantidade de registros atualizados
+- [x] Limite de 500 registros por batch respeitado
+- [x] Funciona para despesas e receitas (coleções distintas na mesma operação)
+- [x] Sem regressão: exclusão em massa e demais filtros funcionam normalmente

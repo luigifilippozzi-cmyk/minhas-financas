@@ -11,6 +11,30 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [3.3.0] - 2026-03-27
+
+### Adicionado — RF-023: Edição em Massa de Transações — Responsável Dinâmico
+
+Permite alterar o responsável de múltiplas transações em lote a partir da aba Gerenciar da Base de Dados. Membros do grupo carregados dinamicamente de `nomesMembros`; atualização em batch Firestore (≤ 500); feedback via toast; cache local atualizado sem reload.
+
+#### `src/js/services/database.js`
+- `atualizarResponsavelEmMassa(items, responsavel)` — batch update de `responsavel` + `portador` em chunks de 500
+
+#### `src/base-dados.html`
+- Filtro `ger-fil-resp` ("Todos os responsáveis") na barra de filtros da aba Gerenciar
+- `ger-sel-resp` + `ger-btn-resp` ("👤 Aplicar") na barra de ações em lote
+
+#### `src/js/pages/base-dados.js`
+- `_nomesMembros` — estado carregado de `grupos/{grupoId}.nomesMembros`
+- `preencherSelResp()` — popula dropdown de ação em lote com membros do grupo
+- `preencherFiltrosResponsaveis()` — popula filtro com nomes únicos do cache
+- `aplicarFiltros()` — filtro por responsável adicionado
+- `atualizarContagem()` — habilita/desabilita `ger-btn-resp` conforme seleção + responsável
+- `confirmarAtualizacaoResp()` — executa batch, atualiza cache local, exibe toast
+- `mostrarToast(msg, isErro)` — toast fixo no canto inferior direito (3,5 s)
+
+---
+
 ## [3.2.0] - 2026-03-27
 
 ### Adicionado — NRF-009: Responsável por Transação no Import

@@ -1,6 +1,7 @@
 // ============================================================
-// PAGE: Base de Dados — RF-018
+// PAGE: Base de Dados — RF-018 + RF-023
 // Gerenciamento de transações: filtros, paginação, exclusão em lote
+// RF-023: edição em massa de responsável (batch Firestore ≤ 500)
 // Limpeza total (admin/mestre only)
 //
 // Nota: a lógica das abas Importar e Duplicatas é tratada
@@ -13,6 +14,7 @@ import {
   buscarGrupo,
   buscarTodasTransacoes,
   excluirEmMassa,
+  atualizarResponsavelEmMassa,   // RF-023
   purgeGrupoCompleto,
   ouvirCategorias,
 } from '../services/database.js';
@@ -31,6 +33,7 @@ const POR_PAGINA     = 50;
 let _selecionados    = new Set(); // ids selecionados
 let _categorias      = [];   // Bug 2: categorias do grupo para filtro e exibição
 let _unsubCats       = null;
+let _nomesMembros    = {};   // RF-023: { uid: nome } — membros do grupo
 
 // ── Inicialização ───────────────────────────────────────────────
 onAuthChange(async (user) => {
@@ -43,15 +46,17 @@ onAuthChange(async (user) => {
 
   _grupoId = perfil.grupoId;
 
-  // Verificar isMestre via campo criadoPor do grupo
+  // Verificar isMestre + carregar membros (RF-023)
   try {
     const grupo = await buscarGrupo(_grupoId);
     _isMestre = grupo?.criadoPor === user.uid;
+    _nomesMembros = grupo?.nomesMembros ?? {};
   } catch (_) { _isMestre = false; }
 
   if (_isMestre) {
     document.getElementById('btn-tab-limpeza')?.classList.remove('hidden');
   }
+  preencherSelResp();
 
   // Bug 2: escuta categorias para filtro e exibição na aba Gerenciar
   _unsubCats = ouvirCategorias(_grupoId, (cats) => {
@@ -109,6 +114,10 @@ function configurarGerenciar() {
   document.getElementById('modal-excluir-cancelar')?.addEventListener('click', fecharModalExclusao);
   document.getElementById('modal-excluir-confirmar')?.addEventListener('click', confirmarExclusao);
 
+  // RF-023: responsável em massa
+  document.getElementById('ger-sel-resp')?.addEventListener('change', () => atualizarContagem());
+  document.getElementById('ger-btn-resp')?.addEventListener('click', confirmarAtualizacaoResp);
+
   document.getElementById('ger-btn-prev')?.addEventListener('click', () => { _paginaAtual--; renderizarPagina(); });
   document.getElementById('ger-btn-next')?.addEventListener('click', () => { _paginaAtual++; renderizarPagina(); });
 }
@@ -143,6 +152,7 @@ async function carregarTransacoes() {
   preencherFiltrosAnos();
   preencherFiltrosMeses();
   preencherFiltrosCategorias();
+  preencherFiltrosResponsaveis();  // RF-023
 
   aplicarFiltros();
 }
@@ -197,11 +207,36 @@ function preencherFiltrosCategorias() {
   if (atual) sel.value = atual;
 }
 
+// RF-023: preenche filtro por responsável com nomes únicos do cache
+function preencherFiltrosResponsaveis() {
+  const sel = document.getElementById('ger-fil-resp');
+  if (!sel) return;
+  const atual = sel.value;
+  const nomes = [...new Set(
+    _todasTransacoes
+      .map(t => t.responsavel ?? t.portador ?? '')
+      .filter(Boolean)
+  )].sort((a, b) => a.localeCompare(b));
+  sel.innerHTML = '<option value="">Todos os responsáveis</option>' +
+    nomes.map(n => `<option value="${n}">${n}</option>`).join('');
+  if (atual) sel.value = atual;
+}
+
+// RF-023: preenche seletor de ação em lote com membros do grupo
+function preencherSelResp() {
+  const sel = document.getElementById('ger-sel-resp');
+  if (!sel) return;
+  const nomes = Object.values(_nomesMembros);
+  sel.innerHTML = '<option value="">— selecione —</option>' +
+    nomes.map(n => `<option value="${n}">${n}</option>`).join('');
+}
+
 function aplicarFiltros() {
   const tipo = document.getElementById('ger-fil-tipo')?.value ?? 'todos';
   const mes  = document.getElementById('ger-fil-mes')?.value  ?? '';
   const ano  = document.getElementById('ger-fil-ano')?.value  ?? '';
   const cat  = document.getElementById('ger-fil-cat')?.value  ?? '';
+  const resp = document.getElementById('ger-fil-resp')?.value ?? '';  // RF-023
 
   _filtradas = _todasTransacoes.filter(t => {
     if (tipo !== 'todos') {
@@ -210,6 +245,7 @@ function aplicarFiltros() {
       else if (tipo === 'despesa' && (t._tipo !== 'despesa' || t.tipo === 'projecao')) return false;
     }
     if (cat && t.categoriaId !== cat) return false;  // Bug 2: comparar por categoriaId
+    if (resp && (t.responsavel ?? t.portador ?? '') !== resp) return false;  // RF-023
     if (mes || ano) {
       const d = t.data?.toDate ? t.data.toDate() : new Date(t.data);
       if (isNaN(d)) return false;
@@ -329,6 +365,10 @@ function atualizarContagem() {
   if (span) span.textContent = `${n} selecionado${n !== 1 ? 's' : ''}`;
   const btn = document.getElementById('ger-btn-excluir');
   if (btn) btn.disabled = n === 0;
+  // RF-023: habilita botão Aplicar apenas quando há seleção E responsável escolhido
+  const btnResp = document.getElementById('ger-btn-resp');
+  const selResp = document.getElementById('ger-sel-resp');
+  if (btnResp) btnResp.disabled = n === 0 || !selResp?.value;
 }
 
 function abrirModalExclusao() {
@@ -369,6 +409,64 @@ async function confirmarExclusao() {
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = 'Excluir permanentemente'; }
   }
+}
+
+// ── RF-023: Edição em massa de responsável ──────────────────────
+
+async function confirmarAtualizacaoResp() {
+  const responsavel = document.getElementById('ger-sel-resp')?.value;
+  if (!responsavel || _selecionados.size === 0) return;
+
+  const btnResp = document.getElementById('ger-btn-resp');
+  if (btnResp) { btnResp.disabled = true; btnResp.textContent = '⏳'; }
+
+  const items = [..._selecionados].map(chave => {
+    const [colecao, id] = chave.split('::');
+    return { id, colecao };
+  });
+
+  try {
+    await atualizarResponsavelEmMassa(items, responsavel);
+    // Atualiza cache local sem recarregar do Firestore
+    const updatedKeys = new Set(items.map(i => `${i.colecao}::${i.id}`));
+    const atualizar = t => {
+      const col = t._tipo === 'receita' ? 'receitas' : 'despesas';
+      return updatedKeys.has(`${col}::${t.id}`) ? { ...t, responsavel, portador: responsavel } : t;
+    };
+    _todasTransacoes = _todasTransacoes.map(atualizar);
+    _filtradas       = _filtradas.map(atualizar);
+    renderizarPagina();
+    const n = items.length;
+    mostrarToast(`✅ ${n} transaç${n !== 1 ? 'ões' : 'ão'} atualizada${n !== 1 ? 's' : ''} — responsável: ${responsavel}`);
+  } catch (e) {
+    console.error('Erro ao atualizar responsável em massa:', e);
+    mostrarToast('❌ Erro ao atualizar. Tente novamente.', true);
+  } finally {
+    if (btnResp) { btnResp.disabled = false; btnResp.textContent = '👤 Aplicar'; }
+  }
+}
+
+// Toast de feedback (aparece por 3,5 s no canto inferior direito)
+function mostrarToast(mensagem, isErro = false) {
+  let toast = document.getElementById('ger-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'ger-toast';
+    toast.style.cssText = [
+      'position:fixed', 'bottom:1.5rem', 'right:1.5rem', 'z-index:9999',
+      'padding:.75rem 1.25rem', 'border-radius:8px', 'font-size:.9rem',
+      'font-weight:600', 'box-shadow:0 4px 12px rgba(0,0,0,.15)',
+      'transition:opacity .3s', 'max-width:360px',
+    ].join(';');
+    document.body.appendChild(toast);
+  }
+  toast.textContent = mensagem;
+  toast.style.background = isErro ? '#fef2f2'  : '#f0fdf4';
+  toast.style.color      = isErro ? '#dc2626'  : '#166534';
+  toast.style.border     = isErro ? '1px solid #fca5a5' : '1px solid #86efac';
+  toast.style.opacity    = '1';
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => { toast.style.opacity = '0'; }, 3500);
 }
 
 // ── Limpeza (admin) ─────────────────────────────────────────────
