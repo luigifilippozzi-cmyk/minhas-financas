@@ -11,8 +11,8 @@
 | **URL da aplicação** | https://minhas-financas-285da.web.app |
 | **Repositório** | https://github.com/luigifilippozzi-cmyk/minhas-financas |
 | **Milestone de testes** | [v1.0 — QA & Testes de Aceitação](https://github.com/luigifilippozzi-cmyk/minhas-financas/milestone/7) |
-| **Total de RFs** | 23+ (RF-001 a RF-022 + NRFs + NRF-009) |
-| **Casos de teste** | 10 suítes (TC-001 a TC-010) |
+| **Total de RFs** | 24+ (RF-001 a RF-023 + NRFs) |
+| **Casos de teste** | 11 suítes (TC-001 a TC-011) |
 
 ---
 
@@ -385,4 +385,40 @@ O progresso do milestone é atualizado automaticamente conforme os checklists da
 
 ---
 
-*Guia gerado em 2026-03-08 | atualizado 2026-03-27 (RF-019 a RF-022 + RF-013 v3.0 + BUG-009 a BUG-012 + NRF-009 v3.2.0) | versão v3.2.0*
+---
+
+## 🗂️ TC-011 — Edição em Massa de Responsável (RF-023)
+
+**RFs cobertas:** RF-023
+
+### Filtro por Responsável
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 1 | Carregue transações na aba Gerenciar | Filtro "Todos os responsáveis" exibe nomes únicos presentes na base |
+| 2 | Selecione um responsável no filtro e clique em Carregar | Tabela exibe apenas as transações daquele responsável |
+| 3 | Volte para "Todos os responsáveis" | Tabela restaura todos os registros |
+
+### Seletor em Lote — Aplicar Responsável
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 4 | Selecione 3 transações usando os checkboxes | Contador mostra "3 selecionados" |
+| 5 | Dropdown "Responsável:" exibe membros do grupo | Lista populada com nomes de `grupos/{grupoId}.nomesMembros` |
+| 6 | Com seleção ativa mas sem responsável escolhido | Botão "👤 Aplicar" permanece desabilitado |
+| 7 | Selecione um responsável no dropdown | Botão "👤 Aplicar" fica habilitado |
+| 8 | Clique em "👤 Aplicar" | Toast aparece: "3 transações atualizadas — responsável: [Nome]" |
+| 9 | Verifique a coluna Responsável na tabela | Atualização refletida imediatamente sem reload |
+| 10 | Consulte as transações no Firestore | Campos `responsavel` e `portador` atualizados em sincronia |
+
+### Integridade e Limites
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 11 | Selecione 0 transações e tente clicar em "👤 Aplicar" | Botão desabilitado — ação bloqueada |
+| 12 | Selecione transações de despesas e receitas simultaneamente | Batch atualiza ambas as coleções corretamente |
+| 13 | Dashboard e filtros de despesas após a atualização | Totais e filtros por responsável refletem o novo valor |
+
+---
+
+*Guia gerado em 2026-03-08 | atualizado 2026-03-27 (RF-019 a RF-023 + NRF-009 v3.3.0) | versão v3.3.0*

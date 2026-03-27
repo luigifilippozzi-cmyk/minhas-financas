@@ -389,7 +389,7 @@
     <div id="tab-gerenciar" class="base-tab-content hidden">
       <div class="card imp-card">
         <h3 class="imp-step-titulo">🗂️ Todas as Transações</h3>
-        <p class="imp-step-desc">Filtre, selecione e exclua transações em lote.</p>
+        <p class="imp-step-desc">Filtre, selecione e gerencie transações em lote.</p>
 
         <!-- Filtros -->
         <div class="ger-filtros">
@@ -408,10 +408,14 @@
           <select id="ger-fil-cat" class="select-input ger-fil-select">
             <option value="">Todas as categorias</option>
           </select>
+          <!-- RF-023: filtro por responsável -->
+          <select id="ger-fil-resp" class="select-input ger-fil-select">
+            <option value="">Todos os responsáveis</option>
+          </select>
           <button id="ger-btn-carregar" class="btn btn-primary btn-sm">🔍 Carregar</button>
         </div>
 
-        <!-- Ações em lote -->
+        <!-- Ações em lote — RF-023: inclui alteração de responsável -->
         <div class="ger-acoes-lote hidden" id="ger-acoes-lote">
           <label class="ger-sel-todos-label">
             <input type="checkbox" id="ger-chk-todos" />
@@ -420,6 +424,13 @@
           <span class="ger-contagem" id="ger-contagem">0 selecionados</span>
           <button id="ger-btn-excluir" class="btn btn-sm ger-btn-excluir" disabled>
             🗑️ Excluir selecionados
+          </button>
+          <span style="margin-left:.5rem;border-left:1px solid var(--border);padding-left:.75rem;font-size:.85rem;font-weight:600;color:var(--text-muted);">Responsável:</span>
+          <select id="ger-sel-resp" class="select-input" style="width:auto;font-size:.85rem;padding:.25rem .5rem;">
+            <option value="">— selecione —</option>
+          </select>
+          <button id="ger-btn-resp" class="btn btn-outline btn-sm" disabled title="Aplicar responsável selecionado a todas as transações marcadas">
+            👤 Aplicar
           </button>
         </div>
 

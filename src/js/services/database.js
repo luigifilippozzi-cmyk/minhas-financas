@@ -683,6 +683,23 @@ export async function buscarTodasTransacoes(grupoId) {
 }
 
 /**
+ * RF-023: Atualiza responsavel + portador em lote para uma lista de { id, colecao }.
+ * Executa em batches de 500 (limite Firestore).
+ * @param {Array<{id:string, colecao:string}>} items
+ * @param {string} responsavel  — nome do membro válido do grupo
+ */
+export async function atualizarResponsavelEmMassa(items, responsavel) {
+  const BATCH = 500;
+  for (let i = 0; i < items.length; i += BATCH) {
+    const batch = writeBatch(db);
+    items.slice(i, i + BATCH).forEach(({ id, colecao }) => {
+      batch.update(doc(db, colecao, id), { responsavel, portador: responsavel });
+    });
+    await batch.commit();
+  }
+}
+
+/**
  * Exclui em lote uma lista de { id, colecao } em batches de 500.
  * @param {Array<{id:string, colecao:string}>} items
  */
