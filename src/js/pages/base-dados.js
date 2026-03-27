@@ -14,8 +14,9 @@ import {
   buscarTodasTransacoes,
   excluirEmMassa,
   purgeGrupoCompleto,
+  ouvirCategorias,
 } from '../services/database.js';
-import { formatarMoeda, formatarData } from '../utils/formatters.js';
+import { formatarMoeda, formatarData, escHTML } from '../utils/formatters.js';
 
 // ── Estado ─────────────────────────────────────────────────────
 let _grupoId   = null;
@@ -28,6 +29,8 @@ let _filtradas       = [];   // após aplicar filtros
 let _paginaAtual     = 0;
 const POR_PAGINA     = 50;
 let _selecionados    = new Set(); // ids selecionados
+let _categorias      = [];   // Bug 2: categorias do grupo para filtro e exibição
+let _unsubCats       = null;
 
 // ── Inicialização ───────────────────────────────────────────────
 onAuthChange(async (user) => {
@@ -50,6 +53,12 @@ onAuthChange(async (user) => {
     document.getElementById('btn-tab-limpeza')?.classList.remove('hidden');
   }
 
+  // Bug 2: escuta categorias para filtro e exibição na aba Gerenciar
+  _unsubCats = ouvirCategorias(_grupoId, (cats) => {
+    _categorias = cats.sort((a, b) => a.nome.localeCompare(b.nome));
+    preencherFiltrosCategorias();
+  });
+
   configurarTabs();
   configurarGerenciar();
   configurarLimpeza();
@@ -71,8 +80,8 @@ function configurarTabs() {
       document.querySelectorAll('.base-tab-content').forEach(el => el.classList.add('hidden'));
       document.getElementById(`tab-${tab}`)?.classList.remove('hidden');
 
-      // Carregar dados ao entrar na aba Gerenciar
-      if (tab === 'gerenciar' && _todasTransacoes.length === 0) {
+      // Issue 7: sempre recarrega ao entrar em Gerenciar para refletir novas importações
+      if (tab === 'gerenciar') {
         carregarTransacoes();
       }
     });
@@ -176,13 +185,13 @@ function preencherFiltrosMeses() {
 function preencherFiltrosCategorias() {
   const sel = document.getElementById('ger-fil-cat');
   if (!sel) return;
-  const cats = [...new Set(_todasTransacoes.map(t => t.categoria).filter(Boolean))].sort();
+  // Bug 2: usa categorias do grupo (categoriaId como value, nome para exibição)
   const atual = sel.value;
   sel.innerHTML = '<option value="">Todas as categorias</option>';
-  cats.forEach(cat => {
+  _categorias.forEach(cat => {
     const opt = document.createElement('option');
-    opt.value = cat;
-    opt.textContent = cat;
+    opt.value = cat.id;
+    opt.textContent = `${cat.emoji ?? ''} ${cat.nome}`.trim();
     sel.appendChild(opt);
   });
   if (atual) sel.value = atual;
@@ -200,7 +209,7 @@ function aplicarFiltros() {
       else if (tipo === 'receita' && t._tipo !== 'receita') return false;
       else if (tipo === 'despesa' && (t._tipo !== 'despesa' || t.tipo === 'projecao')) return false;
     }
-    if (cat && t.categoria !== cat) return false;
+    if (cat && t.categoriaId !== cat) return false;  // Bug 2: comparar por categoriaId
     if (mes || ano) {
       const d = t.data?.toDate ? t.data.toDate() : new Date(t.data);
       if (isNaN(d)) return false;
@@ -254,18 +263,20 @@ function renderizarPagina() {
       const valorStr = formatarMoeda(t.valor ?? 0);
       const tipoLabel = _tipoLabel(t);
       const tipoClass = _tipoClass(t);
-      const desc = t.descricao ?? t.estabelecimento ?? '—';
-      const cat  = t.categoria ?? '—';
-      const resp = t.responsavel ?? t.portador ?? '—';
+      const desc    = t.descricao ?? t.estabelecimento ?? '—';
+      // Bug 2: exibe nome da categoria em vez do ID
+      const catObj  = _categorias.find(c => c.id === t.categoriaId);
+      const catNome = catObj ? `${catObj.emoji ?? ''} ${catObj.nome}`.trim() : (t.categoriaId ?? '—');
+      const resp    = t.responsavel ?? t.portador ?? '—';
 
       tr.innerHTML = `
         <td><input type="checkbox" class="ger-row-chk" data-id="${t.id}" data-colecao="${colecao}" ${checked} /></td>
         <td style="white-space:nowrap;">${dataStr}</td>
-        <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${desc}">${desc}</td>
+        <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escHTML(desc)}">${escHTML(desc)}</td>
         <td style="text-align:right;font-weight:600;">${valorStr}</td>
         <td><span class="ger-tipo-badge ${tipoClass}">${tipoLabel}</span></td>
-        <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${cat}</td>
-        <td style="max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${resp}</td>
+        <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(catNome)}</td>
+        <td style="max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(resp)}</td>
       `;
 
       tr.querySelector('.ger-row-chk')?.addEventListener('change', (e) => {
@@ -344,10 +355,13 @@ async function confirmarExclusao() {
   try {
     await excluirEmMassa(items);
     fecharModalExclusao();
+    // Bug 3: usa chave coleção::id para evitar remoção incorreta por ID coincidente
+    const deletedKeys = new Set(items.map(i => `${i.colecao}::${i.id}`));
     _selecionados.clear();
-    // Remover do cache local
-    const deletedIds = new Set(items.map(i => i.id));
-    _todasTransacoes = _todasTransacoes.filter(t => !deletedIds.has(t.id));
+    _todasTransacoes = _todasTransacoes.filter(t => {
+      const col = t._tipo === 'receita' ? 'receitas' : 'despesas';
+      return !deletedKeys.has(`${col}::${t.id}`);
+    });
     aplicarFiltros();
   } catch (e) {
     console.error('Erro ao excluir em massa:', e);

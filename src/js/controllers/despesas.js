@@ -12,7 +12,7 @@ import {
   ouvirDespesas,
 } from '../services/database.js';
 import { criarDespesa as modelDespesa } from '../models/Despesa.js';
-import { formatarMoeda, formatarData } from '../utils/formatters.js';
+import { formatarMoeda, formatarData, escHTML } from '../utils/formatters.js';
 
 let _unsubscribeDespesas = null;
 
@@ -140,14 +140,14 @@ export function renderizarListaDespesas(
 
   lista.innerHTML = despesas.map((d) => {
     const cat = catMap[d.categoriaId];
-    const catLabel = cat ? `${cat.emoji} ${cat.nome}` : (d.categoriaId ?? '—');
+    const catLabel = cat ? `${escHTML(cat.emoji ?? '')} ${escHTML(cat.nome)}`.trim() : escHTML(d.categoriaId ?? '—');
     const catCor   = cat?.cor ?? '#6c757d';
 
     return `
     <div class="despesa-item card">
       <div class="despesa-left">
         <span class="despesa-cat-badge" style="background:${catCor}22; color:${catCor};">${catLabel}</span>
-        <span class="despesa-descricao">${d.descricao}</span>
+        <span class="despesa-descricao">${escHTML(d.descricao)}</span>
         <span class="despesa-data">${formatarData(d.data)}</span>
       </div>
       <div class="despesa-right">

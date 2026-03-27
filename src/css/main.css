@@ -311,6 +311,8 @@ a:hover { text-decoration: underline; }
 .imp-chip--dup  .imp-chip-label, .imp-chip--dup  .imp-chip-valor { color: #f57f17; }
 .imp-chip--proj { background: #f3e5f5; border-color: #ab47bc; }
 .imp-chip--proj .imp-chip-label, .imp-chip--proj .imp-chip-valor { color: #6a1b9a; }
+.imp-chip--fuzzy { background: #e0f7fa; border-color: #4dd0e1; }
+.imp-chip--fuzzy .imp-chip-label, .imp-chip--fuzzy .imp-chip-valor { color: #00838f; }
 .imp-row-dup { background: #fffde7 !important; }
 .imp-row-dup td { opacity: .8; }
 .imp-badge-proj { display: block; font-size: .68rem; font-weight: 600; color: #7b1fa2; background: #f3e5f5; border-radius: 4px; padding: .05rem .3rem; margin-top: .15rem; white-space: nowrap; }

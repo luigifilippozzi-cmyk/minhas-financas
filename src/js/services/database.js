@@ -311,6 +311,8 @@ export async function purgarDuplicatasDespesas(grupoId, dryRun = false) {
   });
 
   let encontradas = 0, deletadas = 0;
+  // Bug 5: coleta todos os docs a deletar, depois usa writeBatch em lotes de 500
+  const paraDeletear = [];
   for (const [, docs] of grupos) {
     if (docs.length <= 1) continue;
     encontradas += docs.length - 1;
@@ -321,10 +323,16 @@ export async function purgarDuplicatasDespesas(grupoId, dryRun = false) {
         const tb = b.data().dataCriacao?.toMillis?.() ?? b.data().data?.toDate?.()?.getTime?.() ?? 0;
         return ta - tb;
       });
-      for (let i = 1; i < docs.length; i++) {
-        await deleteDoc(docs[i].ref);
-        deletadas++;
-      }
+      for (let i = 1; i < docs.length; i++) paraDeletear.push(docs[i].ref);
+    }
+  }
+  if (paraDeletear.length) {
+    const BATCH = 500;
+    for (let i = 0; i < paraDeletear.length; i += BATCH) {
+      const batch = writeBatch(db);
+      paraDeletear.slice(i, i + BATCH).forEach(ref => batch.delete(ref));
+      await batch.commit();
+      deletadas += Math.min(BATCH, paraDeletear.length - i);
     }
   }
   return { total: snap.docs.length, encontradas, deletadas };
@@ -349,6 +357,8 @@ export async function purgarDuplicatasReceitas(grupoId, dryRun = false) {
   });
 
   let encontradas = 0, deletadas = 0;
+  // Bug 5: coleta todos os docs a deletar, depois usa writeBatch em lotes de 500
+  const paraDeletear = [];
   for (const [, docs] of grupos) {
     if (docs.length <= 1) continue;
     encontradas += docs.length - 1;
@@ -358,10 +368,16 @@ export async function purgarDuplicatasReceitas(grupoId, dryRun = false) {
         const tb = b.data().dataCriacao?.toMillis?.() ?? b.data().data?.toDate?.()?.getTime?.() ?? 0;
         return ta - tb;
       });
-      for (let i = 1; i < docs.length; i++) {
-        await deleteDoc(docs[i].ref);
-        deletadas++;
-      }
+      for (let i = 1; i < docs.length; i++) paraDeletear.push(docs[i].ref);
+    }
+  }
+  if (paraDeletear.length) {
+    const BATCH = 500;
+    for (let i = 0; i < paraDeletear.length; i += BATCH) {
+      const batch = writeBatch(db);
+      paraDeletear.slice(i, i + BATCH).forEach(ref => batch.delete(ref));
+      await batch.commit();
+      deletadas += Math.min(BATCH, paraDeletear.length - i);
     }
   }
   return { total: snap.docs.length, encontradas, deletadas };
@@ -660,9 +676,9 @@ export async function buscarTodasTransacoes(grupoId) {
 
   // Merge e ordena por data desc
   return [...despesas, ...receitas].sort((a, b) => {
-    const da = a.data?.toDate?.() ?? new Date(a.data);
-    const db_ = b.data?.toDate?.() ?? new Date(b.data);
-    return db_ - da;
+    const da    = a.data?.toDate?.() ?? new Date(a.data);
+    const dateB = b.data?.toDate?.() ?? new Date(b.data);
+    return dateB - da;
   });
 }
 
