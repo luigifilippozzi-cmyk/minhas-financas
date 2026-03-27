@@ -23,6 +23,7 @@ export function modelReceita(dados) {
     'origem',       // NRF-006: 'importacao' | 'manual'
     'chave_dedup',  // NRF-006: deduplicação
     'importadoEm',  // NRF-006: timestamp de importação
+    'origemBanco',  // RF-021: banco/emissor detectado ('itau', 'nubank', ...)
   ];
   opcionais.forEach((k) => { if (dados[k] !== undefined) obj[k] = dados[k]; });
   return obj;

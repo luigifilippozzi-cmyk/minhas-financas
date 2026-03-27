@@ -49,7 +49,9 @@ import { modelDespesa } from '../models/Despesa.js';
 import { modelReceita } from '../models/Receita.js';  // NRF-006
 import { formatarMoeda, formatarData } from '../utils/formatters.js';
 import { normalizarStr, similaridade } from '../utils/helpers.js';
-import { extrairTransacoesPDF } from '../utils/pdfParser.js';  // RF-020
+import { extrairTransacoesPDF } from '../utils/pdfParser.js';            // RF-020
+import { detectarOrigemArquivo } from '../utils/detectorOrigemArquivo.js'; // RF-021
+import { categorizarTransacao }  from '../utils/categorizer.js';           // RF-022
 
 // ── Estado ─────────────────────────────────────────────────────
 let _usuario = null;
@@ -71,6 +73,10 @@ let _chavesExistentesRec = new Set(); // NRF-006: dedup receitas (modo banco)
 // RF-020: estado específico de PDF
 let _origemPDF = false;         // true quando o arquivo carregado é PDF
 let _sinaisInvertidos = false;  // toggle: inverte a convenção de sinal do banco
+// RF-021: origem detectada
+let _origemBanco  = 'desconhecido'; // slug do banco ('itau', 'nubank', ...)
+let _origemLabel  = '';             // nome de exibição ('Itaú', 'Nubank', ...)
+let _origemEmoji  = '';             // emoji ('🏦', '💜', ...)
 
 // ── Inicialização ───────────────────────────────────────────────
 onAuthChange(async (user) => {
@@ -206,9 +212,17 @@ async function processarArquivo(file) {
       if (!raw.length) { mostrarErroLeitura('Nenhuma transação encontrada no PDF. Verifique se é um extrato bancário com texto selecionável.'); return; }
       _linhas = parsearLinhasPDF(raw);
       if (!_linhas.length) { mostrarErroLeitura('Nenhuma linha válida extraída do PDF.'); return; }
+      // RF-021: detecta banco pelo nome do arquivo + descrições extraídas
+      const detPDF = detectarOrigemArquivo({ fileName: file.name, textLines: raw.map(r => r.desc) });
+      _origemBanco = detPDF.origem;
+      _origemLabel = detPDF.origemLabel;
+      _origemEmoji = detPDF.origemEmoji;
+      _recategorizarComOrigem();
       _aplicarTipo('banco');
       _atualizarUITipo();
       _atualizarUIInverterSinais(true);
+      _atualizarBancoBadge();
+      _autoSelecionarConta(_origemBanco);
       await marcarDuplicatas();
       mostrarArquivoSelecionado(file.name);
       renderizarPreview();
@@ -219,6 +233,9 @@ async function processarArquivo(file) {
   }
   _origemPDF = false;
   _sinaisInvertidos = false;
+  _origemBanco = 'desconhecido';
+  _origemLabel = '';
+  _origemEmoji = '';
   _atualizarUIInverterSinais(false);
   if (isCSV) {
     const reader = new FileReader();
@@ -227,10 +244,15 @@ async function processarArquivo(file) {
         const rows = parsearCSVTexto(e.target.result);
         _linhas = parsearLinhasExtrato(rows);
         if (!_linhas.length) { mostrarErroLeitura('Nenhuma transação encontrada. Verifique se o arquivo està no formato correto.'); return; }
-        const det1 = detectarTipoExtrato(rows);
+        // RF-021: detecta tipo + banco
+        const det1 = detectarOrigemArquivo({ fileName: file.name, rows });
+        _origemBanco = det1.origem; _origemLabel = det1.origemLabel; _origemEmoji = det1.origemEmoji;
+        _recategorizarComOrigem();
         const tipo1 = det1.confianca === 'baixa' ? await _mostrarModalConfirmacaoTipo(det1) : det1.tipo;
         _aplicarTipo(tipo1);
         _atualizarUITipo();
+        _atualizarBancoBadge();
+        _autoSelecionarConta(_origemBanco);
         await marcarDuplicatas();
         mostrarArquivoSelecionado(file.name);
         renderizarPreview();
@@ -249,10 +271,15 @@ async function processarArquivo(file) {
       const rows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, dateNF: 'DD/MM/YYYY' });
       _linhas = parsearLinhasExtrato(rows);
       if (!_linhas.length) { mostrarErroLeitura('Nenhuma transação encontrada no arquivo.'); return; }
-      const det2 = detectarTipoExtrato(rows);
+      // RF-021: detecta tipo + banco
+      const det2 = detectarOrigemArquivo({ fileName: file.name, rows });
+      _origemBanco = det2.origem; _origemLabel = det2.origemLabel; _origemEmoji = det2.origemEmoji;
+      _recategorizarComOrigem();
       const tipo2 = det2.confianca === 'baixa' ? await _mostrarModalConfirmacaoTipo(det2) : det2.tipo;
       _aplicarTipo(tipo2);
       _atualizarUITipo();
+      _atualizarBancoBadge();
+      _autoSelecionarConta(_origemBanco);
       await marcarDuplicatas();
       mostrarArquivoSelecionado(file.name);
       renderizarPreview();
@@ -328,28 +355,6 @@ async function marcarDuplicatas() {
   });
 }
 
-// ── NRF-006: Detecta o tipo do extrato pelas colunas do cabeçalho ──
-// Retorna: { tipo: 'cartao'|'banco'|'receita'|'despesa', confianca: 'alta'|'baixa', colunas: string[] }
-// confianca 'baixa' → exibe modal de confirmação antes de prosseguir
-function detectarTipoExtrato(rows) {
-  const norm = s => String(s ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
-  for (let i = 0; i < Math.min(rows.length, 5); i++) {
-    const h     = rows[i].map(norm);
-    const hOrig = rows[i].map(c => String(c ?? '').trim()).filter(Boolean);
-    const temData      = h.some(c => c === 'data');
-    const temValor     = h.some(c => c === 'valor' || c.startsWith('valor'));
-    if (!temData || !temValor) continue;  // linha não é cabeçalho
-    const temPortador  = h.some(c => c.includes('portador') || c.includes('titular'));
-    const temParcela   = h.some(c => c === 'parcela');
-    const temCategoria = h.some(c => c.startsWith('categor'));
-    if (temPortador && temParcela)                   return { tipo: 'cartao',  confianca: 'alta',  colunas: hOrig };
-    if (temCategoria && !temPortador && !temParcela) return { tipo: 'receita', confianca: 'alta',  colunas: hOrig };
-    if (!temPortador && !temParcela)                 return { tipo: 'banco',   confianca: 'baixa', colunas: hOrig };
-    return { tipo: 'despesa', confianca: 'baixa', colunas: hOrig };
-  }
-  return { tipo: 'despesa', confianca: 'baixa', colunas: [] };
-}
-
 // ── NRF-006: Modal de confirmação de tipo (baixa confiança) ──────
 // Exibe modal com sugestão de tipo e permite alteração antes de prosseguir.
 // Retorna Promise<string> com o tipo confirmado pelo usuário.
@@ -416,6 +421,7 @@ function _atualizarUITipo() {
   document.getElementById('banco-hint').classList.toggle('hidden', _tipoExtrato !== 'banco');
   // RF-020: toggle de inversão de sinais só aparece em modo banco (e só quando relevante para PDF)
   _atualizarUIInverterSinais(_tipoExtrato === 'banco' && _origemPDF);
+  _atualizarBancoBadge(); // RF-021
   if (_tipoExtrato === 'cartao') {
     const inp = document.getElementById('inp-mes-fatura');
     if (!inp.value) {
@@ -436,6 +442,42 @@ function _atualizarUIInverterSinais(visivel) {
     if (chk) chk.checked = false;
     _sinaisInvertidos = false;
   }
+}
+
+// ── RF-021: Badge de banco/emissor identificado ──────────────────
+function _atualizarBancoBadge() {
+  const badge = document.getElementById('banco-detectado-badge');
+  if (!badge) return;
+  if (!_origemBanco || _origemBanco === 'desconhecido' || !_origemLabel) {
+    badge.classList.add('hidden');
+    return;
+  }
+  badge.textContent = `${_origemEmoji} ${_origemLabel} identificado automaticamente`;
+  badge.classList.remove('hidden');
+}
+
+// ── RF-021: Auto-seleciona conta quando banco é identificado ─────
+function _autoSelecionarConta(origemId) {
+  if (!origemId || origemId === 'desconhecido') return;
+  const sel = document.getElementById('sel-conta-global');
+  if (!sel || sel.value) return;   // usuário já selecionou — não sobrescrever
+  // inferirContaDaDescricao já tem keywords para os principais bancos
+  const contaId = inferirContaDaDescricao(origemId, _contas);
+  if (contaId) {
+    sel.value = contaId;
+    sel.dispatchEvent(new Event('change'));
+  }
+}
+
+// ── RF-022: Re-categoriza linhas com contexto de banco ───────────
+// Chamado após detectar origem para atualizar categorias já atribuídas.
+function _recategorizarComOrigem() {
+  if (!_origemBanco || _origemBanco === 'desconhecido') return;
+  _linhas.forEach((l) => {
+    if (l.erro) return;
+    const cat = categorizarTransacao(l.descricao, _origemBanco, _categorias, _mapaCategoriasHist);
+    if (cat) l.categoriaId = cat;
+  });
 }
 
 // ── RF-020: Converte resultado do pdfParser para _linhas ────────
@@ -809,34 +851,10 @@ function normalizarData(val) {
   return isNaN(d) ? null : d;
 }
 
-// ── Auto-mapeamento de categorias ───────────────────────────────
-function mapearCategoria(estab) {
-  if (!estab || !_categorias.length) return '';
-  const chaveHist = estab.toLowerCase().trim();
-  if (_mapaCategoriasHist[chaveHist]) {
-    const catExiste = _categorias.find(c => c.id === _mapaCategoriasHist[chaveHist]);
-    if (catExiste) return _mapaCategoriasHist[chaveHist];
-  }
-  const e = estab.toLowerCase();
-  const regras = [
-    { keys: ['mercado','supermercado','pao','padaria','hortifruti','feira','lemon','sams','açougue','boutique do pao'], cat: 'alimentação' },
-    { keys: ['restauran','rest ','lanche','burger','pizza','sushi','ifood','ifd*','acai','delivery','cafe ','coffee','bistrô'], cat: 'alimentação' },
-    { keys: ['uber','99*','taxi','cabify','combustivel','gasolina','posto ','shell','ipiranga','estacion'], cat: 'transporte' },
-    { keys: ['farmacia','drogaria','droga','raia','ultrafarma','panvel','medic','clinica','hospital','laborat','odonto','saude'], cat: 'saúde' },
-    { keys: ['netflix','spotify','disney','amazon prime','hbo','youtube','globoplay','cinema','teatro','show','ingresso'], cat: 'lazer' },
-    { keys: ['apple.com','google','icloud','microsoft','shopee','amazon','mercadolivre','aliexpress','temu','magazine'], cat: 'compras' },
-    { keys: ['escola','faculdade','curso','educacao','educação','duolingo','udemy','coursera'], cat: 'educação' },
-    { keys: ['luz','energia','agua','gás','gas','internet','telefone','tim ','vivo ','claro ','oi ','sabesp','cemig','enel','copel'], cat: 'moradia' },
-    { keys: ['pet','cobasi','patagrife','petlove','findet','nutricar','vet'], cat: 'pets' },
-    { keys: ['gympass','wellhub','academia','smartfit','bodytech','total pass'], cat: 'saúde' },
-  ];
-  for (const regra of regras) {
-    if (regra.keys.some(k => e.includes(k))) {
-      const cat = _categorias.find(c => c.nome.toLowerCase().includes(regra.cat) || regra.cat.includes(c.nome.toLowerCase()));
-      if (cat) return cat.id;
-    }
-  }
-  return '';
+// ── Auto-mapeamento de categorias (RF-022: delegado a categorizer.js) ──────
+// origem padrão: _origemBanco (detectado pelo RF-021)
+function mapearCategoria(estab, origem = _origemBanco) {
+  return categorizarTransacao(estab, origem, _categorias, _mapaCategoriasHist);
 }
 
 // ── Renderização da tabela de preview ───────────────────────────
@@ -1043,6 +1061,7 @@ async function executarImportacao() {
           data: l.data instanceof Date ? l.data : new Date(l.data),
           categoriaId: cat, contaId,
           origem: 'importacao', chave_dedup: l.chave_dedup, importadoEm: new Date(),
+          origemBanco: _origemBanco,  // RF-021/RF-022
         }));
         sucesso++;
         continue;
@@ -1060,6 +1079,7 @@ async function executarImportacao() {
         isConjunta: isConj, valorAlocado,
         contaId,  // NRF-004
         status: 'pago',
+        origemBanco: _origemBanco,  // RF-021/RF-022
         // NRF-002.1: salva data original quando parcelada teve data ajustada para mês da fatura
         ...(l.dataAjustada && l.dataOriginal ? {
           dataOriginal: l.dataOriginal instanceof Date ? l.dataOriginal : new Date(l.dataOriginal),
@@ -1207,9 +1227,13 @@ function resetarUpload() {
   _tipoExtrato = 'despesa';         // NRF-006
   _mesFatura   = '';                // NRF-002.1
   _chavesExistentesRec = new Set(); // NRF-006
-  _origemPDF       = false;         // RF-020
+  _origemPDF        = false;        // RF-020
   _sinaisInvertidos = false;        // RF-020
   _atualizarUIInverterSinais(false);
+  _origemBanco = 'desconhecido';    // RF-021
+  _origemLabel = '';
+  _origemEmoji = '';
+  _atualizarBancoBadge();
 }
 function resetarTudo() {
   resetarUpload();

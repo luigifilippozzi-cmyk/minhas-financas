@@ -399,9 +399,14 @@ export async function buscarMapaCategorias(grupoId) {
   const snap = await getDocs(q);
   const mapa = {};
   snap.docs.forEach((d) => {
-    const { descricao, categoriaId } = d.data();
+    const { descricao, categoriaId, origemBanco } = d.data();
     if (descricao && categoriaId) {
-      mapa[descricao.toLowerCase().trim()] = categoriaId;
+      const chave = descricao.toLowerCase().trim();
+      mapa[chave] = categoriaId;
+      // RF-022: índice origin-aware para categorização contextual
+      if (origemBanco && origemBanco !== 'desconhecido') {
+        mapa[chave + '|' + origemBanco] = categoriaId;
+      }
     }
   });
   return mapa;

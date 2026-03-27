@@ -28,6 +28,7 @@ export function modelDespesa(dados) {
     'tipo', 'chave_dedup', 'parcelamento_id', 'importadoEm', 'status',
     'contaId',      // NRF-004: conta/banco de origem
     'dataOriginal', // NRF-002.1: data original da compra (parceladas com data ajustada)
+    'origemBanco',  // RF-021: banco/emissor detectado ('itau', 'nubank', ...)
   ];
   opcionais.forEach((k) => { if (dados[k] !== undefined) obj[k] = dados[k]; });
   return obj;
