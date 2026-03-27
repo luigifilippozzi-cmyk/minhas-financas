@@ -34,6 +34,10 @@
 // • Toggle para inverter sinais (bancos que usam convenção oposta)
 // • Badge de confiança (alta/média/baixa) para linhas de PDF
 //
+// NRF-009 — Responsável por Transação:
+// • Banco: auto-atribui portador = displayName do usuário que faz o upload
+// • Cartão: seletor dropdown por linha + seletor em lote (membros do grupo)
+//
 // Módulos pipeline (RF-013):
 // • normalizadorTransacoes.js — parsing puro (CSV/XLSX)
 // • pipelineBanco.js          — extrato bancário + PDF
@@ -42,7 +46,7 @@
 // ============================================================
 import { onAuthChange, logout } from '../services/auth.js';
 import {
-  buscarPerfil, ouvirCategorias, ouvirContas,
+  buscarPerfil, buscarGrupo, ouvirCategorias, ouvirContas,
   criarDespesa as criarDespesaDB, excluirDespesa,
   buscarChavesDedup, buscarChavesDedupReceitas,   // NRF-006
   buscarMapaProjecoes, buscarMapaCategorias,
@@ -87,6 +91,8 @@ let _sinaisInvertidos = false;  // toggle: inverte a convenção de sinal do ban
 let _origemBanco  = 'desconhecido'; // slug do banco ('itau', 'nubank', ...)
 let _origemLabel  = '';             // nome de exibição ('Itaú', 'Nubank', ...)
 let _origemEmoji  = '';             // emoji ('🏦', '💜', ...)
+// Responsável por Transação
+let _nomesMembros = {};             // { uid: nome } — membros do grupo
 
 // ── Inicialização ───────────────────────────────────────────────
 onAuthChange(async (user) => {
@@ -97,6 +103,10 @@ onAuthChange(async (user) => {
   if (!perfil?.grupoId) { window.location.href = '../grupo.html'; return; }
   _grupoId = perfil.grupoId;
   document.getElementById('usuario-nome').textContent = perfil.nome ?? user.email;
+  // Carrega membros do grupo para seletor de responsável
+  const grupo = await buscarGrupo(_grupoId);
+  _nomesMembros = grupo?.nomesMembros ?? {};
+  preencherSelRespLote();
   _chavesExistentes   = await buscarChavesDedup(_grupoId);
   _projecaoDocMap     = await buscarMapaProjecoes(_grupoId);
   _mapaCategoriasHist = await buscarMapaCategorias(_grupoId);
@@ -152,6 +162,15 @@ function configurarEventos() {
     document.querySelectorAll('.sel-conta-linha').forEach((sel) => {
       sel.value = e.target.value;
       _linhas[+sel.dataset.idx].contaId = e.target.value;
+    });
+  });
+  // Responsável em lote: aplica a todas as linhas de cartão no preview
+  document.getElementById('sel-resp-lote')?.addEventListener('change', (e) => {
+    if (!e.target.value) return;
+    const nome = e.target.value;
+    document.querySelectorAll('.sel-resp-linha').forEach((sel) => {
+      sel.value = nome;
+      _linhas[+sel.dataset.idx].portador = nome;
     });
   });
   // NRF-004 + RF-019: quando o usuário muda a conta global, aplica a todas as linhas do preview
@@ -363,6 +382,9 @@ function _aplicarTipo(tipo) {
     if (_mesFatura) aplicarMesFatura(_linhas, _mesFatura); // pipelineCartao.js
   } else if (tipo === 'banco') {
     classificarBanco(_linhas, _sinaisInvertidos);           // pipelineBanco.js — RF-020
+    // Auto-assign responsável = usuário do upload (banco: não editável no preview)
+    const nomeUsuario = _usuario?.displayName ?? '';
+    if (nomeUsuario) _linhas.forEach(l => { if (!l.erro && !l.portador) l.portador = nomeUsuario; });
   } else if (tipo === 'receita') {
     _linhas.forEach((l) => { if (!l.erro) l.tipoLinha = 'receita'; });
   }
@@ -385,6 +407,9 @@ function _atualizarUITipo() {
   // RF-020: toggle de inversão de sinais só aparece em modo banco (e só quando relevante para PDF)
   _atualizarUIInverterSinais(_tipoExtrato === 'banco' && _origemPDF);
   _atualizarBancoBadge(); // RF-021
+  // Responsável em lote: só visível no modo cartão
+  const respWrap = document.getElementById('resp-lote-wrap');
+  if (respWrap) respWrap.classList.toggle('hidden', _tipoExtrato !== 'cartao');
   if (_tipoExtrato === 'cartao') {
     const inp = document.getElementById('inp-mes-fatura');
     if (!inp.value) {
@@ -579,9 +604,26 @@ function renderizarPreview() {
     } else {
       tdData.textContent = l.data ? formatarData(l.data) : '—';
     }
-    const tdEstab    = criarTd(l.descricao || '—');
-    const portCurto  = l.portador ? l.portador.split(' ').slice(0, 2).join(' ') : '—';
-    const tdPortador = criarTd(portCurto, '.82rem', 'var(--text-muted)');
+    const tdEstab = criarTd(l.descricao || '—');
+    // Portador: seletor editável em modo cartão; texto estático (auto-atribuído) nos demais
+    let tdPortador;
+    if (_tipoExtrato === 'cartao') {
+      tdPortador = document.createElement('td');
+      const selResp = document.createElement('select');
+      selResp.className = 'sel-resp-linha select-input';
+      selResp.style.cssText = 'font-size:.85rem;padding:.2rem .4rem;';
+      selResp.dataset.idx = l._idx;
+      const nomes = Object.values(_nomesMembros);
+      if (!nomes.length && _usuario?.displayName) nomes.push(_usuario.displayName);
+      selResp.innerHTML = '<option value="">— sem responsável —</option>' +
+        nomes.map(n => `<option value="${n}">${n}</option>`).join('');
+      selResp.value = l.portador ?? '';
+      selResp.addEventListener('change', (e) => { _linhas[l._idx].portador = e.target.value; });
+      tdPortador.appendChild(selResp);
+    } else {
+      const portCurto = l.portador ? l.portador.split(' ').slice(0, 2).join(' ') : '—';
+      tdPortador = criarTd(portCurto, '.82rem', 'var(--text-muted)');
+    }
     const parcelaInfo = parsearParcela(l.parcela);
     const tdParcela   = criarTd(l.parcela || '-', '.82rem', parcelaInfo ? '#1565c0' : 'var(--text-muted)');
     tdParcela.style.textAlign = 'center';
@@ -774,6 +816,7 @@ async function executarImportacao() {
           categoriaId: cat, contaId,
           origem: 'importacao', chave_dedup: l.chave_dedup, importadoEm: new Date(),
           origemBanco: _origemBanco,  // RF-021/RF-022
+          responsavel: l.portador ?? '',  // Auto-atribuído no pipeline bancário
         }));
         sucesso++;
         continue;
@@ -909,6 +952,16 @@ function atualizarDropdownsCategoria() {
     sel.value = atual || mapearCategoria(_linhas[idx]?.descricao ?? '');
   });
   preencherSelCatLote();
+}
+
+// Responsável — preenche seletor em lote com membros do grupo
+function preencherSelRespLote() {
+  const sel = document.getElementById('sel-resp-lote');
+  if (!sel) return;
+  const nomes = Object.values(_nomesMembros);
+  if (!nomes.length && _usuario?.displayName) nomes.push(_usuario.displayName);
+  sel.innerHTML = '<option value="">— manter individual —</option>' +
+    nomes.map(n => `<option value="${n}">${n}</option>`).join('');
 }
 
 // NRF-004: preenche todos os selects de conta (global, lote e por linha)
