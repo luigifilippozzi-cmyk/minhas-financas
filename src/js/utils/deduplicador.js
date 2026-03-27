@@ -4,6 +4,7 @@
 // ============================================================
 import { normalizarStr, similaridade } from './helpers.js';
 import { parsearParcela } from './normalizadorTransacoes.js';
+import { detectarAjustesParciais } from './ajusteDetector.js';  // NRF-002.2
 
 // Marca duplicatas e reconciliações em `linhas` (mutação in-place).
 // Mantém Firestore fora: o chamador fornece os conjuntos pré-buscados.
@@ -33,8 +34,14 @@ export function marcarLinhasDuplicatas(linhas, {
     }
   });
 
+  // NRF-002.2 — Fase 3: ajustes parciais de marketplace/supermercado (apenas extrato bancário)
+  if (tipoExtrato === 'banco') {
+    detectarAjustesParciais(linhas);
+    return;
+  }
+
   // NRF-002 — Fase 2: fuzzy matching (apenas para cartão/despesas com parcelas)
-  if (tipoExtrato === 'banco' || tipoExtrato === 'receita') return;
+  if (tipoExtrato === 'receita') return;
   linhas.forEach((l) => {
     if (l.duplicado || l.substitui_projecao || l.erro) return;
     const info = parsearParcela(l.parcela);

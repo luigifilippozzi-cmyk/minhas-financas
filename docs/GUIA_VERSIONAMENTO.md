@@ -57,6 +57,7 @@ Formato: `MAJOR.MINOR.PATCH` — ex: `v1.2.3`
 | v3.0.0 | 2026-03-26 | RF-013 Pipeline Unificado de Ingestão (4 módulos pipeline) |
 | v3.0.1 | 2026-03-26 | Correção de 8 bugs (BUG-001 a BUG-008) identificados em auditoria |
 | v3.0.2 | 2026-03-27 | Correção de 4 bugs (BUG-009 a BUG-012): parcelamento_id, chip erros, isNegativo, separador CSV |
+| v3.1.0 | 2026-03-27 | NRF-002.2 Ajustes parciais marketplace/supermercado (iFood, Mambo, etc.) |
 
 ### Próximas Versões (Backlog)
 

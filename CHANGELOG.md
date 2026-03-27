@@ -11,6 +11,28 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [3.1.0] - 2026-03-27
+
+### Adicionado — NRF-002.2: Detecção de Ajustes Parciais (Marketplace-Aware)
+
+Créditos de ajuste/desconto de marketplaces (iFood, Amazon, Shopee) e supermercados (Mambo, Carrefour, Pão de Açúcar) passam a ser reconhecidos como ajustes parciais, evitando falsos positivos de deduplicação e calculando o valor líquido correto.
+
+#### `src/js/utils/ajusteDetector.js` (novo)
+- `PADROES_ESTABELECIMENTO` — marketplaces, supermercados e delivery elegíveis
+- `classificarEstabelecimento(descricao)` — identifica tipo do estabelecimento por keywords
+- `detectarAjustesParciais(linhas, opts)` — detecta pares (despesa + crédito) por Levenshtein ≥ 72%, valor < despesa e janela de 7 dias; muta linhas in-place
+
+#### `src/js/utils/deduplicador.js`
+- Fase 3 (banco): chama `detectarAjustesParciais` antes de retornar
+
+#### `src/js/pages/importar.js`
+- Preview: `.imp-row-ajuste`, checkbox desmarcado, badge `↩ Ajuste`, valor tachado + líquido
+
+#### `src/css/main.css`
+- `.imp-row-ajuste` + `.imp-badge--ajuste` (tema laranja âmbar)
+
+---
+
 ## [3.0.2] - 2026-03-27
 
 ### Corrigido — BUG-009 a BUG-012

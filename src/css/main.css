@@ -319,6 +319,10 @@ a:hover { text-decoration: underline; }
 .imp-badge--dup { background: #fff8e1; color: #f57f17; border: 1px solid #ffe082; padding: .2rem .5rem; border-radius: 4px; font-size: .8rem; }
 .imp-row-subst { background: #e8f5e9 !important; }
 .imp-badge--subst { background: #2e7d32; color: #fff; border: 1px solid #1b5e20; padding: .2rem .5rem; border-radius: 4px; font-size: .78rem; font-weight: 600; white-space: nowrap; }
+/* NRF-002.2 — Ajuste parcial de marketplace/supermercado */
+.imp-row-ajuste { background: #fff3e0 !important; }
+.imp-row-ajuste td { opacity: .85; }
+.imp-badge--ajuste { background: #fff8e1; color: #e65100; border: 1px solid #ffcc02; padding: .2rem .5rem; border-radius: 4px; font-size: .78rem; font-weight: 600; white-space: nowrap; cursor: help; }
 
 /* ============================================================
    NRF-001 — Divisão Automática de Despesas Conjuntas

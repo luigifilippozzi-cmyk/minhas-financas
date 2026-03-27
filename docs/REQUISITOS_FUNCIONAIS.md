@@ -324,6 +324,37 @@ processarArquivo(file)
 - [x] `dataOriginal` salvo no Firestore e visível no preview
 - [x] Trocar mês de vencimento atualiza o preview em tempo real
 
+### NRF-002.2 — Detecção de Ajustes Parciais (Marketplace-Aware) — v3.1.0
+**Problema:** Créditos de ajuste/desconto de marketplaces (iFood, Mercado Livre) e supermercados (Mambo, Carrefour) apareciam no extrato com descrição muito similar à compra original, fazendo o sistema classific á-los como possíveis duplicatas. O valor correto da transação deveria ser o valor original subtraído do ajuste.
+
+#### Funcionalidades adicionadas
+
+| Funcionalidade | Descrição |
+|---|---|
+| **Detecção de ajuste parcial** | Par (despesa + crédito) com descrição similar (≥ 72% Levenshtein), valor do crédito < despesa e janela de 7 dias |
+| **Estabelecimentos elegíveis** | `PADROES_ESTABELECIMENTO`: marketplace (iFood, Amazon, Shopee…), supermercado (Mambo, Carrefour, Pão de Açúcar…), delivery (Rappi, Uber Eats…) |
+| **Valor líquido na despesa** | `valorLiquido = valorOriginal − valorAjuste`; exibido com valor original tachado no preview |
+| **Badge `↩ Ajuste`** | Linha de crédito recebe badge laranja com valor do ajuste; fica desmarcada por padrão |
+| **Fundo laranja suave** | Linha de ajuste com classe `.imp-row-ajuste` (fundo `#fff3e0`) para distinção visual |
+| **Sem interferência em fatura** | Lógica exclusiva do pipeline bancário — fatura de cartão não é afetada |
+
+#### Arquivos modificados (v3.1.0)
+| Arquivo | Alteração |
+|---|---|
+| `src/js/utils/ajusteDetector.js` | Novo módulo: `PADROES_ESTABELECIMENTO`, `classificarEstabelecimento()`, `detectarAjustesParciais()` |
+| `src/js/utils/deduplicador.js` | Import de `ajusteDetector`; Fase 3 para `tipoExtrato === 'banco'` |
+| `src/js/pages/importar.js` | Preview: classe `imp-row-ajuste`, badge `↩ Ajuste`, célula de valor com `valorLiquido` tachado, checkbox desmarcado |
+| `src/css/main.css` | `.imp-row-ajuste`, `.imp-badge--ajuste` |
+
+#### Critérios de Aceitação
+- [x] Crédito de iFood/Mercado Livre não é marcado como duplicata
+- [x] Crédito de Mambo/Carrefour não é marcado como duplicata
+- [x] `valorLiquido` exibido corretamente com valor original tachado
+- [x] Linha de ajuste desmarcada por padrão no preview
+- [x] Badge `↩ Ajuste` exibe o valor do crédito
+- [x] Nenhuma regressão no fluxo de fatura de cartão
+- [x] Créditos sem match em `PADROES_ESTABELECIMENTO` não são afetados
+
 ---
 
 ## NRF-003: Fluxo de Caixa — Visão Orçamentária Anual
