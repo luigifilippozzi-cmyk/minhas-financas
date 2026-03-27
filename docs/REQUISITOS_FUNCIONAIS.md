@@ -26,6 +26,7 @@
 | NRF-004 | Identificação de Conta/Banco por Transação | Alta | ✅ Implementado |
 | NRF-005 | Fatura do Cartão de Crédito | Alta | ✅ Implementado |
 | NRF-006 | Detecção Automática de Tipo de Extrato | Alta | ✅ Implementado |
+| NRF-007 | _(Reservado — não definido)_ | — | 🔲 N/A |
 | NRF-008 | Deduplicação de Transações | Alta | ✅ Implementado |
 | RF-019 | Correção: Preenchimento Automático de Conta/Banco no Preview | Alta | ✅ Implementado |
 | RF-020 | Classificação Automática por Sinal + Importação PDF | Alta | ✅ Implementado |

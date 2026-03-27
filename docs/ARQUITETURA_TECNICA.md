@@ -60,6 +60,7 @@ firestore/
 │   ├── chave_dedup: string | null       ← dedup key (RF-014 / NRF-008)
 │   ├── parcelamento_id: string | null   ← ref para parcelamentos/{id}
 │   ├── despesaRealId: string | null     ← id da despesa real (projecao_paga)
+│   ├── origemBanco: string | null       ← banco/emissor detectado (RF-021/RF-022)
 │   └── importadoEm: timestamp | null
 │
 ├── receitas/{receitaId}
@@ -73,6 +74,7 @@ firestore/
 │   ├── origem: 'importacao' | 'manual'
 │   ├── contaId: string | null           ← NRF-004
 │   ├── chave_dedup: string | null       ← NRF-008
+│   ├── origemBanco: string | null       ← RF-021/RF-022
 │   └── importadoEm: timestamp | null
 │
 ├── orcamentos/{grupoId_categoriaId_ano_mes}
@@ -186,11 +188,18 @@ src/
     │   ├── categorias.js       ← RF-003
     │   ├── fluxo-caixa.js      ← NRF-003: gráfico anual Chart.js
     │   ├── fatura.js           ← NRF-005: fechamento do cartão
-    │   ├── importar.js         ← RF-013 + RF-014 + NRF-002 + NRF-006 + NRF-008 (abas Importar + Duplicatas)
-    │   └── base-dados.js       ← RF-018: tab switching + Gerenciar (paginação/filtros/exclusão) + Limpeza (purge)
+    │   ├── importar.js         ← Orquestrador fino — RF-013/RF-014/NRF-002/NRF-006/NRF-008
+    │   ├── base-dados.js       ← RF-018: tab switching + Gerenciar + Limpeza (purge)
+    │   ├── pipelineBanco.js    ← RF-013/RF-020: parse extrato bancário CSV/XLSX/PDF; classificarBanco()
+    │   └── pipelineCartao.js   ← RF-013/RF-014: parse fatura; filtrarCreditos(); aplicarMesFatura(); gerarProjecoes()
     └── utils/
-        ├── formatters.js       ← formatarMoeda, formatarData, nomeMes
-        └── helpers.js          ← dataHoje, normalizarStr, similaridade (Levenshtein)
+        ├── formatters.js           ← formatarMoeda, formatarData, nomeMes, escHTML
+        ├── helpers.js              ← dataHoje, normalizarStr, similaridade (Levenshtein)
+        ├── normalizadorTransacoes.js ← RF-013: parsing puro CSV/XLSX; normalização; chave dedup; inferência conta
+        ├── deduplicador.js         ← RF-013: marcarLinhasDuplicatas() — matching exato + fuzzy (sem Firestore)
+        ├── categorizer.js          ← RF-022: categorizarTransacao() — por origem + histórico + palavras-chave
+        ├── detectorOrigemArquivo.js ← RF-021: detectarOrigemArquivo() — tipo (banco/cartão) + banco/emissor
+        └── bankFingerprintMap.js   ← RF-021: 15 bancos/emissores — filePatterns + keywords scoring
 ```
 
 ---

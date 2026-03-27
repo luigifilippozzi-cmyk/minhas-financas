@@ -54,7 +54,9 @@ Formato: `MAJOR.MINOR.PATCH` — ex: `v1.2.3`
 | v2.4.0 | 2026-03 | RF-020 Importação PDF + classificação automática por sinal |
 | v2.6.0 | 2026-03 | RF-021 Motor de detecção + identificação de banco/emissor |
 | v2.6.1 | 2026-03 | RF-022 Categorização inteligente sensível à origem (banco) |
-| v3.0.0 | 2026-03 | RF-013 Pipeline Unificado de Ingestão (4 módulos pipeline) |
+| v3.0.0 | 2026-03-26 | RF-013 Pipeline Unificado de Ingestão (4 módulos pipeline) |
+| v3.0.1 | 2026-03-26 | Correção de 8 bugs (BUG-001 a BUG-008) identificados em auditoria |
+| v3.0.2 | 2026-03-27 | Correção de 4 bugs (BUG-009 a BUG-012): parcelamento_id, chip erros, isNegativo, separador CSV |
 
 ### Próximas Versões (Backlog)
 
