@@ -62,6 +62,7 @@ Formato: `MAJOR.MINOR.PATCH` — ex: `v1.2.3`
 | v3.3.0 | 2026-03-27 | RF-023 Edição em massa de responsável na aba Gerenciar |
 | v3.4.0 | 2026-03-27 | NRF-010 Portador "Conjunto" no upload de fatura de cartão |
 | v3.5.0 | 2026-03-27 | BUG-017 + BUG-018: NRF-002.2 ajustes parciais inoperante — fix crítico |
+| v3.6.0 | 2026-03-27 | BUG-013 a BUG-016: estornos, escala decimal, última parcela, refinanciamento + TD-002 + TD-007 |
 
 ### Próximas Versões (Backlog)
 

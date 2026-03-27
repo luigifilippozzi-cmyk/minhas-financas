@@ -67,7 +67,7 @@ export function parsearLinhasCSVXLSX(rows, {
       || inferirContaDaDescricao(estab, contas);
     if (!dataRaw && !estab && !valorRaw) continue;
     const estabLow = estab.toLowerCase();
-    if (/pagamento de fatura|inclusao de pagamento|inclusão de pagamento|parcela de fatura rotativo|credito de refinanciamento/i.test(estabLow)) continue;
+    if (/pagamento de fatura|inclusao de pagamento|inclusão de pagamento|parcela de fatura rotativo/i.test(estabLow)) continue; // BUG-016: removido 'credito de refinanciamento' — é transação legítima
     const valorBruto = normalizarValorXP(valorRaw);
     const valor = Math.abs(valorBruto);
     const isNegativo = valorBruto < 0;  // BUG-011: true = valor negativo (crédito/estorno em fatura)
@@ -92,10 +92,23 @@ export function parsearLinhasCSVXLSX(rows, {
 }
 
 // ── Normalização de valor XP: "R$ 1.290,00" → 1290.00 ─────────
+// BUG-014: detecta convenção de separador decimal via posição do
+// último ponto vs última vírgula para evitar destruir casas decimais.
 export function normalizarValorXP(val) {
   if (val === null || val === undefined || val === '') return NaN;
   if (typeof val === 'number') return val;
-  const s = String(val).trim().replace(/R\$\s*/i, '').replace(/\./g, '').replace(',', '.');
+  let s = String(val).trim().replace(/R\$\s*/i, '').replace(/\s/g, '');
+  const lastDot   = s.lastIndexOf('.');
+  const lastComma = s.lastIndexOf(',');
+  if (lastComma > lastDot) {
+    // Convenção BR: ponto = milhar, vírgula = decimal  →  "1.290,00"
+    s = s.replace(/\./g, '').replace(',', '.');
+  } else if (lastDot > lastComma) {
+    // Convenção US/XP: vírgula = milhar, ponto = decimal  →  "1,290.00"
+    s = s.replace(/,/g, '');
+  }
+  // Se só tem vírgula (sem ponto), trata como decimal BR  →  "1290,00"
+  if (lastComma >= 0 && lastDot < 0) s = s.replace(',', '.');
   return parseFloat(s);
 }
 
@@ -132,7 +145,7 @@ export function parsearParcela(str) {
   if (!m) return null;
   const atual = parseInt(m[1], 10);
   const total = parseInt(m[2], 10);
-  if (atual >= total || total <= 0 || atual <= 0) return null;
+  if (atual > total || total <= 0 || atual <= 0) return null; // BUG-015: >= excluía última parcela (ex: 12/12)
   return { atual, total };
 }
 
