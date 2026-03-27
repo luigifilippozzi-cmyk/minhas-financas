@@ -564,10 +564,11 @@ function renderizarPreview() {
     if (l.duplicado)               tr.classList.add('imp-row-dup');
     if (l.substitui_projecao)      tr.classList.add('imp-row-subst');
     if (l.substitui_projecao_fuzzy) tr.classList.add('imp-row-fuzzy');  // NRF-002
+    if (l.ajuste_parcial)          tr.classList.add('imp-row-ajuste');  // NRF-002.2
     const tdChk = document.createElement('td');
     const chk   = document.createElement('input');
     chk.type = 'checkbox'; chk.className = 'chk-linha'; chk.dataset.idx = l._idx;
-    chk.checked = !l.erro && !l.duplicado;
+    chk.checked = !l.erro && !l.duplicado && !l.ajuste_parcial;  // NRF-002.2: ajustes desmarcados
     chk.addEventListener('change', () => atualizarChipsPreview());
     tdChk.appendChild(chk);
     // NRF-002.1: mostra data ajustada (mês da fatura) com indicador visual para parceladas
@@ -593,10 +594,18 @@ function renderizarPreview() {
       tip.title = 'Gerará ' + qtdProj + ' parcela(s) futura(s) projetada(s)';
       tdParcela.appendChild(tip);
     }
-    const tdVal = criarTd(isNaN(l.valor) ? '—' : formatarMoeda(l.valor));
+    const tdVal = document.createElement('td');
     tdVal.style.textAlign = 'right'; tdVal.style.fontWeight = '600';
-    // NRF-006: receitas do extrato bancário em verde, despesas em vermelho
-    if (!isNaN(l.valor)) tdVal.style.color = (l.tipoLinha === 'receita') ? 'var(--success, #166534)' : 'var(--danger)';
+    // NRF-002.2: se há valor líquido (ajuste parcial aplicado), mostra tachado + líquido
+    if (l.valorLiquido != null) {
+      tdVal.innerHTML = `<span style="text-decoration:line-through;opacity:.45;font-size:.78rem;">${formatarMoeda(l.valor)}</span>`
+        + `<br><span style="color:var(--danger);">${formatarMoeda(l.valorLiquido)}</span>`;
+      tdVal.title = `Valor original: ${formatarMoeda(l.valor)}\nAjuste: −${formatarMoeda(l.valorAjustado)}\nValor líquido: ${formatarMoeda(l.valorLiquido)}`;
+    } else {
+      tdVal.textContent = isNaN(l.valor) ? '—' : formatarMoeda(l.valor);
+      // NRF-006: receitas do extrato bancário em verde, despesas em vermelho
+      if (!isNaN(l.valor)) tdVal.style.color = (l.tipoLinha === 'receita') ? 'var(--success, #166534)' : 'var(--danger)';
+    }
     const tdCat  = document.createElement('td');
     const selCat = document.createElement('select');
     selCat.className = 'sel-cat-linha select-input';
@@ -631,6 +640,9 @@ function renderizarPreview() {
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--fuzzy" title="Reconciliação fuzzy — similaridade ' + l.projecao_sim + '% com parcela projetada' + chaveInfo + '">🔍 ' + l.projecao_sim + '%</span>';
     } else if (l.substitui_projecao) {
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--subst" title="Substitui parcela projetada — será marcada como paga' + chaveInfo + '">🔄 Real</span>';
+    } else if (l.ajuste_parcial) {
+      // NRF-002.2: crédito identificado como ajuste parcial de marketplace/supermercado
+      tdStatus.innerHTML = '<span class="imp-badge imp-badge--ajuste" title="Ajuste parcial — reduz o valor da compra vinculada (' + l.ajuste_sim + '% similar)" >↩ ' + formatarMoeda(l.valor) + '</span>';
     } else if (l.duplicado) {
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--dup" title="Já importado anteriormente' + chaveInfo + '">🔄</span>';
     } else if (l.erro) {
