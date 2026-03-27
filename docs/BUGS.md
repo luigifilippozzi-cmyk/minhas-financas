@@ -371,6 +371,75 @@ Substituir por classes CSS (ex: `.imp-td-valor`, `.imp-td-erro`, `.imp-td-credit
 
 ---
 
+---
+
+### BUG-013 — NRF-002.2: Despesa com ajuste parcial salva pelo valor bruto
+**Severidade:** 🔴 Crítico
+**Versão introduzida:** v3.1.0
+**Versão corrigida:** v3.5.0
+**Arquivo:** `src/js/pages/importar.js`
+
+**Descrição:**
+Quando `detectarAjustesParciais` marcava uma despesa com `valorLiquido` (valor após desconto), o preview exibia o valor correto (tachado + líquido), mas o save usava `l.valor` (bruto original) para criar a despesa no Firestore. O ajuste era visível na UI mas completamente ignorado na persistência.
+
+**Código problemático:**
+```javascript
+const despesaRef = await criarDespesaDB(modelDespesa({
+  descricao: l.descricao, valor: l.valor, ...  // ← sempre bruto
+}));
+```
+
+**Impacto:**
+Despesa salva no Firestore com valor original (ex: R$100), ignorando o desconto de R$10 — o valor líquido correto (R$90) nunca era persistido. Saldo e totais ficavam incorretos.
+
+**Correção aplicada:**
+```javascript
+const valorBase = l.valorLiquido ?? l.valor;  // usa líquido se disponível
+const despesaRef = await criarDespesaDB(modelDespesa({
+  descricao: l.descricao, valor: valorBase, ...
+}));
+// valorAlocado (conjunto) usa valorBase; projeções usam l.valor (sem ajuste)
+```
+
+---
+
+### BUG-014 — NRF-002.2: Detector de ajustes usa Levenshtein full-string — nenhum par detectado
+**Severidade:** 🔴 Crítico
+**Versão introduzida:** v3.1.0
+**Versão corrigida:** v3.5.0
+**Arquivo:** `src/js/utils/ajusteDetector.js`
+
+**Descrição:**
+O detector comparava as descrições completas de crédito e despesa com Levenshtein (threshold 0.72). Em extratos bancários reais, a descrição do crédito/cashback raramente se parece com a descrição da despesa original:
+- Despesa: `"IFOOD *RESTAURANTE ABC 01/11"`
+- Crédito: `"IFOOD CREDITO"` ou `"PIX RECEBIDO IFOOD"`
+
+Similaridade calculada: ~0.25–0.35 → sempre abaixo do threshold → **nenhum par era detectado**, tornando a funcionalidade inteira inoperante.
+
+**Código problemático:**
+```javascript
+const sim = similaridade(normCred, normalizarStr(desp.descricao));
+if (sim < simMinima) continue;  // simMinima = 0.72 — nunca passava
+```
+
+**Impacto:**
+NRF-002.2 completamente inoperante. Nenhuma linha de crédito era marcada como `ajuste_parcial`, nenhuma despesa recebia `valorLiquido`.
+
+**Correção aplicada:**
+Substituído Levenshtein por verificação de **keyword compartilhada**: extrai o padrão que identificou o estabelecimento no crédito (ex: `'IFOOD'`) e verifica se a despesa candidata contém o mesmo padrão. Levenshtein mantido apenas como critério de desempate entre múltiplas despesas candidatas.
+
+```javascript
+// Extrai keyword que identificou o crédito
+const keyword = PADROES_ESTABELECIMENTO[tipoEst].find(p => normCredUpper.includes(p));
+// Despesa deve conter a mesma keyword
+if (!normDespUpper.includes(keyword)) continue;
+// Levenshtein apenas para desempate (sem threshold gate)
+const sim = similaridade(normCred, normalizarStr(desp.descricao));
+if (sim > melhorSim) { melhorSim = sim; melhorDesp = desp; }
+```
+
+---
+
 ## Legenda de Severidade
 
 | Ícone | Nível | Critério |
