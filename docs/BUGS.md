@@ -315,6 +315,99 @@ if (headerIdx < 0 && rows.some(r => r.length === 1 && String(r[0] ?? '').include
 
 ---
 
+### BUG-013 — Exclusão indevida de estornos/créditos na importação de faturas
+**Severidade:** 🔴 Crítico
+**Versão introduzida:** v3.0.0 (RF-013)
+**Versão corrigida:** pendente
+**Arquivo:** `src/js/pages/pipelineCartao.js`
+
+**Descrição:**
+A função `filtrarCreditos` marca automaticamente qualquer transação com valor negativo (`isNegativo = true`) como erro, impedindo sua importação. Isso bloqueia estornos legítimos de compras que aparecem na fatura do cartão.
+
+**Código problemático:**
+```javascript
+export function filtrarCreditos(linhas) {
+  linhas.forEach((l) => {
+    if (l.isNegativo && !l.erro) l.erro = 'Crédito/estorno — não importado';
+  });
+}
+```
+
+**Impacto:**
+Estornos e créditos legítimos são ignorados durante a importação, resultando em um saldo de fatura incorreto na aplicação em comparação com a fatura real.
+
+**Correção sugerida:**
+Permitir a importação de estornos, possivelmente adicionando um toggle na UI para "Ignorar Créditos/Estornos" ou permitindo que o usuário categorize esses valores manualmente.
+
+---
+
+### BUG-014 — Erro de escala em valores com ponto decimal (multiplicação por 100)
+**Severidade:** 🔴 Crítico
+**Versão introduzida:** v3.0.0 (RF-013)
+**Versão corrigida:** pendente
+**Arquivo:** `src/js/utils/normalizadorTransacoes.js`
+
+**Descrição:**
+A função `normalizarValorXP` remove todos os pontos da string de valor antes de converter para número. Se o arquivo de entrada usar o ponto como separador decimal (ex: `208.17`), o valor é transformado em `20817`, resultando em uma escala 100x maior.
+
+**Código problemático:**
+```javascript
+const s = String(val).trim().replace(/R\$\s*/i, '').replace(/\./g, '').replace(',', '.');
+return parseFloat(s);
+```
+
+**Impacto:**
+Transações importadas de arquivos com formato decimal de ponto (comum em exportações internacionais ou CSVs específicos) ficam com valores irreais (ex: R$ 208,17 vira R$ 20.817,00).
+
+**Correção sugerida:**
+Implementar uma lógica que detecte se o ponto é separador de milhar ou decimal com base na posição e presença de outros separadores.
+
+---
+
+### BUG-015 — Parsing de parcelas ignora a última parcela da série
+**Severidade:** 🟠 Médio
+**Versão introduzida:** v3.0.0 (RF-013)
+**Versão corrigida:** pendente
+**Arquivo:** `src/js/utils/normalizadorTransacoes.js`
+
+**Descrição:**
+A função `parsearParcela` retorna `null` quando a parcela atual é igual ao total (ex: "12/12"). Isso impede que a última parcela seja reconhecida como parte de um parcelamento para fins de reconciliação ou metadados.
+
+**Código problemático:**
+```javascript
+if (atual >= total || total <= 0 || atual <= 0) return null;
+```
+
+**Impacto:**
+A última parcela de compras parceladas não é tratada corretamente pelo sistema de parcelamentos, podendo causar duplicidade ou falha na reconciliação com projeções existentes.
+
+**Correção sugerida:**
+Alterar a condição para `atual > total`.
+
+---
+
+### BUG-016 — Filtro de palavras-chave bloqueia transações legítimas de refinanciamento
+**Severidade:** 🟠 Médio
+**Versão introduzida:** v3.0.0 (RF-013)
+**Versão corrigida:** pendente
+**Arquivo:** `src/js/utils/normalizadorTransacoes.js`
+
+**Descrição:**
+O parser ignora silenciosamente qualquer linha que contenha "credito de refinanciamento". Isso impede a importação de juros de parcelamento de fatura ou refinanciamentos que o usuário pode desejar trackear como despesa financeira.
+
+**Código problemático:**
+```javascript
+if (/...|credito de refinanciamento/i.test(estabLow)) continue;
+```
+
+**Impacto:**
+Despesas financeiras legítimas são omitidas da importação sem aviso ao usuário.
+
+**Correção sugerida:**
+Remover o termo do filtro automático ou permitir que o usuário revise essas linhas no preview.
+
+---
+
 ---
 
 ## Dívida Técnica / Melhorias Pendentes
