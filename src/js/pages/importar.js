@@ -1,5 +1,5 @@
 // ============================================================
-// PAGE: Importar — RF-013 + RF-014 + NRF-002 + NRF-002.1 + NRF-008 + RF-020
+// PAGE: Importar — Orquestrador (RF-013 v3.0.0)
 // Importação de transações de cartão de crédito e extratos bancários.
 //
 // FORMATOS SUPORTADOS:
@@ -33,6 +33,12 @@
 // • Sinal do valor determina tipo: positivo=receita, negativo=despesa
 // • Toggle para inverter sinais (bancos que usam convenção oposta)
 // • Badge de confiança (alta/média/baixa) para linhas de PDF
+//
+// Módulos pipeline (RF-013):
+// • normalizadorTransacoes.js — parsing puro (CSV/XLSX)
+// • pipelineBanco.js          — extrato bancário + PDF
+// • pipelineCartao.js         — fatura de cartão + projeções
+// • deduplicador.js           — marcação de duplicatas (sem Firestore)
 // ============================================================
 import { onAuthChange, logout } from '../services/auth.js';
 import {
@@ -48,10 +54,14 @@ import {
 import { modelDespesa } from '../models/Despesa.js';
 import { modelReceita } from '../models/Receita.js';  // NRF-006
 import { formatarMoeda, formatarData } from '../utils/formatters.js';
-import { normalizarStr, similaridade } from '../utils/helpers.js';
-import { extrairTransacoesPDF } from '../utils/pdfParser.js';            // RF-020
-import { detectarOrigemArquivo } from '../utils/detectorOrigemArquivo.js'; // RF-021
-import { categorizarTransacao }  from '../utils/categorizer.js';           // RF-022
+import { extrairTransacoesPDF } from '../utils/pdfParser.js';              // RF-020
+import { detectarOrigemArquivo } from '../utils/detectorOrigemArquivo.js';     // RF-021
+import { categorizarTransacao }  from '../utils/categorizer.js';               // RF-022
+// RF-013: pipeline modules
+import { parsearCSVTexto, parsearLinhasCSVXLSX, parsearParcela, inferirContaDaDescricao } from '../utils/normalizadorTransacoes.js';
+import { marcarLinhasDuplicatas } from '../utils/deduplicador.js';
+import { parsearLinhasPDF, classificarBanco } from './pipelineBanco.js';
+import { filtrarCreditos, aplicarMesFatura, gerarProjecoes } from './pipelineCartao.js';
 
 // ── Estado ─────────────────────────────────────────────────────
 let _usuario = null;
@@ -171,7 +181,7 @@ function configurarEventos() {
   document.getElementById('inp-mes-fatura')?.addEventListener('change', (e) => {
     _mesFatura = e.target.value;
     if (_tipoExtrato === 'cartao' && _mesFatura && _linhas.length) {
-      aplicarMesFatura(_mesFatura);
+      aplicarMesFatura(_linhas, _mesFatura);
       renderizarPreview();
     }
   });
@@ -210,7 +220,8 @@ async function processarArquivo(file) {
     try {
       const raw = await extrairTransacoesPDF(file);
       if (!raw.length) { mostrarErroLeitura('Nenhuma transação encontrada no PDF. Verifique se é um extrato bancário com texto selecionável.'); return; }
-      _linhas = parsearLinhasPDF(raw);
+      const contaGlobal = document.getElementById('sel-conta-global')?.value ?? '';
+      _linhas = parsearLinhasPDF(raw, { contas: _contas, categorias: _categorias, mapaHist: _mapaCategoriasHist, origemBanco: 'desconhecido', contaGlobal });
       if (!_linhas.length) { mostrarErroLeitura('Nenhuma linha válida extraída do PDF.'); return; }
       // RF-021: detecta banco pelo nome do arquivo + descrições extraídas
       const detPDF = detectarOrigemArquivo({ fileName: file.name, textLines: raw.map(r => r.desc) });
@@ -242,7 +253,7 @@ async function processarArquivo(file) {
     reader.onload = async (e) => {
       try {
         const rows = parsearCSVTexto(e.target.result);
-        _linhas = parsearLinhasExtrato(rows);
+        _linhas = parsearLinhasCSVXLSX(rows, { contas: _contas, categorias: _categorias, mapaHist: _mapaCategoriasHist, origemBanco: 'desconhecido' });
         if (!_linhas.length) { mostrarErroLeitura('Nenhuma transação encontrada. Verifique se o arquivo està no formato correto.'); return; }
         // RF-021: detecta tipo + banco
         const det1 = detectarOrigemArquivo({ fileName: file.name, rows });
@@ -269,7 +280,7 @@ async function processarArquivo(file) {
       const name = wb.SheetNames.find(n => /transa/i.test(n)) ?? wb.SheetNames[0];
       const ws   = wb.Sheets[name];
       const rows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, dateNF: 'DD/MM/YYYY' });
-      _linhas = parsearLinhasExtrato(rows);
+      _linhas = parsearLinhasCSVXLSX(rows, { contas: _contas, categorias: _categorias, mapaHist: _mapaCategoriasHist, origemBanco: 'desconhecido' });
       if (!_linhas.length) { mostrarErroLeitura('Nenhuma transação encontrada no arquivo.'); return; }
       // RF-021: detecta tipo + banco
       const det2 = detectarOrigemArquivo({ fileName: file.name, rows });
@@ -303,55 +314,13 @@ async function marcarDuplicatas() {
     _projecoesDetalhadas = await buscarProjecoesDetalhadas(_grupoId);
   }
 
-  // Fase 1: matching exato por chave_dedup
-  _linhas.forEach((l) => {
-    if (!l.chave_dedup || l.erro) return;
-    // NRF-006: usa coleção correta conforme tipo da linha
-    const chavesRef = l.tipoLinha === 'receita' ? _chavesExistentesRec : _chavesExistentes;
-    if (_projecaoDocMap.has(l.chave_dedup) && l.tipoLinha !== 'receita') {
-      l.substitui_projecao = true;
-      l.duplicado = false;
-    } else if (chavesRef.has(l.chave_dedup)) {
-      l.duplicado = true;
-    }
-  });
-
-  // NRF-002 — Fase 2: fuzzy matching (apenas para cartão/despesas com parcelas)
-  if (_tipoExtrato === 'banco' || _tipoExtrato === 'receita') return;
-  _linhas.forEach((l) => {
-    if (l.duplicado || l.substitui_projecao || l.erro) return;
-    const info = parsearParcela(l.parcela);
-    if (!info) return;  // só parceladas
-    const estabL  = normalizarStr(l.descricao);
-    const portL   = normalizarStr(l.portador ?? '');
-    let melhorSim  = 0;
-    let melhorProj = null;
-    for (const proj of _projecoesDetalhadas) {
-      if (proj.status === 'pago' || proj.tipo === 'projecao_paga') continue;
-      const infoProj = parsearParcela(proj.parcela);
-      if (!infoProj) continue;
-      if (infoProj.atual !== info.atual || infoProj.total !== info.total) continue;
-      // Portador: exige match parcial pelo primeiro nome
-      if (l.portador && proj.portador) {
-        const portP    = normalizarStr(proj.portador);
-        const primeiroL = portL.split(' ')[0];
-        const primeiroP = portP.split(' ')[0];
-        if (primeiroL && primeiroP && primeiroL !== primeiroP) continue;
-      }
-      // Valor: ±1% ou ±R$ 0,50
-      const diff    = Math.abs((proj.valor ?? 0) - l.valor);
-      const pctDiff = l.valor > 0 ? diff / l.valor : 1;
-      if (pctDiff > 0.01 && diff > 0.50) continue;
-      // Estabelecimento: similaridade Levenshtein >= 0.85
-      const sim = similaridade(estabL, normalizarStr(proj.descricao ?? ''));
-      if (sim >= 0.85 && sim > melhorSim) { melhorSim = sim; melhorProj = proj; }
-    }
-    if (melhorProj) {
-      l.substitui_projecao_fuzzy = true;
-      l.projecao_id_fuzzy        = melhorProj.id;
-      l.projecao_sim             = Math.round(melhorSim * 100);
-      l.parcelamento_id_proj     = melhorProj.parcelamento_id ?? null;
-    }
+  // RF-013: delega marcação para deduplicador.js (sem Firestore)
+  marcarLinhasDuplicatas(_linhas, {
+    chavesDesp: _chavesExistentes,
+    chavesRec: _chavesExistentesRec,
+    projecaoDocMap: _projecaoDocMap,
+    projecoesDetalhadas: _projecoesDetalhadas,
+    tipoExtrato: _tipoExtrato,
   });
 }
 
@@ -390,16 +359,10 @@ function _aplicarTipo(tipo) {
     if (l.dataOriginal) l.data = l.dataOriginal instanceof Date ? l.dataOriginal : new Date(l.dataOriginal);
   });
   if (tipo === 'cartao') {
-    _linhas.forEach((l) => { if (l.isCredito && !l.erro) l.erro = 'Crédito/estorno — não importado'; });
-    if (_mesFatura) aplicarMesFatura(_mesFatura);
+    filtrarCreditos(_linhas);                               // pipelineCartao.js
+    if (_mesFatura) aplicarMesFatura(_linhas, _mesFatura); // pipelineCartao.js
   } else if (tipo === 'banco') {
-    // RF-020: _sinaisInvertidos troca a convenção (alguns bancos: positivo=despesa)
-    _linhas.forEach((l) => {
-      if (!l.erro) {
-        const isDebt = _sinaisInvertidos ? !l.isCredito : l.isCredito;
-        l.tipoLinha = isDebt ? 'despesa' : 'receita';
-      }
-    });
+    classificarBanco(_linhas, _sinaisInvertidos);           // pipelineBanco.js — RF-020
   } else if (tipo === 'receita') {
     _linhas.forEach((l) => { if (!l.erro) l.tipoLinha = 'receita'; });
   }
@@ -480,205 +443,6 @@ function _recategorizarComOrigem() {
   });
 }
 
-// ── RF-020: Converte resultado do pdfParser para _linhas ────────
-// raw: [{dataStr, desc, valor, confianca}]
-// valor negativo = débito (despesa), positivo = crédito (receita)
-function parsearLinhasPDF(raw) {
-  const contaGlobal = document.getElementById('sel-conta-global')?.value ?? '';
-  return raw.map((item, idx) => {
-    const data  = _normalizarDataPDF(item.dataStr);
-    const valor = Math.abs(item.valor);
-    const isCredito = item.valor < 0;  // negativo = débito = isCredito para compatibilidade com o pipeline
-    const erros = [];
-    if (!data)                         erros.push('Data inválida');
-    if (!item.desc || item.desc.length < 2) erros.push('Descrição vazia');
-    if (isNaN(valor) || valor <= 0)    erros.push('Valor inválido');
-    const chave = erros.length ? null : gerarChaveDedup(data, item.desc, valor, '', '-');
-    return {
-      _idx: idx,
-      data, dataOriginal: data,
-      descricao: item.desc, portador: '', parcela: '-', valor, isCredito,
-      categoriaId: mapearCategoria(item.desc),
-      contaId: contaGlobal || inferirContaDaDescricao(item.desc, _contas),
-      erro: erros.length ? erros.join(', ') : null,
-      _erroOriginal: erros.length ? erros.join(', ') : null,
-      chave_dedup: chave, duplicado: false, tipoLinha: null,
-      _confiancaPDF: item.confianca,   // 'alta' | 'media' | 'baixa'
-    };
-  });
-}
-
-// ── RF-020: Normaliza string de data do PDF para Date ───────────
-// Suporta: DD/MM/YYYY, DD/MM/YY, DD/MM, DD-MM-YYYY, DD.MM.YYYY
-function _normalizarDataPDF(dataStr) {
-  if (!dataStr) return null;
-  // Normaliza separadores para /
-  let s = dataStr.replace(/[-\.]/g, '/');
-  const parts = s.split('/');
-  if (parts.length === 2) {
-    // DD/MM → assume ano corrente
-    s = parts[0].padStart(2,'0') + '/' + parts[1].padStart(2,'0') + '/' + new Date().getFullYear();
-  } else if (parts.length === 3 && parts[2].length === 2) {
-    // DD/MM/YY → DD/MM/20YY
-    s = parts[0].padStart(2,'0') + '/' + parts[1].padStart(2,'0') + '/20' + parts[2];
-  }
-  return normalizarData(s);
-}
-
-// ── NRF-002.1: Ajusta datas de parceladas para o mês da fatura ──
-// Para à vista: mantém a data original do CSV.
-// Para parceladas: substitui por 01/mês-fatura.
-function aplicarMesFatura(mesFatura) {
-  if (!mesFatura || !_linhas.length) return;
-  const [ano, mes] = mesFatura.split('-').map(Number);
-  const dataFatura = new Date(ano, mes - 1, 1);
-  _linhas.forEach((l) => {
-    // Restaura data original antes de aplicar (permite trocar de mês)
-    l.data = l.dataOriginal instanceof Date ? l.dataOriginal : new Date(l.dataOriginal);
-    if (!l.erro && l.parcela && l.parcela !== '-') {
-      l.data = new Date(dataFatura);
-      l.dataAjustada = true;
-    } else {
-      l.dataAjustada = false;
-    }
-  });
-}
-
-// ── Parser CSV com separador ";" ────────────────────────────────
-function parsearCSVTexto(content) {
-  const texto = content.replace(/^\uFEFF/, '');
-  return texto.split(/\r?\n/).filter(l => l.trim()).map(l => l.split(';').map(c => c.trim()));
-}
-
-// ── Parser de linhas — layout do extrato bancário ───────────────
-function parsearLinhasExtrato(rows) {
-  if (!rows.length) return [];
-  let headerIdx = -1;
-  for (let i = 0; i < Math.min(rows.length, 10); i++) {
-    const r = rows[i].map(c => String(c ?? '').toLowerCase().trim());
-    if (r.some(c => c === 'data') && r.some(c => c.includes('estabelecimento') || c.includes('descri')) && r.some(c => c.includes('valor'))) {
-      headerIdx = i; break;
-    }
-  }
-  let idxData = 0, idxEstab = 1, idxPortador = 2, idxValor = 3, idxParcela = 4, idxConta = -1;
-  if (headerIdx >= 0) {
-    const h = rows[headerIdx].map(c => String(c ?? '').toLowerCase().trim());
-    idxData     = h.findIndex(c => c === 'data');
-    idxEstab    = h.findIndex(c => c.includes('estabelecimento') || c.includes('descri'));
-    idxPortador = h.findIndex(c => c.includes('portador') || c.includes('titular'));
-    idxValor    = h.findIndex(c => c.includes('valor'));
-    idxParcela  = h.findIndex(c => c.includes('parcela'));
-    idxConta    = h.findIndex(c => c.includes('conta') || c.includes('banco'));  // NRF-004
-    if (idxData < 0)     idxData = 0;
-    if (idxEstab < 0)    idxEstab = 1;
-    if (idxPortador < 0) idxPortador = 2;
-    if (idxValor < 0)    idxValor = 3;
-  }
-  const dataRows = headerIdx >= 0 ? rows.slice(headerIdx + 1) : rows.slice(1);
-  const resultado = [];
-  for (const row of dataRows) {
-    if (!row?.some(c => c)) continue;
-    const dataRaw  = String(row[idxData]     ?? '').trim();
-    const estab    = String(row[idxEstab]    ?? '').trim();
-    const portador = String(row[idxPortador] ?? '').trim();
-    const valorRaw = String(row[idxValor]    ?? '').trim();
-    // NRF-002.1: normaliza "X de Y" → "XX/YY" para compatibilidade com projeções
-    const parcela  = idxParcela >= 0 ? normalizarParcela(String(row[idxParcela] ?? '').trim()) : '-';
-    // NRF-004: resolve conta/banco column → contaId
-    const contaNome  = idxConta >= 0 ? String(row[idxConta] ?? '').trim() : '';
-    const _norm      = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    const contaNomeN = _norm(contaNome);
-    const contaObj   = contaNome ? _contas.find(c => {
-      const n = _norm(c.nome);
-      return n.includes(contaNomeN) || contaNomeN.includes(n);
-    }) : null;
-    // Prioridade: coluna Conta → inferência pelo valor da coluna → inferência pela descrição
-    const contaId = contaObj?.id
-      || inferirContaDaDescricao(contaNome, _contas)
-      || inferirContaDaDescricao(estab, _contas);
-    if (!dataRaw && !estab && !valorRaw) continue;
-    const estabLow = estab.toLowerCase();
-    if (/pagamento de fatura|inclusao de pagamento|inclusão de pagamento|parcela de fatura rotativo|credito de refinanciamento/i.test(estabLow)) continue;
-    // Aceita valores negativos (extrato bancário) e positivos (cartão de crédito)
-    // Sempre armazena como positivo — a direção contábil é despesa pelo contexto da importação
-    const valorBruto = normalizarValorXP(valorRaw);
-    const valor = Math.abs(valorBruto);
-    const isCredito = valorBruto < 0;  // NRF-002.1: crédito/estorno em fatura
-    const dataFmt = normalizarData(dataRaw);
-    const erros = [];
-    if (!dataFmt) erros.push('Data inválida');
-    if (!estab)   erros.push('Descrição vazia');
-    if (isNaN(valor) || valor <= 0) erros.push('Valor inválido');
-    const chave = (!erros.length) ? gerarChaveDedup(dataFmt, estab, valor, portador, parcela) : null;
-    resultado.push({
-      _idx: resultado.length,
-      data: dataFmt, dataOriginal: dataFmt,  // NRF-002.1: dataOriginal preservada para ajuste de mês
-      descricao: estab, portador, parcela, valor, isCredito,
-      categoriaId: mapearCategoria(estab),
-      contaId,  // NRF-004: conta detectada do arquivo (pode ser '' se coluna ausente)
-      erro: erros.length ? erros.join(', ') : null,
-      _erroOriginal: erros.length ? erros.join(', ') : null,  // NRF-006: imutável, usado para reset
-      chave_dedup: chave, duplicado: false, tipoLinha: null,
-    });
-  }
-  return resultado;
-}
-
-// ── RF-014: Gera chave de deduplicação ─────────────────────────
-function gerarChaveDedup(data, estab, valor, portador, parcela) {
-  if (!data || isNaN(valor)) return null;
-  const estabNorm = String(estab    ?? '').toLowerCase().trim().replace(/\s+/g, ' ').substring(0, 50);
-  const portNorm  = String(portador ?? '').toLowerCase().trim().substring(0, 30);
-  const parc = parcela && String(parcela).trim() !== '-' ? String(parcela).trim() : null;
-  if (parc) return estabNorm + '||' + Number(valor).toFixed(2) + '||' + portNorm + '||' + parc;
-  const dataISO = (data instanceof Date ? data : new Date(data)).toISOString().slice(0, 10);
-  return dataISO + '||' + estabNorm + '||' + Number(valor).toFixed(2) + '||' + portNorm;
-}
-
-// ── NRF-002.1: Normaliza parcela para formato canônico "XX/YY" ──
-// Aceita "X/Y", "X de Y" (CSV fatura) ou "-"
-function normalizarParcela(str) {
-  if (!str || String(str).trim() === '-') return '-';
-  const s = String(str).trim();
-  const m = s.match(/^(\d+)\s+de\s+(\d+)$/i) || s.match(/^(\d+)\/(\d+)$/);
-  if (!m) return '-';
-  const a = parseInt(m[1], 10), t = parseInt(m[2], 10);
-  if (a <= 0 || t <= 0 || a > t) return '-';
-  return String(a).padStart(2, '0') + '/' + String(t).padStart(2, '0');
-}
-
-// ── RF-014: Interpreta campo Parcela "02/06" ou "2 de 6" ────────
-function parsearParcela(str) {
-  if (!str || String(str).trim() === '-' || !String(str).trim()) return null;
-  const s = String(str).trim();
-  const m = s.match(/^(\d+)\/(\d+)$/) || s.match(/^(\d+)\s+de\s+(\d+)$/i);
-  if (!m) return null;
-  const atual = parseInt(m[1], 10);
-  const total = parseInt(m[2], 10);
-  if (atual >= total || total <= 0 || atual <= 0) return null;
-  return { atual, total };
-}
-
-// ── RF-014: Gera projeções para parcelas futuras ────────────────
-function gerarProjecoes(linha, parcelamentoId) {
-  const info = parsearParcela(linha.parcela);
-  if (!info) return [];
-  const projecoes = [];
-  for (let n = info.atual + 1; n <= info.total; n++) {
-    const dataBase   = linha.data instanceof Date ? linha.data : new Date(linha.data);
-    const dataProj   = new Date(dataBase);
-    dataProj.setMonth(dataProj.getMonth() + (n - info.atual));
-    const parcelaStr = String(n).padStart(2, '0') + '/' + String(info.total).padStart(2, '0');
-    const chaveDedup = gerarChaveDedup(dataProj, linha.descricao, linha.valor, linha.portador, parcelaStr);
-    projecoes.push({
-      descricao: linha.descricao, valor: linha.valor, categoriaId: linha.categoriaId ?? '',
-      data: dataProj, portador: linha.portador ?? '', responsavel: linha.portador ?? '',
-      parcela: parcelaStr, tipo: 'projecao', parcelamento_id: parcelamentoId,
-      chave_dedup: chaveDedup, status: 'pendente',
-    });
-  }
-  return projecoes;
-}
 
 // ── NRF-004: Geração dinâmica do template Excel ─────────────────
 function gerarTemplateDespesas() {
@@ -782,73 +546,6 @@ function gerarTemplateReceitas() {
   wsI['!cols'] = [{ wch: 12 }, { wch: 60 }, { wch: 14 }];
   XLSX.utils.book_append_sheet(wb, wsI, 'Instruções');
   XLSX.writeFile(wb, 'template-receitas.xlsx');
-}
-
-// ── NRF-004: Infere conta/banco a partir de palavras-chave na descrição ─────
-// Prioridade: match direto contra nome das contas do grupo → então mapa de
-// palavras-chave de bancos brasileiros mais comuns.
-function inferirContaDaDescricao(descricao, contas) {
-  if (!descricao || !contas.length) return '';
-  const d = descricao.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-
-  // 1. Tenta match direto: alguma palavra significativa do nome da conta está na descrição
-  for (const c of contas) {
-    const palavras = c.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').split(/\s+/);
-    if (palavras.some(p => p.length > 3 && d.includes(p))) return c.id;
-  }
-
-  // 2. Mapa de palavras-chave → trecho do nome da conta
-  const BANCO_KEYWORDS = [
-    { keys: ['itau', 'itaú'],                              conta: 'itaú'       },
-    { keys: ['bradesco'],                                  conta: 'bradesco'   },
-    { keys: ['santander'],                                 conta: 'santander'  },
-    { keys: ['btg'],                                       conta: 'btg'        },
-    { keys: ['xp invest', 'xpinvest', 'xp corret', 'xp pagamento'], conta: 'xp' },
-    { keys: ['nubank', 'nu pagamento', 'nu financ'],       conta: 'nubank'     },
-    { keys: ['banco inter', 'inter pagamento'],            conta: 'inter'      },
-    { keys: ['c6 bank', 'c6bank', 'c6 pagamento'],         conta: 'c6'         },
-    { keys: ['caixa eco', 'cef ', 'cx eco'],               conta: 'caixa'      },
-    { keys: ['banco do brasil', 'bb seg', 'bb pag'],       conta: 'brasil'     },
-    { keys: ['sicoob', 'sicredi'],                         conta: 'sicoob'     },
-    { keys: ['original'],                                  conta: 'original'   },
-    { keys: ['next bank', 'next pag'],                     conta: 'next'       },
-    { keys: ['neon'],                                      conta: 'neon'       },
-    { keys: ['picpay'],                                    conta: 'picpay'     },
-    { keys: ['mercado pago', 'mercadopago'],               conta: 'mercado'    },
-    { keys: ['facilcred'],                                 conta: 'facilcred'  },
-  ];
-
-  for (const regra of BANCO_KEYWORDS) {
-    if (regra.keys.some(k => d.includes(k))) {
-      const match = contas.find(c =>
-        c.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(regra.conta)
-      );
-      if (match) return match.id;
-    }
-  }
-
-  return '';
-}
-
-// ── Normalização de valor XP: "R$ 1.290,00" → 1290.00 ─────────
-function normalizarValorXP(val) {
-  if (val === null || val === undefined || val === '') return NaN;
-  if (typeof val === 'number') return val;
-  const s = String(val).trim().replace(/R\$\s*/i, '').replace(/\./g, '').replace(',', '.');
-  return parseFloat(s);
-}
-
-// ── Normalização de data ─────────────────────────────────────────
-function normalizarData(val) {
-  if (!val) return null;
-  if (val instanceof Date && !isNaN(val)) return val;
-  const s  = String(val).trim();
-  const m1 = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-  if (m1) return new Date(m1[3] + '-' + m1[2].padStart(2,'0') + '-' + m1[1].padStart(2,'0') + 'T12:00:00');
-  const m2 = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (m2) return new Date(s + 'T12:00:00');
-  const d = new Date(s);
-  return isNaN(d) ? null : d;
 }
 
 // ── Auto-mapeamento de categorias (RF-022: delegado a categorizer.js) ──────
@@ -1001,7 +698,7 @@ function atualizarChipsPreview() {
   document.getElementById('chip-total-imp').textContent    = formatarMoeda(total);
   document.getElementById('btn-imp-count').textContent     = sel.length;
   if (erros > 0) {
-    document.getElementById('chip-erros').textContent = errors;
+    document.getElementById('chip-erros').textContent = erros;
     document.getElementById('chip-erros-wrap').classList.remove('hidden');
   }
   const dupWrap = document.getElementById('chip-dup-wrap');
