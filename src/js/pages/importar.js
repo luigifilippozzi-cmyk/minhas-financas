@@ -38,6 +38,12 @@
 // • Banco: auto-atribui portador = displayName do usuário que faz o upload
 // • Cartão: seletor dropdown por linha + seletor em lote (membros do grupo)
 //
+// NRF-010 — Portador "Conjunto" no Upload de Fatura:
+// • Opção "👥 Conjunto" nos seletores de responsável (linha + lote)
+// • Marca isConjunta=true + valorAlocado=valor/2 automaticamente
+// • Badge visual 👥 na coluna Status; linha destacada em verde
+// • Parcelas projetadas herdam isConjunta=true do registro pai
+//
 // Módulos pipeline (RF-013):
 // • normalizadorTransacoes.js — parsing puro (CSV/XLSX)
 // • pipelineBanco.js          — extrato bancário + PDF
@@ -66,6 +72,9 @@ import { parsearCSVTexto, parsearLinhasCSVXLSX, parsearParcela, inferirContaDaDe
 import { marcarLinhasDuplicatas } from '../utils/deduplicador.js';
 import { parsearLinhasPDF, classificarBanco } from './pipelineBanco.js';
 import { filtrarCreditos, aplicarMesFatura, gerarProjecoes } from './pipelineCartao.js';
+
+// ── Constantes ─────────────────────────────────────────────────
+const RESP_CONJUNTO = 'conjunto'; // NRF-010: valor controlado para portador/responsável conjunto
 
 // ── Estado ─────────────────────────────────────────────────────
 let _usuario = null;
@@ -165,13 +174,18 @@ function configurarEventos() {
     });
   });
   // Responsável em lote: aplica a todas as linhas de cartão no preview
+  // NRF-010: 'conjunto' marca isConjunta=true em todas as linhas
   document.getElementById('sel-resp-lote')?.addEventListener('change', (e) => {
     if (!e.target.value) return;
-    const nome = e.target.value;
+    const nome   = e.target.value;
+    const isConj = nome === RESP_CONJUNTO;
     document.querySelectorAll('.sel-resp-linha').forEach((sel) => {
       sel.value = nome;
-      _linhas[+sel.dataset.idx].portador = nome;
+      const idx = +sel.dataset.idx;
+      _linhas[idx].portador   = nome;
+      _linhas[idx].isConjunta = isConj;
     });
+    renderizarPreview(); // NRF-010: atualiza badges de status
   });
   // NRF-004 + RF-019: quando o usuário muda a conta global, aplica a todas as linhas do preview
   document.getElementById('sel-conta-global')?.addEventListener('change', (e) => {
@@ -616,9 +630,14 @@ function renderizarPreview() {
       const nomes = Object.values(_nomesMembros);
       if (!nomes.length && _usuario?.displayName) nomes.push(_usuario.displayName);
       selResp.innerHTML = '<option value="">— sem responsável —</option>' +
-        nomes.map(n => `<option value="${n}">${n}</option>`).join('');
+        nomes.map(n => `<option value="${n}">${n}</option>`).join('') +
+        `<option value="${RESP_CONJUNTO}">👥 Conjunto</option>`; // NRF-010
       selResp.value = l.portador ?? '';
-      selResp.addEventListener('change', (e) => { _linhas[l._idx].portador = e.target.value; });
+      selResp.addEventListener('change', (e) => {
+        const val = e.target.value;
+        _linhas[l._idx].portador   = val;
+        _linhas[l._idx].isConjunta = val === RESP_CONJUNTO; // NRF-010
+      });
       tdPortador.appendChild(selResp);
     } else {
       const portCurto = l.portador ? l.portador.split(' ').slice(0, 2).join(' ') : '—';
@@ -692,6 +711,10 @@ function renderizarPreview() {
     } else if (l.tipoLinha === 'receita') {
       // NRF-006: modo banco — badge de receita
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok" style="background:#dcfce7;color:#166534;" title="Será salva como Receita' + chaveInfo + '">📥 Receita</span>';
+    } else if (l.isConjunta && _tipoExtrato === 'cartao') {
+      // NRF-010: linha marcada como despesa conjunta
+      tdStatus.innerHTML = '<span class="imp-badge imp-badge--conjunto" title="Despesa conjunta — será dividida entre os membros (50%/50%)' + chaveInfo + '">👥 Conjunto</span>';
+      tr.classList.add('imp-row-conjunto');
     } else if (l.tipoLinha === 'despesa' && _tipoExtrato === 'banco') {
       // NRF-006: modo banco — badge de despesa
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok" style="background:#fee2e2;color:#991b1b;" title="Será salva como Despesa' + chaveInfo + '">💸 Despesa</span>';
@@ -803,8 +826,9 @@ async function executarImportacao() {
     // BUG-009: prioriza parcelamento_id existente (reconciliação) antes de gerar UUID novo
     const parc_id = info ? (l.parcelamento_id_proj ?? crypto.randomUUID()) : null;
     // NRF-001: auto-mark isConjunta/valorAlocado from category's isConjuntaPadrao
+    // NRF-010: seleção "Conjunto" pelo usuário tem prioridade sobre padrão da categoria
     const catObj       = _categorias.find(c => c.id === cat);
-    const isConj       = catObj?.isConjuntaPadrao ?? false;
+    const isConj       = l.isConjunta ?? (catObj?.isConjuntaPadrao ?? false);
     const valorAlocado = isConj ? Math.round(l.valor * 100 / 2) / 100 : null;
     try {
       // NRF-006: modo banco — linhas de receita vão para coleção 'receitas'
@@ -955,13 +979,15 @@ function atualizarDropdownsCategoria() {
 }
 
 // Responsável — preenche seletor em lote com membros do grupo
+// NRF-010: inclui opção "Conjunto" ao final da lista
 function preencherSelRespLote() {
   const sel = document.getElementById('sel-resp-lote');
   if (!sel) return;
   const nomes = Object.values(_nomesMembros);
   if (!nomes.length && _usuario?.displayName) nomes.push(_usuario.displayName);
   sel.innerHTML = '<option value="">— manter individual —</option>' +
-    nomes.map(n => `<option value="${n}">${n}</option>`).join('');
+    nomes.map(n => `<option value="${n}">${n}</option>`).join('') +
+    `<option value="${RESP_CONJUNTO}">👥 Conjunto</option>`;
 }
 
 // NRF-004: preenche todos os selects de conta (global, lote e por linha)
