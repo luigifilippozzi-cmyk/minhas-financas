@@ -26,6 +26,10 @@ export function parsearLinhasCSVXLSX(rows, {
       headerIdx = i; break;
     }
   }
+  // BUG-012: detecta separador errado (vírgula em vez de ponto-e-vírgula)
+  if (headerIdx < 0 && rows.some(r => r.length === 1 && String(r[0] ?? '').includes(','))) {
+    throw new Error('Arquivo parece usar vírgula como separador. Exporte o CSV usando ponto-e-vírgula (;).');
+  }
   let idxData = 0, idxEstab = 1, idxPortador = 2, idxValor = 3, idxParcela = 4, idxConta = -1;
   if (headerIdx >= 0) {
     const h = rows[headerIdx].map(c => String(c ?? '').toLowerCase().trim());
@@ -66,7 +70,7 @@ export function parsearLinhasCSVXLSX(rows, {
     if (/pagamento de fatura|inclusao de pagamento|inclusão de pagamento|parcela de fatura rotativo|credito de refinanciamento/i.test(estabLow)) continue;
     const valorBruto = normalizarValorXP(valorRaw);
     const valor = Math.abs(valorBruto);
-    const isCredito = valorBruto < 0;  // NRF-002.1: crédito/estorno em fatura
+    const isNegativo = valorBruto < 0;  // BUG-011: true = valor negativo (crédito/estorno em fatura)
     const dataFmt = normalizarData(dataRaw);
     const erros = [];
     if (!dataFmt) erros.push('Data inválida');
@@ -76,7 +80,7 @@ export function parsearLinhasCSVXLSX(rows, {
     resultado.push({
       _idx: resultado.length,
       data: dataFmt, dataOriginal: dataFmt,
-      descricao: estab, portador, parcela, valor, isCredito,
+      descricao: estab, portador, parcela, valor, isNegativo,
       categoriaId: categorizarTransacao(estab, origemBanco, categorias, mapaHist),
       contaId,
       erro: erros.length ? erros.join(', ') : null,

@@ -17,7 +17,7 @@ export function processarFaturaCartao({ rows, contas, categorias, mapaHist, orig
 // Créditos em fatura de cartão são excluídos da importação.
 export function filtrarCreditos(linhas) {
   linhas.forEach((l) => {
-    if (l.isCredito && !l.erro) l.erro = 'Crédito/estorno — não importado';
+    if (l.isNegativo && !l.erro) l.erro = 'Crédito/estorno — não importado';
   });
 }
 
