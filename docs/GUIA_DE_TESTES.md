@@ -11,8 +11,8 @@
 | **URL da aplicação** | https://minhas-financas-285da.web.app |
 | **Repositório** | https://github.com/luigifilippozzi-cmyk/minhas-financas |
 | **Milestone de testes** | [v1.0 — QA & Testes de Aceitação](https://github.com/luigifilippozzi-cmyk/minhas-financas/milestone/7) |
-| **Total de RFs** | 24+ (RF-001 a RF-023 + NRFs) |
-| **Casos de teste** | 11 suítes (TC-001 a TC-011) |
+| **Total de RFs** | 25+ (RF-001 a RF-023 + NRFs incluindo NRF-010) |
+| **Casos de teste** | 12 suítes (TC-001 a TC-012) |
 
 ---
 
@@ -421,4 +421,37 @@ O progresso do milestone é atualizado automaticamente conforme os checklists da
 
 ---
 
-*Guia gerado em 2026-03-08 | atualizado 2026-03-27 (RF-019 a RF-023 + NRF-009 v3.3.0) | versão v3.3.0*
+---
+
+## TC-012 — NRF-010: Portador "Conjunto" no Upload de Fatura
+
+> **Pré-requisito:** grupo com 2 membros, arquivo CSV de fatura de cartão com pelo menos 3 transações (incluindo uma com parcela X/Y).
+
+### Seleção por Linha
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 1 | Importe uma fatura de cartão (CSV) | Preview exibe transações com seletor por linha |
+| 2 | No seletor de responsável de uma linha, escolha "👥 Conjunto" | Badge "👥 Conjunto" (verde) aparece na coluna Status; fundo da linha fica verde claro |
+| 3 | As demais linhas permanecem com responsável individual | Somente a linha alterada tem o badge Conjunto |
+
+### Seletor em Lote
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 4 | No seletor em lote, escolha "👥 Conjunto" | Todas as linhas do preview recebem badge "👥 Conjunto" e fundo verde |
+| 5 | Selecione um membro individual no lote | Badges Conjunto removidos; linhas voltam ao estado padrão |
+
+### Persistência e Integridade
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 6 | Marque 2 linhas como Conjunto e importe | Despesas salvas com `isConjunta=true`, `portador='conjunto'`, `responsavel='conjunto'` |
+| 7 | Verifique `valorAlocado` no Firestore | `valorAlocado = valor / 2` calculado corretamente |
+| 8 | Transação com parcela "01/03" marcada como Conjunto | Parcelas projetadas (02/03 e 03/03) herdam `isConjunta=true` |
+| 9 | Fatura do cartão após importação | Transações Conjunto exibidas corretamente na aba "Conjuntas" |
+| 10 | Dashboard após importação | Indicadores "Meu Bolso" vs "Família" refletem divisão correta |
+
+---
+
+*Guia gerado em 2026-03-08 | atualizado 2026-03-27 (RF-019 a RF-023 + NRF-009/NRF-010 v3.4.0) | versão v3.4.0*

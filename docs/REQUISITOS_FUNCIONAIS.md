@@ -35,6 +35,7 @@
 | RF-021 | Motor de Detecção, Roteamento e Identificação de Banco | Alta | ✅ Implementado |
 | RF-022 | Auto Categorização Inteligente Sensível à Origem | Alta | ✅ Implementado |
 | RF-023 | Edição em Massa de Transações — Responsável Dinâmico | Alta | ✅ Implementado |
+| NRF-010 | Portador "Conjunto" no Upload de Fatura de Cartão | Alta | ✅ Implementado |
 
 ---
 
@@ -1001,3 +1002,42 @@ Permite a edição em massa do campo Responsável na aba Gerenciar da página Ba
 - [x] Limite de 500 registros por batch respeitado
 - [x] Funciona para despesas e receitas (coleções distintas na mesma operação)
 - [x] Sem regressão: exclusão em massa e demais filtros funcionam normalmente
+
+---
+
+## NRF-010: Portador "Conjunto" no Upload de Fatura de Cartão
+**Prioridade:** Alta | **Versão:** v3.4.0 | **Status:** ✅ Implementado
+
+### Descrição
+Permite que o usuário marque transações importadas via fatura de cartão de crédito como despesas conjuntas diretamente no preview de importação — por linha individual ou em lote — utilizando a opção "👥 Conjunto" nos seletores de responsável.
+
+### Funcionalidades
+
+| Funcionalidade | Detalhe |
+|----------------|---------|
+| Opção "👥 Conjunto" | Disponível em `sel-resp-lote` (lote) e `sel-resp-linha` (por linha) — adicionada ao final da lista de membros |
+| Constante controlada | `RESP_CONJUNTO = 'conjunto'` — valor canônico, sem input livre |
+| Auto-marcação | Seleção de "Conjunto" aplica `portador='conjunto'` + `isConjunta=true` na linha |
+| Split automático | `valorAlocado = valor / 2` — derivado em `modelDespesa()` quando `isConjunta=true` |
+| Badge visual | `👥 Conjunto` (verde) na coluna Status; fundo verde claro (`#f0fdf4`) na linha |
+| Prioridade de seleção | Seleção do usuário prevalece sobre padrão da categoria (`isConjuntaPadrao`) |
+| Propagação a parcelas | Parcelas projetadas herdam `isConjunta=true` e `valorAlocado` do registro pai |
+| Re-render automático | Seletor em lote chama `renderizarPreview()` para atualizar badges de todas as linhas |
+
+### Arquivos
+
+| Arquivo | Mudança |
+|---------|---------|
+| `src/js/pages/importar.js` | `RESP_CONJUNTO` constante; `preencherSelRespLote()` com opção Conjunto; bulk listener com `isConjunta`; per-line change listener; badge `imp-badge--conjunto`; save override `l.isConjunta ??` |
+| `src/css/main.css` | `.imp-row-conjunto` + `.imp-badge--conjunto` — estilos visuais |
+
+### Critérios de Aceitação
+- [x] Opção "👥 Conjunto" aparece em ambos os seletores (linha e lote)
+- [x] Seleção individual por linha marca apenas aquela linha como conjunto
+- [x] Seletor em lote marca todas as linhas do preview como conjunto + atualiza badges
+- [x] Badge "👥 Conjunto" aparece na coluna Status; linha fica com fundo verde
+- [x] Despesa salva com `isConjunta=true`, `portador='conjunto'`, `responsavel='conjunto'`
+- [x] `valorAlocado = valor / 2` calculado e salvo
+- [x] Parcelas projetadas herdam `isConjunta=true`
+- [x] Padrão da categoria é sobreposto pela seleção do usuário
+- [x] Sem regressão: seletores de membros individuais continuam funcionando
