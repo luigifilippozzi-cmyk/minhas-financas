@@ -11,6 +11,46 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [3.0.0] - 2026-03-26
+
+### Adicionado — RF-013: Pipeline Unificado de Ingestão e Processamento
+
+Refatoração arquitetural: `importar.js` passa a ser um orquestrador fino; lógica de parsing, classificação, projeções e deduplicação distribuída em módulos independentes e testáveis.
+
+#### `src/js/utils/normalizadorTransacoes.js` (novo)
+- `parsearCSVTexto(content)` — parser CSV com separador ";" e BOM stripping
+- `parsearLinhasCSVXLSX(rows, {contas, categorias, mapaHist, origemBanco})` — versão parameterizada de `parsearLinhasExtrato` (sem closures de estado)
+- `normalizarValorXP(val)` — normalização "R$ 1.290,00" → `1290.00`
+- `normalizarData(val)` — parse de data multi-formato (DD/MM/YYYY, ISO, Date)
+- `normalizarParcela(str)` — normalização "X de Y" → "XX/YY"
+- `parsearParcela(str)` — parse de parcela para `{atual, total}`
+- `gerarChaveDedup(data, estab, valor, portador, parcela)` — chave de deduplicação
+- `inferirContaDaDescricao(descricao, contas)` — inferência de conta por keywords
+
+#### `src/js/utils/deduplicador.js` (novo)
+- `marcarLinhasDuplicatas(linhas, {chavesDesp, chavesRec, projecaoDocMap, projecoesDetalhadas, tipoExtrato})` — função pura de marcação (sem Firestore)
+- Encapsula matching exato (Fase 1) e fuzzy Levenshtein ≥ 85% (Fase 2 — NRF-002)
+
+#### `src/js/pages/pipelineBanco.js` (novo)
+- `processarExtratoBancario({rows, contas, categorias, mapaHist, origemBanco})` → linhas
+- `parsearLinhasPDF(raw, opts)` — converte saída do pdfParser para linhas (RF-020)
+- `classificarBanco(linhas, sinaisInvertidos)` — classifica como despesa/receita pelo sinal
+
+#### `src/js/pages/pipelineCartao.js` (novo)
+- `processarFaturaCartao({rows, contas, categorias, mapaHist, origemBanco, mesFatura})` → linhas
+- `filtrarCreditos(linhas)` — marca créditos/estornos como erro (NRF-002.1)
+- `aplicarMesFatura(linhas, mesFatura)` — ajusta datas de parceladas (NRF-002.1)
+- `gerarProjecoes(linha, parcelamentoId)` — gera projeções de parcelas futuras (RF-014)
+
+#### `src/js/pages/importar.js` (refatorado)
+- Importa e delega para os quatro módulos pipeline
+- `_aplicarTipo('cartao')` → chama `filtrarCreditos` + `aplicarMesFatura` (pipelineCartao.js)
+- `_aplicarTipo('banco')` → chama `classificarBanco` (pipelineBanco.js)
+- `marcarDuplicatas()` → mantém fetch Firestore; delega marcação a `marcarLinhasDuplicatas`
+- Funções removidas (migradas para módulos): `parsearLinhasExtrato`, `gerarChaveDedup`, `normalizarParcela`, `parsearParcela`, `gerarProjecoes`, `inferirContaDaDescricao`, `normalizarValorXP`, `normalizarData`, `_normalizarDataPDF`, `parsearLinhasPDF`, `aplicarMesFatura`, `parsearCSVTexto`
+
+---
+
 ## [2.6.1] - 2026-03-26
 
 ### Adicionado — RF-022: Auto Categorização Inteligente Sensível à Origem

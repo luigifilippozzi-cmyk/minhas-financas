@@ -54,12 +54,13 @@ Formato: `MAJOR.MINOR.PATCH` — ex: `v1.2.3`
 | v2.4.0 | 2026-03 | RF-020 Importação PDF + classificação automática por sinal |
 | v2.6.0 | 2026-03 | RF-021 Motor de detecção + identificação de banco/emissor |
 | v2.6.1 | 2026-03 | RF-022 Categorização inteligente sensível à origem (banco) |
+| v3.0.0 | 2026-03 | RF-013 Pipeline Unificado de Ingestão (4 módulos pipeline) |
 
 ### Próximas Versões (Backlog)
 
 | Versão | Milestone Planejado |
 |--------|---------------------|
-| v3.0.0 | App iOS via Capacitor (MILESTONE_iOS_App.md) |
+| v3.1.0 | App iOS via Capacitor (MILESTONE_iOS_App.md) |
 
 ## Workflow Completo
 

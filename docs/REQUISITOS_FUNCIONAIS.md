@@ -14,7 +14,7 @@
 | RF-010 | Filtros e Período | Média | ✅ Implementado |
 | RF-011 | Sincronização em Tempo Real | Alta | ✅ Implementado |
 | RF-012 | Exportação de Dados | Baixa | ✅ Implementado |
-| RF-013 | Importação de Transações via Excel | Média | ✅ Implementado |
+| RF-013 | Pipeline Unificado de Ingestão (v3.0.0) | Alta | ✅ Implementado |
 | RF-014 | Gestão Multi-Usuário de Cartão de Crédito | Alta | ✅ Implementado |
 | RF-015 | Recuperação de Senha | Média | ✅ Implementado |
 | RF-016 | Gestão de Receitas | Alta | ✅ Implementado |
@@ -111,19 +111,52 @@
 - Despesas ordenadas por data no arquivo exportado
 - Alerta informativo se não houver despesas no período
 
-## RF-013: Importação de Transações via Excel
-**Prioridade:** Média | **Versão:** v0.7.0 | **Status:** ✅ Implementado
+## RF-013: Pipeline Unificado de Ingestão e Processamento
+**Prioridade:** Alta | **Versão:** v3.0.0 | **Status:** ✅ Implementado
 
-- Template Excel disponível para download com colunas: Data, Descrição, Valor (R$), Categoria
-- Sheet "Instruções" no template explica como preencher
-- Página dedicada `importar.html` com área de upload (drag & drop ou clique)
-- Parse do arquivo Excel via SheetJS (client-side, sem servidor)
-- Tabela de preview com todas as transações lidas do arquivo
-- Dropdown por linha para mapear/confirmar a categoria de cada transação
-- Checkbox por linha para incluir/excluir transações individuais
-- Importação em lote para o Firestore (mesma estrutura das despesas manuais)
-- Flag `origem: 'importacao'` nas despesas importadas para rastreabilidade
-- Ambos os membros do grupo veem as despesas importadas em tempo real (onSnapshot)
+`importar.js` refatorado como orquestrador fino. Toda lógica de parsing, classificação, projeções e deduplicação distribuída em módulos independentes e testáveis.
+
+### Módulos criados
+
+| Módulo | Localização | Responsabilidade |
+|--------|-------------|-----------------|
+| `normalizadorTransacoes.js` | `utils/` | Parsing puro CSV/XLSX; normalização de data/valor/parcela; geração de chave dedup; inferência de conta |
+| `deduplicador.js` | `utils/` | Marcação de duplicatas (matching exato + fuzzy Levenshtein ≥ 85%) sem acesso ao Firestore |
+| `pipelineBanco.js` | `pages/` | Parse de extrato bancário + PDF; classificação por sinal (RF-020) |
+| `pipelineCartao.js` | `pages/` | Parse de fatura de cartão; filtro de créditos; ajuste de mês; geração de projeções (RF-014) |
+
+### Arquitetura do orquestrador
+
+```
+processarArquivo(file)
+  │
+  ├─ CSV/XLSX → parsearLinhasCSVXLSX()      [normalizadorTransacoes.js]
+  ├─ PDF      → parsearLinhasPDF()          [pipelineBanco.js]
+  │
+  ├─ detectarOrigemArquivo()               [detectorOrigemArquivo.js — RF-021]
+  ├─ _recategorizarComOrigem()             [categorizer.js — RF-022]
+  │
+  ├─ _aplicarTipo('cartao')
+  │     → filtrarCreditos()               [pipelineCartao.js]
+  │     → aplicarMesFatura()              [pipelineCartao.js]
+  │
+  ├─ _aplicarTipo('banco')
+  │     → classificarBanco()              [pipelineBanco.js]
+  │
+  └─ marcarDuplicatas()
+        → fetch Firestore (inline)
+        → marcarLinhasDuplicatas()        [deduplicador.js]
+```
+
+### Funções migradas do importar.js
+
+`parsearLinhasExtrato`, `gerarChaveDedup`, `normalizarParcela`, `parsearParcela`, `gerarProjecoes`, `inferirContaDaDescricao`, `normalizarValorXP`, `normalizarData`, `_normalizarDataPDF`, `parsearLinhasPDF`, `aplicarMesFatura`, `parsearCSVTexto`
+
+### Invariantes mantidas
+
+- Comportamento externo 100% idêntico (nenhuma mudança na UI ou no Firestore)
+- `parsearLinhasCSVXLSX` parametrizado com `{contas, categorias, mapaHist, origemBanco}` substituindo closures sobre estado global
+- `deduplicador.js` é função pura: Firestore fetching permanece em `importar.js`
 
 ## RF-014: Gestão Multi-Usuário de Cartão de Crédito
 **Prioridade:** Alta | **Versão:** v0.8.0 | **Status:** ✅ Implementado
