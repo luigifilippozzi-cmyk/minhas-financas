@@ -697,9 +697,11 @@ function atualizarChipsPreview() {
   document.getElementById('chip-selecionadas').textContent = sel.length;
   document.getElementById('chip-total-imp').textContent    = formatarMoeda(total);
   document.getElementById('btn-imp-count').textContent     = sel.length;
-  if (erros > 0) {
+  // BUG-010: toggle completo para ocultar chip quando erros === 0
+  const errosWrap = document.getElementById('chip-erros-wrap');
+  if (errosWrap) {
     document.getElementById('chip-erros').textContent = erros;
-    document.getElementById('chip-erros-wrap').classList.remove('hidden');
+    errosWrap.classList.toggle('hidden', erros === 0);
   }
   const dupWrap = document.getElementById('chip-dup-wrap');
   if (dupWrap) {
@@ -744,7 +746,8 @@ async function executarImportacao() {
     const cat     = document.querySelector('.sel-cat-linha[data-idx="' + idx + '"]')?.value ?? l.categoriaId ?? '';
     const contaId = document.querySelector('.sel-conta-linha[data-idx="' + idx + '"]')?.value || l.contaId || undefined; // NRF-004
     const info    = parsearParcela(l.parcela);
-    const parc_id = info ? crypto.randomUUID() : null;
+    // BUG-009: prioriza parcelamento_id existente (reconciliação) antes de gerar UUID novo
+    const parc_id = info ? (l.parcelamento_id_proj ?? crypto.randomUUID()) : null;
     // NRF-001: auto-mark isConjunta/valorAlocado from category's isConjuntaPadrao
     const catObj       = _categorias.find(c => c.id === cat);
     const isConj       = catObj?.isConjuntaPadrao ?? false;
@@ -771,7 +774,7 @@ async function executarImportacao() {
         origem: 'importacao', portador: l.portador ?? '', responsavel: l.portador ?? '',
         parcela: l.parcela ?? '-', tipo: 'despesa',
         chave_dedup: l.chave_dedup,
-        parcelamento_id: parc_id ?? l.parcelamento_id_proj ?? null,
+        parcelamento_id: parc_id,
         importadoEm: new Date(),
         isConjunta: isConj, valorAlocado,
         contaId,  // NRF-004

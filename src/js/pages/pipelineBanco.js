@@ -37,7 +37,7 @@ export function parsearLinhasPDF(raw, {
   return raw.map((item, idx) => {
     const data  = _normalizarDataPDF(item.dataStr);
     const valor = Math.abs(item.valor);
-    const isCredito = item.valor < 0;  // negativo = débito = isCredito para o pipeline
+    const isNegativo = item.valor < 0;  // BUG-011: true = valor negativo no arquivo (débito no extrato bancário)
     const erros = [];
     if (!data)                              erros.push('Data inválida');
     if (!item.desc || item.desc.length < 2) erros.push('Descrição vazia');
@@ -46,7 +46,7 @@ export function parsearLinhasPDF(raw, {
     return {
       _idx: idx,
       data, dataOriginal: data,
-      descricao: item.desc, portador: '', parcela: '-', valor, isCredito,
+      descricao: item.desc, portador: '', parcela: '-', valor, isNegativo,
       categoriaId: categorizarTransacao(item.desc, origemBanco, categorias, mapaHist),
       contaId: contaGlobal || inferirContaDaDescricao(item.desc, contas),
       erro: erros.length ? erros.join(', ') : null,
@@ -58,13 +58,13 @@ export function parsearLinhasPDF(raw, {
 }
 
 // ── RF-020: Classifica linhas de extrato como despesa/receita ───
-// Usa o sinal do valor original (isCredito) para determinar a direção.
+// Usa isNegativo (valor < 0 no arquivo original) para determinar direção.
 // sinaisInvertidos=true: bancos que usam convenção oposta (positivo=despesa).
 // Muta as linhas in-place.
 export function classificarBanco(linhas, sinaisInvertidos = false) {
   linhas.forEach((l) => {
     if (!l.erro) {
-      const isDebt = sinaisInvertidos ? !l.isCredito : l.isCredito;
+      const isDebt = sinaisInvertidos ? !l.isNegativo : l.isNegativo;
       l.tipoLinha = isDebt ? 'despesa' : 'receita';
     }
   });

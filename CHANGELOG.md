@@ -11,6 +11,22 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [3.0.2] - 2026-03-27
+
+### Corrigido — BUG-009 a BUG-012
+
+#### `src/js/pages/importar.js`
+- **BUG-009 (Crítico):** `parcelamento_id` incorreto em despesas reconciliadas — `parc_id` agora prioriza `l.parcelamento_id_proj` antes de gerar UUID novo; `?? l.parcelamento_id_proj` removido da linha de escrita do modelo
+- **BUG-010 (UX):** Chip de erros nunca ocultado ao trocar de arquivo — substituído por `classList.toggle('hidden', erros === 0)` (padrão consistente com demais chips)
+
+#### `src/js/pages/pipelineBanco.js` + `src/js/utils/normalizadorTransacoes.js` + `src/js/pages/pipelineCartao.js`
+- **BUG-011 (Manutenção):** Campo `isCredito` renomeado para `isNegativo` — nome semanticamente neutro, correto em ambos os contextos (fatura e extrato bancário)
+
+#### `src/js/utils/normalizadorTransacoes.js`
+- **BUG-012 (Médio):** CSV com separador errado (vírgula) agora lança erro informativo em vez de falhar silenciosamente com erros genéricos
+
+---
+
 ## [3.0.0] - 2026-03-26
 
 ### Adicionado — RF-013: Pipeline Unificado de Ingestão e Processamento

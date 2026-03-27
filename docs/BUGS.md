@@ -208,6 +208,113 @@ No comparador de sort de `buscarTodasTransacoes()`, a variável local era nomead
 
 ---
 
+---
+
+### BUG-009 — `parcelamento_id` incorreto em despesas reconciliadas
+**Severidade:** 🔴 Crítico
+**Versão introduzida:** v3.0.0 (RF-013)
+**Versão corrigida:** v3.0.2
+**Arquivo:** `src/js/pages/importar.js`
+
+**Descrição:**
+`parc_id` era gerado com `crypto.randomUUID()` para qualquer linha com parcela, independentemente de ser uma reconciliação fuzzy. O operador `??` na linha 774 (`parc_id ?? l.parcelamento_id_proj`) nunca alcançava `l.parcelamento_id_proj` porque `parc_id` era sempre um UUID não-nulo. A despesa real reconciliada era vinculada a um `parcelamento_id` novo, desconectado do parcelamento mestre original.
+
+**Código problemático:**
+```javascript
+const parc_id = info ? crypto.randomUUID() : null;
+// ...
+parcelamento_id: parc_id ?? l.parcelamento_id_proj ?? null,  // ?? nunca alcançado
+```
+
+**Impacto:**
+Despesas reais importadas via reconciliação fuzzy ficavam "soltas", sem vínculo com o parcelamento mestre. Histórico de parcelas quebrado; `reconciliarParcela()` não encontrava as despesas correspondentes.
+
+**Correção:**
+```javascript
+// Prioriza parcelamento existente (reconciliação) antes de gerar UUID novo
+const parc_id = info ? (l.parcelamento_id_proj ?? crypto.randomUUID()) : null;
+// ...
+parcelamento_id: parc_id,
+```
+
+---
+
+### BUG-010 — Chip de erros nunca oculto ao trocar de arquivo
+**Severidade:** 🟡 Baixo/UX
+**Versão introduzida:** v3.0.0 (RF-013)
+**Versão corrigida:** v3.0.2
+**Arquivo:** `src/js/pages/importar.js`
+
+**Descrição:**
+`atualizarChipsPreview()` usava `classList.remove('hidden')` para exibir o chip de erros, mas não tinha o caminho contrário. Os chips de duplicatas e projeções usavam `classList.toggle('hidden', count === 0)` (correto), mas o chip de erros só removia a classe, nunca a adicionava de volta.
+
+**Código problemático:**
+```javascript
+if (erros > 0) {
+  document.getElementById('chip-erros').textContent = erros;
+  document.getElementById('chip-erros-wrap').classList.remove('hidden');
+}
+// ← sem else: chip nunca volta ao estado 'hidden'
+```
+
+**Impacto:**
+Ao trocar de arquivo (novo arquivo sem erros), o chip de erros permanecia visível com a contagem do arquivo anterior, confundindo o usuário.
+
+**Correção:**
+```javascript
+const errosWrap = document.getElementById('chip-erros-wrap');
+if (errosWrap) {
+  document.getElementById('chip-erros').textContent = erros;
+  errosWrap.classList.toggle('hidden', erros === 0);
+}
+```
+
+---
+
+### BUG-011 — Campo `isCredito` semanticamente invertido em contexto de extrato bancário
+**Severidade:** 🟡 Cosmético/Manutenção
+**Versão introduzida:** v3.0.0 (RF-013)
+**Versão corrigida:** v3.0.2
+**Arquivo:** `src/js/pages/pipelineBanco.js`, `src/js/utils/normalizadorTransacoes.js`, `src/js/pages/pipelineCartao.js`
+
+**Descrição:**
+O campo `isCredito` era definido como `valor < 0` em ambos os parsers. Em contexto de fatura de cartão isso faz sentido (valor negativo = estorno/crédito). Em contexto de extrato bancário, valor negativo = débito, tornando o nome semanticamente invertido. O comentário em `pipelineBanco.js` inclusive anotava a contradição: `// negativo = débito = isCredito`.
+
+**Código problemático:**
+```javascript
+// pipelineBanco.js
+const isCredito = item.valor < 0;  // negativo = débito = isCredito ← contraditório
+```
+
+**Impacto:**
+O código funcionava corretamente (a lógica de `classificarBanco` compensava a inversão), mas a nomenclatura dificultava manutenção e aumentava o risco de futuros bugs por engano.
+
+**Correção:**
+Renomear `isCredito` → `isNegativo` nos 3 arquivos envolvidos. O nome descreve o sinal do valor sem implicação semântica (correto em ambos os contextos).
+
+---
+
+### BUG-012 — CSV com separador errado tratado silenciosamente
+**Severidade:** 🟠 Médio
+**Versão introduzida:** v3.0.0 (RF-013)
+**Versão corrigida:** v3.0.2
+**Arquivo:** `src/js/utils/normalizadorTransacoes.js`
+
+**Descrição:**
+Quando um arquivo CSV usava vírgula como separador em vez de ponto-e-vírgula, `parsearLinhasCSVXLSX` falhava em detectar o header (`headerIdx === -1`) e silenciosamente tentava processar as colunas posicionalmente. O resultado era uma lista de linhas com erros obscuros ("Data inválida", "Valor inválido") sem indicar a causa raiz.
+
+**Impacto:**
+Usuário recebia erros genéricos sem entender que o problema era o separador do arquivo. Experiência confusa, especialmente para exportações do Excel com configuração de locale diferente.
+
+**Correção:**
+```javascript
+if (headerIdx < 0 && rows.some(r => r.length === 1 && String(r[0] ?? '').includes(','))) {
+  throw new Error('Arquivo parece usar vírgula como separador. Exporte o CSV usando ponto-e-vírgula (;).');
+}
+```
+
+---
+
 ## Legenda de Severidade
 
 | Ícone | Nível | Critério |
