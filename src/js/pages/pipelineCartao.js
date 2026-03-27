@@ -13,11 +13,15 @@ export function processarFaturaCartao({ rows, contas, categorias, mapaHist, orig
   return linhas;
 }
 
-// ── NRF-002.1: Marca créditos/estornos como erro ────────────────
-// Créditos em fatura de cartão são excluídos da importação.
+// ── NRF-002.1: Marca créditos/estornos para revisão no preview ──
+// BUG-013: em vez de bloquear com erro, marca isEstorno=true para
+// que o usuário possa decidir no preview se importa como receita.
 export function filtrarCreditos(linhas) {
   linhas.forEach((l) => {
-    if (l.isNegativo && !l.erro) l.erro = 'Crédito/estorno — não importado';
+    if (l.isNegativo && !l.erro) {
+      l.isEstorno = true;
+      l.tipoLinha = 'receita'; // estorno reduz fatura → salvo como receita se importado
+    }
   });
 }
 

@@ -11,6 +11,44 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [3.6.0] - 2026-03-27
+
+### Corrigido — BUG-013 a BUG-016 + TD-002 + TD-007: 4 bugs de parsing/importação + 2 débitos técnicos
+
+#### `src/js/pages/pipelineCartao.js` — BUG-013
+- **Problema:** `filtrarCreditos` marcava estornos/créditos de fatura como erro bloqueante — nunca eram importáveis
+- **Fix:** em vez de erro, seta `isEstorno=true` + `tipoLinha='receita'`; linha fica visível no preview com badge "↩ Estorno" (amarelo) — usuário pode marcar a checkbox para importar como Receita
+
+#### `src/js/pages/importar.js` — BUG-013 UI
+- Reset `l.isEstorno = false` no loop de `_aplicarTipo` (limpa ao trocar tipo)
+- Checkbox desmarcada por padrão para linhas com `isEstorno=true`
+- Badge `↩ Estorno` inserido ANTES do check genérico `tipoLinha === 'receita'` na cadeia de status
+
+#### `src/css/main.css` — BUG-013
+- `.imp-badge--estorno` adicionado: fundo amarelo claro (`#fef9c3`), texto âmbar escuro
+
+#### `src/js/utils/normalizadorTransacoes.js` — BUG-014
+- **Problema:** `normalizarValorXP` removia todos os pontos → `208.17` virava `20817` (×100)
+- **Fix:** detecta convenção de separador pela posição do último ponto vs última vírgula (convenção BR vs US/XP)
+
+#### `src/js/utils/normalizadorTransacoes.js` — BUG-015
+- **Problema:** `parsearParcela` retornava `null` para `atual === total` (ex: "12/12") — última parcela invisível
+- **Fix:** condição alterada de `atual >= total` para `atual > total`
+
+#### `src/js/utils/normalizadorTransacoes.js` — BUG-016
+- **Problema:** `credito de refinanciamento` hardcoded no filtro de skip → despesas financeiras legítimas silenciosamente ignoradas
+- **Fix:** removido do regex de filtro (apenas termos de controle de sistema permanecem)
+
+#### `src/js/pages/importar.js` — TD-002
+- Extraída `async _reprocessarLinhas()` que agrupa `await marcarDuplicatas() + renderizarPreview()`
+- 5 ocorrências do par repetido substituídas por `await _reprocessarLinhas()`
+
+#### `firestore.rules` — TD-007
+- Adicionada função `isValidTransacao()`: `valor is number && valor > 0 && grupoId is string`
+- Aplicada às regras `write` e `create` das coleções `despesas` e `receitas`
+
+---
+
 ## [3.5.0] - 2026-03-27
 
 ### Corrigido — BUG-017 + BUG-018: NRF-002.2 Ajustes Parciais Marketplace completamente inoperante

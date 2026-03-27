@@ -206,8 +206,7 @@ function configurarEventos() {
   document.getElementById('sel-tipo-extrato')?.addEventListener('change', async (e) => {
     _aplicarTipo(e.target.value);
     _atualizarUITipo();
-    await marcarDuplicatas();
-    renderizarPreview();
+    await _reprocessarLinhas(); // TD-002
   });
 
   // NRF-002.1: mês de vencimento da fatura
@@ -224,8 +223,7 @@ function configurarEventos() {
     _sinaisInvertidos = e.target.checked;
     if (_tipoExtrato === 'banco' && _linhas.length) {
       _aplicarTipo('banco');
-      await marcarDuplicatas();
-      renderizarPreview();
+      await _reprocessarLinhas(); // TD-002
     }
   });
 
@@ -267,9 +265,8 @@ async function processarArquivo(file) {
       _atualizarUIInverterSinais(true);
       _atualizarBancoBadge();
       _autoSelecionarConta(_origemBanco);
-      await marcarDuplicatas();
       mostrarArquivoSelecionado(file.name);
-      renderizarPreview();
+      await _reprocessarLinhas(); // TD-002
     } catch (err) {
       mostrarErroLeitura('Erro ao ler o PDF: ' + err.message);
     }
@@ -297,9 +294,8 @@ async function processarArquivo(file) {
         _atualizarUITipo();
         _atualizarBancoBadge();
         _autoSelecionarConta(_origemBanco);
-        await marcarDuplicatas();
         mostrarArquivoSelecionado(file.name);
-        renderizarPreview();
+        await _reprocessarLinhas(); // TD-002
       } catch (err) { mostrarErroLeitura('Erro ao ler o CSV: ' + err.message); }
     };
     reader.readAsText(file, 'UTF-8');
@@ -324,9 +320,8 @@ async function processarArquivo(file) {
       _atualizarUITipo();
       _atualizarBancoBadge();
       _autoSelecionarConta(_origemBanco);
-      await marcarDuplicatas();
       mostrarArquivoSelecionado(file.name);
-      renderizarPreview();
+      await _reprocessarLinhas(); // TD-002
     } catch (err) { mostrarErroLeitura('Erro ao ler o Excel: ' + err.message); }
   };
   reader.readAsArrayBuffer(file);
@@ -388,6 +383,7 @@ function _aplicarTipo(tipo) {
   _linhas.forEach((l) => {
     l.erro       = l._erroOriginal ?? null;
     l.tipoLinha  = null;
+    l.isEstorno  = false; // BUG-013: limpa flag de estorno ao trocar tipo
     l.dataAjustada = false;
     if (l.dataOriginal) l.data = l.dataOriginal instanceof Date ? l.dataOriginal : new Date(l.dataOriginal);
   });
@@ -403,6 +399,13 @@ function _aplicarTipo(tipo) {
     _linhas.forEach((l) => { if (!l.erro) l.tipoLinha = 'receita'; });
   }
   // 'despesa': comportamento padrão, sem tipoLinha
+}
+
+// ── TD-002: Helper para re-processar linhas após mudança de tipo ─
+// Agrupa marcarDuplicatas + renderizarPreview (evita repetição).
+async function _reprocessarLinhas() {
+  await marcarDuplicatas();
+  renderizarPreview();
 }
 
 // ── NRF-006: Atualiza a UI de detecção de tipo ──────────────────
@@ -607,7 +610,7 @@ function renderizarPreview() {
     const tdChk = document.createElement('td');
     const chk   = document.createElement('input');
     chk.type = 'checkbox'; chk.className = 'chk-linha'; chk.dataset.idx = l._idx;
-    chk.checked = !l.erro && !l.duplicado && !l.ajuste_parcial;  // NRF-002.2: ajustes desmarcados
+    chk.checked = !l.erro && !l.duplicado && !l.ajuste_parcial && !l.isEstorno;  // NRF-002.2/BUG-013: ajustes e estornos desmarcados por padrão
     chk.addEventListener('change', () => atualizarChipsPreview());
     tdChk.appendChild(chk);
     // NRF-002.1: mostra data ajustada (mês da fatura) com indicador visual para parceladas
@@ -708,6 +711,9 @@ function renderizarPreview() {
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--dup" title="Já importado anteriormente' + chaveInfo + '">🔄</span>';
     } else if (l.erro) {
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--erro" title="' + l.erro + chaveInfo + '">⚠️</span>';
+    } else if (l.isEstorno && _tipoExtrato === 'cartao') {
+      // BUG-013: crédito/estorno em fatura — usuário pode marcar para importar como receita
+      tdStatus.innerHTML = '<span class="imp-badge imp-badge--estorno" title="Crédito/estorno de fatura — marque para importar como Receita' + chaveInfo + '">↩ Estorno</span>';
     } else if (l.tipoLinha === 'receita') {
       // NRF-006: modo banco — badge de receita
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok" style="background:#dcfce7;color:#166534;" title="Será salva como Receita' + chaveInfo + '">📥 Receita</span>';

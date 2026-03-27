@@ -318,11 +318,11 @@ if (headerIdx < 0 && rows.some(r => r.length === 1 && String(r[0] ?? '').include
 ### BUG-013 — Exclusão indevida de estornos/créditos na importação de faturas
 **Severidade:** 🔴 Crítico
 **Versão introduzida:** v3.0.0 (RF-013)
-**Versão corrigida:** pendente
-**Arquivo:** `src/js/pages/pipelineCartao.js`
+**Versão corrigida:** v3.6.0
+**Arquivo:** `src/js/pages/pipelineCartao.js`, `src/js/pages/importar.js`, `src/css/main.css`
 
 **Descrição:**
-A função `filtrarCreditos` marca automaticamente qualquer transação com valor negativo (`isNegativo = true`) como erro, impedindo sua importação. Isso bloqueia estornos legítimos de compras que aparecem na fatura do cartão.
+A função `filtrarCreditos` marcava automaticamente qualquer transação com valor negativo (`isNegativo = true`) como erro bloqueante, impedindo sua importação. Isso bloqueava estornos legítimos de compras que aparecem na fatura do cartão.
 
 **Código problemático:**
 ```javascript
@@ -334,21 +334,23 @@ export function filtrarCreditos(linhas) {
 ```
 
 **Impacto:**
-Estornos e créditos legítimos são ignorados durante a importação, resultando em um saldo de fatura incorreto na aplicação em comparação com a fatura real.
+Estornos e créditos legítimos eram ignorados durante a importação, resultando em um saldo de fatura incorreto na aplicação em comparação com a fatura real.
 
-**Correção sugerida:**
-Permitir a importação de estornos, possivelmente adicionando um toggle na UI para "Ignorar Créditos/Estornos" ou permitindo que o usuário categorize esses valores manualmente.
+**Correção aplicada:**
+- `pipelineCartao.js`: em vez de erro, seta `isEstorno=true` e `tipoLinha='receita'` — linha visível no preview para o usuário decidir
+- `importar.js`: reset `isEstorno=false` em `_aplicarTipo`; checkbox desmarcado por padrão (`&& !l.isEstorno`); badge `↩ Estorno` (amarelo) inserido ANTES do check `tipoLinha === 'receita'`
+- `main.css`: estilo `.imp-badge--estorno` adicionado (fundo amarelo claro)
 
 ---
 
 ### BUG-014 — Erro de escala em valores com ponto decimal (multiplicação por 100)
 **Severidade:** 🔴 Crítico
 **Versão introduzida:** v3.0.0 (RF-013)
-**Versão corrigida:** pendente
+**Versão corrigida:** v3.6.0
 **Arquivo:** `src/js/utils/normalizadorTransacoes.js`
 
 **Descrição:**
-A função `normalizarValorXP` remove todos os pontos da string de valor antes de converter para número. Se o arquivo de entrada usar o ponto como separador decimal (ex: `208.17`), o valor é transformado em `20817`, resultando em uma escala 100x maior.
+A função `normalizarValorXP` removia todos os pontos da string de valor antes de converter para número. Se o arquivo de entrada usava ponto como separador decimal (ex: `208.17`), o valor era transformado em `20817`, resultando em escala 100x maior.
 
 **Código problemático:**
 ```javascript
@@ -357,21 +359,24 @@ return parseFloat(s);
 ```
 
 **Impacto:**
-Transações importadas de arquivos com formato decimal de ponto (comum em exportações internacionais ou CSVs específicos) ficam com valores irreais (ex: R$ 208,17 vira R$ 20.817,00).
+Transações importadas de arquivos com formato decimal de ponto ficavam com valores irreais (ex: R$ 208,17 virava R$ 20.817,00).
 
-**Correção sugerida:**
-Implementar uma lógica que detecte se o ponto é separador de milhar ou decimal com base na posição e presença de outros separadores.
+**Correção aplicada:**
+Detecta a convenção de separador decimal comparando a posição do último ponto vs última vírgula:
+- `lastComma > lastDot` → convenção BR (ponto=milhar, vírgula=decimal)
+- `lastDot > lastComma` → convenção US/XP (vírgula=milhar, ponto=decimal)
+- Só vírgula, sem ponto → trata como decimal BR
 
 ---
 
 ### BUG-015 — Parsing de parcelas ignora a última parcela da série
 **Severidade:** 🟠 Médio
 **Versão introduzida:** v3.0.0 (RF-013)
-**Versão corrigida:** pendente
+**Versão corrigida:** v3.6.0
 **Arquivo:** `src/js/utils/normalizadorTransacoes.js`
 
 **Descrição:**
-A função `parsearParcela` retorna `null` quando a parcela atual é igual ao total (ex: "12/12"). Isso impede que a última parcela seja reconhecida como parte de um parcelamento para fins de reconciliação ou metadados.
+A função `parsearParcela` retornava `null` quando a parcela atual era igual ao total (ex: "12/12"), bloqueando o parsing da última parcela de qualquer série.
 
 **Código problemático:**
 ```javascript
@@ -379,21 +384,21 @@ if (atual >= total || total <= 0 || atual <= 0) return null;
 ```
 
 **Impacto:**
-A última parcela de compras parceladas não é tratada corretamente pelo sistema de parcelamentos, podendo causar duplicidade ou falha na reconciliação com projeções existentes.
+A última parcela de compras parceladas não era reconhecida pelo sistema de parcelamentos, causando falha na reconciliação com projeções existentes.
 
-**Correção sugerida:**
-Alterar a condição para `atual > total`.
+**Correção aplicada:**
+Condição alterada de `atual >= total` para `atual > total` — permite que a última parcela seja parseada corretamente.
 
 ---
 
 ### BUG-016 — Filtro de palavras-chave bloqueia transações legítimas de refinanciamento
 **Severidade:** 🟠 Médio
 **Versão introduzida:** v3.0.0 (RF-013)
-**Versão corrigida:** pendente
+**Versão corrigida:** v3.6.0
 **Arquivo:** `src/js/utils/normalizadorTransacoes.js`
 
 **Descrição:**
-O parser ignora silenciosamente qualquer linha que contenha "credito de refinanciamento". Isso impede a importação de juros de parcelamento de fatura ou refinanciamentos que o usuário pode desejar trackear como despesa financeira.
+O parser ignorava silenciosamente qualquer linha contendo "credito de refinanciamento", impedindo a importação de despesas financeiras legítimas (juros de parcelamento rotativo, refinanciamento de fatura).
 
 **Código problemático:**
 ```javascript
@@ -401,10 +406,10 @@ if (/...|credito de refinanciamento/i.test(estabLow)) continue;
 ```
 
 **Impacto:**
-Despesas financeiras legítimas são omitidas da importação sem aviso ao usuário.
+Despesas financeiras legítimas eram omitidas da importação sem aviso ao usuário.
 
-**Correção sugerida:**
-Remover o termo do filtro automático ou permitir que o usuário revise essas linhas no preview.
+**Correção aplicada:**
+Removido `|credito de refinanciamento` do regex de filtro. Apenas termos de controle de sistema (pagamento de fatura, inclusão de pagamento, parcela rotativa) permanecem filtrados.
 
 ---
 
@@ -428,15 +433,15 @@ Implementar paginação com cursor (`startAfter`) e carregamento sob demanda (sc
 
 ---
 
-### TD-002 — Trio `_aplicarTipo + marcarDuplicatas + renderizarPreview` repetido
+### TD-002 — Trio `_aplicarTipo + marcarDuplicatas + renderizarPreview` repetido ✅ Resolvido v3.6.0
 **Tipo:** DRY / Manutenibilidade
 **Arquivo:** `src/js/pages/importar.js`
 
 **Descrição:**
-O mesmo trio de chamadas é invocado em 3 contextos diferentes (mudança de tipo, mudança de mês de fatura, toggle de sinais). Qualquer nova etapa de processamento precisa ser adicionada em 3 lugares.
+O mesmo trio de chamadas era invocado em 5 contextos diferentes (mudança de tipo, toggle de sinais, PDF, CSV, XLSX). Qualquer nova etapa de processamento precisava ser adicionada em 5 lugares.
 
-**Sugestão:**
-Extrair em uma função `_reprocessarLinhas()` que encapsula o trio. Reduz de ~30 linhas repetidas para 1 chamada por contexto.
+**Correção aplicada:**
+Extraída função `async _reprocessarLinhas() { await marcarDuplicatas(); renderizarPreview(); }` que agrupa o par `marcarDuplicatas + renderizarPreview`. As 5 ocorrências foram substituídas por `await _reprocessarLinhas()`.
 
 ---
 
@@ -488,15 +493,15 @@ Unificar em um componente de importação genérico que aceite configurações d
 
 ---
 
-### TD-007 — Ausência de validação de esquema nas regras do Firestore
+### TD-007 — Ausência de validação de esquema nas regras do Firestore ✅ Resolvido v3.6.0
 **Tipo:** Segurança / Integridade
 **Arquivo:** `firestore.rules`
 
 **Descrição:**
-As regras de segurança validam apenas a permissão de acesso ao grupo, mas não o formato ou valores dos dados enviados (ex: permitir valor negativo ou data inválida).
+As regras de segurança validavam apenas a permissão de acesso ao grupo, mas não o formato ou valores dos dados enviados.
 
-**Sugestão:**
-Adicionar validações de tipo e valor (ex: `valor is number && valor > 0`) diretamente nas `firestore.rules`.
+**Correção aplicada:**
+Adicionada função `isValidTransacao()` que verifica `valor is number && valor > 0 && grupoId is string`. Aplicada às regras `write` e `create` das coleções `despesas` e `receitas`.
 
 ---
 
