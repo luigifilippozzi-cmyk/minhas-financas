@@ -72,6 +72,7 @@ firestore/
 │   ├── data: timestamp
 │   ├── dataCriacao: timestamp
 │   ├── origem: 'importacao' | 'manual'
+│   ├── responsavel: string | null       ← NRF-009: nome do responsável (auto-atribuído no import bancário)
 │   ├── contaId: string | null           ← NRF-004
 │   ├── chave_dedup: string | null       ← NRF-008
 │   ├── origemBanco: string | null       ← RF-021/RF-022
@@ -174,13 +175,23 @@ src/
     │   └── firebase.js         ← Inicialização Firebase (Auth + Firestore)
     ├── services/
     │   ├── auth.js             ← onAuthChange, logout
-    │   └── database.js         ← Todas as operações Firestore (CRUD + listeners + batch ops)
+    │   ├── database.js         ← Todas as operações Firestore (CRUD + listeners + batch ops)
+    │   ├── grupos.js           ← RF-002: criarGrupo, entrarGrupo, gerenciamento de membros
+    │   └── storage.js          ← Placeholder Firebase Storage (upload de imagens — futuro)
     ├── models/
     │   ├── Despesa.js          ← modelDespesa() — factory com defaults
     │   ├── Receita.js          ← modelReceita() + CATEGORIAS_RECEITA_PADRAO
-    │   └── Conta.js            ← modelConta() + CONTAS_PADRAO (11 contas)
+    │   ├── Conta.js            ← modelConta() + CONTAS_PADRAO (11 contas)
+    │   ├── Categoria.js        ← modelCategoria() + CATEGORIAS_PADRAO (seed automático)
+    │   ├── Grupo.js            ← modelGrupo() — factory para criação de grupo
+    │   ├── Orcamento.js        ← modelOrcamento() — orçamento mensal por categoria
+    │   └── Usuario.js          ← modelUsuario() — perfil de usuário
     ├── controllers/
-    │   └── despesas.js         ← salvarDespesa, deletarDespesa, renderizarListaDespesas
+    │   ├── despesas.js         ← salvarDespesa, deletarDespesa, renderizarListaDespesas
+    │   ├── categorias.js       ← RF-003: CRUD de categorias; sync em tempo real
+    │   ├── orcamentos.js       ← RF-004: CRUD de orçamentos mensais; copiar mês anterior
+    │   ├── dashboard.js        ← RF-009/RF-017: cálculo de KPIs e renderização de cards
+    │   └── receitas-dashboard.js ← RF-017: renderização da seção de receitas no dashboard
     ├── pages/
     │   ├── despesas.js         ← RF-005–RF-011: CRUD + filtros + contas
     │   ├── receitas.js         ← RF-016: CRUD + import + dedup
@@ -188,13 +199,16 @@ src/
     │   ├── categorias.js       ← RF-003
     │   ├── fluxo-caixa.js      ← NRF-003: gráfico anual Chart.js
     │   ├── fatura.js           ← NRF-005: fechamento do cartão
-    │   ├── importar.js         ← Orquestrador fino — RF-013/RF-014/NRF-002/NRF-006/NRF-008
+    │   ├── grupo.js            ← RF-002: criação/entrada de grupo; convite
+    │   ├── importar.js         ← Orquestrador fino — RF-013/RF-014/NRF-002/NRF-006/NRF-008/NRF-009
     │   ├── base-dados.js       ← RF-018: tab switching + Gerenciar + Limpeza (purge)
     │   ├── pipelineBanco.js    ← RF-013/RF-020: parse extrato bancário CSV/XLSX/PDF; classificarBanco()
     │   └── pipelineCartao.js   ← RF-013/RF-014: parse fatura; filtrarCreditos(); aplicarMesFatura(); gerarProjecoes()
     └── utils/
         ├── formatters.js           ← formatarMoeda, formatarData, nomeMes, escHTML
         ├── helpers.js              ← dataHoje, normalizarStr, similaridade (Levenshtein)
+        ├── validators.js           ← validarEmail, validarValor, validarData — funções de validação de input
+        ├── pdfParser.js            ← RF-020: extrairTransacoesPDF() — extração via PDF.js
         ├── normalizadorTransacoes.js ← RF-013: parsing puro CSV/XLSX; normalização; chave dedup; inferência conta
         ├── deduplicador.js         ← RF-013: marcarLinhasDuplicatas() — matching exato + fuzzy + ajustes (sem Firestore)
         ├── ajusteDetector.js       ← NRF-002.2: detectarAjustesParciais() — marketplace/supermercado aware

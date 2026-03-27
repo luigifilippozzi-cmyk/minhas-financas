@@ -11,8 +11,8 @@
 | **URL da aplicação** | https://minhas-financas-285da.web.app |
 | **Repositório** | https://github.com/luigifilippozzi-cmyk/minhas-financas |
 | **Milestone de testes** | [v1.0 — QA & Testes de Aceitação](https://github.com/luigifilippozzi-cmyk/minhas-financas/milestone/7) |
-| **Total de RFs** | 22+ (RF-001 a RF-022 + NRFs) |
-| **Casos de teste** | 9 suítes (TC-001 a TC-009) |
+| **Total de RFs** | 23+ (RF-001 a RF-022 + NRFs + NRF-009) |
+| **Casos de teste** | 10 suítes (TC-001 a TC-010) |
 
 ---
 
@@ -358,4 +358,31 @@ O progresso do milestone é atualizado automaticamente conforme os checklists da
 
 ---
 
-*Guia gerado em 2026-03-08 | atualizado 2026-03-27 (RF-019 a RF-022 + RF-013 v3.0 + BUG-009 a BUG-012) | versão v3.0.2*
+## 👤 TC-010 — Responsável por Transação (NRF-009)
+
+**NRFs cobertas:** NRF-009
+
+### Extrato Bancário — atribuição automática
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 1 | Faça upload de extrato bancário (CSV/XLSX/PDF) com usuário A logado | Coluna Portador no preview mostra o nome do usuário A em todas as linhas |
+| 2 | Verifique que a coluna Portador é texto estático (não editável) | Nenhum dropdown aparece na coluna Portador em modo banco |
+| 3 | Confirme importação e verifique despesas salvas no Firestore | Campo `responsavel` e `portador` preenchidos com displayName do usuário A |
+| 4 | Receitas importadas do extrato bancário | Campo `responsavel` salvo também nas receitas geradas |
+
+### Fatura de Cartão — seletor por linha e em lote
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 5 | Faça upload de fatura de cartão (CSV/XLSX) | Coluna Portador renderiza `<select>` dropdown por linha |
+| 6 | Dropdown contém os membros do grupo (ex: "Luigi", "Maria") | Lista populada com nomes de `grupos/{grupoId}.nomesMembros` |
+| 7 | Selecione um responsável individual em uma linha | Valor atualizado apenas naquela linha |
+| 8 | Use o seletor em lote "Responsável:" na barra de ações | Nome aplicado a todas as linhas do preview de uma vez |
+| 9 | Seletor em lote "Responsável:" visível em modo cartão | Wrapper `resp-lote-wrap` visível quando tipo = cartão |
+| 10 | Troque para modo banco (seletor de tipo) | Seletor em lote "Responsável:" some; coluna Portador volta para texto estático |
+| 11 | Confirme importação de fatura | `responsavel` e `portador` salvo corretamente por transação no Firestore |
+
+---
+
+*Guia gerado em 2026-03-08 | atualizado 2026-03-27 (RF-019 a RF-022 + RF-013 v3.0 + BUG-009 a BUG-012 + NRF-009 v3.2.0) | versão v3.2.0*
