@@ -200,7 +200,7 @@ src/
     │   ├── fluxo-caixa.js      ← NRF-003: gráfico anual Chart.js
     │   ├── fatura.js           ← NRF-005: fechamento do cartão
     │   ├── grupo.js            ← RF-002: criação/entrada de grupo; convite
-    │   ├── importar.js         ← Orquestrador fino — RF-013/RF-014/NRF-002/NRF-006/NRF-008/NRF-009
+    │   ├── importar.js         ← Orquestrador fino — RF-013/RF-014/NRF-002/NRF-006/NRF-008/NRF-009/NRF-010
     │   ├── base-dados.js       ← RF-018 + RF-023: tab switching + Gerenciar + edição em massa + Limpeza (purge)
     │   ├── pipelineBanco.js    ← RF-013/RF-020: parse extrato bancário CSV/XLSX/PDF; classificarBanco()
     │   └── pipelineCartao.js   ← RF-013/RF-014: parse fatura; filtrarCreditos(); aplicarMesFatura(); gerarProjecoes()
