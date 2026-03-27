@@ -11,6 +11,64 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [2.6.1] - 2026-03-26
+
+### Adicionado — RF-022: Auto Categorização Inteligente Sensível à Origem
+
+Categorização automática passa a considerar o banco/emissor como contexto, usando histórico segmentado por banco antes do histórico global.
+
+#### `src/js/utils/categorizer.js` (novo)
+- `categorizarTransacao(estab, origem, categorias, mapaHist)` — função pura, sem estado
+- **Camada 1:** lookup `descricao|origemBanco` no mapa de histórico (origin-specific)
+- **Camada 2:** lookup `descricao` no mapa global (compatibilidade retrógrada)
+- **Camada 3:** regras por palavras-chave (fallback estático — mesmo conjunto anterior)
+
+#### `src/js/services/database.js`
+- `buscarMapaCategorias`: agora também indexa `descricao|origemBanco` quando `origemBanco` está presente e ≠ `'desconhecido'`
+
+#### `src/js/pages/importar.js`
+- `mapearCategoria(estab, origem)` → thin wrapper sobre `categorizarTransacao`; `origem` padrão = `_origemBanco`
+- `_recategorizarComOrigem()` — re-processa categorias depois que a origem é identificada
+- Regras REGRAS removidas do `importar.js` (agora em `categorizer.js`)
+- Modelos recebem `origemBanco: _origemBanco` em importações
+
+#### `src/js/models/Despesa.js` + `Receita.js`
+- Campo `origemBanco` adicionado à lista de opcionais
+
+---
+
+## [2.6.0] - 2026-03-26
+
+### Adicionado — RF-021: Motor de Detecção, Roteamento e Identificação de Banco
+
+Identifica automaticamente o tipo do arquivo (banco/cartão) e o banco/emissor, pre-selecionando a conta correspondente.
+
+#### `src/js/utils/bankFingerprintMap.js` (novo)
+- 15 bancos/emissores brasileiros com fingerprints de identificação
+- Por banco: `filePatterns` (regex sobre nome do arquivo), `keywords.high` (+40 pts), `keywords.medium` (+20 pts)
+- Bancos: Itaú, Nubank, Bradesco, Santander, Banco Inter, Banco do Brasil, Caixa, XP, BTG, C6, Original, Neon, PicPay, Mercado Pago, Sicoob
+
+#### `src/js/utils/detectorOrigemArquivo.js` (novo)
+- `detectarOrigemArquivo({fileName, rows, textLines})` — substitui `detectarTipoExtrato()`
+- **Tipo:** analisa colunas CSV/XLSX (mesma lógica anterior) + conteúdo textual (PDF)
+- **Banco:** scoring por filename + keywords, max 100 pts
+- **Saída:** `{tipo, confiancaTipo, confianca, colunas, origem, origemLabel, origemEmoji, confiancaOrigem, pipeline}`
+
+#### `src/js/pages/importar.js`
+- `detectarTipoExtrato()` removida — lógica movida para `detectorOrigemArquivo.js`
+- CSV/XLSX/PDF: chamam `detectarOrigemArquivo()` após parse → setam `_origemBanco/Label/Emoji`
+- `_atualizarBancoBadge()` — exibe badge `#banco-detectado-badge`
+- `_autoSelecionarConta(origemId)` — auto-seleciona `sel-conta-global` via `inferirContaDaDescricao`
+- `resetarUpload()` — limpa origem ao trocar arquivo
+
+#### `src/base-dados.html`
+- `<div id="banco-detectado-badge">` na seção `tipo-extrato-wrap`
+
+#### `src/css/main.css`
+- `.imp-banco-detectado-badge` — badge índigo/azul
+
+---
+
 ## [2.4.0] - 2026-03-26
 
 ### Adicionado — RF-020: Classificação Automática por Sinal + Importação PDF

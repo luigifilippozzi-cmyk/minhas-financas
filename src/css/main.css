@@ -810,6 +810,21 @@ a:hover { text-decoration: underline; }
   margin-bottom: .75rem;
 }
 
+/* ── RF-021: Badge de banco/emissor identificado ── */
+.imp-banco-detectado-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .82rem;
+  font-weight: 600;
+  color: #3730a3;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 6px;
+  padding: .35rem .75rem;
+  margin-top: .4rem;
+}
+
 /* ── RF-020: Confiança de extração PDF ── */
 .imp-badge--conf-alta  { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
 .imp-badge--conf-media { background: #fef9c3; color: #854d0e; border: 1px solid #fde047; }

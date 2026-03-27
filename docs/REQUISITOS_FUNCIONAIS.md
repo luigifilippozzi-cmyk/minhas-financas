@@ -29,6 +29,8 @@
 | NRF-008 | Deduplicação de Transações | Alta | ✅ Implementado |
 | RF-019 | Correção: Preenchimento Automático de Conta/Banco no Preview | Alta | ✅ Implementado |
 | RF-020 | Classificação Automática por Sinal + Importação PDF | Alta | ✅ Implementado |
+| RF-021 | Motor de Detecção, Roteamento e Identificação de Banco | Alta | ✅ Implementado |
+| RF-022 | Auto Categorização Inteligente Sensível à Origem | Alta | ✅ Implementado |
 
 ---
 
@@ -762,3 +764,92 @@ Usuários com extratos bancários em PDF não conseguiam importar diretamente. A
 - [x] PDF sem texto selecionável exibe mensagem de erro amigável
 - [x] Reset (trocar arquivo) limpa `_origemPDF` e `_sinaisInvertidos`
 - [x] Pipeline de deduplicação, categorização e importação funciona igual ao CSV/XLSX
+
+---
+
+## RF-021: Motor de Detecção, Roteamento e Identificação de Banco
+**Prioridade:** Alta | **Versão:** v2.6.0 | **Status:** ✅ Implementado
+
+### Motivação
+O sistema detectava apenas o tipo do arquivo (banco/cartão) mas não sabia qual banco/emissor era o arquivo. Isso impedia a auto-seleção de conta e a categorização contextual.
+
+### Funcionalidades
+
+#### Identificação de banco/emissor
+- Scoring por nome do arquivo (+40 pts), keywords de alta confiança (+40 pts), keywords de média confiança (+20 pts)
+- 15 bancos/emissores: Itaú, Nubank, Bradesco, Santander, Banco Inter, Banco do Brasil, Caixa Econômica, XP, BTG, C6 Bank, Banco Original, Neon, PicPay, Mercado Pago, Sicoob
+- Score < 20 → `'desconhecido'`
+
+#### Auto-seleção de conta (integração NRF-004)
+- Banco identificado com conta cadastrada → `sel-conta-global` pré-selecionado automaticamente
+- Não sobrescreve se usuário já selecionou manualmente
+
+#### Badge visual
+- `#banco-detectado-badge`: "🏦 Itaú identificado automaticamente"
+- Visível somente quando banco é reconhecido (score ≥ 20)
+
+#### Substituição de `detectarTipoExtrato`
+- `detectorOrigemArquivo.js` agora é o único módulo de detecção
+- Mantém compatibilidade total com modal de confirmação de tipo (campo `confianca: 'alta'|'baixa'`, campo `colunas`)
+
+### Arquivos
+
+| Arquivo | Papel |
+|---------|-------|
+| `src/js/utils/bankFingerprintMap.js` | **Novo** — dados de fingerprint dos bancos |
+| `src/js/utils/detectorOrigemArquivo.js` | **Novo** — motor de detecção RF-021 |
+| `src/js/pages/importar.js` | Integração: `_origemBanco`, `_atualizarBancoBadge()`, `_autoSelecionarConta()` |
+| `src/base-dados.html` | `#banco-detectado-badge` |
+| `src/css/main.css` | `.imp-banco-detectado-badge` |
+
+### Critérios de Aceitação
+- [x] Arquivo com "itau" no nome → banco Itaú identificado
+- [x] PDF com texto "Nubank S.A." → banco Nubank identificado
+- [x] Banco identificado + conta cadastrada → conta auto-selecionada
+- [x] Banco identificado → badge exibido no tipo-extrato-wrap
+- [x] Banco não identificado → badge oculto, sem auto-seleção
+- [x] Trocar arquivo → banco resetado, badge oculto, conta não forçada
+- [x] Modal de confirmação de tipo continua funcionando (campos `confianca` e `colunas` presentes)
+- [x] PDF identificado como Nubank → `origemBanco: 'nubank'` salvo nas despesas/receitas
+
+---
+
+## RF-022: Auto Categorização Inteligente Sensível à Origem
+**Prioridade:** Alta | **Versão:** v2.6.1 | **Status:** ✅ Implementado
+
+### Motivação
+A categorização automática usava apenas o histórico global (descrição → categoria). Com a origem do banco disponível via RF-021, é possível melhorar a precisão usando histórico segmentado por banco.
+
+### Funcionamento
+
+**Chave de histórico com contexto:** `descricao_normalizada + '|' + origemBanco`
+
+**Prioridade de lookup:**
+1. `mapaHist["pix recebido|itau"]` → específico do banco (RF-022)
+2. `mapaHist["pix recebido"]` → global (comportamento anterior)
+3. Regras por palavras-chave (fallback estático)
+
+**Aprendizado cross-session:**
+- `origemBanco` salvo em cada despesa/receita importada
+- `buscarMapaCategorias` indexa `descricao|origemBanco` quando presente
+- Próximas importações do mesmo banco se beneficiam do histórico
+
+### Arquivos
+
+| Arquivo | Papel |
+|---------|-------|
+| `src/js/utils/categorizer.js` | **Novo** — `categorizarTransacao(estab, origem, categorias, mapaHist)` |
+| `src/js/services/database.js` | `buscarMapaCategorias` indexa `|origemBanco` |
+| `src/js/pages/importar.js` | `mapearCategoria` → wrapper; `_recategorizarComOrigem()` |
+| `src/js/models/Despesa.js` | Campo opcional `origemBanco` |
+| `src/js/models/Receita.js` | Campo opcional `origemBanco` |
+
+### Critérios de Aceitação
+- [x] `categorizarTransacao` tenta lookup origin-specific antes do global
+- [x] Histórico origin-specific tem prioridade sobre global
+- [x] Fallback para regras por palavras-chave quando sem histórico
+- [x] `origemBanco` salvo em despesas/receitas importadas
+- [x] Re-importação do mesmo banco usa histórico acumulado
+- [x] `_recategorizarComOrigem()` atualiza categorias após detecção de banco
+- [x] Funciona em modo banco (CSV, XLSX, PDF) e modo cartão
+- [x] Sem regressão: importações sem `origemBanco` funcionam normalmente

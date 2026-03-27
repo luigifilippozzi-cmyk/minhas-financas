@@ -52,6 +52,8 @@ Formato: `MAJOR.MINOR.PATCH` — ex: `v1.2.3`
 | v2.2.0 | 2026-03 | RF-018 Base de Dados centralizada (4 abas) |
 | v2.3.0 | 2026-03 | RF-019 Bug fix: Conta/Banco automático no preview |
 | v2.4.0 | 2026-03 | RF-020 Importação PDF + classificação automática por sinal |
+| v2.6.0 | 2026-03 | RF-021 Motor de detecção + identificação de banco/emissor |
+| v2.6.1 | 2026-03 | RF-022 Categorização inteligente sensível à origem (banco) |
 
 ### Próximas Versões (Backlog)
 
