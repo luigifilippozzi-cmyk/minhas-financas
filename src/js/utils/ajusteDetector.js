@@ -49,13 +49,13 @@ export function classificarEstabelecimento(descricao) {
  *
  * Condições para considerar como ajuste parcial:
  *   1. Crédito pertence a estabelecimento elegível (marketplace/supermercado/delivery)
- *   2. Despesa contém a MESMA keyword identificadora do crédito (ex: 'IFOOD')  ← BUG-014 fix
+ *   2. Despesa contém a MESMA keyword identificadora do crédito (ex: 'IFOOD')  ← BUG-018 fix
  *   3. Valor do crédito < valor da despesa (parcial, não estorno total)
  *   4. Diferença de data ≤ janelaDias
  *   Levenshtein é usado somente como critério de desempate quando há múltiplas
  *   despesas candidatas — NÃO como gate de inclusão (threshold removido).
  *
- * Rationale BUG-014: em extratos bancários reais, o crédito/cashback raramente
+ * Rationale BUG-018: em extratos bancários reais, o crédito/cashback raramente
  *   tem a mesma descrição da despesa original. Ex:
  *     despesa  → "IFOOD *RESTAURANTE ABC 01/11"
  *     crédito  → "IFOOD CREDITO" ou "PIX RECEBIDO IFOOD"
@@ -89,7 +89,7 @@ export function detectarAjustesParciais(linhas, {
     const tipoEst = classificarEstabelecimento(cred.descricao);
     if (!tipoEst) continue;
 
-    // BUG-014: extrai a keyword que identificou o estabelecimento no crédito
+    // BUG-018: extrai a keyword que identificou o estabelecimento no crédito
     const normCredUpper = cred.descricao.toUpperCase()
       .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     const keyword = PADROES_ESTABELECIMENTO[tipoEst].find(p => normCredUpper.includes(p));
@@ -111,7 +111,7 @@ export function detectarAjustesParciais(linhas, {
         if (diffDias > janelaDias) continue;
       }
 
-      // BUG-014: critério principal — despesa deve conter a MESMA keyword do crédito
+      // BUG-018: critério principal — despesa deve conter a MESMA keyword do crédito
       const normDespUpper = desp.descricao.toUpperCase()
         .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
       if (!normDespUpper.includes(keyword)) continue;

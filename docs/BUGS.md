@@ -315,6 +315,99 @@ if (headerIdx < 0 && rows.some(r => r.length === 1 && String(r[0] ?? '').include
 
 ---
 
+### BUG-013 — Exclusão indevida de estornos/créditos na importação de faturas
+**Severidade:** 🔴 Crítico
+**Versão introduzida:** v3.0.0 (RF-013)
+**Versão corrigida:** pendente
+**Arquivo:** `src/js/pages/pipelineCartao.js`
+
+**Descrição:**
+A função `filtrarCreditos` marca automaticamente qualquer transação com valor negativo (`isNegativo = true`) como erro, impedindo sua importação. Isso bloqueia estornos legítimos de compras que aparecem na fatura do cartão.
+
+**Código problemático:**
+```javascript
+export function filtrarCreditos(linhas) {
+  linhas.forEach((l) => {
+    if (l.isNegativo && !l.erro) l.erro = 'Crédito/estorno — não importado';
+  });
+}
+```
+
+**Impacto:**
+Estornos e créditos legítimos são ignorados durante a importação, resultando em um saldo de fatura incorreto na aplicação em comparação com a fatura real.
+
+**Correção sugerida:**
+Permitir a importação de estornos, possivelmente adicionando um toggle na UI para "Ignorar Créditos/Estornos" ou permitindo que o usuário categorize esses valores manualmente.
+
+---
+
+### BUG-014 — Erro de escala em valores com ponto decimal (multiplicação por 100)
+**Severidade:** 🔴 Crítico
+**Versão introduzida:** v3.0.0 (RF-013)
+**Versão corrigida:** pendente
+**Arquivo:** `src/js/utils/normalizadorTransacoes.js`
+
+**Descrição:**
+A função `normalizarValorXP` remove todos os pontos da string de valor antes de converter para número. Se o arquivo de entrada usar o ponto como separador decimal (ex: `208.17`), o valor é transformado em `20817`, resultando em uma escala 100x maior.
+
+**Código problemático:**
+```javascript
+const s = String(val).trim().replace(/R\$\s*/i, '').replace(/\./g, '').replace(',', '.');
+return parseFloat(s);
+```
+
+**Impacto:**
+Transações importadas de arquivos com formato decimal de ponto (comum em exportações internacionais ou CSVs específicos) ficam com valores irreais (ex: R$ 208,17 vira R$ 20.817,00).
+
+**Correção sugerida:**
+Implementar uma lógica que detecte se o ponto é separador de milhar ou decimal com base na posição e presença de outros separadores.
+
+---
+
+### BUG-015 — Parsing de parcelas ignora a última parcela da série
+**Severidade:** 🟠 Médio
+**Versão introduzida:** v3.0.0 (RF-013)
+**Versão corrigida:** pendente
+**Arquivo:** `src/js/utils/normalizadorTransacoes.js`
+
+**Descrição:**
+A função `parsearParcela` retorna `null` quando a parcela atual é igual ao total (ex: "12/12"). Isso impede que a última parcela seja reconhecida como parte de um parcelamento para fins de reconciliação ou metadados.
+
+**Código problemático:**
+```javascript
+if (atual >= total || total <= 0 || atual <= 0) return null;
+```
+
+**Impacto:**
+A última parcela de compras parceladas não é tratada corretamente pelo sistema de parcelamentos, podendo causar duplicidade ou falha na reconciliação com projeções existentes.
+
+**Correção sugerida:**
+Alterar a condição para `atual > total`.
+
+---
+
+### BUG-016 — Filtro de palavras-chave bloqueia transações legítimas de refinanciamento
+**Severidade:** 🟠 Médio
+**Versão introduzida:** v3.0.0 (RF-013)
+**Versão corrigida:** pendente
+**Arquivo:** `src/js/utils/normalizadorTransacoes.js`
+
+**Descrição:**
+O parser ignora silenciosamente qualquer linha que contenha "credito de refinanciamento". Isso impede a importação de juros de parcelamento de fatura ou refinanciamentos que o usuário pode desejar trackear como despesa financeira.
+
+**Código problemático:**
+```javascript
+if (/...|credito de refinanciamento/i.test(estabLow)) continue;
+```
+
+**Impacto:**
+Despesas financeiras legítimas são omitidas da importação sem aviso ao usuário.
+
+**Correção sugerida:**
+Remover o termo do filtro automático ou permitir que o usuário revise essas linhas no preview.
+
+---
+
 ---
 
 ## Dívida Técnica / Melhorias Pendentes
@@ -371,9 +464,43 @@ Substituir por classes CSS (ex: `.imp-td-valor`, `.imp-td-erro`, `.imp-td-credit
 
 ---
 
+### TD-005 — Falta de paginação server-side na aba Gerenciar
+**Tipo:** Performance / Escalabilidade
+**Arquivo:** `src/js/services/database.js`, `src/js/pages/base-dados.js`
+
+**Descrição:**
+A função `buscarTodasTransacoes` carrega todas as despesas e receitas de um grupo de uma só vez. Para grupos com histórico longo (+1.000 transações), isso causa latência e alto consumo de memória.
+
+**Sugestão:**
+Implementar paginação server-side utilizando `startAfter` do Firestore e um botão "Carregar Mais" na UI.
+
 ---
 
-### BUG-013 — NRF-002.2: Despesa com ajuste parcial salva pelo valor bruto
+### TD-006 — Duplicação de lógica de importação entre Despesas e Receitas
+**Tipo:** Manutenibilidade / DRY
+**Arquivo:** `src/js/pages/importar.js`, `src/js/pages/receitas.js`
+
+**Descrição:**
+Existem dois sistemas de importação independentes com lógicas de preview, parsing e dedup muito similares, mas mantidos separadamente.
+
+**Sugestão:**
+Unificar em um componente de importação genérico que aceite configurações de tipo de dado.
+
+---
+
+### TD-007 — Ausência de validação de esquema nas regras do Firestore
+**Tipo:** Segurança / Integridade
+**Arquivo:** `firestore.rules`
+
+**Descrição:**
+As regras de segurança validam apenas a permissão de acesso ao grupo, mas não o formato ou valores dos dados enviados (ex: permitir valor negativo ou data inválida).
+
+**Sugestão:**
+Adicionar validações de tipo e valor (ex: `valor is number && valor > 0`) diretamente nas `firestore.rules`.
+
+---
+
+### BUG-017 — NRF-002.2: Despesa com ajuste parcial salva pelo valor bruto
 **Severidade:** 🔴 Crítico
 **Versão introduzida:** v3.1.0
 **Versão corrigida:** v3.5.0
@@ -403,7 +530,7 @@ const despesaRef = await criarDespesaDB(modelDespesa({
 
 ---
 
-### BUG-014 — NRF-002.2: Detector de ajustes usa Levenshtein full-string — nenhum par detectado
+### BUG-018 — NRF-002.2: Detector de ajustes usa Levenshtein full-string — nenhum par detectado
 **Severidade:** 🔴 Crítico
 **Versão introduzida:** v3.1.0
 **Versão corrigida:** v3.5.0

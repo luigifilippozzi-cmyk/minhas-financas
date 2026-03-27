@@ -61,7 +61,7 @@ Formato: `MAJOR.MINOR.PATCH` — ex: `v1.2.3`
 | v3.2.0 | 2026-03-27 | NRF-009 Responsável por Transação: auto-assign banco + seletor cartão |
 | v3.3.0 | 2026-03-27 | RF-023 Edição em massa de responsável na aba Gerenciar |
 | v3.4.0 | 2026-03-27 | NRF-010 Portador "Conjunto" no upload de fatura de cartão |
-| v3.5.0 | 2026-03-27 | BUG-013 + BUG-014: NRF-002.2 ajustes parciais inoperante — fix crítico |
+| v3.5.0 | 2026-03-27 | BUG-017 + BUG-018: NRF-002.2 ajustes parciais inoperante — fix crítico |
 
 ### Próximas Versões (Backlog)
 
