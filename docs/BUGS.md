@@ -464,6 +464,42 @@ Substituir por classes CSS (ex: `.imp-td-valor`, `.imp-td-erro`, `.imp-td-credit
 
 ---
 
+### TD-005 — Falta de paginação server-side na aba Gerenciar
+**Tipo:** Performance / Escalabilidade
+**Arquivo:** `src/js/services/database.js`, `src/js/pages/base-dados.js`
+
+**Descrição:**
+A função `buscarTodasTransacoes` carrega todas as despesas e receitas de um grupo de uma só vez. Para grupos com histórico longo (+1.000 transações), isso causa latência e alto consumo de memória.
+
+**Sugestão:**
+Implementar paginação server-side utilizando `startAfter` do Firestore e um botão "Carregar Mais" na UI.
+
+---
+
+### TD-006 — Duplicação de lógica de importação entre Despesas e Receitas
+**Tipo:** Manutenibilidade / DRY
+**Arquivo:** `src/js/pages/importar.js`, `src/js/pages/receitas.js`
+
+**Descrição:**
+Existem dois sistemas de importação independentes com lógicas de preview, parsing e dedup muito similares, mas mantidos separadamente.
+
+**Sugestão:**
+Unificar em um componente de importação genérico que aceite configurações de tipo de dado.
+
+---
+
+### TD-007 — Ausência de validação de esquema nas regras do Firestore
+**Tipo:** Segurança / Integridade
+**Arquivo:** `firestore.rules`
+
+**Descrição:**
+As regras de segurança validam apenas a permissão de acesso ao grupo, mas não o formato ou valores dos dados enviados (ex: permitir valor negativo ou data inválida).
+
+**Sugestão:**
+Adicionar validações de tipo e valor (ex: `valor is number && valor > 0`) diretamente nas `firestore.rules`.
+
+---
+
 ## Legenda de Severidade
 
 | Ícone | Nível | Critério |
