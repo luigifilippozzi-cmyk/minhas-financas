@@ -11,6 +11,27 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [3.2.0] - 2026-03-27
+
+### Adicionado — NRF-009: Responsável por Transação no Import
+
+Extrato bancário auto-atribui responsável = usuário do upload (não editável no preview). Fatura de cartão passa a ter seletor editável por linha e em lote, populado com os membros do grupo.
+
+#### `src/base-dados.html`
+- `resp-lote-wrap` — wrapper com label + `sel-resp-lote` na barra de ações em lote (visível apenas em modo cartão)
+
+#### `src/js/pages/importar.js`
+- `buscarGrupo` importado de `database.js`
+- `_nomesMembros` — novo estado: mapa `{ uid: nome }` dos membros do grupo
+- `preencherSelRespLote()` — preenche seletor em lote com nomes dos membros (fallback para `displayName` em grupo solo)
+- `_aplicarTipo('banco')` — auto-preenche `l.portador = displayName` para linhas sem portador explícito
+- `_atualizarUITipo()` — mostra/oculta `resp-lote-wrap` conforme tipo (cartão apenas)
+- `renderizarPreview()` — coluna Portador: `<select class="sel-resp-linha">` em modo cartão; texto estático nos demais
+- `sel-resp-lote` listener — aplica nome selecionado a todos os `.sel-resp-linha` em lote
+- `criarReceita` — passa `responsavel: l.portador` (receitas do extrato bancário)
+
+---
+
 ## [3.1.0] - 2026-03-27
 
 ### Adicionado — NRF-002.2: Detecção de Ajustes Parciais (Marketplace-Aware)

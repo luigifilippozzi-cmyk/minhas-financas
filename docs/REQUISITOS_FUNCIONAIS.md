@@ -29,6 +29,7 @@
 | NRF-006 | Detecção Automática de Tipo de Extrato | Alta | ✅ Implementado |
 | NRF-007 | _(Reservado — não definido)_ | — | 🔲 N/A |
 | NRF-008 | Deduplicação de Transações | Alta | ✅ Implementado |
+| NRF-009 | Responsável por Transação no Import | Média | ✅ Implementado |
 | RF-019 | Correção: Preenchimento Automático de Conta/Banco no Preview | Alta | ✅ Implementado |
 | RF-020 | Classificação Automática por Sinal + Importação PDF | Alta | ✅ Implementado |
 | RF-021 | Motor de Detecção, Roteamento e Identificação de Banco | Alta | ✅ Implementado |
@@ -919,3 +920,44 @@ A categorização automática usava apenas o histórico global (descrição → 
 - [x] `_recategorizarComOrigem()` atualiza categorias após detecção de banco
 - [x] Funciona em modo banco (CSV, XLSX, PDF) e modo cartão
 - [x] Sem regressão: importações sem `origemBanco` funcionam normalmente
+
+---
+
+## NRF-009: Responsável por Transação no Import
+**Prioridade:** Média | **Versão:** v3.2.0 | **Status:** ✅ Implementado
+
+### Motivação
+No modelo de grupo familiar (2 membros), saber quem é o responsável por cada transação importada é fundamental para reconciliação de gastos, fluxo de caixa por pessoa e rastreabilidade.
+
+### Comportamento por Tipo de Pipeline
+
+| Pipeline | Atribuição | Editável no preview |
+|----------|-----------|---------------------|
+| 🏦 Extrato Bancário | Automático: `responsavel = displayName` do usuário que faz o upload | ❌ Não (texto estático) |
+| 💳 Fatura de Cartão | Manual: seletor por linha + seletor em lote | ✅ Sim |
+| 📥 Receitas | Herdado do pipeline bancário (automático) | ❌ Não |
+| 💸 Despesas CSV | Herdado da coluna Portador (se existir) | ❌ Estático |
+
+### Funcionalidades
+
+- **Banco:** `_aplicarTipo('banco')` auto-preenche `l.portador = _usuario.displayName` para todas as linhas sem portador explícito
+- **Cartão:** coluna Portador no preview renderiza `<select class="sel-resp-linha">` com membros do grupo; seletor em lote `sel-resp-lote` aplica a todas as linhas de uma vez
+- **Membros:** carregados de `grupos/{grupoId}.nomesMembros` na inicialização; fallback para `displayName` do usuário atual se grupo sem outros membros
+- **Persistência:** `portador` e `responsavel` já existem no modelo `Despesa`/`Receita` — sem migração de schema necessária
+
+### Arquivos
+
+| Arquivo | Mudança |
+|---------|---------|
+| `src/js/pages/importar.js` | `buscarGrupo` importado; `_nomesMembros` state; `preencherSelRespLote()`; auto-assign em `_aplicarTipo('banco')`; portador editável em cartão; `_atualizarUITipo` show/hide `resp-lote-wrap`; `sel-resp-lote` listener; `responsavel` em `criarReceita` |
+| `src/base-dados.html` | `resp-lote-wrap` div com label + `sel-resp-lote` na barra de ações em lote |
+
+### Critérios de Aceitação
+- [x] Upload de extrato bancário → portador de todas as linhas = nome do usuário logado
+- [x] Preview bancário mostra nome do portador como texto (não editável)
+- [x] Preview de fatura de cartão mostra seletor dropdown com membros do grupo por linha
+- [x] Seletor em lote `Responsável:` visível apenas em modo cartão
+- [x] Seletor em lote aplica nome a todos os `.sel-resp-linha` de uma vez
+- [x] `criarReceita` recebe `responsavel: l.portador` (receitas do extrato bancário)
+- [x] `criarDespesa` já recebia `responsavel: l.portador` — sem alteração necessária
+- [x] Sem regressão em modos receita/despesa (portador exibido como texto)
