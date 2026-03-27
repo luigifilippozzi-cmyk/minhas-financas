@@ -315,6 +315,62 @@ if (headerIdx < 0 && rows.some(r => r.length === 1 && String(r[0] ?? '').include
 
 ---
 
+---
+
+## Dívida Técnica / Melhorias Pendentes
+
+Itens identificados em revisão de código que não são bugs (não quebram funcionalidade), mas representam oportunidades de melhoria de performance, manutenibilidade ou UX.
+
+---
+
+### TD-001 — `buscarTodasTransacoes` sem paginação server-side
+**Tipo:** Performance
+**Arquivo:** `src/js/services/database.js`
+
+**Descrição:**
+A função carrega todas as transações do grupo em uma única query Firestore. Para grupos com +1.000 transações, isso pode causar latência perceptível na aba Gerenciar.
+
+**Sugestão:**
+Implementar paginação com cursor (`startAfter`) e carregamento sob demanda (scroll infinito ou botão "Carregar mais") na aba Gerenciar de `base-dados.js`.
+
+---
+
+### TD-002 — Trio `_aplicarTipo + marcarDuplicatas + renderizarPreview` repetido
+**Tipo:** DRY / Manutenibilidade
+**Arquivo:** `src/js/pages/importar.js`
+
+**Descrição:**
+O mesmo trio de chamadas é invocado em 3 contextos diferentes (mudança de tipo, mudança de mês de fatura, toggle de sinais). Qualquer nova etapa de processamento precisa ser adicionada em 3 lugares.
+
+**Sugestão:**
+Extrair em uma função `_reprocessarLinhas()` que encapsula o trio. Reduz de ~30 linhas repetidas para 1 chamada por contexto.
+
+---
+
+### TD-003 — Templates de export em `importar.js` (1032 linhas)
+**Tipo:** Separação de responsabilidades
+**Arquivo:** `src/js/pages/importar.js`
+
+**Descrição:**
+O bloco com `gerarTemplateDespesas`, `gerarTemplateBanco` e `gerarTemplateReceitas` (~100 linhas) não depende de estado global do módulo e poderia ser isolado. O arquivo atual tem ~1032 linhas, tornando navegação e revisão mais lentas.
+
+**Sugestão:**
+Extrair para `src/js/utils/templateExport.js` como funções puras que recebem `contas` e `categorias` como parâmetros.
+
+---
+
+### TD-004 — Inline styles em `renderizarPreview`
+**Tipo:** Manutenibilidade / CSS
+**Arquivo:** `src/js/pages/importar.js`
+
+**Descrição:**
+Estilização de células da tabela de preview usa `element.style.color`, `element.style.textAlign`, etc. diretamente no JS. Dificulta ajustes visuais e temas futuros.
+
+**Sugestão:**
+Substituir por classes CSS (ex: `.imp-td-valor`, `.imp-td-erro`, `.imp-td-credito`) definidas em `main.css`. O JS apenas adiciona/remove classes conforme o estado da linha.
+
+---
+
 ## Legenda de Severidade
 
 | Ícone | Nível | Critério |

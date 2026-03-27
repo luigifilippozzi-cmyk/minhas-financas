@@ -1,4 +1,4 @@
-# 🧪 Guia de Testes — Minhas Finanças v1.0
+# 🧪 Guia de Testes — Minhas Finanças v3.0
 
 > **Como usar este guia:** Siga cada seção na ordem indicada. Para cada caso de teste, execute a ação descrita, compare com o resultado esperado, e marque ✅ se passou ou 🐛 se encontrou um bug. Reporte bugs criando uma issue no GitHub com a label `bug` e `blocker` (se impedir o fluxo principal).
 
@@ -11,8 +11,8 @@
 | **URL da aplicação** | https://minhas-financas-285da.web.app |
 | **Repositório** | https://github.com/luigifilippozzi-cmyk/minhas-financas |
 | **Milestone de testes** | [v1.0 — QA & Testes de Aceitação](https://github.com/luigifilippozzi-cmyk/minhas-financas/milestone/7) |
-| **Total de RFs** | 18 (RF-001 a RF-018 + NRFs) |
-| **Casos de teste** | 7 suítes (TC-001 a TC-007) |
+| **Total de RFs** | 22+ (RF-001 a RF-022 + NRFs) |
+| **Casos de teste** | 9 suítes (TC-001 a TC-009) |
 
 ---
 
@@ -272,6 +272,8 @@ A versão v1.0 está pronta para uso quando:
 - [ ] **TC-005 (importação)** funciona para o formato de extrato XP utilizado
 - [ ] **TC-006 (RF-014)** deduplicação e projeções funcionam corretamente
 - [ ] **TC-007 (RF-018)** Gerenciar carrega, filtra e exclui em lote; Limpeza visível só para o mestre
+- [ ] **TC-008 (RF-019 a RF-022)** Detecção automática de banco, categorização por origem e importação PDF
+- [ ] **TC-009 (RF-013 v3.0)** Pipeline: parcelamento_id correto em reconciliações; chip de erros oculta ao trocar arquivo
 - [ ] **Nenhum `blocker`** em aberto no GitHub
 - [ ] **Sync em tempo real** funciona em todos os fluxos testados
 
@@ -286,4 +288,74 @@ O progresso do milestone é atualizado automaticamente conforme os checklists da
 
 ---
 
-*Guia gerado em 2026-03-08 | atualizado 2026-03-26 (RF-017 Dashboard + RF-018 Base de Dados) | versão v2.2.0*
+---
+
+## 🔍 TC-008 — Detecção de Banco, Categorização e Importação PDF
+
+**RFs cobertas:** RF-019, RF-020, RF-021, RF-022
+
+### Detecção automática de banco (RF-021)
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 1 | Faça upload de extrato com nome "extrato-itau.csv" | Banner mostra "🟠 Banco Itaú" com alta confiança |
+| 2 | Faça upload de extrato Nubank (keywords "nubank" no conteúdo) | Detecta Nubank automaticamente |
+| 3 | Faça upload de arquivo sem fingerprint conhecido | Mostra "Banco desconhecido" sem travar |
+| 4 | Selecione a conta manualmente no seletor global após detecção | Override funciona; conta aplicada a todas as linhas |
+
+### Categorização sensível à origem (RF-022)
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 5 | Importe extrato do Itaú com transações já importadas antes | Categorias do histórico do Itaú aplicadas automaticamente |
+| 6 | Importe o mesmo estabelecimento de um banco diferente | Histórico do banco específico tem prioridade sobre o global |
+| 7 | Estabelecimento novo sem histórico | Fallback para regras por palavras-chave |
+
+### Importação PDF + classificação por sinal (RF-020)
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 8 | Faça upload de extrato bancário em PDF | Parser converte linhas para preview com data/descrição/valor |
+| 9 | Verifique linhas com valor negativo | Classificadas como `despesa` (tipoLinha = 'despesa') |
+| 10 | Verifique linhas com valor positivo | Classificadas como `receita` (tipoLinha = 'receita') |
+| 11 | Ative "Sinais Invertidos" antes de importar | Classificação inverte: positivo = despesa, negativo = receita |
+| 12 | PDF com confiança 'baixa' em alguma linha | Linha com badge de aviso ou erro visível no preview |
+
+### Preenchimento automático de conta no preview (RF-019)
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 13 | CSV com coluna "Conta / Banco" preenchida | Conta resolvida por nome na coluna; exibida no select da linha |
+| 14 | Coluna ausente, mas descrição contém "Itaú" | `inferirContaDaDescricao` detecta e preenche automaticamente |
+| 15 | Sem coluna e sem keywords de banco na descrição | Seletor global de conta aplicado como fallback |
+
+---
+
+## 🏗️ TC-009 — Pipeline Unificado (RF-013 v3.0) e Bug Fixes
+
+**RFs cobertas:** RF-013 | **Bugs:** BUG-009, BUG-010, BUG-011, BUG-012
+
+### parcelamento_id em reconciliações (BUG-009)
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 1 | Importe extrato com parcela que já tem projeção fuzzy na base | Despesa real salva com o mesmo `parcelamento_id` da projeção original |
+| 2 | Verifique na aba Fatura → Projeções após reconciliação fuzzy | Parcelas reconciliadas aparecem agrupadas no parcelamento correto |
+
+### Chip de erros (BUG-010)
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 3 | Faça upload de arquivo com linhas de erro (data inválida) | Chip de erros aparece com a contagem correta |
+| 4 | Troque para um arquivo sem erros | Chip de erros **desaparece** (hidden) — não herda contagem anterior |
+
+### Detecção de separador errado (BUG-012)
+
+| # | Ação | Resultado Esperado |
+|---|------|--------------------|
+| 5 | Faça upload de CSV exportado com vírgula como separador | Mensagem de erro clara: "Arquivo parece usar vírgula como separador. Use ponto-e-vírgula (;)." |
+| 6 | Faça upload do mesmo arquivo com ponto-e-vírgula | Import funciona normalmente |
+
+---
+
+*Guia gerado em 2026-03-08 | atualizado 2026-03-27 (RF-019 a RF-022 + RF-013 v3.0 + BUG-009 a BUG-012) | versão v3.0.2*
