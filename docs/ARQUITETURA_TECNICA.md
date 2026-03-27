@@ -175,7 +175,7 @@ src/
     │   └── firebase.js         ← Inicialização Firebase (Auth + Firestore)
     ├── services/
     │   ├── auth.js             ← onAuthChange, logout
-    │   ├── database.js         ← Todas as operações Firestore (CRUD + listeners + batch ops)
+    │   ├── database.js         ← Todas as operações Firestore (CRUD + listeners + batch ops); RF-023: atualizarResponsavelEmMassa()
     │   ├── grupos.js           ← RF-002: criarGrupo, entrarGrupo, gerenciamento de membros
     │   └── storage.js          ← Placeholder Firebase Storage (upload de imagens — futuro)
     ├── models/
@@ -201,7 +201,7 @@ src/
     │   ├── fatura.js           ← NRF-005: fechamento do cartão
     │   ├── grupo.js            ← RF-002: criação/entrada de grupo; convite
     │   ├── importar.js         ← Orquestrador fino — RF-013/RF-014/NRF-002/NRF-006/NRF-008/NRF-009
-    │   ├── base-dados.js       ← RF-018: tab switching + Gerenciar + Limpeza (purge)
+    │   ├── base-dados.js       ← RF-018 + RF-023: tab switching + Gerenciar + edição em massa + Limpeza (purge)
     │   ├── pipelineBanco.js    ← RF-013/RF-020: parse extrato bancário CSV/XLSX/PDF; classificarBanco()
     │   └── pipelineCartao.js   ← RF-013/RF-014: parse fatura; filtrarCreditos(); aplicarMesFatura(); gerarProjecoes()
     └── utils/
