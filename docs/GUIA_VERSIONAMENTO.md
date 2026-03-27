@@ -60,12 +60,13 @@ Formato: `MAJOR.MINOR.PATCH` — ex: `v1.2.3`
 | v3.1.0 | 2026-03-27 | NRF-002.2 Ajustes parciais marketplace/supermercado (iFood, Mambo, etc.) |
 | v3.2.0 | 2026-03-27 | NRF-009 Responsável por Transação: auto-assign banco + seletor cartão |
 | v3.3.0 | 2026-03-27 | RF-023 Edição em massa de responsável na aba Gerenciar |
+| v3.4.0 | 2026-03-27 | NRF-010 Portador "Conjunto" no upload de fatura de cartão |
 
 ### Próximas Versões (Backlog)
 
 | Versão | Milestone Planejado |
 |--------|---------------------|
-| v3.3.0 | App iOS via Capacitor (MILESTONE_iOS_App.md) |
+| v3.5.0 | App iOS via Capacitor (MILESTONE_iOS_App.md) |
 
 ## Workflow Completo
 

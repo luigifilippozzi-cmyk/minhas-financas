@@ -11,6 +11,27 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [3.4.0] - 2026-03-27
+
+### Adicionado — NRF-010: Portador "Conjunto" no Upload de Fatura de Cartão
+
+Permite marcar transações importadas via fatura de cartão como despesas conjuntas diretamente no preview de importação, tanto por linha quanto em lote. A seleção "👥 Conjunto" aplica `isConjunta=true` e `valorAlocado=valor/2` automaticamente, com destaque visual verde nas linhas afetadas.
+
+#### `src/js/pages/importar.js`
+- `RESP_CONJUNTO = 'conjunto'` — constante controlada para portador/responsável conjunto (NRF-010)
+- `preencherSelRespLote()` — opção "👥 Conjunto" adicionada ao final da lista de membros
+- Bulk listener `sel-resp-lote` — ao selecionar "Conjunto", marca `isConjunta=true` em todas as linhas e chama `renderizarPreview()` para atualizar badges
+- Per-line `sel-resp-linha` — opção "👥 Conjunto" adicionada; change listener propaga `isConjunta` para a linha
+- Status badge `imp-badge--conjunto` — exibido na coluna Status quando `l.isConjunta && cartão`
+- Save flow — `isConj = l.isConjunta ?? (catObj?.isConjuntaPadrao ?? false)` — seleção do usuário tem prioridade sobre padrão da categoria
+- Parcelas projetadas herdam `isConjunta` e `valorAlocado` do registro pai (comportamento existente mantido)
+
+#### `src/css/main.css`
+- `.imp-row-conjunto` — background verde claro (`#f0fdf4`) para linhas marcadas como conjunto
+- `.imp-badge--conjunto` — badge verde "👥 Conjunto" na coluna Status
+
+---
+
 ## [3.3.0] - 2026-03-27
 
 ### Adicionado — RF-023: Edição em Massa de Transações — Responsável Dinâmico
