@@ -9,6 +9,19 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+### Melhorado — Épico A: Hierarquia e composição do dashboard
+
+#### `src/dashboard.html`
+- **KPIs unificados no topo:** Total Orçado, Total Gasto, Total Receitas, Saldo e Disponível agora aparecem juntos em um único bloco visível sem scroll
+- **Seção de Receitas eliminada como seção separada:** KPIs de receitas movidos para o bloco principal; categorias de receitas passam a ser sub-bloco dentro da mesma seção, separado por `.section-subtitle`
+- **Widget de parcelamentos realocado:** movido para após os grids de categorias (antes interrompia o fluxo KPIs → categorias)
+- **Ações centralizadas no header:** "+ Nova Receita" e "+ Nova Despesa" agora ficam no cabeçalho principal junto aos seletores de período
+
+#### `src/css/dashboard.css`
+- **`.section-subtitle`:** novo estilo de sub-título uppercase/small para separar blocos dentro de uma seção sem criar seções HTML independentes
+- **Cores semânticas por card KPI:** `.resumo-card--gasto` (rose), `.resumo-card--disponivel` (indigo suave) adicionados
+- **`.resumo-cards`:** `minmax` reduzido de 175px para 160px para acomodar 5 KPIs na mesma linha em telas médias
+
 ---
 
 ## [3.8.0] - 2026-03-27
