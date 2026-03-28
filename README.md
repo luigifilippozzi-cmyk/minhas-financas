@@ -90,13 +90,30 @@ minhas-financas/
 
 - [x] v1.0.0 — Autenticação, Grupos, Categorias, Despesas, Orçamentos, Dashboard
 - [x] v1.1.0 — Importação de extratos, Recuperação de senha, Reconciliação fuzzy
-- [x] v1.2.0 — Contas conjuntas (NRF-001), chips por usuário, correção bug #90
+- [x] v1.2.0 — Contas conjuntas (NRF-001), chips por usuário
 - [x] v1.3.0 — Módulo de Receitas (RF-016) com dashboard e página de gestão
 - [x] v1.4.0 — Fluxo de Caixa anual (NRF-003) com Chart.js, tabela e badges de situação
-- [x] v1.5.0 — Redesign visual completo: Inter font, shadcn/ui + Tremor design system, navbar blur, modais animados
-- [x] v1.6.0 — NRF-004: Identificação de conta/banco por transação + seleção no import de extratos
-- [ ] v1.7.0 — Notificações de orçamento e alertas de saldo
-- [ ] v2.0.0 — App iOS via Capacitor
+- [x] v1.5.0 — Redesign visual completo: Inter font, shadcn/ui + Tremor design system
+- [x] v1.6.0 — NRF-004: Identificação de conta/banco por transação + seleção no import
+- [x] v1.7.0 — NRF-005: Fatura do Cartão de Crédito (fechamento mensal, projeções)
+- [x] v1.8.0 — NRF-008: Deduplicação de transações no import (chave única por transação)
+- [x] v1.9.0 — NRF-002.1: Importação de fatura de cartão CSV nativo (parcelas, portador)
+- [x] v2.0.0 — NRF-006: Detecção automática de tipo de extrato no upload
+- [x] v2.1.0 — RF-017: Dashboard como tela inicial com gráficos (Chart.js)
+- [x] v2.2.0 — RF-018: Centralização da base de dados (4 abas: Importar · Duplicatas · Gerenciar · Limpeza)
+- [x] v2.3.0 — RF-019: Preenchimento automático de conta/banco no preview
+- [x] v2.4.0 — RF-020: Classificação automática por sinal + importação de PDF bancário
+- [x] v2.6.0 — RF-021: Motor de detecção e identificação de banco (15 bancos/emissores)
+- [x] v3.0.0 — RF-013: Pipeline unificado de ingestão (pipelineCartao/pipelineBanco/deduplicador)
+- [x] v3.1.0 — NRF-002.2: Detecção de ajustes parciais marketplace-aware
+- [x] v3.2.0 — NRF-009: Responsável por transação no import (auto-atribuição portador)
+- [x] v3.3.0 — RF-023: Edição em massa de transações — responsável dinâmico
+- [x] v3.4.0 — NRF-010: Portador "Conjunto" no upload de fatura (divisão 50/50)
+- [x] v3.5.0 — Fix NRF-002.2: ajustes parciais completamente inoperantes (BUG-017/018)
+- [x] v3.6.0 — Fix importação: estornos importáveis, valores decimais corretos, última parcela incluída
+- [x] v3.7.0 — Fix BUG-019: estornos marcados por padrão no preview (créditos da fatura)
+- [x] v3.8.0 — Fix BUG-021/022: ciclo de faturamento modelado com campo `mesFatura`
+- [ ] v4.0.0 — App iOS via Capacitor (projeto paralelo em andamento)
 
 ## 🤝 Contribuindo
 

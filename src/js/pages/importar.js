@@ -57,7 +57,7 @@ import {
   buscarChavesDedup, buscarChavesDedupReceitas,   // NRF-006
   buscarMapaProjecoes, buscarMapaCategorias,
   buscarProjecoesDetalhadas, atualizarStatusParcela,
-  criarParcelamento, reconciliarParcela,
+  criarParcelamento, reconciliarParcela, atualizarDespesa,
   criarReceita,                                    // NRF-006: salvar receitas do extrato bancário
   purgarDuplicatasDespesas, purgarDuplicatasReceitas,
 } from '../services/database.js';
@@ -850,6 +850,7 @@ async function executarImportacao() {
           origem: 'importacao', chave_dedup: l.chave_dedup, importadoEm: new Date(),
           origemBanco: _origemBanco,  // RF-021/RF-022
           responsavel: l.portador ?? '',  // Auto-atribuído no pipeline bancário
+          ...(l.mesFatura ? { mesFatura: l.mesFatura } : {}),  // BUG-021
         }));
         sucesso++;
         continue;
@@ -873,6 +874,7 @@ async function executarImportacao() {
         ...(l.dataAjustada && l.dataOriginal ? {
           dataOriginal: l.dataOriginal instanceof Date ? l.dataOriginal : new Date(l.dataOriginal),
         } : {}),
+        ...(l.mesFatura ? { mesFatura: l.mesFatura } : {}),  // BUG-021
       }));
       // NRF-002: reconciliação por matching exato
       if (l.substitui_projecao && l.chave_dedup && _projecaoDocMap.has(l.chave_dedup)) {
@@ -918,12 +920,20 @@ async function executarImportacao() {
             contaId,  // NRF-004: propaga conta para as projeções de parcelas
             status: 'pendente',
           }));
-          _chavesExistentes.add(p.chave_dedup);
+          _chavesExistentes.set(p.chave_dedup, '');  // BUG-021: Map em vez de Set
           projGeradas++;
         }
       }
       sucesso++;
     } catch { falha++; }
+  }
+  // BUG-021: propaga mesFatura nas duplicatas detectadas (parceladas de meses anteriores)
+  if (_tipoExtrato === 'cartao' && _mesFatura) {
+    for (const l of _linhas) {
+      if (l.duplicado && l.duplicado_docId) {
+        try { await atualizarDespesa(l.duplicado_docId, { mesFatura: _mesFatura }); } catch {}
+      }
+    }
   }
   mostrarResultado(sucesso, falha, projGeradas, reconciliacoes, reconciliacoesFuzzy);
 }

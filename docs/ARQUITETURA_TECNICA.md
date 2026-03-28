@@ -61,6 +61,7 @@ firestore/
 │   ├── parcelamento_id: string | null   ← ref para parcelamentos/{id}
 │   ├── despesaRealId: string | null     ← id da despesa real (projecao_paga)
 │   ├── origemBanco: string | null       ← banco/emissor detectado (RF-021/RF-022)
+│   ├── mesFatura: string | null         ← ciclo de faturamento "YYYY-MM" (BUG-021/v3.8.0)
 │   └── importadoEm: timestamp | null
 │
 ├── receitas/{receitaId}
@@ -76,6 +77,7 @@ firestore/
 │   ├── contaId: string | null           ← NRF-004
 │   ├── chave_dedup: string | null       ← NRF-008
 │   ├── origemBanco: string | null       ← RF-021/RF-022
+│   ├── mesFatura: string | null         ← ciclo de faturamento "YYYY-MM" (BUG-021/v3.8.0)
 │   └── importadoEm: timestamp | null
 │
 ├── orcamentos/{grupoId_categoriaId_ano_mes}
@@ -124,6 +126,7 @@ Definidos em `firestore.indexes.json`:
 | `contas` | `(grupoId ASC, ativa ASC)` | Contas ativas do grupo |
 | `receitas` | `(grupoId ASC, data DESC)` | Listagem mensal de receitas |
 | `receitas` | `(grupoId ASC, data ASC)` | RF-017/RF-018: busca por intervalo de datas |
+| `despesas` | `(grupoId ASC, mesFatura DESC)` | BUG-022/v3.8.0: fatura por ciclo de faturamento |
 
 ---
 
@@ -140,7 +143,7 @@ chave_simples = data(YYYY-MM-DD) || descricao(lower,trim,60chars) || valor(2dec)
 ```
 
 ### Fluxo de proteção
-1. **Import**: `buscarChavesDedup(grupoId)` → `Set<chave_dedup>` → skipa linhas já existentes
+1. **Import**: `buscarChavesDedup(grupoId)` → `Map<chave_dedup, docId>` → skipa linhas já existentes; `docId` usado para atualizar `mesFatura` nas duplicatas de cartão (BUG-021/v3.8.0)
 2. **Manual (despesas)**: `criarDespesa` recebe `chave_dedup = manual||data||desc||valor`
 3. **Purga**: `purgarDuplicatasDespesas / purgarDuplicatasReceitas` com `dryRun` para análise prévia
 

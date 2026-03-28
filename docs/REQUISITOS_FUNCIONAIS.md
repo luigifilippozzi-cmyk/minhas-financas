@@ -631,6 +631,11 @@ Arquivo gerado com SheetJS contendo 3 abas:
 - [x] Exportação Excel gera arquivo com 3 abas (Transações, Resumo, Conjuntas)
 - [x] Link no navbar visível em todas as páginas da aplicação
 - [x] Auto-seleciona o primeiro cartão de crédito cadastrado ao entrar na página
+- [x] Transações à vista de fim de mês (ex: fev/26–28 no ciclo de março) aparecem na fatura correta via campo `mesFatura` (BUG-021/022 — v3.8.0)
+- [x] Parceladas de meses anteriores aparecem no ciclo de faturamento correto após import via `mesFatura` (BUG-021 — v3.8.0)
+
+#### Atualização v3.8.0 — Campo `mesFatura` e Ciclo de Faturamento (BUG-021/022)
+O campo `mesFatura: "YYYY-MM"` foi adicionado a todas as transações importadas de fatura de cartão. A página `fatura.js` utiliza dois listeners em paralelo (`ouvirDespesas` para mês calendário + `ouvirDespesasPorMesFatura` para campo `mesFatura`) com merge por `id`, garantindo que transações com `data` em meses adjacentes mas pertencentes ao ciclo correto apareçam na fatura.
 
 ---
 
