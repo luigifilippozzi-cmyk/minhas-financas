@@ -1,0 +1,121 @@
+# MILESTONE — Melhorias Visuais (Clean, Fluido e Intuitivo)
+
+## Status
+- **Estado:** Planejado
+- **Versão alvo:** v1.3.0
+- **Janela sugerida:** 3 sprints (3 semanas)
+- **Documento de acompanhamento:** este arquivo (checklist vivo)
+
+## Objetivo do milestone
+Elevar a qualidade visual e de usabilidade do produto com foco em:
+1. reduzir ruído visual;
+2. melhorar hierarquia de informação;
+3. tornar navegação e ações mais intuitivas em desktop e mobile;
+4. padronizar componentes para evolução sustentável.
+
+## Escopo do milestone
+### Incluído
+- Refino visual do dashboard e páginas principais.
+- Padronização de tipografia, espaçamento, ícones e estados.
+- Melhorias de responsividade e microinterações.
+- Revisão de estados de carregamento, vazio e erro.
+
+### Fora de escopo (neste ciclo)
+- Redesign completo de regras de negócio.
+- Mudanças profundas de arquitetura front-end.
+- Reescrita total de todas as telas legadas.
+
+---
+
+## Critérios de sucesso (Definition of Done do milestone)
+- [ ] Dashboard com nova hierarquia visual aplicada.
+- [ ] Navegação principal simplificada e consistente.
+- [ ] Padrão visual documentado (cores, tipografia, espaçamento, estados).
+- [ ] Responsividade validada para mobile/tablet/desktop.
+- [ ] Métricas mínimas atingidas (tempo de tarefa e redução de erro de navegação).
+
+## KPIs de validação
+- **Tempo para registrar despesa:** reduzir em **20%+**.
+- **Erros de navegação:** reduzir em **15%+**.
+- **Uso dos filtros do dashboard:** aumentar em **25%+**.
+- **Satisfação de usabilidade (NPS interno):** atingir **>= 8/10**.
+
+---
+
+## Backlog do milestone (épicos e entregáveis)
+
+### Épico A — Hierarquia e composição do dashboard
+**Objetivo:** deixar informação crítica mais evidente em menos tempo de leitura.
+
+- [ ] Reorganizar dashboard em blocos: **KPI → Categorias → Gráficos**.
+- [ ] Destacar 4 KPIs principais no primeiro viewport.
+- [ ] Reduzir densidade visual no topo da tela.
+- [ ] Revisar pesos de títulos/subtítulos/cards.
+
+**Entregável:** dashboard com escaneabilidade melhorada e foco em decisão rápida.
+
+### Épico B — Sistema visual unificado
+**Objetivo:** criar consistência entre páginas e componentes.
+
+- [ ] Padronizar paleta (primária, sucesso, alerta, crítico, neutros).
+- [ ] Definir tipografia base (H1/H2/corpo/legenda).
+- [ ] Aplicar grid de espaçamento em múltiplos de 8px.
+- [ ] Substituir emojis de ações por ícones consistentes.
+
+**Entregável:** base visual coesa e reutilizável.
+
+### Épico C — Fluidez e responsividade
+**Objetivo:** melhorar experiência em diferentes tamanhos de tela.
+
+- [ ] Ajustar breakpoints (mobile/tablet/desktop).
+- [ ] Garantir layout de 1 coluna em mobile para áreas críticas.
+- [ ] Preservar CTA principal visível em mobile (ex.: Nova Despesa).
+- [ ] Melhorar filtros para uso por toque (barra rolável ou sheet).
+
+**Entregável:** navegação fluida em telas pequenas e médias.
+
+### Épico D — Feedback e microinterações
+**Objetivo:** aumentar previsibilidade e sensação de qualidade.
+
+- [ ] Implementar estados visuais de **carregando/vazio/erro**.
+- [ ] Adotar skeleton loading para blocos de dados.
+- [ ] Definir transições curtas e consistentes (150–220ms).
+- [ ] Aplicar semáforo de orçamento (<70 / 70–89 / >=90).
+
+**Entregável:** interface mais clara, estável e reativa.
+
+---
+
+## Plano por sprint
+
+### Sprint 1 — Fundação visual
+- [ ] Simplificar navbar e hierarquia do dashboard.
+- [ ] Aplicar tokens de tipografia e espaçamento.
+- [ ] Validar contraste básico e leitura.
+
+### Sprint 2 — Responsividade e interação
+- [ ] Ajustes mobile/tablet nas principais páginas.
+- [ ] Estados de carregamento/vazio/erro.
+- [ ] Microinterações (hover/focus/transições).
+
+### Sprint 3 — Polimento e validação
+- [ ] Ajustes finais orientados por uso real.
+- [ ] Rodada de validação com KPIs definidos.
+- [ ] Fechamento do milestone e lições aprendidas.
+
+---
+
+## Riscos e mitigação
+- **Risco:** mudanças visuais sem impacto real em produtividade.  
+  **Mitigação:** medir KPIs antes/depois e ajustar por evidência.
+
+- **Risco:** inconsistência entre páginas novas e antigas.  
+  **Mitigação:** checklist de padrões visuais por tela tocada.
+
+- **Risco:** regressão de usabilidade em mobile.  
+  **Mitigação:** validação obrigatória em viewport mobile por sprint.
+
+## Governança do milestone
+- Atualizar este checklist a cada entrega relevante.
+- Toda PR visual deve referenciar ao menos 1 item deste milestone.
+- Encerrar milestone apenas quando critérios de sucesso e KPIs mínimos forem avaliados.
