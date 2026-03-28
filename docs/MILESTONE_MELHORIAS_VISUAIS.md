@@ -1,7 +1,7 @@
 # MILESTONE — Melhorias Visuais (Clean, Fluido e Intuitivo)
 
 ## Status
-- **Estado:** Planejado
+- **Estado:** Em andamento
 - **Versão alvo:** v1.3.0
 - **Janela sugerida:** 3 sprints (3 semanas)
 - **Documento de acompanhamento:** este arquivo (checklist vivo)
@@ -28,7 +28,7 @@ Elevar a qualidade visual e de usabilidade do produto com foco em:
 ---
 
 ## Critérios de sucesso (Definition of Done do milestone)
-- [ ] Dashboard com nova hierarquia visual aplicada.
+- [x] Dashboard com nova hierarquia visual aplicada. *(Épico A — 2026-03-28)*
 - [ ] Navegação principal simplificada e consistente.
 - [ ] Padrão visual documentado (cores, tipografia, espaçamento, estados).
 - [ ] Responsividade validada para mobile/tablet/desktop.
@@ -44,13 +44,13 @@ Elevar a qualidade visual e de usabilidade do produto com foco em:
 
 ## Backlog do milestone (épicos e entregáveis)
 
-### Épico A — Hierarquia e composição do dashboard
+### Épico A — Hierarquia e composição do dashboard ✅ *2026-03-28*
 **Objetivo:** deixar informação crítica mais evidente em menos tempo de leitura.
 
-- [ ] Reorganizar dashboard em blocos: **KPI → Categorias → Gráficos**.
-- [ ] Destacar 4 KPIs principais no primeiro viewport.
-- [ ] Reduzir densidade visual no topo da tela.
-- [ ] Revisar pesos de títulos/subtítulos/cards.
+- [x] Reorganizar dashboard em blocos: **KPI → Categorias → Gráficos**.
+- [x] Destacar 4 KPIs principais no primeiro viewport.
+- [x] Reduzir densidade visual no topo da tela.
+- [x] Revisar pesos de títulos/subtítulos/cards.
 
 **Entregável:** dashboard com escaneabilidade melhorada e foco em decisão rápida.
 
@@ -89,8 +89,8 @@ Elevar a qualidade visual e de usabilidade do produto com foco em:
 ## Plano por sprint
 
 ### Sprint 1 — Fundação visual
-- [ ] Simplificar navbar e hierarquia do dashboard.
-- [ ] Aplicar tokens de tipografia e espaçamento.
+- [x] Simplificar navbar e hierarquia do dashboard.
+- [x] Aplicar tokens de tipografia e espaçamento.
 - [ ] Validar contraste básico e leitura.
 
 ### Sprint 2 — Responsividade e interação
