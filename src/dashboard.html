@@ -39,11 +39,13 @@
   <!-- Conteúdo Principal -->
   <main class="main-content">
 
-    <!-- ═══ SEÇÃO: DASHBOARD DE ORÇAMENTOS ═══ -->
+    <!-- ═══ BLOCO 1: KPIs + CATEGORIAS ═══ -->
     <section class="section" id="section-dashboard">
       <div class="section-header">
         <h2 class="section-title">📊 Dashboard — <span id="mes-ano-atual"></span></h2>
         <div class="section-actions">
+          <a href="receitas.html" class="btn btn-success btn-sm">+ Nova Receita</a>
+          <button id="btn-nova-despesa" class="btn btn-primary btn-sm">+ Nova Despesa</button>
           <!-- CT-009.5: botão de visibilidade do painel de parcelamentos -->
           <button id="btn-ver-parc-dash" class="btn btn-outline btn-sm" title="Ver parcelamentos em aberto">💳 Parcelas</button>
           <select id="select-mes" class="select-input"></select>
@@ -51,19 +53,29 @@
         </div>
       </div>
 
-      <!-- Cards de resumo -->
+      <!-- ── KPIs principais (visíveis no primeiro viewport) ── -->
       <div class="resumo-cards">
         <div class="card resumo-card">
           <span class="resumo-label">Total Orçado</span>
           <span class="resumo-valor" id="total-orcado">R$ 0,00</span>
         </div>
-        <div class="card resumo-card">
+        <div class="card resumo-card resumo-card--gasto">
           <span class="resumo-label">Total Gasto</span>
           <span class="resumo-valor" id="total-gasto">R$ 0,00</span>
         </div>
-        <div class="card resumo-card">
+        <div class="card resumo-card resumo-card--receita">
+          <span class="resumo-label">Total Receitas</span>
+          <span class="resumo-valor rec-verde" id="rec-total">R$ 0,00</span>
+        </div>
+        <div class="card resumo-card resumo-card--saldo">
+          <span class="resumo-label">Saldo</span>
+          <span class="resumo-valor" id="rec-saldo">R$ 0,00</span>
+          <span class="resumo-sublabel">Receitas − Despesas</span>
+        </div>
+        <div class="card resumo-card resumo-card--disponivel">
           <span class="resumo-label">Disponível</span>
           <span class="resumo-valor" id="total-disponivel">R$ 0,00</span>
+          <span class="resumo-sublabel">Orçado − Gasto</span>
         </div>
         <!-- NRF-001: cards de divisão conjunta (visíveis apenas quando há despesas conjuntas) -->
         <div class="card resumo-card resumo-card--meu-bolso" id="card-meu-bolso" style="display:none;">
@@ -78,7 +90,20 @@
         </div>
       </div>
 
-      <!-- RF-014: Painel de Parcelamentos em Aberto -->
+      <!-- ── Categorias de Despesas ── -->
+      <h3 class="section-subtitle">Despesas por Categoria</h3>
+      <div class="categorias-grid" id="categorias-grid">
+        <!-- Preenchido dinamicamente via JS -->
+        <p class="empty-state">Carregando categorias...</p>
+      </div>
+
+      <!-- ── Categorias de Receitas ── -->
+      <h3 class="section-subtitle">Receitas — <span id="rec-mes-titulo"></span></h3>
+      <div class="categorias-grid" id="receitas-grid">
+        <p class="empty-state">Carregando receitas...</p>
+      </div>
+
+      <!-- RF-014: Painel de Parcelamentos em Aberto (após categorias) -->
       <div class="card parc-widget hidden" id="parc-widget-dash">
         <div class="parc-widget-header" id="parc-toggle-dash" style="cursor:pointer;">
           <span>💳 Parcelamentos em Aberto</span>
@@ -95,38 +120,9 @@
         </div>
       </div>
 
-      <!-- Grid de categorias com progresso -->
-      <div class="categorias-grid" id="categorias-grid">
-        <!-- Preenchido dinamicamente via JS -->
-        <p class="empty-state">Carregando categorias...</p>
-      </div>
     </section>
 
-    <!-- ═══ SEÇÃO: RECEITAS ═══ -->
-    <section class="section" id="section-receitas">
-      <div class="section-header">
-        <h2 class="section-title">📥 Receitas — <span id="rec-mes-titulo"></span></h2>
-        <a href="receitas.html" class="btn btn-success btn-sm">+ Nova Receita</a>
-      </div>
-
-      <div class="resumo-cards">
-        <div class="card resumo-card resumo-card--receita">
-          <span class="resumo-label">Total Receitas</span>
-          <span class="resumo-valor rec-verde" id="rec-total">R$ 0,00</span>
-        </div>
-        <div class="card resumo-card resumo-card--saldo">
-          <span class="resumo-label">Saldo</span>
-          <span class="resumo-valor" id="rec-saldo">R$ 0,00</span>
-          <span class="resumo-sublabel">Receitas − Despesas</span>
-        </div>
-      </div>
-
-      <div class="categorias-grid" id="receitas-grid">
-        <p class="empty-state">Carregando receitas...</p>
-      </div>
-    </section>
-
-    <!-- ═══ SEÇÃO: GRÁFICOS (RF-017) ═══ -->
+    <!-- ═══ BLOCO 2: GRÁFICOS (RF-017) ═══ -->
     <section class="section" id="section-graficos">
       <div class="section-header">
         <h2 class="section-title">📈 Análise por Categoria</h2>
@@ -152,14 +148,8 @@
       </div>
     </section>
 
-    <!-- Atalho rápido para nova despesa (mantido para navegação) -->
-    <div style="text-align:right;margin-top:-.5rem;">
-      <button id="btn-nova-despesa" class="btn btn-primary btn-sm">+ Nova Despesa</button>
-    </div>
-
   </main>
 
-  <!-- Modal de despesa removido: btn-nova-despesa redireciona para despesas.html -->
   <!-- Firebase SDK (versão modular) -->
   <!-- TODO: Substituir pelos scripts do seu projeto Firebase -->
   <!-- <script type="module" src="js/config/firebase.js"></script> -->
