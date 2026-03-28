@@ -3,10 +3,14 @@
   "version": "3.8.0",
   "description": "Aplicativo web de gestão financeira familiar com Firebase",
   "main": "src/js/app.js",
+  "type": "module",
   "scripts": {
     "start": "firebase serve",
     "deploy": "firebase deploy",
-    "emulate": "firebase emulators:start"
+    "emulate": "firebase emulators:start",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "keywords": [
     "firebase",
@@ -18,6 +22,8 @@
   "author": "Luigi",
   "license": "MIT",
   "devDependencies": {
-    "firebase-tools": "^13.0.0"
+    "firebase-tools": "^13.0.0",
+    "vitest": "^2.0.0",
+    "@vitest/coverage-v8": "^2.0.0"
   }
 }
