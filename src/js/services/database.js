@@ -138,7 +138,7 @@ export async function atualizarDespesa(despesaId, dados) {
   return updateDoc(doc(db, 'despesas', despesaId), dados);
 }
 
-// BUG-021: retorna despesas pelo campo mesFatura (ciclo de faturamento).
+// BUG-022: retorna despesas pelo campo mesFatura (ciclo de faturamento).
 // Complementa ouvirDespesas (mês calendário) para cobrir transações com data fora do mês.
 export function ouvirDespesasPorMesFatura(grupoId, mesFatura, callback) {
   const q = query(
@@ -273,7 +273,7 @@ export async function garantirContasPadrao(grupoId, contasPadrao) {
 
 /**
  * Retorna um Map<chave_dedup, docId> com todas as despesas do grupo.
- * BUG-020: Map (em vez de Set) permite recuperar o docId para atualizar mesFatura em duplicatas.
+ * BUG-021: Map (em vez de Set) permite recuperar o docId para atualizar mesFatura em duplicatas.
  */
 export async function buscarChavesDedup(grupoId) {
   const q    = query(collection(db, 'despesas'), where('grupoId', '==', grupoId));

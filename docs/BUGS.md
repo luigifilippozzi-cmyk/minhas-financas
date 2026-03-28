@@ -451,7 +451,7 @@ O badge `↩ Estorno` continua visível; tooltip atualizado para "desmarque para
 
 ---
 
-### BUG-020 — Campo `mesFatura` não persistido; transações à vista e parceladas de ciclos anteriores ausentes da fatura
+### BUG-021 — Campo `mesFatura` não persistido; transações à vista e parceladas de ciclos anteriores ausentes da fatura
 **Severidade:** 🔴 Crítico
 **Versão introduzida:** v1.0 (design original)
 **Versão corrigida:** v3.8.0
@@ -490,14 +490,14 @@ l.duplicado = true;  // ← faltava: l.duplicado_docId = Map.get(chave)
 
 ---
 
-### BUG-021 — `fatura.js` filtra por mês calendário: transações de ciclos cross-month nunca aparecem
+### BUG-022 — `fatura.js` filtra por mês calendário: transações de ciclos cross-month nunca aparecem
 **Severidade:** 🔴 Crítico
 **Versão introduzida:** v1.0 (design original)
 **Versão corrigida:** v3.8.0
 **Arquivos:** `src/js/pages/fatura.js`, `src/js/services/database.js`, `firestore.indexes.json`
 
 **Descrição:**
-`ouvirDespesas` filtra por `data >= início_do_mês && data <= fim_do_mês`. Transações com `data` fora do mês calendário mas pertencentes ao ciclo de faturamento (ex: à vista de fev/26–28 no ciclo de março) nunca eram retornadas pelo listener. Mesmo após BUG-020 adicionar `mesFatura` ao Firestore, sem este fix a fatura ainda não exibiria essas transações.
+`ouvirDespesas` filtra por `data >= início_do_mês && data <= fim_do_mês`. Transações com `data` fora do mês calendário mas pertencentes ao ciclo de faturamento (ex: à vista de fev/26–28 no ciclo de março) nunca eram retornadas pelo listener. Mesmo após BUG-021 adicionar `mesFatura` ao Firestore, sem este fix a fatura ainda não exibiria essas transações.
 
 **Correção aplicada:**
 1. Nova função `ouvirDespesasPorMesFatura(grupoId, mesFatura, callback)` em `database.js` — faz query por `where('mesFatura', '==', mesFatura)`.
