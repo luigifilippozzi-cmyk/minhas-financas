@@ -11,6 +11,17 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [3.7.0] - 2026-03-27
+
+### Corrigido — BUG-019: Estornos da fatura desmarcados por padrão — créditos não contabilizados
+
+#### `src/js/pages/importar.js` — BUG-019
+- **Problema:** O BUG-013 (v3.6.0) desbloqueou estornos/créditos, mas mantinha o checkbox desmarcado por padrão (`&& !l.isEstorno`). Usuários que clicavam "Importar" diretamente nunca importavam créditos — saldo da fatura no app persistia maior que o oficial pela soma dos estornos não contabilizados
+- **Fix:** Removido `!l.isEstorno` da condição de `chk.checked` → estornos agora selecionados por padrão, como qualquer outra transação. Badge `↩ Estorno` continua visível; tooltip atualizado para "desmarque para ignorar"
+- **Impacto real:** Fatura março 2026 — R$ 18.319,66 em créditos ausentes (Credito Refinanciamento R$18.222 + reembolso MercadoLivre R$24,99 + reembolso iFood R$72,67)
+
+---
+
 ## [3.6.0] - 2026-03-27
 
 ### Corrigido — BUG-013 a BUG-016 + TD-002 + TD-007: 4 bugs de parsing/importação + 2 débitos técnicos

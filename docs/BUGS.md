@@ -415,6 +415,42 @@ Removido `|credito de refinanciamento` do regex de filtro. Apenas termos de cont
 
 ---
 
+### BUG-019 — Estornos auto-desmarcados no preview: créditos da fatura não importados por padrão
+**Severidade:** 🔴 Crítico
+**Versão introduzida:** v3.6.0 (BUG-013)
+**Versão corrigida:** v3.7.0
+**Arquivo:** `src/js/pages/importar.js`
+
+**Descrição:**
+O BUG-013 (v3.6.0) desbloqueou estornos/créditos da fatura (valores negativos), mas a UI mantinha esses itens **desmarcados por padrão** via `!l.isEstorno` na condição de `chk.checked`. Qualquer usuário que clicasse em "Importar" sem revisar manualmente cada linha ignorava sistematicamente todos os créditos.
+
+**Código problemático:**
+```javascript
+// importar.js linha 613
+chk.checked = !l.erro && !l.duplicado && !l.ajuste_parcial && !l.isEstorno;
+//                                                             ^^^^^^^^^^^^ créditos nunca selecionados
+```
+
+**Impacto:**
+Créditos/estornos da fatura (ex: reembolsos, cashbacks, crédito de refinanciamento) nunca eram importados. O saldo total da fatura no app ficava maior que o saldo oficial da operadora pela soma de todos os créditos não contabilizados.
+
+**Exemplo real detectado (Fatura março 2026):**
+| Estabelecimento | Valor |
+|---|---|
+| Credito de Refinanciamento Saldo Financiado | R$ -18.222,00 |
+| MERCADOLIVRE*22PRODUTOS | R$ -24,99 |
+| IFD*HNT COMERCIO HORTI | R$ -72,67 |
+| **Total não contabilizado** | **R$ 18.319,66** |
+
+**Correção aplicada:**
+```javascript
+// Removido !l.isEstorno — estornos marcados por padrão como qualquer despesa normal
+chk.checked = !l.erro && !l.duplicado && !l.ajuste_parcial;
+```
+O badge `↩ Estorno` continua visível; tooltip atualizado para "desmarque para ignorar". Usuário pode desmarcar individualmente qualquer estorno que não queira importar.
+
+---
+
 ## Dívida Técnica / Melhorias Pendentes
 
 Itens identificados em revisão de código que não são bugs (não quebram funcionalidade), mas representam oportunidades de melhoria de performance, manutenibilidade ou UX.
