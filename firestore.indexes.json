@@ -58,6 +58,14 @@
         { "fieldPath": "grupoId", "order": "ASCENDING" },
         { "fieldPath": "data",    "order": "DESCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "despesas",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "grupoId",   "order": "ASCENDING" },
+        { "fieldPath": "mesFatura", "order": "DESCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

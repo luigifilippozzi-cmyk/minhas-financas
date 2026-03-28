@@ -10,7 +10,7 @@
 // ============================================================
 
 import { onAuthChange, logout } from '../services/auth.js';
-import { buscarPerfil, buscarGrupo, ouvirContas, ouvirCategorias, ouvirDespesas } from '../services/database.js';
+import { buscarPerfil, buscarGrupo, ouvirContas, ouvirCategorias, ouvirDespesas, ouvirDespesasPorMesFatura } from '../services/database.js';
 import { formatarMoeda, formatarData, nomeMes } from '../utils/formatters.js';
 
 // ── Estado ────────────────────────────────────────────────────
@@ -27,9 +27,10 @@ let _despesas   = [];        // despesas do mês filtradas pelo cartão
 let _cartaoId   = '';        // contaId do cartão selecionado
 let _tabAtiva   = 'todas';
 
-let _unsubContas = null;
-let _unsubCats   = null;
-let _unsubDesp   = null;
+let _unsubContas        = null;
+let _unsubCats          = null;
+let _unsubDesp          = null;
+let _unsubDespMesFatura = null;  // BUG-022: listener paralelo por mesFatura
 
 // ── Inicialização ─────────────────────────────────────────────
 onAuthChange(async (user) => {
@@ -109,18 +110,42 @@ function preencherSeletorCartao() {
 }
 
 // ── Listener de despesas ──────────────────────────────────────
+// BUG-022: usa dois listeners — mês calendário (backward compat) + mesFatura (ciclo de faturamento).
+// Transações com data em meses adjacentes mas pertencentes a este ciclo ficam visíveis.
 function recarregarDespesas() {
-  if (_unsubDesp) { _unsubDesp(); _unsubDesp = null; }
+  if (_unsubDesp)          { _unsubDesp();          _unsubDesp = null; }
+  if (_unsubDespMesFatura) { _unsubDespMesFatura();  _unsubDespMesFatura = null; }
   if (!_cartaoId) {
     _despesas = [];
     mostrarEmpty(true);
     return;
   }
   mostrarEmpty(false);
-  _unsubDesp = ouvirDespesas(_grupoId, _mes, _ano, (todas) => {
-    _despesas = todas.filter(d => d.contaId === _cartaoId && d.tipo !== 'projecao');
+  const mesFaturaStr = String(_ano) + '-' + String(_mes).padStart(2, '0');
+  let _calendarSet   = [];
+  let _mesFaturaSet  = [];
+
+  function _merge() {
+    const seen = new Set();
+    _despesas = [..._calendarSet, ..._mesFaturaSet].filter(d => {
+      if (d.tipo === 'projecao')    return false;
+      if (d.contaId !== _cartaoId) return false;
+      if (seen.has(d.id))           return false;
+      seen.add(d.id);
+      return true;
+    });
     renderizarTudo();
     carregarProjecoes();
+  }
+
+  _unsubDesp = ouvirDespesas(_grupoId, _mes, _ano, (todas) => {
+    _calendarSet = todas;
+    _merge();
+  });
+
+  _unsubDespMesFatura = ouvirDespesasPorMesFatura(_grupoId, mesFaturaStr, (todas) => {
+    _mesFaturaSet = todas;
+    _merge();
   });
 }
 
