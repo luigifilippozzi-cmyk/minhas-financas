@@ -318,6 +318,33 @@
   border-top: 1px solid var(--color-border);
 }
 .parc-compra-desc  { flex: 1; color: var(--color-text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ══════════════════════════════════════════════════════════════
+   GRÁFICO RECEITAS X DESPESAS (RF-017)
+   ══════════════════════════════════════════════════════════════ */
+.rec-chart-card {
+  margin-top: var(--space-5);
+  padding: var(--space-4);
+}
+.rec-chart-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+.rec-chart-header h3 {
+  margin: 0;
+  font-size: var(--font-size-base);
+}
+.rec-chart-sub {
+  font-size: .72rem;
+  color: var(--color-text-muted);
+}
+.rec-chart-wrap {
+  position: relative;
+  min-height: 260px;
+}
 .parc-compra-info  { color: var(--color-text-muted); white-space: nowrap; }
 .parc-compra-valor { font-weight: 700; color: var(--color-text); white-space: nowrap; }
 
