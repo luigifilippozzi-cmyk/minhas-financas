@@ -23,7 +23,7 @@
 // • Detecta arquivo de fatura automaticamente
 // • Normaliza parcela "X de Y" → "XX/YY" para compatibilidade com projeções
 // • Seletor de mês de vencimento — parceladas salvam com data do mês da fatura
-// • Créditos/estornos (valor negativo) excluídos automaticamente em modo fatura
+// • Créditos/estornos (valor negativo): marcados por padrão — importados como Receita (badge ↩ Estorno)
 // • dataOriginal salvo no Firestore para rastreabilidade
 //
 // NRF-008 — Purga de duplicatas
@@ -610,7 +610,7 @@ function renderizarPreview() {
     const tdChk = document.createElement('td');
     const chk   = document.createElement('input');
     chk.type = 'checkbox'; chk.className = 'chk-linha'; chk.dataset.idx = l._idx;
-    chk.checked = !l.erro && !l.duplicado && !l.ajuste_parcial && !l.isEstorno;  // NRF-002.2/BUG-013: ajustes e estornos desmarcados por padrão
+    chk.checked = !l.erro && !l.duplicado && !l.ajuste_parcial;  // NRF-002.2: ajustes desmarcados; estornos marcados por padrão (BUG-019)
     chk.addEventListener('change', () => atualizarChipsPreview());
     tdChk.appendChild(chk);
     // NRF-002.1: mostra data ajustada (mês da fatura) com indicador visual para parceladas
@@ -713,7 +713,7 @@ function renderizarPreview() {
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--erro" title="' + l.erro + chaveInfo + '">⚠️</span>';
     } else if (l.isEstorno && _tipoExtrato === 'cartao') {
       // BUG-013: crédito/estorno em fatura — usuário pode marcar para importar como receita
-      tdStatus.innerHTML = '<span class="imp-badge imp-badge--estorno" title="Crédito/estorno de fatura — marque para importar como Receita' + chaveInfo + '">↩ Estorno</span>';
+      tdStatus.innerHTML = '<span class="imp-badge imp-badge--estorno" title="Crédito/estorno de fatura — será importado como Receita (desmarque para ignorar)' + chaveInfo + '">↩ Estorno</span>';
     } else if (l.tipoLinha === 'receita') {
       // NRF-006: modo banco — badge de receita
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok" style="background:#dcfce7;color:#166534;" title="Será salva como Receita' + chaveInfo + '">📥 Receita</span>';
