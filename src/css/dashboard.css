@@ -33,6 +33,17 @@
   margin: 0;
 }
 
+.section-subtitle {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: var(--space-8) 0 var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
 .section-actions {
   display: flex;
   align-items: center;
@@ -45,9 +56,9 @@
 
 .resumo-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: var(--space-4);
-  margin-bottom: var(--space-6);
+  margin-bottom: 0;
 }
 
 .resumo-card {
@@ -76,8 +87,10 @@
 }
 
 /* Cores específicas por tipo de card */
-.resumo-card--receita::before  { background: var(--color-income); opacity: 1; }
-.resumo-card--saldo::before    { background: var(--color-balance); opacity: 1; }
+.resumo-card--gasto::before     { background: var(--color-expense); opacity: 1; }
+.resumo-card--receita::before   { background: var(--color-income); opacity: 1; }
+.resumo-card--saldo::before     { background: var(--color-balance); opacity: 1; }
+.resumo-card--disponivel::before { background: var(--color-primary); opacity: 0.5; }
 .resumo-card--meu-bolso::before { background: #818cf8; opacity: 1; }
 .resumo-card--familia::before   { background: var(--color-ok); opacity: 1; }
 
@@ -397,6 +410,7 @@
 
   .section-header { flex-direction: column; align-items: flex-start; }
   .section-title  { font-size: var(--font-size-lg); }
+  .section-subtitle { margin: var(--space-6) 0 var(--space-3); }
 
   .dash-graficos-row { grid-template-columns: 1fr; }
   .dash-chart-wrap  { height: 240px; }
