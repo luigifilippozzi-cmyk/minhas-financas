@@ -116,7 +116,8 @@ function iniciarListeners() {
     renderizarDashboardReceitas(
       estadoApp.categoriasReceita,
       estadoApp.receitas,
-      estadoApp.despesas.filter(d => d.tipo !== 'projecao').reduce((s, d) => s + (d.valor ?? 0), 0),
+      estadoApp.categorias,
+      estadoApp.despesas,
     );
   });
 
@@ -133,7 +134,8 @@ function iniciarListeners() {
     renderizarDashboardReceitas(
       estadoApp.categoriasReceita,
       estadoApp.receitas,
-      estadoApp.despesas.filter(d => d.tipo !== 'projecao').reduce((s, d) => s + (d.valor ?? 0), 0),
+      estadoApp.categorias,
+      estadoApp.despesas,
     );
   });
 }
@@ -147,7 +149,8 @@ function iniciarListenerCategoriasReceita(grupoId) {
     renderizarDashboardReceitas(
       estadoApp.categoriasReceita,
       estadoApp.receitas,
-      estadoApp.despesas.filter(d => d.tipo !== 'projecao').reduce((s, d) => s + (d.valor ?? 0), 0),
+      estadoApp.categorias,
+      estadoApp.despesas,
     );
   });
 }
