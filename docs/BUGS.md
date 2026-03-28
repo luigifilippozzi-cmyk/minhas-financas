@@ -338,7 +338,7 @@ Estornos e créditos legítimos eram ignorados durante a importação, resultand
 
 **Correção aplicada:**
 - `pipelineCartao.js`: em vez de erro, seta `isEstorno=true` e `tipoLinha='receita'` — linha visível no preview para o usuário decidir
-- `importar.js`: reset `isEstorno=false` em `_aplicarTipo`; checkbox desmarcado por padrão (`&& !l.isEstorno`); badge `↩ Estorno` (amarelo) inserido ANTES do check `tipoLinha === 'receita'`
+- `importar.js`: reset `isEstorno=false` em `_aplicarTipo`; checkbox desmarcado por padrão (`&& !l.isEstorno`) — **ver BUG-019 (v3.7.0)**: corrigido para marcado por padrão; badge `↩ Estorno` (amarelo) inserido ANTES do check `tipoLinha === 'receita'`
 - `main.css`: estilo `.imp-badge--estorno` adicionado (fundo amarelo claro)
 
 ---

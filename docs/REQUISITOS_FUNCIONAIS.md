@@ -308,7 +308,7 @@ processarArquivo(file)
 | **Normalização de parcela** | `"X de Y"` convertido para `"XX/YY"` no momento do parse — dedup e fuzzy matching funcionam com ambos os formatos |
 | **Ajuste de data por mês de fatura** | Parceladas têm `data` substituída pelo 1º dia do mês de vencimento; à vista mantêm data original |
 | **`dataOriginal` preservada** | Data original da compra salva no Firestore; preview mostra badge `📅` com tooltip |
-| **Exclusão automática de créditos** | Linhas com valor negativo (créditos/estornos) recebem `erro` e ficam desmarcadas no preview |
+| **Importação de créditos/estornos** | Linhas com valor negativo recebem `isEstorno=true`, badge `↩ Estorno` (amarelo) e ficam **marcadas por padrão** — importadas como Receita; usuário pode desmarcar individualmente (BUG-013 + BUG-019) |
 | **Re-renderização ao trocar mês** | Alterar o seletor de mês re-renderiza o preview imediatamente com novas datas |
 
 #### Arquivos modificados (v1.9.0)
@@ -324,7 +324,7 @@ processarArquivo(file)
 - [x] Fatura detectada automaticamente — banner exibido sem intervenção manual
 - [x] Parceladas salvas no mês de vencimento selecionado
 - [x] À vista mantêm data original do extrato
-- [x] Créditos/estornos excluídos automaticamente no modo fatura
+- [x] Créditos/estornos visíveis no preview com badge `↩ Estorno` e marcados por padrão — importados como Receita
 - [x] `dataOriginal` salvo no Firestore e visível no preview
 - [x] Trocar mês de vencimento atualiza o preview em tempo real
 
