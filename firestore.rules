@@ -53,8 +53,9 @@ service cloud.firestore {
     // Despesas: apenas membros do grupo + validação de schema (TD-007)
     match /despesas/{despesaId} {
       allow read:   if isSignedIn() && isMemberOfGroup(resource.data.grupoId);
-      allow write:  if isSignedIn() && isMemberOfGroup(resource.data.grupoId) && isValidTransacao();
       allow create: if isSignedIn() && isMemberOfGroup(request.resource.data.grupoId) && isValidTransacao();
+      allow update: if isSignedIn() && isMemberOfGroup(resource.data.grupoId) && isValidTransacao();
+      allow delete: if isSignedIn() && isMemberOfGroup(resource.data.grupoId);
     }
 
     // Orçamentos: apenas membros do grupo
@@ -82,8 +83,9 @@ service cloud.firestore {
     // Receitas: apenas membros do grupo + validação de schema (TD-007, RF-016)
     match /receitas/{receitaId} {
       allow read:   if isSignedIn() && isMemberOfGroup(resource.data.grupoId);
-      allow write:  if isSignedIn() && isMemberOfGroup(resource.data.grupoId) && isValidTransacao();
       allow create: if isSignedIn() && isMemberOfGroup(request.resource.data.grupoId) && isValidTransacao();
+      allow update: if isSignedIn() && isMemberOfGroup(resource.data.grupoId) && isValidTransacao();
+      allow delete: if isSignedIn() && isMemberOfGroup(resource.data.grupoId);
     }
   }
 }
