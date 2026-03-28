@@ -8,7 +8,7 @@ import { parsearLinhasCSVXLSX, parsearParcela, gerarChaveDedup } from '../utils/
 // Aplica filtro de créditos e ajuste de mês de fatura já no parse.
 export function processarFaturaCartao({ rows, contas, categorias, mapaHist, origemBanco, mesFatura }) {
   const linhas = parsearLinhasCSVXLSX(rows, { contas, categorias, mapaHist, origemBanco });
-  if (mesFatura) linhas.forEach(l => { l.mesFatura = mesFatura; });  // BUG-020: propaga ciclo de faturamento
+  if (mesFatura) linhas.forEach(l => { l.mesFatura = mesFatura; });  // BUG-021: propaga ciclo de faturamento
   filtrarCreditos(linhas);
   if (mesFatura) aplicarMesFatura(linhas, mesFatura);
   return linhas;

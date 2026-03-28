@@ -13,30 +13,30 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [3.8.0] - 2026-03-27
 
-### Corrigido — BUG-020 + BUG-021: Ciclo de faturamento não modelado — 43 transações ausentes da fatura (R$ 7.926,93)
+### Corrigido — BUG-021 + BUG-022: Ciclo de faturamento não modelado — 43 transações ausentes da fatura (R$ 7.926,93)
 
-#### `src/js/pages/pipelineCartao.js` — BUG-020
+#### `src/js/pages/pipelineCartao.js` — BUG-021
 - **Problema:** `processarFaturaCartao` nunca propagava `mesFatura` nas linhas; campo não chegava ao Firestore
 - **Fix:** `linhas.forEach(l => { l.mesFatura = mesFatura; })` adicionado após `parsearLinhasCSVXLSX`
 
-#### `src/js/utils/deduplicador.js` — BUG-020
+#### `src/js/utils/deduplicador.js` — BUG-021
 - **Problema:** `chavesDesp` era um `Set` sem docId; impossível atualizar `mesFatura` em duplicatas já salvas
 - **Fix:** `l.duplicado_docId = chavesRef instanceof Map ? chavesRef.get(chave) : null` — expõe docId para o chamador
 
-#### `src/js/services/database.js` — BUG-020 + BUG-021
-- **BUG-020:** `buscarChavesDedup` agora retorna `Map<chave_dedup, docId>` (era `Set`) — mantém compatibilidade via `.has()`
-- **BUG-021:** Nova função `ouvirDespesasPorMesFatura(grupoId, mesFatura, cb)` — query Firestore por campo `mesFatura`
+#### `src/js/services/database.js` — BUG-021 + BUG-022
+- **BUG-021:** `buscarChavesDedup` agora retorna `Map<chave_dedup, docId>` (era `Set`) — mantém compatibilidade via `.has()`
+- **BUG-022:** Nova função `ouvirDespesasPorMesFatura(grupoId, mesFatura, cb)` — query Firestore por campo `mesFatura`
 
-#### `src/js/pages/importar.js` — BUG-020
+#### `src/js/pages/importar.js` — BUG-021
 - **Fix:** `mesFatura` incluído no model de `criarDespesa` e `criarReceita` para imports de cartão
 - **Fix:** Após o loop de importação, itera `_linhas` e chama `atualizarDespesa(docId, { mesFatura })` nas duplicatas de cartão — garante que parceladas de meses anteriores apareçam no ciclo correto
 - **Fix:** `_chavesExistentes.add()` → `_chavesExistentes.set('', '')` — compatibilidade com Map
 
-#### `src/js/pages/fatura.js` — BUG-021
+#### `src/js/pages/fatura.js` — BUG-022
 - **Problema:** `ouvirDespesas` filtra por mês calendário (`data >= início && data <= fim`); transações com `data` fora do mês mas pertencentes ao ciclo nunca apareciam
 - **Fix:** `recarregarDespesas()` usa **dois listeners em paralelo**: `ouvirDespesas` (mês calendário, backward compat) + `ouvirDespesasPorMesFatura` (campo `mesFatura`); `_merge()` faz union por `id`
 
-#### `firestore.indexes.json` — BUG-021
+#### `firestore.indexes.json` — BUG-022
 - Novo índice composto: `despesas / grupoId ASC + mesFatura DESC`
 
 ---

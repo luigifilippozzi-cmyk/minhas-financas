@@ -31,7 +31,7 @@ export function marcarLinhasDuplicatas(linhas, {
       l.duplicado = false;
     } else if (chavesRef.has(l.chave_dedup)) {
       l.duplicado = true;
-      l.duplicado_docId = chavesRef instanceof Map ? chavesRef.get(l.chave_dedup) : null;  // BUG-020
+      l.duplicado_docId = chavesRef instanceof Map ? chavesRef.get(l.chave_dedup) : null;  // BUG-021
     }
   });
 

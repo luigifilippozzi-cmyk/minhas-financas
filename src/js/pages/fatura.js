@@ -30,7 +30,7 @@ let _tabAtiva   = 'todas';
 let _unsubContas        = null;
 let _unsubCats          = null;
 let _unsubDesp          = null;
-let _unsubDespMesFatura = null;  // BUG-021: listener paralelo por mesFatura
+let _unsubDespMesFatura = null;  // BUG-022: listener paralelo por mesFatura
 
 // ── Inicialização ─────────────────────────────────────────────
 onAuthChange(async (user) => {
@@ -110,7 +110,7 @@ function preencherSeletorCartao() {
 }
 
 // ── Listener de despesas ──────────────────────────────────────
-// BUG-021: usa dois listeners — mês calendário (backward compat) + mesFatura (ciclo de faturamento).
+// BUG-022: usa dois listeners — mês calendário (backward compat) + mesFatura (ciclo de faturamento).
 // Transações com data em meses adjacentes mas pertencentes a este ciclo ficam visíveis.
 function recarregarDespesas() {
   if (_unsubDesp)          { _unsubDesp();          _unsubDesp = null; }
