@@ -138,6 +138,21 @@ export async function atualizarDespesa(despesaId, dados) {
   return updateDoc(doc(db, 'despesas', despesaId), dados);
 }
 
+// BUG-021: retorna despesas pelo campo mesFatura (ciclo de faturamento).
+// Complementa ouvirDespesas (mês calendário) para cobrir transações com data fora do mês.
+export function ouvirDespesasPorMesFatura(grupoId, mesFatura, callback) {
+  const q = query(
+    collection(db, 'despesas'),
+    where('grupoId', '==', grupoId),
+    where('mesFatura', '==', mesFatura),
+    orderBy('mesFatura', 'desc'),
+  );
+  return onSnapshot(q,
+    (snap) => { callback(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); },
+    (err)  => { console.error('[ouvirDespesasPorMesFatura] Erro:', err); },
+  );
+}
+
 export async function excluirDespesa(despesaId) {
   return deleteDoc(doc(db, 'despesas', despesaId));
 }
@@ -257,13 +272,13 @@ export async function garantirContasPadrao(grupoId, contasPadrao) {
 // ── RF-014: Deduplicação ──────────────────────────────────────
 
 /**
- * Retorna um Set com todas as chave_dedup já gravadas no grupo (despesas).
- * Usado para detectar duplicatas no import.
+ * Retorna um Map<chave_dedup, docId> com todas as despesas do grupo.
+ * BUG-020: Map (em vez de Set) permite recuperar o docId para atualizar mesFatura em duplicatas.
  */
 export async function buscarChavesDedup(grupoId) {
   const q    = query(collection(db, 'despesas'), where('grupoId', '==', grupoId));
   const snap = await getDocs(q);
-  return new Set(snap.docs.map((d) => d.data().chave_dedup).filter(Boolean));
+  return new Map(snap.docs.filter(d => d.data().chave_dedup).map(d => [d.data().chave_dedup, d.id]));
 }
 
 /**

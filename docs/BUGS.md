@@ -451,6 +451,62 @@ O badge `↩ Estorno` continua visível; tooltip atualizado para "desmarque para
 
 ---
 
+### BUG-020 — Campo `mesFatura` não persistido; transações à vista e parceladas de ciclos anteriores ausentes da fatura
+**Severidade:** 🔴 Crítico
+**Versão introduzida:** v1.0 (design original)
+**Versão corrigida:** v3.8.0
+**Arquivos:** `src/js/pages/pipelineCartao.js`, `src/js/pages/importar.js`, `src/js/services/database.js`, `src/js/utils/deduplicador.js`
+
+**Descrição:**
+Durante o import de fatura de cartão, o campo `mesFatura: "YYYY-MM"` nunca era salvo no Firestore. Também, o deduplicador usava um `Set` puro sem expor o `docId` das duplicatas, impossibilitando atualizar o `mesFatura` de transações já salvas em ciclos anteriores.
+
+**Impacto (Fatura março 2026):**
+- **15 transações à vista (fev/26–28, R$ 1.622,42):** salvas com `data` em fevereiro → não aparecem na fatura de março.
+- **26 parceladas de meses anteriores (R$ 6.402,17):** já existiam no Firestore com datas de meses anteriores → marcadas como `duplicado=true` → não reimportadas → não aparecem em março.
+- Diferença total acumulada: **R$ 7.926,93** (excluindo estornos cobertos por BUG-019).
+
+**Raiz técnica:**
+```javascript
+// pipelineCartao.js — mesFatura nunca propagado nas linhas
+export function processarFaturaCartao({ ..., mesFatura }) {
+  const linhas = parsearLinhasCSVXLSX(...);
+  // ← faltava: linhas.forEach(l => { l.mesFatura = mesFatura; })
+  ...
+}
+
+// database.js — buscarChavesDedup retornava Set (sem docId)
+return new Set(snap.docs.map(d => d.data().chave_dedup).filter(Boolean));
+
+// deduplicador.js — não expunha docId da duplicata
+l.duplicado = true;  // ← faltava: l.duplicado_docId = Map.get(chave)
+```
+
+**Correção aplicada:**
+1. `processarFaturaCartao` propaga `l.mesFatura = mesFatura` em todas as linhas.
+2. `buscarChavesDedup` retorna `Map<chave_dedup, docId>` em vez de `Set`.
+3. `deduplicador.js` expõe `l.duplicado_docId` via `chavesRef instanceof Map ? chavesRef.get(chave) : null`.
+4. `importar.js` salva `mesFatura` no Firestore (despesas, receitas e projeções).
+5. Após o loop de importação, itera `_linhas` e chama `atualizarDespesa(docId, { mesFatura })` para cada duplicata detectada em imports de cartão.
+
+---
+
+### BUG-021 — `fatura.js` filtra por mês calendário: transações de ciclos cross-month nunca aparecem
+**Severidade:** 🔴 Crítico
+**Versão introduzida:** v1.0 (design original)
+**Versão corrigida:** v3.8.0
+**Arquivos:** `src/js/pages/fatura.js`, `src/js/services/database.js`, `firestore.indexes.json`
+
+**Descrição:**
+`ouvirDespesas` filtra por `data >= início_do_mês && data <= fim_do_mês`. Transações com `data` fora do mês calendário mas pertencentes ao ciclo de faturamento (ex: à vista de fev/26–28 no ciclo de março) nunca eram retornadas pelo listener. Mesmo após BUG-020 adicionar `mesFatura` ao Firestore, sem este fix a fatura ainda não exibiria essas transações.
+
+**Correção aplicada:**
+1. Nova função `ouvirDespesasPorMesFatura(grupoId, mesFatura, callback)` em `database.js` — faz query por `where('mesFatura', '==', mesFatura)`.
+2. `recarregarDespesas()` em `fatura.js` usa **dois listeners em paralelo**: o existente (mês calendário, backward compat) + o novo (campo `mesFatura`).
+3. `_merge()` faz union das duas listas deduplificando por `id`, excluindo `tipo=projecao` e filtrando pelo `_cartaoId`.
+4. Novo índice Firestore: `despesas / grupoId ASC + mesFatura DESC`.
+
+---
+
 ## Dívida Técnica / Melhorias Pendentes
 
 Itens identificados em revisão de código que não são bugs (não quebram funcionalidade), mas representam oportunidades de melhoria de performance, manutenibilidade ou UX.
