@@ -608,6 +608,48 @@ if (sim > melhorSim) { melhorSim = sim; melhorDesp = desp; }
 
 ---
 
+### BUG-020 — `purgeGrupoCompleto` bloqueado pelas regras do Firestore (`allow write` + `isValidTransacao`)
+**Severidade:** 🔴 Crítico
+**Versão introduzida:** v3.6.0 (TD-007 — adicionou `isValidTransacao()` à regra `write`)
+**Versão corrigida:** v3.8.0
+**Arquivo:** `firestore.rules`
+
+**Descrição:**
+As regras de `despesas` e `receitas` usavam `allow write` com a validação `isValidTransacao()`. O `write` abrange `create`, `update` **e `delete`**. Durante uma exclusão, `request.resource` é `null` — a função `isValidTransacao()` acessava `request.resource.data`, causando falha na avaliação da regra e bloqueando toda operação de delete.
+
+**Código problemático:**
+```javascript
+// firestore.rules
+function isValidTransacao() {
+  let d = request.resource.data;   // ← null durante delete → erro/DENIED
+  return d.valor is number && d.valor > 0 && d.grupoId is string;
+}
+
+match /despesas/{despesaId} {
+  allow write: if isSignedIn() && isMemberOfGroup(resource.data.grupoId) && isValidTransacao();
+  // ↑ delete também passa por isValidTransacao() → sempre negado
+}
+```
+
+**Impacto:**
+- `purgeGrupoCompleto` lançava erro silencioso ("Erro ao purgar a base de dados")
+- `excluirEmMassa` também bloqueado para despesas e receitas
+- `excluirDespesa` e `excluirReceita` idem
+
+**Correção:**
+Separar `write` em `create` + `update` + `delete` nas coleções `despesas` e `receitas`. `isValidTransacao()` aplicado apenas em `create` e `update`; `delete` requer apenas membresia do grupo.
+
+```javascript
+match /despesas/{despesaId} {
+  allow read:   if isSignedIn() && isMemberOfGroup(resource.data.grupoId);
+  allow create: if isSignedIn() && isMemberOfGroup(request.resource.data.grupoId) && isValidTransacao();
+  allow update: if isSignedIn() && isMemberOfGroup(resource.data.grupoId) && isValidTransacao();
+  allow delete: if isSignedIn() && isMemberOfGroup(resource.data.grupoId);
+}
+```
+
+---
+
 ## Legenda de Severidade
 
 | Ícone | Nível | Critério |
