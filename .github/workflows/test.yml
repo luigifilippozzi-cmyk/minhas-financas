@@ -1,0 +1,35 @@
+# ============================================================
+# CI — Testes unitários
+#
+# Roda em todo pull request e em pushes para qualquer branch
+# que não seja main (que usa o workflow deploy.yml).
+# ============================================================
+
+name: 🧪 Testes unitários
+
+on:
+  pull_request:
+  push:
+    branches-ignore:
+      - main
+
+jobs:
+  test:
+    name: Vitest
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📦 Instala dependências
+        run: npm ci
+
+      - name: 🧪 Roda testes
+        run: npm test
