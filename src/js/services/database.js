@@ -282,13 +282,13 @@ export async function buscarChavesDedup(grupoId) {
 }
 
 /**
- * Retorna um Set com todas as chave_dedup já gravadas na coleção receitas.
- * Usado para detectar duplicatas no import de receitas.
+ * Retorna um Map<chave_dedup, docId> com todas as receitas do grupo.
+ * BUG-024: Map (em vez de Set) permite recuperar o docId para atualizar mesFatura em estornos duplicados.
  */
 export async function buscarChavesDedupReceitas(grupoId) {
   const q    = query(collection(db, 'receitas'), where('grupoId', '==', grupoId));
   const snap = await getDocs(q);
-  return new Set(snap.docs.map((d) => d.data().chave_dedup).filter(Boolean));
+  return new Map(snap.docs.filter(d => d.data().chave_dedup).map(d => [d.data().chave_dedup, d.id]));
 }
 
 // ── NRF-008: Purga de Duplicatas ─────────────────────────────

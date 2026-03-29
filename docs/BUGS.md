@@ -413,6 +413,55 @@ Removido `|credito de refinanciamento` do regex de filtro. Apenas termos de cont
 
 ---
 
+### BUG-017 — Despesas importadas com valor bruto mesmo quando há ajuste parcial (NRF-002.2)
+**Severidade:** 🔴 Crítico
+**Versão introduzida:** v3.1.0 (NRF-002.2)
+**Versão corrigida:** v3.5.0
+**Arquivo:** `src/js/pages/importar.js`
+
+**Descrição:**
+Ao importar despesas com ajuste parcial de marketplace/supermercado (ex: iFood com desconto), o campo `valorLiquido` era calculado corretamente no preview (valor bruto − crédito de ajuste), mas o `criarDespesaDB` persistia `l.valor` (bruto) em vez de `l.valorLiquido` (líquido). O usuário via o valor correto no preview, mas a despesa salva no Firestore tinha o valor antes do desconto.
+
+**Código problemático:**
+```javascript
+const despesaRef = await criarDespesaDB(modelDespesa({
+  descricao: l.descricao, valor: l.valor,  // ← bruto, ignora valorLiquido
+  ...
+}));
+```
+
+**Impacto:**
+Despesas de marketplace ficavam com valor inflado no Firestore. O total da fatura no app era maior que o cobrado na fatura real para qualquer compra com cashback/desconto ajustado.
+
+**Correção aplicada:**
+```javascript
+const valorBase = l.valorLiquido ?? l.valor;  // pós-ajuste parcial se disponível
+```
+Projeções de parcelas futuras continuam usando `l.valor` (bruto) — o desconto se aplica apenas à parcela real do mês.
+
+---
+
+### BUG-018 — `ajusteDetector.js` fazia match com estabelecimento errado (keyword ausente)
+**Severidade:** 🟠 Médio
+**Versão introduzida:** v3.1.0 (NRF-002.2)
+**Versão corrigida:** v3.5.0
+**Arquivo:** `src/js/utils/ajusteDetector.js`
+
+**Descrição:**
+O detector de ajustes parciais identificava um crédito de ajuste (ex: `CASHBACK IFOOD`) e procurava uma despesa próxima no tempo, mas não exigia que a despesa contivesse a mesma keyword do crédito. Isso causava falso-positivo: um crédito de ajuste do iFood era associado a uma compra em supermercado diferente que aconteceu no mesmo dia.
+
+**Código problemático:**
+```javascript
+// critério: proximidade temporal apenas — sem validação de keyword
+const candidatos = linhas.filter(l => Math.abs(l.data - credito.data) < DELTA_MS);
+```
+
+**Impacto:**
+Ajuste parcial aplicado na despesa errada. Despesa do estabelecimento incorreto ficava com `valorLiquido` reduzido indevidamente; a despesa-alvo do ajuste mantinha o valor bruto.
+
+**Correção aplicada:**
+Critério adicional: a despesa candidata deve conter a mesma keyword identificadora do crédito (ex: `'ifood'` em `CASHBACK IFOOD` deve estar presente na descrição da despesa). Elimina falsos-positivos em dias com múltiplas transações de estabelecimentos distintos.
+
 ---
 
 ### BUG-019 — Estornos auto-desmarcados no preview: créditos da fatura não importados por padrão
@@ -502,8 +551,61 @@ l.duplicado = true;  // ← faltava: l.duplicado_docId = Map.get(chave)
 **Correção aplicada:**
 1. Nova função `ouvirDespesasPorMesFatura(grupoId, mesFatura, callback)` em `database.js` — faz query por `where('mesFatura', '==', mesFatura)`.
 2. `recarregarDespesas()` em `fatura.js` usa **dois listeners em paralelo**: o existente (mês calendário, backward compat) + o novo (campo `mesFatura`).
-3. `_merge()` faz union das duas listas deduplificando por `id`, excluindo `tipo=projecao` e filtrando pelo `_cartaoId`.
+3. `_merge()` faz union das duas listas deduplificando por `id`, excluindo `tipo=projecao`/`projecao_paga` (BUG-023) e filtrando pelo `_cartaoId`.
 4. Novo índice Firestore: `despesas / grupoId ASC + mesFatura DESC`.
+
+---
+
+### BUG-023 — `projecao_paga` incluída no total da fatura — double-counting de parceladas reconciliadas
+**Severidade:** 🔴 Crítico
+**Versão introduzida:** v1.8.0 (NRF-005 — fatura.js)
+**Versão corrigida:** v3.9.0
+**Arquivo:** `src/js/pages/fatura.js`
+
+**Descrição:**
+O filtro `_merge()` em `fatura.js` excluía apenas `tipo === 'projecao'` (projeções pendentes), mas não `tipo === 'projecao_paga'` (projeções reconciliadas). Quando o usuário importa uma fatura com parceladas que já tinham projeções existentes, a reconciliação:
+1. Cria uma despesa real (`tipo: 'despesa'`, `data = 01/mesFatura`)
+2. Atualiza a projeção para `tipo: 'projecao_paga'` (mesma `data`, mesmo `contaId`)
+
+Ambos os documentos passavam pelo `_merge()` com a mesma data e contaId, aparecendo duplicados na view e dobrando o total calculado.
+
+**Código problemático:**
+```javascript
+_despesas = [..._calendarSet, ..._mesFaturaSet].filter(d => {
+  if (d.tipo === 'projecao') return false;  // ← projecao_paga não filtrada
+  if (d.contaId !== _cartaoId) return false;
+  ...
+});
+```
+
+**Impacto:**
+Para cada parcelada reconciliada no mês, a despesa aparece duas vezes na fatura. Com 26 parceladas de ciclos anteriores (como na fatura de março/2026), o total exibido e exportado ficava ~R$ 6.400 acima do valor real.
+
+**Correção aplicada:**
+```javascript
+if (d.tipo === 'projecao' || d.tipo === 'projecao_paga') return false;  // BUG-023
+```
+
+---
+
+### BUG-024 — `buscarChavesDedupReceitas` retorna `Set` — mesFatura não propagado para estornos duplicados
+**Severidade:** 🟠 Médio
+**Versão introduzida:** v3.8.0 (BUG-021)
+**Versão corrigida:** v3.9.0
+**Arquivos:** `src/js/services/database.js`, `src/js/pages/importar.js`
+
+**Descrição:**
+O BUG-021 (v3.8.0) converteu `buscarChavesDedup` de `Set` para `Map<chave, docId>` para permitir atualizar `mesFatura` em duplicatas. Porém `buscarChavesDedupReceitas` (usado para estornos/créditos da fatura) ainda retornava `Set`. Com isso:
+1. `deduplicador.js` nunca conseguia o `docId` dos estornos duplicados (`chavesRef instanceof Map` → false)
+2. `l.duplicado_docId` ficava sempre `null` para estornos
+3. Além disso, o post-loop de `importar.js` chamava `atualizarDespesa` para todos os duplicados, sem distinguir receitas — uma chamada errada para docIds da coleção `receitas`
+
+**Impacto:**
+Se um estorno/crédito da fatura já havia sido importado em ciclo anterior, o campo `mesFatura` na coleção `receitas` não era atualizado para o novo ciclo. O estorno ficava invisível para qualquer query futura que filtrasse por `mesFatura`.
+
+**Correção aplicada:**
+1. `database.js`: `buscarChavesDedupReceitas` agora retorna `Map<chave_dedup, docId>` (mesmo padrão de `buscarChavesDedup`)
+2. `importar.js`: adicionado `atualizarReceita` ao import; post-loop distingue `tipoLinha === 'receita'` e chama `atualizarReceita` ou `atualizarDespesa` conforme o tipo do duplicado
 
 ---
 
@@ -597,74 +699,7 @@ Adicionada função `isValidTransacao()` que verifica `valor is number && valor 
 
 ---
 
-### BUG-017 — NRF-002.2: Despesa com ajuste parcial salva pelo valor bruto
-**Severidade:** 🔴 Crítico
-**Versão introduzida:** v3.1.0
-**Versão corrigida:** v3.5.0
-**Arquivo:** `src/js/pages/importar.js`
-
-**Descrição:**
-Quando `detectarAjustesParciais` marcava uma despesa com `valorLiquido` (valor após desconto), o preview exibia o valor correto (tachado + líquido), mas o save usava `l.valor` (bruto original) para criar a despesa no Firestore. O ajuste era visível na UI mas completamente ignorado na persistência.
-
-**Código problemático:**
-```javascript
-const despesaRef = await criarDespesaDB(modelDespesa({
-  descricao: l.descricao, valor: l.valor, ...  // ← sempre bruto
-}));
-```
-
-**Impacto:**
-Despesa salva no Firestore com valor original (ex: R$100), ignorando o desconto de R$10 — o valor líquido correto (R$90) nunca era persistido. Saldo e totais ficavam incorretos.
-
-**Correção aplicada:**
-```javascript
-const valorBase = l.valorLiquido ?? l.valor;  // usa líquido se disponível
-const despesaRef = await criarDespesaDB(modelDespesa({
-  descricao: l.descricao, valor: valorBase, ...
-}));
-// valorAlocado (conjunto) usa valorBase; projeções usam l.valor (sem ajuste)
-```
-
----
-
-### BUG-018 — NRF-002.2: Detector de ajustes usa Levenshtein full-string — nenhum par detectado
-**Severidade:** 🔴 Crítico
-**Versão introduzida:** v3.1.0
-**Versão corrigida:** v3.5.0
-**Arquivo:** `src/js/utils/ajusteDetector.js`
-
-**Descrição:**
-O detector comparava as descrições completas de crédito e despesa com Levenshtein (threshold 0.72). Em extratos bancários reais, a descrição do crédito/cashback raramente se parece com a descrição da despesa original:
-- Despesa: `"IFOOD *RESTAURANTE ABC 01/11"`
-- Crédito: `"IFOOD CREDITO"` ou `"PIX RECEBIDO IFOOD"`
-
-Similaridade calculada: ~0.25–0.35 → sempre abaixo do threshold → **nenhum par era detectado**, tornando a funcionalidade inteira inoperante.
-
-**Código problemático:**
-```javascript
-const sim = similaridade(normCred, normalizarStr(desp.descricao));
-if (sim < simMinima) continue;  // simMinima = 0.72 — nunca passava
-```
-
-**Impacto:**
-NRF-002.2 completamente inoperante. Nenhuma linha de crédito era marcada como `ajuste_parcial`, nenhuma despesa recebia `valorLiquido`.
-
-**Correção aplicada:**
-Substituído Levenshtein por verificação de **keyword compartilhada**: extrai o padrão que identificou o estabelecimento no crédito (ex: `'IFOOD'`) e verifica se a despesa candidata contém o mesmo padrão. Levenshtein mantido apenas como critério de desempate entre múltiplas despesas candidatas.
-
-```javascript
-// Extrai keyword que identificou o crédito
-const keyword = PADROES_ESTABELECIMENTO[tipoEst].find(p => normCredUpper.includes(p));
-// Despesa deve conter a mesma keyword
-if (!normDespUpper.includes(keyword)) continue;
-// Levenshtein apenas para desempate (sem threshold gate)
-const sim = similaridade(normCred, normalizarStr(desp.descricao));
-if (sim > melhorSim) { melhorSim = sim; melhorDesp = desp; }
-```
-
----
-
-### BUG-020 — `purgeGrupoCompleto` bloqueado pelas regras do Firestore (`allow write` + `isValidTransacao`)
+### BUG-020 —`purgeGrupoCompleto` bloqueado pelas regras do Firestore (`allow write` + `isValidTransacao`)
 **Severidade:** 🔴 Crítico
 **Versão introduzida:** v3.6.0 (TD-007 — adicionou `isValidTransacao()` à regra `write`)
 **Versão corrigida:** v3.8.0

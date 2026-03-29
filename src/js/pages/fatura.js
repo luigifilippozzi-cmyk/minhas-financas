@@ -128,7 +128,7 @@ function recarregarDespesas() {
   function _merge() {
     const seen = new Set();
     _despesas = [..._calendarSet, ..._mesFaturaSet].filter(d => {
-      if (d.tipo === 'projecao')    return false;
+      if (d.tipo === 'projecao' || d.tipo === 'projecao_paga') return false;  // BUG-023
       if (d.contaId !== _cartaoId) return false;
       if (seen.has(d.id))           return false;
       seen.add(d.id);
