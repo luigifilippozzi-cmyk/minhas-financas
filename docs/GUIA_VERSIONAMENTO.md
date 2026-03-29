@@ -63,12 +63,15 @@ Formato: `MAJOR.MINOR.PATCH` — ex: `v1.2.3`
 | v3.4.0 | 2026-03-27 | NRF-010 Portador "Conjunto" no upload de fatura de cartão |
 | v3.5.0 | 2026-03-27 | BUG-017 + BUG-018: NRF-002.2 ajustes parciais inoperante — fix crítico |
 | v3.6.0 | 2026-03-27 | BUG-013 a BUG-016: estornos, escala decimal, última parcela, refinanciamento + TD-002 + TD-007 |
+| v3.7.0 | 2026-03-27 | BUG-019: estornos auto-desmarcados no preview (créditos da fatura não importados) |
+| v3.8.0 | 2026-03-29 | BUG-020 + BUG-021 + BUG-022: ciclo de faturamento mesFatura não modelado |
+| v3.9.0 | 2026-03-29 | BUG-023 + BUG-024: double-counting projecao_paga + mesFatura estornos duplicados |
 
 ### Próximas Versões (Backlog)
 
 | Versão | Milestone Planejado |
 |--------|---------------------|
-| v3.6.0 | App iOS via Capacitor (MILESTONE_iOS_App.md) |
+| v4.0.0 | App iOS via Capacitor — Fase 0: Vite bundler (MILESTONE_iOS_App.md) |
 
 ## Workflow Completo
 
