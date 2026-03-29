@@ -57,7 +57,7 @@ import {
   buscarChavesDedup, buscarChavesDedupReceitas,   // NRF-006
   buscarMapaProjecoes, buscarMapaCategorias,
   buscarProjecoesDetalhadas, atualizarStatusParcela,
-  criarParcelamento, reconciliarParcela, atualizarDespesa,
+  criarParcelamento, reconciliarParcela, atualizarDespesa, atualizarReceita,
   criarReceita,                                    // NRF-006: salvar receitas do extrato bancário
   purgarDuplicatasDespesas, purgarDuplicatasReceitas,
 } from '../services/database.js';
@@ -928,10 +928,17 @@ async function executarImportacao() {
     } catch { falha++; }
   }
   // BUG-021: propaga mesFatura nas duplicatas detectadas (parceladas de meses anteriores)
+  // BUG-024: distingue receitas (estornos) de despesas ao atualizar mesFatura
   if (_tipoExtrato === 'cartao' && _mesFatura) {
     for (const l of _linhas) {
       if (l.duplicado && l.duplicado_docId) {
-        try { await atualizarDespesa(l.duplicado_docId, { mesFatura: _mesFatura }); } catch {}
+        try {
+          if (l.tipoLinha === 'receita') {
+            await atualizarReceita(l.duplicado_docId, { mesFatura: _mesFatura });
+          } else {
+            await atualizarDespesa(l.duplicado_docId, { mesFatura: _mesFatura });
+          }
+        } catch {}
       }
     }
   }
