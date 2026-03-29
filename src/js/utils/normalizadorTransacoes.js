@@ -7,7 +7,34 @@ import { categorizarTransacao } from './categorizer.js';
 // ── Parser CSV com separador ";" ────────────────────────────────
 export function parsearCSVTexto(content) {
   const texto = content.replace(/^\uFEFF/, '');
-  return texto.split(/\r?\n/).filter(l => l.trim()).map(l => l.split(';').map(c => c.trim()));
+  return texto
+    .split(/\r?\n/)
+    .filter(l => l.trim())
+    .map(parseLinhaCSVSemicolon);
+}
+
+function parseLinhaCSVSemicolon(linha) {
+  const out = [];
+  let atual = '';
+  let emAspas = false;
+  for (let i = 0; i < linha.length; i++) {
+    const ch = linha[i];
+    const prox = linha[i + 1];
+    if (ch === '"') {
+      // CSV padrão: "" representa aspas literal dentro do campo
+      if (emAspas && prox === '"') { atual += '"'; i++; continue; }
+      emAspas = !emAspas;
+      continue;
+    }
+    if (ch === ';' && !emAspas) {
+      out.push(atual.trim());
+      atual = '';
+      continue;
+    }
+    atual += ch;
+  }
+  out.push(atual.trim());
+  return out;
 }
 
 // ── Parser de linhas — layout do extrato/fatura (CSV ou XLSX) ──
@@ -114,8 +141,18 @@ export function normalizarValorXP(val) {
 
 // ── Normalização de data ─────────────────────────────────────────
 export function normalizarData(val) {
-  if (!val) return null;
-  if (val instanceof Date && !isNaN(val)) return val;
+  if (val === null || val === undefined || val === '') return null;
+  if (val instanceof Date) return isNaN(val.getTime()) ? null : val;
+
+  // XLSX: datas podem vir como serial numérico (dias desde 1899-12-30)
+  if (typeof val === 'number' && isFinite(val)) {
+    const base = new Date(Date.UTC(1899, 11, 30));
+    const ms = Math.round(val * 86400000);
+    const d = new Date(base.getTime() + ms);
+    d.setUTCHours(12, 0, 0, 0); // reduz risco de virar dia por timezone
+    return isNaN(d.getTime()) ? null : d;
+  }
+
   const s  = String(val).trim();
   const m1 = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
   if (m1) return new Date(m1[3] + '-' + m1[2].padStart(2,'0') + '-' + m1[1].padStart(2,'0') + 'T12:00:00');
@@ -156,7 +193,9 @@ export function gerarChaveDedup(data, estab, valor, portador, parcela) {
   const portNorm  = String(portador ?? '').toLowerCase().trim().substring(0, 30);
   const parc = parcela && String(parcela).trim() !== '-' ? String(parcela).trim() : null;
   if (parc) return estabNorm + '||' + Number(valor).toFixed(2) + '||' + portNorm + '||' + parc;
-  const dataISO = (data instanceof Date ? data : new Date(data)).toISOString().slice(0, 10);
+  const dataObj = data instanceof Date ? data : new Date(data);
+  if (isNaN(dataObj.getTime())) return null;
+  const dataISO = dataObj.toISOString().slice(0, 10);
   return dataISO + '||' + estabNorm + '||' + Number(valor).toFixed(2) + '||' + portNorm;
 }
 
