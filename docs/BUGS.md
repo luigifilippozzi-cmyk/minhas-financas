@@ -609,6 +609,48 @@ Se um estorno/crédito da fatura já havia sido importado em ciclo anterior, o c
 
 ---
 
+### BUG-025 — `garantirContasPadrao` ausente em `fatura.js` e `importar.js` — aba fatura não carrega após import
+**Severidade:** 🔴 Crítico
+**Versão introduzida:** v1.8.0 (NRF-004 — adicionou coleção `contas`)
+**Versão corrigida:** v3.9.1
+**Arquivos:** `src/js/pages/fatura.js`, `src/js/pages/importar.js`
+
+**Descrição:**
+`garantirContasPadrao` (que cria as contas padrão do grupo, incluindo `💳 Cartão de Crédito` com `tipo:'cartao'`) era chamada **apenas** em `app.js`, carregado exclusivamente por `dashboard.html`. Usuários que acessavam `base-dados.html` para importar dados e depois navegavam para `fatura.html` sem nunca ter visitado o dashboard nunca tinham as contas criadas.
+
+**Código problemático (antes):**
+```javascript
+// app.js (carregado APENAS por dashboard.html)
+garantirContasPadrao(estadoApp.perfil.grupoId, CONTAS_PADRAO).catch(() => {});
+
+// fatura.js e importar.js — garantirContasPadrao NUNCA chamada
+_unsubContas = ouvirContas(_grupoId, (contas) => {
+  // contas = [] se usuário não visitou o dashboard
+  preencherSeletorCartao();  // dropdown fica só com "— selecione —"
+});
+```
+
+**Cadeia de impacto:**
+1. Usuário registra conta → vai para `base-dados.html` sem passar pelo dashboard
+2. `garantirContasPadrao` nunca chamada → coleção `contas` vazia para o grupo
+3. Durante o import: `ouvirContas` retorna `[]` → seletor de conta vazio → `contaId: undefined` em todas as transações importadas
+4. Em `fatura.html`: `ouvirContas` retorna `[]` → `preencherSeletorCartao` não encontra conta com `tipo:'cartao'` → nenhum auto-select → `_cartaoId` nunca definido → `recarregarDespesas()` nunca chamado → página presa no estado vazio indefinidamente
+
+**Correção aplicada:**
+- `fatura.js`: importa `garantirContasPadrao` e `CONTAS_PADRAO`; chama `await garantirContasPadrao(_grupoId, CONTAS_PADRAO).catch(() => {})` antes de `ouvirContas` — garante que `💳 Cartão de Crédito` exista para o auto-select funcionar
+- `importar.js`: mesma chamada antes de carregar o preview — garante que o seletor de conta esteja populado no momento do import, evitando `contaId: undefined` nas despesas
+
+```javascript
+// fatura.js e importar.js — DEPOIS do fix
+await garantirContasPadrao(_grupoId, CONTAS_PADRAO).catch(() => {});
+_unsubContas = ouvirContas(_grupoId, (contas) => {
+  // contas agora sempre inclui as contas padrão
+  preencherSeletorCartao();  // auto-seleciona "Cartão de Crédito"
+});
+```
+
+---
+
 ## Dívida Técnica / Melhorias Pendentes
 
 Itens identificados em revisão de código que não são bugs (não quebram funcionalidade), mas representam oportunidades de melhoria de performance, manutenibilidade ou UX.

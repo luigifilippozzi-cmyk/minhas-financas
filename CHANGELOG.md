@@ -24,6 +24,18 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [3.9.1] - 2026-03-30
+
+### Corrigido — BUG-025: Aba "Fatura do Cartão" não carrega após importação de dados de cartão
+
+#### `src/js/pages/fatura.js` + `src/js/pages/importar.js`
+- **Problema:** `garantirContasPadrao` era chamada exclusivamente em `app.js` (carregado apenas por `dashboard.html`). Usuários que acessavam `base-dados.html` para importar e depois navegavam para `fatura.html` sem visitar o dashboard nunca tinham as contas padrão criadas. A coleção `contas` ficava vazia → `ouvirContas` retornava `[]` → seletor de cartão só exibia "— selecione —" → nenhum auto-select → página presa no estado vazio indefinidamente.
+- **Impacto secundário:** sem contas disponíveis durante o import, `contaId` ficava `undefined` em todas as transações importadas, tornando-as invisíveis na fatura mesmo após o problema principal ser corrigido.
+- **Fix `fatura.js`:** importa `garantirContasPadrao` + `CONTAS_PADRAO`; chama `await garantirContasPadrao(_grupoId, CONTAS_PADRAO).catch(() => {})` antes de `ouvirContas` — garante que `💳 Cartão de Crédito` (`tipo:'cartao'`) exista para o auto-select funcionar.
+- **Fix `importar.js`:** mesma chamada antes de montar o preview — garante que o seletor de conta esteja populado no momento do import, evitando `contaId: undefined` nas despesas importadas.
+
+---
+
 ## [3.8.0] - 2026-03-27
 
 ### Corrigido — BUG-021 + BUG-022: Ciclo de faturamento não modelado — 43 transações ausentes da fatura (R$ 7.926,93)
