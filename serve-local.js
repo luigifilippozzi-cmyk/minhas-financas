@@ -1,7 +1,9 @@
 // Simple static server for local development (no Firebase auth needed)
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
+import http from 'http';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const PORT = process.env.PORT || 5000;
 const PUBLIC_DIR = path.join(__dirname, 'src');
