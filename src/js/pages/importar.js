@@ -72,6 +72,7 @@ import { categorizarTransacao }  from '../utils/categorizer.js';               /
 // RF-013: pipeline modules
 import { parsearCSVTexto, parsearLinhasCSVXLSX, parsearParcela, inferirContaDaDescricao } from '../utils/normalizadorTransacoes.js';
 import { marcarLinhasDuplicatas } from '../utils/deduplicador.js';
+import { deveCarregarChavesReceitas } from '../utils/importarDedup.js';
 import { parsearLinhasPDF, classificarBanco } from './pipelineBanco.js';
 import { filtrarCreditos, aplicarMesFatura, gerarProjecoes } from './pipelineCartao.js';
 
@@ -336,7 +337,10 @@ async function processarArquivo(file) {
 async function marcarDuplicatas() {
   _chavesExistentes    = await buscarChavesDedup(_grupoId);
   // NRF-006: carrega chaves de receitas quando em modo banco (mixed credits/debits)
-  _chavesExistentesRec = (_tipoExtrato === 'banco' || _tipoExtrato === 'receita')
+  // Cartão também pode conter estornos/créditos (tipoLinha='receita') no mesmo arquivo.
+  // Sem carregar chaves de receitas aqui, duplicatas de estorno passam batido e
+  // não recebem atualização de mesFatura em imports de ciclos futuros.
+  _chavesExistentesRec = deveCarregarChavesReceitas(_tipoExtrato)
     ? await buscarChavesDedupReceitas(_grupoId)
     : new Set();
   _projecaoDocMap      = await buscarMapaProjecoes(_grupoId);

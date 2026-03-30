@@ -559,7 +559,7 @@ l.duplicado = true;  // ← faltava: l.duplicado_docId = Map.get(chave)
 ### BUG-023 — `projecao_paga` incluída no total da fatura — double-counting de parceladas reconciliadas
 **Severidade:** 🔴 Crítico
 **Versão introduzida:** v1.8.0 (NRF-005 — fatura.js)
-**Versão corrigida:** v3.9.0
+**Versão corrigida:** v3.9.0 (parcial) / v3.9.2 (completa)
 **Arquivo:** `src/js/pages/fatura.js`
 
 **Descrição:**
@@ -591,7 +591,7 @@ if (d.tipo === 'projecao' || d.tipo === 'projecao_paga') return false;  // BUG-0
 ### BUG-024 — `buscarChavesDedupReceitas` retorna `Set` — mesFatura não propagado para estornos duplicados
 **Severidade:** 🟠 Médio
 **Versão introduzida:** v3.8.0 (BUG-021)
-**Versão corrigida:** v3.9.0
+**Versão corrigida:** v3.9.0 (parcial) / v3.9.2 (completa)
 **Arquivos:** `src/js/services/database.js`, `src/js/pages/importar.js`
 
 **Descrição:**
@@ -606,6 +606,7 @@ Se um estorno/crédito da fatura já havia sido importado em ciclo anterior, o c
 **Correção aplicada:**
 1. `database.js`: `buscarChavesDedupReceitas` agora retorna `Map<chave_dedup, docId>` (mesmo padrão de `buscarChavesDedup`)
 2. `importar.js`: adicionado `atualizarReceita` ao import; post-loop distingue `tipoLinha === 'receita'` e chama `atualizarReceita` ou `atualizarDespesa` conforme o tipo do duplicado
+3. **Follow-up v3.9.2:** em `marcarDuplicatas`, o carregamento de chaves de receita também passou a cobrir `_tipoExtrato === 'cartao'` (antes cobria apenas `banco|receita`). Isso fecha o gap de dedup para estornos em fatura de cartão.
 
 ---
 
