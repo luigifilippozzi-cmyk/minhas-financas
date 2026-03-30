@@ -60,9 +60,11 @@ import {
   criarParcelamento, reconciliarParcela, atualizarDespesa, atualizarReceita,
   criarReceita,                                    // NRF-006: salvar receitas do extrato bancário
   purgarDuplicatasDespesas, purgarDuplicatasReceitas,
+  garantirContasPadrao,
 } from '../services/database.js';
 import { modelDespesa } from '../models/Despesa.js';
 import { modelReceita } from '../models/Receita.js';  // NRF-006
+import { CONTAS_PADRAO } from '../models/Conta.js';
 import { formatarMoeda, formatarData } from '../utils/formatters.js';
 import { extrairTransacoesPDF } from '../utils/pdfParser.js';              // RF-020
 import { detectarOrigemArquivo } from '../utils/detectorOrigemArquivo.js';     // RF-021
@@ -116,6 +118,8 @@ onAuthChange(async (user) => {
   const grupo = await buscarGrupo(_grupoId);
   _nomesMembros = grupo?.nomesMembros ?? {};
   preencherSelRespLote();
+  // Garante que contas padrão existam antes de carregar o formulário de importação
+  await garantirContasPadrao(_grupoId, CONTAS_PADRAO).catch(() => {});
   _chavesExistentes   = await buscarChavesDedup(_grupoId);
   _projecaoDocMap     = await buscarMapaProjecoes(_grupoId);
   _mapaCategoriasHist = await buscarMapaCategorias(_grupoId);
