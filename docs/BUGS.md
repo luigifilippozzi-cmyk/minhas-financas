@@ -537,6 +537,8 @@ l.duplicado = true;  // ← faltava: l.duplicado_docId = Map.get(chave)
 4. `importar.js` salva `mesFatura` no Firestore (despesas, receitas e projeções).
 5. Após o loop de importação, itera `_linhas` e chama `atualizarDespesa(docId, { mesFatura })` para cada duplicata detectada em imports de cartão.
 
+> **Nota:** a correção em `processarFaturaCartao` cobriu o caminho XLSX/processamento interno. O caminho direto de `importar.js → parsearLinhasCSVXLSX` (CSV) nunca chamava `processarFaturaCartao` e permaneceu com o gap — coberto pelo **BUG-026** (v3.9.3).
+
 ---
 
 ### BUG-022 — `fatura.js` filtra por mês calendário: transações de ciclos cross-month nunca aparecem
