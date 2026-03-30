@@ -704,6 +704,44 @@ linhas.forEach((l) => {
 
 ---
 
+### BUG-027 — `executarImportacao` retorna cedo quando todos são duplicados — mesFatura nunca atualizado
+**Severidade:** 🔴 Crítico
+**Versão introduzida:** v3.8.0 (BUG-021 — adicionou update de mesFatura em duplicatas)
+**Versão corrigida:** v3.9.4
+**Arquivos:** `src/js/pages/importar.js`
+
+**Descrição:**
+`executarImportacao()` fazia `return` imediato na linha 830 quando `idxs.length === 0` (nenhum checkbox selecionado). O loop de atualização de `mesFatura` nos duplicados existia **após** esse guard — portanto, quando o CSV de re-import detectava todos os registros como duplicados (todos desmarcados), o botão "Importar" saía sem fazer nada.
+
+**Código problemático (antes):**
+```javascript
+async function executarImportacao() {
+  const idxs = [...document.querySelectorAll('.chk-linha:checked')].map(cb => +cb.dataset.idx);
+  if (!idxs.length) { mostrarAvisoZero(); return; }  // ← sai aqui quando todos são dups
+  ...
+  // BUG-021: loop que atualiza mesFatura nos duplicados — NUNCA chegava aqui
+  if (_tipoExtrato === 'cartao' && _mesFatura) {
+    for (const l of _linhas) {
+      if (l.duplicado && l.duplicado_docId) { await atualizarDespesa(...); }
+    }
+  }
+}
+```
+
+**Correção aplicada:**
+```javascript
+// BUG-027: early return só quando não há novas seleções E não há duplicatas a atualizar
+const temDuplicatasCartao = _tipoExtrato === 'cartao' && _mesFatura &&
+  _linhas.some(l => l.duplicado && l.duplicado_docId);
+if (!idxs.length && !temDuplicatasCartao) {
+  mostrarAvisoZero(); return;
+}
+```
+
+**UX:** tela de resultado exibe mensagem dedicada ("Fatura sincronizada! X transações vinculadas ao mês YYYY-MM") quando 0 novas importadas mas duplicatas foram atualizadas com `mesFatura`.
+
+---
+
 ## Dívida Técnica / Melhorias Pendentes
 
 Itens identificados em revisão de código que não são bugs (não quebram funcionalidade), mas representam oportunidades de melhoria de performance, manutenibilidade ou UX.
