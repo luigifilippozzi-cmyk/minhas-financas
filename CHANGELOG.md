@@ -7,6 +7,17 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [3.9.4] - 2026-03-30
+
+### Corrigido — BUG-027: botão "Importar" retornava cedo quando todos são duplicados — mesFatura nunca atualizado
+
+#### `src/js/pages/importar.js`
+- **Causa raiz:** `executarImportacao()` fazia `return` imediato quando `idxs.length === 0` (nenhum checkbox marcado), antes de executar o loop de atualização de `mesFatura` nos duplicados (linhas 940-951). Com 102 duplicados e 0 selecionados, o update nunca rodava.
+- **Fix:** guarda agora verifica também `temDuplicatasCartao` antes de sair — se há duplicatas de cartão com `duplicado_docId`, o fluxo continua e atualiza `mesFatura` em todos eles.
+- **UX:** tela de resultado exibe mensagem específica ("Fatura sincronizada! X transações vinculadas ao mês YYYY-MM") quando 0 novas importadas mas duplicatas foram atualizadas.
+
+---
+
 ## [3.9.3] - 2026-03-30
 
 ### Corrigido — BUG-026: `mesFatura` nunca salvo no Firestore — transações de cartão invisíveis na fatura

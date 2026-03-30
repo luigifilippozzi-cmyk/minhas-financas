@@ -827,7 +827,12 @@ function atualizarChipsPreview() {
 // ── NRF-002 + RF-014: Importação em lote ────────────────────────
 async function executarImportacao() {
   const idxs = [...document.querySelectorAll('.chk-linha:checked')].map(cb => +cb.dataset.idx);
-  if (!idxs.length) { document.getElementById('imp-aviso-zero').classList.remove('hidden'); return; }
+  // BUG-027: verifica se há duplicatas de cartão que precisam de mesFatura mesmo sem novas seleções
+  const temDuplicatasCartao = _tipoExtrato === 'cartao' && _mesFatura &&
+    _linhas.some(l => l.duplicado && l.duplicado_docId);
+  if (!idxs.length && !temDuplicatasCartao) {
+    document.getElementById('imp-aviso-zero').classList.remove('hidden'); return;
+  }
   document.getElementById('imp-aviso-zero').classList.add('hidden');
   const btn = document.getElementById('btn-importar');
   btn.disabled = true; btn.textContent = 'Importando…';
@@ -950,11 +955,13 @@ async function executarImportacao() {
       }
     }
   }
-  mostrarResultado(sucesso, falha, projGeradas, reconciliacoes, reconciliacoesFuzzy);
+  // Conta duplicatas atualizadas com mesFatura para exibir no resultado
+  const dupAtualizadas = _linhas.filter(l => l.duplicado && l.duplicado_docId).length;
+  mostrarResultado(sucesso, falha, projGeradas, reconciliacoes, reconciliacoesFuzzy, dupAtualizadas);
 }
 
 // ── Resultado ─────────────────────────────────────────────────────
-function mostrarResultado(sucesso, falha, projGeradas, reconciliacoes, reconciliacoesFuzzy) {
+function mostrarResultado(sucesso, falha, projGeradas, reconciliacoes, reconciliacoesFuzzy, dupAtualizadas = 0) {
   if (projGeradas === undefined)         projGeradas = 0;
   if (reconciliacoes === undefined)      reconciliacoes = 0;
   if (reconciliacoesFuzzy === undefined) reconciliacoesFuzzy = 0;
@@ -964,7 +971,12 @@ function mostrarResultado(sucesso, falha, projGeradas, reconciliacoes, reconcili
   const titulo = document.getElementById('resultado-titulo');
   const msg    = document.getElementById('resultado-msg');
   const projEl = document.getElementById('resultado-proj');
-  if (falha === 0) {
+  // BUG-027: caso especial — apenas duplicatas atualizadas com mesFatura, sem novas importações
+  if (sucesso === 0 && falha === 0 && dupAtualizadas > 0) {
+    icon.textContent   = '✅';
+    titulo.textContent = 'Fatura sincronizada!';
+    msg.textContent    = dupAtualizadas + ' transaç' + (dupAtualizadas !== 1 ? 'ões já existentes foram' : 'ão já existente foi') + ' vinculada' + (dupAtualizadas !== 1 ? 's' : '') + ' ao mês ' + _mesFatura + ' e agora aparece' + (dupAtualizadas !== 1 ? 'm' : '') + ' na aba Fatura.';
+  } else if (falha === 0) {
     icon.textContent   = '⛅';
     titulo.textContent = 'Importação concluída com sucesso!';
     msg.textContent    = sucesso + ' despesa' + (sucesso !== 1 ? 's' : '') + ' importada' + (sucesso !== 1 ? 's' : '') + ' e sincronizadas com o grupo.';
