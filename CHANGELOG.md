@@ -9,6 +9,13 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+### Corrigido — BUG-024 (follow-up): deduplicação de estornos em import de cartão
+
+#### `src/js/pages/importar.js`
+- **Problema residual:** mesmo após BUG-024 (v3.9.0), o fluxo `cartao` não carregava `buscarChavesDedupReceitas` durante `marcarDuplicatas()`.
+- **Impacto:** estornos/créditos (`tipoLinha='receita'`) vindos de fatura de cartão podiam não ser marcados como duplicados, impedindo propagação de `mesFatura` em reimports de ciclos futuros.
+- **Fix:** condição de carga das chaves de receita passou a incluir `_tipoExtrato === 'cartao'`.
+
 ### Melhorado — Épico A: Hierarquia e composição do dashboard
 
 #### `src/dashboard.html`
