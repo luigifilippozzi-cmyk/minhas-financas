@@ -19,10 +19,10 @@ export function renderizarDashboard(categorias, despesas, orcamentos, nomeAtual 
   // Mapeia orçamentos por categoriaId
   const orcMap = Object.fromEntries(orcamentos.map((o) => [o.categoriaId, o.valorLimite]));
 
-  // Soma despesas por categoria
+  // Soma despesas reais por categoria (exclui projeções — parcelas futuras do cartão)
   const gastoMap = {};
-  despesas.forEach((d) => {
-    gastoMap[d.categoriaId] = (gastoMap[d.categoriaId] ?? 0) + d.valor;
+  despesas.filter(d => d.tipo !== 'projecao').forEach((d) => {
+    gastoMap[d.categoriaId] = (gastoMap[d.categoriaId] ?? 0) + (d.valor ?? 0);
   });
 
   // Totais gerais

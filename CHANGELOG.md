@@ -5,6 +5,10 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [Unreleased]
+
+*(sem mudanças pendentes)*
+
 ---
 
 ## [3.9.4] - 2026-03-30
@@ -32,23 +36,6 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
-## [Unreleased]
-
-### Melhorado — Épico A: Hierarquia e composição do dashboard
-
-#### `src/dashboard.html`
-- **KPIs unificados no topo:** Total Orçado, Total Gasto, Total Receitas, Saldo e Disponível agora aparecem juntos em um único bloco visível sem scroll
-- **Seção de Receitas eliminada como seção separada:** KPIs de receitas movidos para o bloco principal; categorias de receitas passam a ser sub-bloco dentro da mesma seção, separado por `.section-subtitle`
-- **Widget de parcelamentos realocado:** movido para após os grids de categorias (antes interrompia o fluxo KPIs → categorias)
-- **Ações centralizadas no header:** "+ Nova Receita" e "+ Nova Despesa" agora ficam no cabeçalho principal junto aos seletores de período
-
-#### `src/css/dashboard.css`
-- **`.section-subtitle`:** novo estilo de sub-título uppercase/small para separar blocos dentro de uma seção sem criar seções HTML independentes
-- **Cores semânticas por card KPI:** `.resumo-card--gasto` (rose), `.resumo-card--disponivel` (indigo suave) adicionados
-- **`.resumo-cards`:** `minmax` reduzido de 175px para 160px para acomodar 5 KPIs na mesma linha em telas médias
-
----
-
 ## [3.9.2] - 2026-03-30
 
 ### Corrigido — BUG-024 (follow-up): deduplicação de estornos em import de cartão
@@ -69,6 +56,36 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - **Impacto secundário:** sem contas disponíveis durante o import, `contaId` ficava `undefined` em todas as transações importadas, tornando-as invisíveis na fatura mesmo após o problema principal ser corrigido.
 - **Fix `fatura.js`:** importa `garantirContasPadrao` + `CONTAS_PADRAO`; chama `await garantirContasPadrao(_grupoId, CONTAS_PADRAO).catch(() => {})` antes de `ouvirContas` — garante que `💳 Cartão de Crédito` (`tipo:'cartao'`) exista para o auto-select funcionar.
 - **Fix `importar.js`:** mesma chamada antes de montar o preview — garante que o seletor de conta esteja populado no momento do import, evitando `contaId: undefined` nas despesas importadas.
+
+---
+
+## [3.9.0] - 2026-03-27
+
+### Corrigido — BUG-023: `projecao_paga` incluída no total da fatura — double-counting de parceladas reconciliadas
+
+#### `src/js/pages/fatura.js`
+- **Problema:** `_merge()` excluía `tipo === 'projecao'` mas não `tipo === 'projecao_paga'` — parceladas reconciliadas apareciam duas vezes (despesa real + projeção paga), dobrando o total.
+- **Fix:** `if (d.tipo === 'projecao' || d.tipo === 'projecao_paga') return false;`
+
+### Corrigido — BUG-024 (parcial): `buscarChavesDedupReceitas` retorna `Set` — mesFatura não propagado para estornos
+
+#### `src/js/services/database.js` + `src/js/pages/importar.js`
+- **Problema:** `buscarChavesDedupReceitas` retornava `Set` (sem `docId`), impedindo atualização de `mesFatura` em estornos duplicados. Post-loop chamava `atualizarDespesa` para todos os duplicados sem distinguir receitas.
+- **Fix parcial:** `buscarChavesDedupReceitas` passa a retornar `Map<chave_dedup, docId>`; post-loop distingue `tipoLinha === 'receita'` e chama `atualizarReceita` ou `atualizarDespesa` conforme o tipo.
+- **Fix completo em v3.9.2:** cobertura de `_tipoExtrato === 'cartao'` no carregamento de chaves de receita em `marcarDuplicatas`.
+
+### Melhorado — Épico A: Hierarquia e composição do dashboard
+
+#### `src/dashboard.html`
+- **KPIs unificados no topo:** Total Orçado, Total Gasto, Total Receitas, Saldo e Disponível agora aparecem juntos em um único bloco visível sem scroll
+- **Seção de Receitas eliminada como seção separada:** categorias de receitas passam a ser sub-bloco dentro da mesma seção, separado por `.section-subtitle`
+- **Widget de parcelamentos realocado:** movido para após os grids de categorias
+- **Ações centralizadas no header:** "+ Nova Receita" e "+ Nova Despesa" no cabeçalho junto aos seletores de período
+
+#### `src/css/dashboard.css`
+- **`.section-subtitle`:** novo estilo de sub-título para separar blocos sem criar seções HTML independentes
+- **Cores semânticas por card KPI:** `.resumo-card--gasto` (rose), `.resumo-card--disponivel` (indigo suave)
+- **`.resumo-cards`:** `minmax` reduzido de 175px → 160px para acomodar 5 KPIs em telas médias
 
 ---
 
