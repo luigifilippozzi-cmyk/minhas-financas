@@ -336,7 +336,10 @@ async function processarArquivo(file) {
 async function marcarDuplicatas() {
   _chavesExistentes    = await buscarChavesDedup(_grupoId);
   // NRF-006: carrega chaves de receitas quando em modo banco (mixed credits/debits)
-  _chavesExistentesRec = (_tipoExtrato === 'banco' || _tipoExtrato === 'receita')
+  // Cartão também pode conter estornos/créditos (tipoLinha='receita') no mesmo arquivo.
+  // Sem carregar chaves de receitas aqui, duplicatas de estorno passam batido e
+  // não recebem atualização de mesFatura em imports de ciclos futuros.
+  _chavesExistentesRec = (_tipoExtrato === 'banco' || _tipoExtrato === 'receita' || _tipoExtrato === 'cartao')
     ? await buscarChavesDedupReceitas(_grupoId)
     : new Set();
   _projecaoDocMap      = await buscarMapaProjecoes(_grupoId);
