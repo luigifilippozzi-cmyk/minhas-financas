@@ -7,6 +7,20 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [3.9.3] - 2026-03-30
+
+### Corrigido — BUG-026: `mesFatura` nunca salvo no Firestore — transações de cartão invisíveis na fatura
+
+#### `src/js/pages/pipelineCartao.js`
+- **Causa raiz:** `aplicarMesFatura()` ajustava `l.data` para parceladas mas nunca atribuía `l.mesFatura` às linhas. O campo só era propagado por `processarFaturaCartao()`, que **não é chamado** pelo fluxo de importação (`importar.js` chama `parsearLinhasCSVXLSX` + `_aplicarTipo` diretamente).
+- **Impacto:** guarda `...(l.mesFatura ? { mesFatura: l.mesFatura } : {})` em importar.js nunca disparava → zero transações salvas com `mesFatura` → `fatura.js` não encontrava nenhuma delas via `ouvirDespesasPorMesFatura`.
+- **Fix:** adicionada linha `l.mesFatura = mesFatura` dentro do `forEach` de `aplicarMesFatura`, garantindo propagação para todos os callers (import page + `processarFaturaCartao`).
+
+#### `tests/pages/pipelineCartao.test.js` *(novo)*
+- 9 testes cobrindo `aplicarMesFatura` (BUG-026), `filtrarCreditos` e integração via `processarFaturaCartao`.
+
+---
+
 ## [Unreleased]
 
 ### Melhorado — Épico A: Hierarquia e composição do dashboard

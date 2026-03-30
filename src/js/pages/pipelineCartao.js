@@ -35,6 +35,8 @@ export function aplicarMesFatura(linhas, mesFatura) {
   const [ano, mes] = mesFatura.split('-').map(Number);
   const dataFatura = new Date(ano, mes - 1, 1);
   linhas.forEach((l) => {
+    // BUG-026: propaga mesFatura para cada linha para que o campo seja salvo no Firestore
+    l.mesFatura = mesFatura;
     // Restaura data original antes de aplicar (permite trocar de mês)
     l.data = l.dataOriginal instanceof Date ? l.dataOriginal : new Date(l.dataOriginal);
     if (!l.erro && l.parcela && l.parcela !== '-') {
