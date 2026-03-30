@@ -652,6 +652,58 @@ _unsubContas = ouvirContas(_grupoId, (contas) => {
 
 ---
 
+### BUG-026 — `aplicarMesFatura` não atribui `l.mesFatura` — todas as transações de cartão invisíveis na fatura
+**Severidade:** 🔴 Crítico
+**Versão introduzida:** v3.8.0 (BUG-021 — adicionou campo `mesFatura`)
+**Versão corrigida:** v3.9.3
+**Arquivos:** `src/js/pages/pipelineCartao.js`
+
+**Descrição:**
+`aplicarMesFatura()` ajustava `l.data` (movendo parceladas para o dia 01 do mês da fatura) mas **nunca atribuía `l.mesFatura`** em cada linha. O setter `l.mesFatura = mesFatura` existia apenas em `processarFaturaCartao()` — função que o `importar.js` **nunca chama** (o fluxo de importação usa diretamente `parsearLinhasCSVXLSX` + `_aplicarTipo`).
+
+**Código problemático (antes):**
+```javascript
+// pipelineCartao.js — aplicarMesFatura
+linhas.forEach((l) => {
+  // l.mesFatura nunca atribuído aqui ← raiz do bug
+  l.data = l.dataOriginal instanceof Date ? l.dataOriginal : new Date(l.dataOriginal);
+  if (!l.erro && l.parcela && l.parcela !== '-') {
+    l.data = new Date(dataFatura);
+    l.dataAjustada = true;
+  } else {
+    l.dataAjustada = false;
+  }
+});
+
+// importar.js — save loop
+...(l.mesFatura ? { mesFatura: l.mesFatura } : {}),  // ← nunca disparava (undefined)
+```
+
+**Cadeia de impacto:**
+1. Usuário importa CSV de fatura de cartão
+2. `_aplicarTipo('cartao')` chama `aplicarMesFatura(_linhas, _mesFatura)` — ajusta datas, mas `l.mesFatura` permanece `undefined`
+3. Save loop: `l.mesFatura` é `undefined` → guard falso → campo `mesFatura` **nunca enviado ao Firestore**
+4. `fatura.js` usa `ouvirDespesasPorMesFatura` para buscar transações por `mesFatura` → retorna vazio → **todas as transações ficam invisíveis na fatura**
+
+**Correção aplicada:**
+```javascript
+// pipelineCartao.js — aplicarMesFatura — DEPOIS do fix
+linhas.forEach((l) => {
+  l.mesFatura = mesFatura;  // BUG-026: propaga campo para todos os callers
+  l.data = l.dataOriginal instanceof Date ? l.dataOriginal : new Date(l.dataOriginal);
+  if (!l.erro && l.parcela && l.parcela !== '-') {
+    l.data = new Date(dataFatura);
+    l.dataAjustada = true;
+  } else {
+    l.dataAjustada = false;
+  }
+});
+```
+
+**Nota operacional:** transações importadas antes de v3.9.3 foram salvas sem `mesFatura`. Para que apareçam na fatura é necessário re-importar o CSV — o dedup existente reconhece os duplicados e apenas atualiza o campo sem criar novas entradas.
+
+---
+
 ## Dívida Técnica / Melhorias Pendentes
 
 Itens identificados em revisão de código que não são bugs (não quebram funcionalidade), mas representam oportunidades de melhoria de performance, manutenibilidade ou UX.
