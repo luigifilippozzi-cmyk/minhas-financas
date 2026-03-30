@@ -10,8 +10,9 @@
 // ============================================================
 
 import { onAuthChange, logout } from '../services/auth.js';
-import { buscarPerfil, buscarGrupo, ouvirContas, ouvirCategorias, ouvirDespesas, ouvirDespesasPorMesFatura } from '../services/database.js';
+import { buscarPerfil, buscarGrupo, ouvirContas, ouvirCategorias, ouvirDespesas, ouvirDespesasPorMesFatura, garantirContasPadrao } from '../services/database.js';
 import { formatarMoeda, formatarData, nomeMes } from '../utils/formatters.js';
+import { CONTAS_PADRAO } from '../models/Conta.js';
 
 // ── Estado ────────────────────────────────────────────────────
 let _usuario    = null;
@@ -49,6 +50,9 @@ onAuthChange(async (user) => {
 
   configurarEventos();
   atualizarTituloMes();
+
+  // Garante que contas padrão existam (ex: usuário que nunca visitou o dashboard)
+  await garantirContasPadrao(_grupoId, CONTAS_PADRAO).catch(() => {});
 
   _unsubCats = ouvirCategorias(_grupoId, (cats) => {
     _categorias = cats;
