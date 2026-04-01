@@ -400,10 +400,13 @@ function atualizarChips() {
   if (chipTotal) chipTotal.textContent = formatarMoeda(total);
   if (chipCount) chipCount.textContent = count;
 
-  // NRF-001: "Meu Bolso" = individuais + valorAlocado das conjuntas
+  // NRF-001: "Meu Bolso" = minhas individuais + valorAlocado das conjuntas (fix convidado)
+  const nomeUsuarioAtual = (_grupo?.nomesMembros?.[_usuario?.uid] ?? '').trim();
   const meuBolso = reais.reduce((s, d) => {
     if (d.isConjunta) return s + (d.valorAlocado ?? d.valor / 2);
-    return s + d.valor;
+    const resp = (d.responsavel || d.portador || '').trim();
+    if (nomeUsuarioAtual && resp === nomeUsuarioAtual) return s + d.valor;
+    return s;
   }, 0);
   const chipMB    = document.getElementById('chip-meu-bolso');
   const chipMBVal = document.getElementById('chip-meu-bolso-valor');
