@@ -36,6 +36,8 @@
 | RF-022 | Auto Categorização Inteligente Sensível à Origem | Alta | ✅ Implementado |
 | RF-023 | Edição em Massa de Transações — Responsável Dinâmico | Alta | ✅ Implementado |
 | NRF-010 | Portador "Conjunto" no Upload de Fatura de Cartão | Alta | ✅ Implementado |
+| RF-024 | Importação de Extrato Bancário via Template XLSX | Alta | ✅ Implementado |
+| RF-060 | Planejamento Mensal — Visão Unificada de Despesas Previstas | Alta | ✅ Implementado |
 
 ---
 
@@ -1046,3 +1048,68 @@ Permite que o usuário marque transações importadas via fatura de cartão de c
 - [x] Parcelas projetadas herdam `isConjunta=true`
 - [x] Padrão da categoria é sobreposto pela seleção do usuário
 - [x] Sem regressão: seletores de membros individuais continuam funcionando
+
+---
+
+## RF-060: Planejamento Mensal — Visão Unificada de Despesas Previstas
+**Prioridade:** Alta | **Versão:** v3.11.0 | **Status:** ✅ Implementado
+
+Nova aba "📋 Planejamento" com visão prospectiva do mês: o usuário vê todas as saídas esperadas e acompanha a evolução realizado vs. previsto ao longo do período.
+
+### Fontes de dados
+| Fonte | O que fornece |
+|-------|---------------|
+| Despesas dos meses N-1 e N-2 | Detecção de recorrentes (aluguel, assinaturas, contas fixas) |
+| Despesas com `tipo='projecao'` do mês | Parcelas de cartão de crédito já projetadas |
+| Orçamentos do mês | Limites por categoria como referência |
+| Despesas realizadas do mês (listener) | Auto-matching em tempo real |
+
+### Funcionalidades
+- **Geração automática do plano:** ao clicar "Gerar Plano", o sistema combina recorrentes + parcelas + orçamentos em itens de planejamento
+- **Detecção de recorrentes:** algoritmo compara meses N-1 e N-2, com 3 níveis de confiança (alta ≤5%, média ≤15%, baixa >15%)
+- **Auto-matching em tempo real:** quando uma despesa é registrada (em qualquer aba), o plano atualiza automaticamente via `onSnapshot`
+- **Checklist agrupada por categoria:** com subtotais, badges de tipo (Recorrente/Parcela/Orçamento/Manual) e status (pendente/realizado/acima)
+- **KPIs:** Total Previsto, Total Realizado, Diferença, Cobertura %
+- **Análise de gaps:** categorias com orçamento sem itens planejados; planejado acima do orçamento
+- **Despesas não planejadas:** lista de despesas realizadas que não estão no plano
+- **Adição manual de itens:** formulário inline para despesas avulsas
+- **Marcação manual:** para itens que não foram auto-matched
+
+### Coleção Firestore: `planejamento_items`
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| grupoId | string | ID do grupo |
+| ano | number | Ano |
+| mes | number | Mês (1-12) |
+| categoriaId | string | Categoria |
+| descricao | string | Descrição do item |
+| valorPrevisto | number | Valor esperado |
+| origem | string | 'recorrente' / 'parcela' / 'manual' / 'orcamento' |
+| status | string | 'pendente' / 'realizado' / 'parcial' / 'cancelado' |
+| despesaId | string? | Link para despesa realizada |
+| valorRealizado | number? | Valor efetivo |
+| parcelamentoId | string? | Link para parcelamento mestre |
+
+### Arquivos
+
+| Arquivo | Mudança |
+|---------|---------|
+| `src/planejamento.html` | *(novo)* Página HTML com navbar, KPIs, checklist, gaps |
+| `src/js/pages/planejamento.js` | *(novo)* Entry point: auth, listeners, render, auto-match |
+| `src/js/controllers/planejamento.js` | *(novo)* Geração do plano, matching, análise de gaps |
+| `src/js/utils/recurringDetector.js` | *(novo)* Detecção de despesas recorrentes |
+| `src/css/planejamento.css` | *(novo)* Estilos específicos |
+| `src/js/services/database.js` | CRUD `planejamento_items` + `buscarDespesasMes` |
+| `firestore.rules` | Regras para `planejamento_items` |
+| `firestore.indexes.json` | Índice composto grupoId+mes+ano |
+| 8 páginas HTML | Link "📋 Planejamento" na navbar |
+
+### Critérios de Aceitação
+- [ ] Página acessível via navbar em todas as páginas
+- [ ] Geração do plano combina recorrentes + parcelas + orçamentos
+- [ ] Auto-matching atualiza status quando despesa é registrada
+- [ ] KPIs calculam corretamente previsto/realizado/diferença/cobertura
+- [ ] Análise de gaps identifica categorias sem plano e excesso
+- [ ] Despesas não planejadas são listadas
+- [ ] Navegação entre meses funciona (planos independentes)
+- [ ] Primeiro mês (sem histórico) mostra apenas parcelas + orçamentos

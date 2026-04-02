@@ -115,6 +115,8 @@ export function parsearLinhasCSVXLSX(rows, {
     } else {
       valorBruto = normalizarValorXP(valorRaw);
     }
+    // RF-024: valor zero = saldo/marcador (ex: COD. LANC. 0), descarte silencioso
+    if (valorBruto === 0) continue;
     const valor = Math.abs(valorBruto);
     const isNegativo = valorBruto < 0;  // BUG-011: true = valor negativo (crédito/estorno em fatura)
     const dataFmt = normalizarData(dataRaw);

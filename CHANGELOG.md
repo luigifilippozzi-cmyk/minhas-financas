@@ -11,6 +11,94 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [3.11.0] - 2026-04-02
+
+### Adicionado — RF-060: Planejamento Mensal
+
+Nova aba "📋 Planejamento" com visão unificada de despesas previstas para o mês, combinando despesas recorrentes, parcelas de cartão e orçamentos — com tracking de realizado vs. planejado em tempo real.
+
+#### `src/planejamento.html` *(novo)*
+- Página completa com KPIs (Previsto / Realizado / Diferença / Cobertura), checklist agrupada por categoria, análise de gaps e seção de despesas não planejadas.
+
+#### `src/js/pages/planejamento.js` *(novo)*
+- Entry point com autenticação, navegação de mês, listeners real-time (Firestore onSnapshot) para itens do plano, despesas e orçamentos.
+- Auto-matching: ao registrar uma despesa em qualquer aba, o plano atualiza automaticamente via comparação de `categoriaId` + `descricao` fuzzy ou `parcelamento_id`.
+
+#### `src/js/controllers/planejamento.js` *(novo)*
+- `gerarPlanoPara(grupoId, mes, ano)` — gera plano combinando recorrentes + parcelas (`tipo='projecao'`) + orçamentos.
+- `autoMatch(planItems, despesas)` — matching automático por parcelamentoId ou categoriaId+descrição.
+- `analisarGaps(orcamentos, planItems, categorias)` — identifica categorias sem plano e planejado acima do orçamento.
+- `despesasNaoPlanejadas(despesas, planItems)` — lista despesas realizadas fora do plano.
+
+#### `src/js/utils/recurringDetector.js` *(novo)*
+- `detectarRecorrentes(despN1, despN2)` — compara meses N-1 e N-2 para identificar despesas fixas.
+- Três níveis de confiança: alta (variação ≤5%), média (≤15%), baixa (>15% ou descrição genérica).
+- Exclusão automática de descrições genéricas: "PIX", "transferência", "pagamento", etc.
+
+#### `src/css/planejamento.css` *(novo)*
+- Estilos para KPIs, checklist, badges de tipo (Recorrente/Parcela/Orçamento/Manual), status icons, análise de gaps, formulário inline, layout responsivo.
+
+#### `src/js/services/database.js`
+- `buscarDespesasMes(grupoId, mes, ano)` — leitura única para detecção de recorrentes.
+- `salvarItemPlanejamento(dados)` — upsert com ID composto (grupoId_ano_mes_hash).
+- `salvarItensPlanejamentoBatch(items)` — batch write para geração inicial do plano.
+- `ouvirPlanejamento(grupoId, mes, ano, cb)` — listener real-time.
+- `excluirItemPlanejamento(itemId)` — exclusão de item manual.
+- `existePlanejamento(grupoId, mes, ano)` — verifica se plano já existe.
+
+#### `firestore.rules`
+- Regras de segurança para `/planejamento_items/{itemId}` — acesso restrito a membros do grupo.
+
+#### `firestore.indexes.json`
+- Índice composto: `planejamento_items / grupoId ASC + mes ASC + ano ASC`.
+
+#### Navegação (8 páginas)
+- Link "📋 Planejamento" adicionado na navbar de todas as páginas, posicionado após Dashboard.
+
+#### Nova coleção Firestore: `planejamento_items`
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| grupoId | string | Grupo do usuário |
+| ano | number | Ano do planejamento |
+| mes | number | Mês (1-12) |
+| categoriaId | string | Categoria da despesa |
+| descricao | string | Descrição do item |
+| valorPrevisto | number | Valor esperado |
+| origem | string | 'recorrente' / 'parcela' / 'manual' / 'orcamento' |
+| status | string | 'pendente' / 'realizado' / 'parcial' / 'cancelado' |
+| despesaId | string? | Link para despesa realizada |
+| valorRealizado | number? | Valor efetivo |
+| parcelamentoId | string? | Link para parcelamento mestre |
+
+---
+
+## [3.10.0] - 2026-04-02
+
+### Adicionado — RF-024: Importação de Extrato Bancário via Template XLSX
+
+#### `src/js/utils/normalizadorTransacoes.js`
+- **Descarte silencioso de linhas com valor zero:** adicionado `if (valorBruto === 0) continue` após cálculo do valor bruto — linhas de saldo/marcadores (ex: COD. LANC. 0) são ignoradas sem gerar erro no preview.
+
+#### `src/js/utils/detectorOrigemArquivo.js`
+- **Detecção de alta confiança para template de 3 colunas:** arquivo com exatamente 3 colunas (Data, Descrição, Valor) sem portador/parcela/categoria passa a retornar `tipo: 'banco'` com `confiança: 'alta'` (90%), eliminando o modal de confirmação de tipo nesses casos.
+
+#### `src/js/pages/importar.js`
+- **Reconhecimento da aba "Extrato":** seleção de aba no XLSX expandida de `/transa/i` para `/extrato|transa/i`, permitindo que o template oficial (aba "Extrato") seja lido diretamente sem fallback para a primeira aba.
+
+#### `src/templates/template-importacao.xlsx` *(substituído)*
+- Template recriado com aba nomeada **Extrato** e cabeçalho de 3 colunas: `Data | Descrição | Valor`.
+- Inclui 3 linhas de exemplo: receita positiva (`476,00`), despesa negativa (`-250,00`) e marcador de saldo descartado (`0`).
+- Valor com sinal determina classificação: positivo → receita, negativo → despesa.
+
+#### Regras de classificação por sinal (RF-024)
+| Condição | Classificação |
+|----------|--------------|
+| Valor > 0 | Receita (crédito) |
+| Valor < 0 | Despesa (débito) |
+| Valor = 0 ou vazio | Descartado silenciosamente |
+
+---
+
 ## [3.9.4] - 2026-03-30
 
 ### Corrigido — BUG-027: botão "Importar" retornava cedo quando todos são duplicados — mesFatura nunca atualizado

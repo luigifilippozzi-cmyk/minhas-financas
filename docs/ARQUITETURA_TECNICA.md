@@ -95,16 +95,31 @@ firestore/
 │   ├── tipo: 'banco' | 'cartao' | 'dinheiro'
 │   └── ativa: boolean
 │
-└── parcelamentos/{parcId}               ← NRF-002
+├── parcelamentos/{parcId}               ← NRF-002
+│   ├── grupoId: string
+│   ├── estabelecimento: string
+│   ├── valorTotal: number
+│   ├── totalParcelas: number
+│   ├── parcelasPagas: number
+│   ├── portador: string
+│   ├── usuarioId: string
+│   ├── dataOriginal: timestamp
+│   ├── status: 'ativo' | 'quitado'
+│   ├── criadoEm: timestamp
+│   └── atualizadoEm: timestamp
+│
+└── planejamento_items/{grupoId_ano_mes_hash}  ← RF-060
     ├── grupoId: string
-    ├── estabelecimento: string
-    ├── valorTotal: number
-    ├── totalParcelas: number
-    ├── parcelasPagas: number
-    ├── portador: string
-    ├── usuarioId: string
-    ├── dataOriginal: timestamp
-    ├── status: 'ativo' | 'quitado'
+    ├── ano: number
+    ├── mes: number (1–12)
+    ├── categoriaId: string
+    ├── descricao: string
+    ├── valorPrevisto: number
+    ├── origem: 'recorrente' | 'parcela' | 'manual' | 'orcamento'
+    ├── status: 'pendente' | 'realizado' | 'parcial' | 'cancelado'
+    ├── despesaId: string | null             ← ref para despesa realizada
+    ├── valorRealizado: number | null
+    ├── parcelamentoId: string | null        ← ref para parcelamentos/{id}
     ├── criadoEm: timestamp
     └── atualizadoEm: timestamp
 ```
@@ -127,6 +142,7 @@ Definidos em `firestore.indexes.json`:
 | `receitas` | `(grupoId ASC, data DESC)` | Listagem mensal de receitas |
 | `receitas` | `(grupoId ASC, data ASC)` | RF-017/RF-018: busca por intervalo de datas |
 | `despesas` | `(grupoId ASC, mesFatura DESC)` | BUG-022/v3.8.0: fatura por ciclo de faturamento |
+| `planejamento_items` | `(grupoId ASC, mes ASC, ano ASC)` | RF-060: itens de planejamento mensal |
 
 ---
 
@@ -160,6 +176,7 @@ src/
 ├── orcamentos.html
 ├── categorias.html
 ├── fluxo-caixa.html
+├── planejamento.html           ← RF-060: Planejamento Mensal
 ├── fatura.html                 ← NRF-005
 ├── base-dados.html             ← RF-018: 4 abas — Importar · Duplicatas · Gerenciar · Limpeza
 ├── importar.html               ← Redirect para base-dados.html (backward compat)
@@ -170,7 +187,8 @@ src/
 │   ├── variables.css           ← Sistema de design: cores, sombras, tipografia
 │   ├── components.css          ← Navbar, botões, modais, inputs, scrollbar
 │   ├── main.css                ← Dashboard, imports, fatura, base-dados, layouts de página
-│   └── dashboard.css           ← RF-017: cards KPI, gráficos, filtros de período
+│   ├── dashboard.css           ← RF-017: cards KPI, gráficos, filtros de período
+│   └── planejamento.css        ← RF-060: KPIs, checklist, badges, gaps
 │
 └── js/
     ├── app.js                  ← Boot: auth, seed de categorias e contas; RF-017 gráficos
@@ -193,6 +211,7 @@ src/
     │   ├── despesas.js         ← salvarDespesa, deletarDespesa, renderizarListaDespesas
     │   ├── categorias.js       ← RF-003: CRUD de categorias; sync em tempo real
     │   ├── orcamentos.js       ← RF-004: CRUD de orçamentos mensais; copiar mês anterior
+    │   ├── planejamento.js     ← RF-060: geração do plano, auto-matching, análise de gaps
     │   ├── dashboard.js        ← RF-009/RF-017: cálculo de KPIs e renderização de cards
     │   └── receitas-dashboard.js ← RF-017: renderização da seção de receitas no dashboard
     ├── pages/
@@ -201,6 +220,7 @@ src/
     │   ├── orcamentos.js       ← RF-004
     │   ├── categorias.js       ← RF-003
     │   ├── fluxo-caixa.js      ← NRF-003: gráfico anual Chart.js
+    │   ├── planejamento.js     ← RF-060: planejamento mensal — auth, listeners, render
     │   ├── fatura.js           ← NRF-005: fechamento do cartão
     │   ├── grupo.js            ← RF-002: criação/entrada de grupo; convite
     │   ├── importar.js         ← Orquestrador fino — RF-013/RF-014/NRF-002/NRF-006/NRF-008/NRF-009/NRF-010
@@ -215,6 +235,7 @@ src/
         ├── normalizadorTransacoes.js ← RF-013: parsing puro CSV/XLSX; normalização; chave dedup; inferência conta
         ├── deduplicador.js         ← RF-013: marcarLinhasDuplicatas() — matching exato + fuzzy + ajustes (sem Firestore)
         ├── ajusteDetector.js       ← NRF-002.2: detectarAjustesParciais() — marketplace/supermercado aware
+        ├── recurringDetector.js    ← RF-060: detectarRecorrentes() — análise de meses N-1/N-2
         ├── categorizer.js          ← RF-022: categorizarTransacao() — por origem + histórico + palavras-chave
         ├── detectorOrigemArquivo.js ← RF-021: detectarOrigemArquivo() — tipo (banco/cartão) + banco/emissor
         └── bankFingerprintMap.js   ← RF-021: 15 bancos/emissores — filePatterns + keywords scoring
@@ -259,7 +280,7 @@ UI Event
 
 Princípios:
 - Usuário autenticado acessa apenas o próprio perfil em `/usuarios/{userId}`
-- Dados do grupo (`categorias`, `despesas`, `receitas`, `orcamentos`, `contas`, `parcelamentos`) só são acessíveis por membros do grupo via `isMemberOfGroup(grupoId)`
+- Dados do grupo (`categorias`, `despesas`, `receitas`, `orcamentos`, `contas`, `parcelamentos`, `planejamento_items`) só são acessíveis por membros do grupo via `isMemberOfGroup(grupoId)`
 - `parcelamentos`: `allow delete: if false` — nunca deletados, apenas quitados por status
 - Coleções `contas` e `receitas` exigem regras explícitas — Firestore nega por padrão qualquer coleção não declarada
 

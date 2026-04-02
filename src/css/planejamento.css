@@ -1,0 +1,267 @@
+/* ============================================================
+   RF-060 — Planejamento Mensal
+   ============================================================ */
+
+/* ── Header e Navegação de Mês ────────────────────────────── */
+
+.plan-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.plan-nav-mes {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+
+.plan-mes-titulo {
+  font-size: 1.25rem;
+  font-weight: 700;
+  min-width: 180px;
+  text-align: center;
+}
+
+.plan-acoes {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+/* ── KPI Cards ────────────────────────────────────────────── */
+
+.plan-resumo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: .75rem;
+  margin-bottom: 1.5rem;
+}
+
+.plan-kpi {
+  background: var(--bg-card, #fff);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: var(--radius, 8px);
+  padding: 1rem;
+  text-align: center;
+}
+
+.plan-kpi-label {
+  font-size: .75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  color: var(--text-muted, #6b7280);
+  margin-bottom: .25rem;
+}
+
+.plan-kpi-valor {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.plan-kpi--positivo .plan-kpi-valor { color: var(--success, #16a34a); }
+.plan-kpi--negativo .plan-kpi-valor { color: var(--danger, #dc2626); }
+
+/* ── Checklist / Tabela ───────────────────────────────────── */
+
+.plan-tabela-wrap {
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+.plan-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .875rem;
+}
+
+.plan-tabela th {
+  text-align: left;
+  padding: .6rem .75rem;
+  font-weight: 600;
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  color: var(--text-muted, #6b7280);
+  border-bottom: 2px solid var(--border, #e5e7eb);
+  white-space: nowrap;
+}
+
+.plan-tabela td {
+  padding: .6rem .75rem;
+  border-bottom: 1px solid var(--border-light, #f3f4f6);
+  vertical-align: middle;
+}
+
+.plan-tabela tr:hover { background: var(--bg-hover, #f9fafb); }
+
+.plan-row-subtotal {
+  background: var(--bg-subtle, #f3f4f6) !important;
+  font-weight: 600;
+}
+
+.plan-row-subtotal td { border-bottom: 2px solid var(--border, #e5e7eb); }
+
+/* ── Badges de Tipo ───────────────────────────────────────── */
+
+.plan-badge {
+  display: inline-block;
+  font-size: .7rem;
+  font-weight: 600;
+  padding: .15rem .5rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.plan-badge--recorrente { background: #dbeafe; color: #1d4ed8; }
+.plan-badge--parcela    { background: #ede9fe; color: #7c3aed; }
+.plan-badge--orcamento  { background: #f3f4f6; color: #4b5563; }
+.plan-badge--manual     { background: #fef3c7; color: #92400e; }
+
+/* ── Status Icons ─────────────────────────────────────────── */
+
+.plan-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: .8rem;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+
+.plan-status:hover { opacity: .7; }
+
+.plan-status--pendente  { background: #f3f4f6; color: #9ca3af; }
+.plan-status--realizado { background: #dcfce7; color: #16a34a; }
+.plan-status--acima     { background: #fef2f2; color: #dc2626; }
+.plan-status--cancelado { background: #f3f4f6; color: #d1d5db; text-decoration: line-through; }
+
+/* ── Valores ──────────────────────────────────────────────── */
+
+.plan-valor-previsto { color: var(--text-muted, #6b7280); }
+
+.plan-valor-realizado { font-weight: 600; }
+.plan-valor-realizado--ok    { color: var(--success, #16a34a); }
+.plan-valor-realizado--acima { color: var(--danger, #dc2626); }
+.plan-valor-realizado--vazio { color: var(--text-muted, #9ca3af); font-style: italic; }
+
+/* ── Formulário Inline ────────────────────────────────────── */
+
+.plan-form-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  align-items: center;
+  padding: .75rem;
+  background: var(--bg-subtle, #f9fafb);
+  border-radius: var(--radius, 8px);
+  margin-bottom: 1rem;
+}
+
+.plan-form-inline input,
+.plan-form-inline select {
+  padding: .4rem .6rem;
+  border: 1px solid var(--border, #d1d5db);
+  border-radius: var(--radius, 6px);
+  font-size: .85rem;
+  font-family: inherit;
+}
+
+.plan-form-inline input[type="text"] { flex: 1; min-width: 180px; }
+.plan-form-inline input[type="number"] { width: 120px; }
+
+/* ── Gaps ──────────────────────────────────────────────────── */
+
+.plan-gaps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.plan-gap-card {
+  background: var(--bg-card, #fff);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: var(--radius, 8px);
+  padding: 1rem;
+}
+
+.plan-gap-card h4 { font-size: .85rem; font-weight: 700; margin: 0 0 .75rem; }
+
+.plan-gap-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: .35rem 0;
+  font-size: .8rem;
+  border-bottom: 1px solid var(--border-light, #f3f4f6);
+}
+
+.plan-gap-item:last-child { border-bottom: none; }
+.plan-gap-excesso { color: var(--danger, #dc2626); font-weight: 600; }
+
+/* ── Despesas não planejadas ──────────────────────────────── */
+
+.plan-nao-planejadas { margin-top: 1.5rem; }
+
+.plan-nao-planejadas summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: .9rem;
+  padding: .5rem 0;
+  color: var(--text-muted, #6b7280);
+}
+
+.plan-nao-planejadas summary:hover { color: var(--text, #111); }
+
+/* ── Feedback ─────────────────────────────────────────────── */
+
+.plan-feedback {
+  font-size: .8rem;
+  padding: .3rem .8rem;
+  border-radius: var(--radius, 6px);
+  transition: opacity .3s;
+}
+
+.plan-feedback-ok  { background: #dcfce7; color: #166534; }
+.plan-feedback-erro { background: #fef2f2; color: #991b1b; }
+
+/* ── Empty State ──────────────────────────────────────────── */
+
+.plan-empty { text-align: center; padding: 2rem 1rem; color: var(--text-muted, #6b7280); }
+.plan-empty p { margin-bottom: .5rem; }
+
+/* ── Ações em linha ───────────────────────────────────────── */
+
+.plan-acoes-item { display: flex; gap: .25rem; }
+
+.plan-acoes-item button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: .85rem;
+  padding: .2rem;
+  border-radius: 4px;
+  opacity: .5;
+  transition: opacity .15s;
+}
+
+.plan-acoes-item button:hover { opacity: 1; }
+
+/* ── Responsive ───────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .plan-header { flex-direction: column; align-items: stretch; }
+  .plan-nav-mes { justify-content: center; }
+  .plan-acoes { justify-content: center; }
+  .plan-resumo { grid-template-columns: repeat(2, 1fr); }
+  .plan-tabela { font-size: .8rem; }
+  .plan-tabela th, .plan-tabela td { padding: .4rem .5rem; }
+}

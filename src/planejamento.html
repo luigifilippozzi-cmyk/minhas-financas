@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Planejamento — Minhas Finanças</title>
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/planejamento.css" />
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+
+  <!-- Header / Navbar -->
+  <header class="navbar">
+    <div class="navbar-brand">
+      <a href="dashboard.html" class="navbar-back" title="Voltar ao Dashboard">←</a>
+      <span>💰</span>
+      <span>Planejamento</span>
+    </div>
+    <div class="navbar-user">
+      <span id="usuario-nome">Carregando...</span>
+      <a href="dashboard.html"      class="btn btn-outline btn-sm">🏠 Dashboard</a>
+      <a href="planejamento.html"   class="btn btn-primary  btn-sm">📋 Planejamento</a>
+      <a href="despesas.html"       class="btn btn-outline btn-sm">💸 Despesas</a>
+      <a href="receitas.html"       class="btn btn-outline btn-sm">📥 Receitas</a>
+      <a href="orcamentos.html"     class="btn btn-outline btn-sm">💰 Orçamentos</a>
+      <a href="fluxo-caixa.html"    class="btn btn-outline btn-sm">📈 Fluxo de Caixa</a>
+      <a href="categorias.html"     class="btn btn-outline btn-sm">🏷️ Categorias</a>
+      <a href="fatura.html"         class="btn btn-outline btn-sm">💳 Fatura</a>
+      <a href="base-dados.html"     class="btn btn-outline btn-sm">📦 Base de Dados</a>
+      <button id="btn-logout"       class="btn btn-outline btn-sm">Sair</button>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="main-content">
+    <section class="section">
+
+      <!-- Cabeçalho com navegação de mês -->
+      <div class="plan-header">
+        <div class="plan-nav-mes">
+          <button id="btn-mes-anterior" class="btn btn-outline btn-sm">‹</button>
+          <h2 class="plan-mes-titulo" id="plan-mes-titulo">Abril 2026</h2>
+          <button id="btn-mes-proximo" class="btn btn-outline btn-sm">›</button>
+        </div>
+        <div class="plan-acoes">
+          <button id="btn-gerar-plano" class="btn btn-primary btn-sm">🔄 Gerar Plano</button>
+          <button id="btn-add-item" class="btn btn-outline btn-sm">+ Adicionar Item</button>
+          <span id="plan-feedback" class="plan-feedback hidden"></span>
+        </div>
+      </div>
+
+      <!-- KPI Cards -->
+      <div class="plan-resumo">
+        <div class="plan-kpi">
+          <div class="plan-kpi-label">Total Previsto</div>
+          <div class="plan-kpi-valor" id="kpi-previsto">R$ 0,00</div>
+        </div>
+        <div class="plan-kpi">
+          <div class="plan-kpi-label">Total Realizado</div>
+          <div class="plan-kpi-valor" id="kpi-realizado">R$ 0,00</div>
+        </div>
+        <div class="plan-kpi" id="kpi-diff-wrap">
+          <div class="plan-kpi-label">Diferença</div>
+          <div class="plan-kpi-valor" id="kpi-diferenca">R$ 0,00</div>
+        </div>
+        <div class="plan-kpi">
+          <div class="plan-kpi-label">Cobertura</div>
+          <div class="plan-kpi-valor" id="kpi-cobertura">0%</div>
+        </div>
+      </div>
+
+      <!-- Formulário inline para adicionar item (oculto por padrão) -->
+      <div id="plan-form-add" class="plan-form-inline hidden">
+        <input type="text" id="add-descricao" placeholder="Descrição da despesa" />
+        <select id="add-categoria"></select>
+        <input type="number" id="add-valor" placeholder="Valor previsto" min="0" step="0.01" />
+        <button id="btn-salvar-item" class="btn btn-primary btn-sm">Salvar</button>
+        <button id="btn-cancelar-item" class="btn btn-outline btn-sm">Cancelar</button>
+      </div>
+
+      <!-- Checklist de Planejamento -->
+      <div class="plan-tabela-wrap">
+        <table class="plan-tabela" id="plan-tabela">
+          <thead>
+            <tr>
+              <th style="width:40px;"></th>
+              <th>Tipo</th>
+              <th>Descrição</th>
+              <th>Categoria</th>
+              <th style="text-align:right;">Previsto</th>
+              <th style="text-align:right;">Realizado</th>
+              <th style="width:60px;"></th>
+            </tr>
+          </thead>
+          <tbody id="plan-tbody">
+            <tr>
+              <td colspan="7" class="plan-empty">
+                <p>Carregando planejamento...</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Análise de Gaps -->
+      <div class="plan-gaps" id="plan-gaps"></div>
+
+      <!-- Despesas não planejadas -->
+      <details class="plan-nao-planejadas" id="plan-nao-planejadas">
+        <summary>Despesas não planejadas deste mês (<span id="count-nao-plan">0</span>)</summary>
+        <div id="lista-nao-planejadas"></div>
+      </details>
+
+    </section>
+  </main>
+
+  <script type="module" src="js/pages/planejamento.js"></script>
+</body>
+</html>
