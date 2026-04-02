@@ -6,6 +6,8 @@
 // • CSV do extrato bancário (separador ";")
 //   Layout: Data;Estabelecimento;Portador;Valor;Parcela
 // • Excel (.xlsx) com o mesmo layout (template disponível)
+// • Excel (.xlsx) — template padronizado RF-024 (aba "Extrato", 3 colunas: Data|Descrição|Valor)
+//   Positivo = receita, negativo = despesa; valor zero descartado silenciosamente
 // • PDF de extrato bancário (via PDF.js — RF-020)
 //
 // RF-014 — Funcionalidades:
@@ -311,7 +313,7 @@ async function processarArquivo(file) {
     try {
       const data = new Uint8Array(e.target.result);
       const wb   = XLSX.read(data, { type: 'array', cellDates: true });
-      const name = wb.SheetNames.find(n => /transa/i.test(n)) ?? wb.SheetNames[0];
+      const name = wb.SheetNames.find(n => /extrato|transa/i.test(n)) ?? wb.SheetNames[0];
       const ws   = wb.Sheets[name];
       const rows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, dateNF: 'DD/MM/YYYY' });
       _linhas = parsearLinhasCSVXLSX(rows, { contas: _contas, categorias: _categorias, mapaHist: _mapaCategoriasHist, origemBanco: 'desconhecido' });

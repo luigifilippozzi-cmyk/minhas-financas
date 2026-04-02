@@ -519,7 +519,7 @@ export async function buscarDespesasPeriodo(grupoId, inicio, fim) {
     where('grupoId', '==', grupoId),
     where('data', '>=', inicio),
     where('data', '<=', fim),
-    orderBy('data'),
+    orderBy('data', 'desc'),
   );
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
@@ -534,7 +534,7 @@ export async function buscarReceitasPeriodo(grupoId, inicio, fim) {
     where('grupoId', '==', grupoId),
     where('data', '>=', inicio),
     where('data', '<=', fim),
-    orderBy('data'),
+    orderBy('data', 'desc'),
   );
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
@@ -550,7 +550,7 @@ export async function buscarDespesasAno(grupoId, ano) {
     where('grupoId', '==', grupoId),
     where('data', '>=', inicio),
     where('data', '<=', fim),
-    orderBy('data'),
+    orderBy('data', 'desc'),
   );
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
@@ -564,7 +564,7 @@ export async function buscarReceitasAno(grupoId, ano) {
     where('grupoId', '==', grupoId),
     where('data', '>=', inicio),
     where('data', '<=', fim),
-    orderBy('data'),
+    orderBy('data', 'desc'),
   );
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));

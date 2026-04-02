@@ -67,6 +67,16 @@
         { "fieldPath": "mesFatura", "order": "DESCENDING" }
       ]
     }
+    ,
+    {
+      "collectionGroup": "planejamento_items",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "grupoId", "order": "ASCENDING" },
+        { "fieldPath": "mes",     "order": "ASCENDING" },
+        { "fieldPath": "ano",     "order": "ASCENDING" }
+      ]
+    }
   ],
   "fieldOverrides": []
 }
