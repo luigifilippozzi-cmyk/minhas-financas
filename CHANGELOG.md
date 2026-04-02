@@ -11,6 +11,33 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [3.10.0] - 2026-04-02
+
+### Adicionado — RF-024: Importação de Extrato Bancário via Template XLSX
+
+#### `src/js/utils/normalizadorTransacoes.js`
+- **Descarte silencioso de linhas com valor zero:** adicionado `if (valorBruto === 0) continue` após cálculo do valor bruto — linhas de saldo/marcadores (ex: COD. LANC. 0) são ignoradas sem gerar erro no preview.
+
+#### `src/js/utils/detectorOrigemArquivo.js`
+- **Detecção de alta confiança para template de 3 colunas:** arquivo com exatamente 3 colunas (Data, Descrição, Valor) sem portador/parcela/categoria passa a retornar `tipo: 'banco'` com `confiança: 'alta'` (90%), eliminando o modal de confirmação de tipo nesses casos.
+
+#### `src/js/pages/importar.js`
+- **Reconhecimento da aba "Extrato":** seleção de aba no XLSX expandida de `/transa/i` para `/extrato|transa/i`, permitindo que o template oficial (aba "Extrato") seja lido diretamente sem fallback para a primeira aba.
+
+#### `src/templates/template-importacao.xlsx` *(substituído)*
+- Template recriado com aba nomeada **Extrato** e cabeçalho de 3 colunas: `Data | Descrição | Valor`.
+- Inclui 3 linhas de exemplo: receita positiva (`476,00`), despesa negativa (`-250,00`) e marcador de saldo descartado (`0`).
+- Valor com sinal determina classificação: positivo → receita, negativo → despesa.
+
+#### Regras de classificação por sinal (RF-024)
+| Condição | Classificação |
+|----------|--------------|
+| Valor > 0 | Receita (crédito) |
+| Valor < 0 | Despesa (débito) |
+| Valor = 0 ou vazio | Descartado silenciosamente |
+
+---
+
 ## [3.9.4] - 2026-03-30
 
 ### Corrigido — BUG-027: botão "Importar" retornava cedo quando todos são duplicados — mesFatura nunca atualizado

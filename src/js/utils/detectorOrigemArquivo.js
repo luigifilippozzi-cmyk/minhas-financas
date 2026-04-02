@@ -63,6 +63,12 @@ function _detectarTipo(rows, textLines) {
     const temCategoria = h.some(c => c.startsWith('categor'));
     if (temPortador && temParcela)                   return { tipo: 'cartao',  confianca: 'alta',  confiancaNum: 90, colunas: hOrig };
     if (temCategoria && !temPortador && !temParcela) return { tipo: 'receita', confianca: 'alta',  confiancaNum: 90, colunas: hOrig };
+    // RF-024: template padrão de extrato — exatamente 3 colunas (Data, Descrição, Valor)
+    // Sem portador/parcela/categoria → extrato bancário com sinal do valor determinando tipo
+    if (!temPortador && !temParcela && !temCategoria && hOrig.length === 3 &&
+        temData && h.some(c => c.includes('descri')) && temValor) {
+      return { tipo: 'banco', confianca: 'alta', confiancaNum: 90, colunas: hOrig };
+    }
     if (!temPortador && !temParcela)                 return { tipo: 'banco',   confianca: 'baixa', confiancaNum: 60, colunas: hOrig };
     return { tipo: 'despesa', confianca: 'baixa', confiancaNum: 50, colunas: hOrig };
   }
