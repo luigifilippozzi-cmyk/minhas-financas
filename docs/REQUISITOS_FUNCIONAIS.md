@@ -38,6 +38,7 @@
 | NRF-010 | Portador "Conjunto" no Upload de Fatura de Cartão | Alta | ✅ Implementado |
 | RF-024 | Importação de Extrato Bancário via Template XLSX | Alta | ✅ Implementado |
 | RF-060 | Planejamento Mensal — Visão Unificada de Despesas Previstas | Alta | ✅ Implementado |
+| RF-061 | Categorias e Orçamentos — Separação Despesa vs Receita | Alta | ✅ Implementado |
 
 ---
 
@@ -1113,3 +1114,41 @@ Nova aba "📋 Planejamento" com visão prospectiva do mês: o usuário vê toda
 - [ ] Despesas não planejadas são listadas
 - [ ] Navegação entre meses funciona (planos independentes)
 - [ ] Primeiro mês (sem histórico) mostra apenas parcelas + orçamentos
+
+## RF-061: Categorias e Orçamentos — Separação Despesa vs Receita
+**Prioridade:** Alta | **Versão:** v3.12.0 | **Status:** ✅ Implementado
+
+Categorias agora possuem um campo `tipo` (`'despesa'` ou `'receita'`), permitindo separar visualmente e funcionalmente categorias de despesa e categorias de receita em todas as telas relevantes.
+
+### Funcionalidades
+- Campo `tipo` no modelo `Categoria` (default: `'despesa'`)
+- Seletor de tipo (Despesa / Receita) no modal de criação/edição de categoria
+- Página de Categorias renderiza duas seções: "Categorias de Despesa" e "Categorias de Receita"
+- Labels contextuais: "Orçamento Mensal" para despesas, "Meta Mensal" para receitas
+- Toggle "Despesa conjunta padrão" oculto para categorias de receita
+- Página de Orçamentos dividida em duas seções: "Orçamentos de Despesa" e "Metas de Receita"
+- Chips de resumo separados: Orçado/Gasto/Disponível (despesas) e Meta/Recebido/Faltante (receitas)
+- Migração automática: categorias legado sem `tipo` recebem `tipo='despesa'` no primeiro acesso
+
+### Arquivos Alterados
+
+| Arquivo | Alteração |
+|---------|-----------|
+| `src/js/models/Categoria.js` | Campo `tipo` no modelo e em `CATEGORIAS_PADRAO` |
+| `src/js/services/database.js` | `migrarCategoriasLegado()` — migração idempotente |
+| `src/js/controllers/categorias.js` | `tipo` incluído no payload de `salvarCategoria()` |
+| `src/categorias.html` | Seletor de tipo no modal + duas seções na lista |
+| `src/js/pages/categorias.js` | Renderização em 2 seções, wiring do seletor, labels contextuais |
+| `src/css/main.css` | Estilos para seções, seletor de tipo, chips de receita |
+| `src/orcamentos.html` | Duas seções com chips distintos |
+| `src/js/pages/orcamentos.js` | Filtragem por tipo, listener de receitas, chips separados |
+
+### Critérios de Aceitação
+- [ ] Categorias existentes sem `tipo` são migradas automaticamente para `tipo='despesa'`
+- [ ] Nova categoria pode ser criada como Despesa ou Receita
+- [ ] Página de Categorias exibe duas listas separadas
+- [ ] Modal alterna label Orçamento/Meta conforme o tipo selecionado
+- [ ] Toggle conjunta oculto para receitas
+- [ ] Página de Orçamentos exibe seções separadas com semântica distinta
+- [ ] Chips de receita mostram Meta/Recebido/Faltante corretamente
+- [ ] Testes existentes continuam passando (194/194)

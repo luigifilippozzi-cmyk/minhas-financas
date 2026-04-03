@@ -80,7 +80,7 @@ export async function criarCategoriasPadrao(grupoId) {
  * @returns {Promise<string>}        - ID da categoria
  */
 export async function salvarCategoria(dados, grupoId, categoriaId = null) {
-  const { nome, emoji, cor, orcamentoMensal, isConjuntaPadrao } = dados;
+  const { nome, emoji, cor, orcamentoMensal, isConjuntaPadrao, tipo } = dados;
 
   if (!nome?.trim()) throw new Error('O nome da categoria é obrigatório.');
   if (!emoji?.trim()) throw new Error('Escolha um emoji para a categoria.');
@@ -92,6 +92,7 @@ export async function salvarCategoria(dados, grupoId, categoriaId = null) {
     orcamentoMensal: Number(orcamentoMensal) || 0,
     // NRF-001: marca se despesas desta cat são sempre conjuntas
     isConjuntaPadrao: Boolean(isConjuntaPadrao),
+    tipo: tipo || 'despesa',
   };
 
   if (categoriaId) {
