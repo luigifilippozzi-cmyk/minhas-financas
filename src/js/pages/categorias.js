@@ -5,8 +5,7 @@
 // ============================================================
 
 import { onAuthChange, logout } from '../services/auth.js';
-import { buscarPerfil } from '../services/database.js';
-import { ouvirCategorias } from '../services/database.js';
+import { buscarPerfil, ouvirCategorias, migrarCategoriasLegado } from '../services/database.js';
 import { salvarCategoria, desativarCategoria } from '../controllers/categorias.js';
 
 // ── Estado ────────────────────────────────────────────────────
@@ -42,6 +41,11 @@ function iniciarApp() {
   // Cancela listener anterior (caso reiniciado)
   if (_unsubscribe) _unsubscribe();
 
+  // Migração: seta tipo='despesa' em categorias legado sem o campo
+  migrarCategoriasLegado(_grupoId).catch((err) =>
+    console.warn('[migrarCategoriasLegado]', err)
+  );
+
   // Listener em tempo real — atualiza para AMBOS os membros do grupo
   _unsubscribe = ouvirCategorias(_grupoId, (cats) => {
     _categorias = cats;
@@ -52,44 +56,55 @@ function iniciarApp() {
 // ── Renderização ──────────────────────────────────────────────
 
 function renderizarLista(cats) {
-  const lista = document.getElementById('categorias-lista');
+  const listaDespesa = document.getElementById('categorias-lista-despesa');
+  const listaReceita = document.getElementById('categorias-lista-receita');
 
-  if (!cats.length) {
-    lista.innerHTML = `<p class="empty-state">Nenhuma categoria ativa. Crie a primeira!</p>`;
-    return;
-  }
+  const despesas = cats.filter((c) => (c.tipo ?? 'despesa') === 'despesa')
+    .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+  const receitas = cats.filter((c) => c.tipo === 'receita')
+    .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
 
-  lista.innerHTML = cats
-    .sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'))
-    .map((cat) => `
-      <div class="cat-item" data-id="${cat.id}">
-        <div class="cat-item-left">
-          <span class="cat-item-emoji">${cat.emoji}</span>
-          <div class="cat-item-info">
-            <span class="cat-item-nome">${cat.nome}</span>
-            <span class="cat-item-orcamento">
-              ${cat.orcamentoMensal > 0
-                ? `Limite: R$ ${Number(cat.orcamentoMensal).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
-                : 'Sem limite definido'}
-            </span>
-            ${cat.isConjuntaPadrao
-              ? '<span class="cat-conjunta-badge" title="Despesas desta categoria são divididas 50/50">👫 conjunta</span>'
-              : ''}
-          </div>
-        </div>
-        <div class="cat-item-right">
-          <span class="cat-cor-badge" style="background:${cat.cor}"></span>
-          <button
-            class="btn btn-outline btn-sm"
-            onclick="window.abrirEditar('${cat.id}')"
-          >✏️ Editar</button>
-          <button
-            class="btn btn-sm cat-btn-desativar"
-            onclick="window.confirmarDesativar('${cat.id}', '${cat.nome}')"
-          >🗑️</button>
+  listaDespesa.innerHTML = despesas.length
+    ? despesas.map(renderItemCategoria).join('')
+    : '<p class="empty-state">Nenhuma categoria de despesa. Crie a primeira!</p>';
+
+  listaReceita.innerHTML = receitas.length
+    ? receitas.map(renderItemCategoria).join('')
+    : '<p class="empty-state">Nenhuma categoria de receita. Crie a primeira!</p>';
+}
+
+function renderItemCategoria(cat) {
+  const isReceita = cat.tipo === 'receita';
+  const labelOrc = isReceita ? 'Meta' : 'Limite';
+  return `
+    <div class="cat-item" data-id="${cat.id}">
+      <div class="cat-item-left">
+        <span class="cat-item-emoji">${cat.emoji}</span>
+        <div class="cat-item-info">
+          <span class="cat-item-nome">${cat.nome}</span>
+          <span class="cat-item-orcamento">
+            ${cat.orcamentoMensal > 0
+              ? `${labelOrc}: R$ ${Number(cat.orcamentoMensal).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
+              : isReceita ? 'Sem meta definida' : 'Sem limite definido'}
+          </span>
+          ${!isReceita && cat.isConjuntaPadrao
+            ? '<span class="cat-conjunta-badge" title="Despesas desta categoria são divididas 50/50">👫 conjunta</span>'
+            : ''}
         </div>
       </div>
-    `).join('');
+      <div class="cat-item-right">
+        <span class="cat-cor-badge" style="background:${cat.cor}"></span>
+        <button
+          class="btn btn-outline btn-sm"
+          onclick="window.abrirEditar('${cat.id}')"
+        >✏️ Editar</button>
+        <button
+          class="btn btn-sm cat-btn-desativar"
+          onclick="window.confirmarDesativar('${cat.id}', '${cat.nome}')"
+        >🗑️</button>
+      </div>
+    </div>
+  `;
 }
 
 // ── Emoji: sugestão automática e picker ──────────────────────
@@ -182,6 +197,11 @@ function abrirModal(cat = null) {
   if (toggleConj) toggleConj.checked = cat?.isConjuntaPadrao ?? false;
   document.getElementById('cat-erro').classList.add('hidden');
 
+  // Seletor de tipo
+  const tipo = cat?.tipo ?? 'despesa';
+  document.getElementById('cat-tipo').value = tipo;
+  atualizarSeletorTipo(tipo);
+
   // Atualiza prévia
   atualizarPrevia();
 
@@ -200,6 +220,24 @@ function abrirModal(cat = null) {
 
   document.getElementById('modal-categoria').classList.remove('hidden');
   document.getElementById('cat-emoji').focus();
+}
+
+/** Atualiza UI do seletor de tipo e campos dependentes */
+function atualizarSeletorTipo(tipo) {
+  document.querySelectorAll('.cat-tipo-btn').forEach((btn) => {
+    btn.classList.toggle('active', btn.dataset.tipo === tipo);
+  });
+  document.getElementById('cat-tipo').value = tipo;
+
+  const isReceita = tipo === 'receita';
+
+  // Label contextual: Orçamento vs Meta
+  const labelOrc = document.getElementById('label-orcamento');
+  if (labelOrc) labelOrc.textContent = isReceita ? 'Meta Mensal (R$)' : 'Orçamento Mensal (R$)';
+
+  // Toggle conjunta só aparece para despesas
+  const fgConjunta = document.getElementById('form-group-conjunta');
+  if (fgConjunta) fgConjunta.style.display = isReceita ? 'none' : '';
 }
 
 function fecharModal() {
@@ -295,6 +333,13 @@ function configurarEventos() {
     }
   });
 
+  // Seletor de tipo (Despesa / Receita)
+  document.querySelectorAll('.cat-tipo-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      atualizarSeletorTipo(btn.dataset.tipo);
+    });
+  });
+
   // Submit do formulário
   document.getElementById('form-categoria')
     .addEventListener('submit', async (e) => {
@@ -310,13 +355,17 @@ function configurarEventos() {
       const emojiRaw  = document.getElementById('cat-emoji').value.trim();
       // Se o campo emoji ainda estiver vazio, usa a sugestão; fallback para 📦
       const emojiFinal = emojiRaw || sugerirEmoji(nomeVal) || '📦';
+      const tipoVal = document.getElementById('cat-tipo').value || 'despesa';
       const dados = {
         emoji:             emojiFinal,
         nome:              nomeVal,
         cor:               document.getElementById('cat-cor').value,
         orcamentoMensal:   document.getElementById('cat-orcamento').value,
-        // NRF-001: toggle conjunta padrão
-        isConjuntaPadrao:  document.getElementById('cat-conjunta-padrao')?.checked ?? false,
+        // NRF-001: toggle conjunta padrão (só para despesas)
+        isConjuntaPadrao:  tipoVal === 'despesa'
+          ? (document.getElementById('cat-conjunta-padrao')?.checked ?? false)
+          : false,
+        tipo:              tipoVal,
       };
 
       try {

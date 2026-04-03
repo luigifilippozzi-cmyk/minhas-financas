@@ -11,6 +11,44 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [3.12.0] - 2026-04-03
+
+### Adicionado — RF-061: Categorias e Orçamentos — Separação Despesa vs Receita
+
+Categorias agora possuem campo `tipo` (`despesa` | `receita`), permitindo gerenciamento e orçamentos separados por natureza.
+
+#### `src/js/models/Categoria.js`
+- Campo `tipo` (default `'despesa'`) no modelo `criarCategoria()` e em `CATEGORIAS_PADRAO`.
+
+#### `src/js/services/database.js`
+- `migrarCategoriasLegado(grupoId)` — migração idempotente para categorias sem campo `tipo`.
+
+#### `src/js/controllers/categorias.js`
+- `tipo` incluído no payload de `salvarCategoria()`.
+
+#### `src/categorias.html`
+- Seletor de tipo (Despesa / Receita) no modal de criação/edição.
+- Lista separada em duas seções: "Categorias de Despesa" e "Categorias de Receita".
+
+#### `src/js/pages/categorias.js`
+- Renderização em 2 seções com `renderItemCategoria()`.
+- Labels contextuais: Orçamento vs Meta, toggle conjunta oculto para receitas.
+- Migração automática chamada no bootstrap.
+
+#### `src/css/main.css`
+- Estilos para `.cat-section-titulo`, `.orc-section-titulo`, `.cat-tipo-selector`, `.cat-tipo-btn`.
+- Chips de resumo de receitas: `.orc-chip-meta`, `.orc-chip-recebido`, `.orc-chip-faltante`.
+
+#### `src/orcamentos.html`
+- Duas seções: "Orçamentos de Despesa" (chips Orçado/Gasto/Disponível) e "Metas de Receita" (chips Meta/Recebido/Faltante).
+
+#### `src/js/pages/orcamentos.js`
+- Filtragem de categorias por `tipo`, `renderOrcItem()` reutilizável.
+- Listener de receitas (`ouvirReceitas`) para calcular "Recebido" nas metas.
+- `atualizarChipsReceitas()` para totais de receita.
+
+---
+
 ## [3.11.0] - 2026-04-02
 
 ### Adicionado — RF-060: Planejamento Mensal

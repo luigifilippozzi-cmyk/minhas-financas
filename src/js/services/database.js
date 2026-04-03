@@ -204,6 +204,22 @@ export function ouvirCategoriasReceita(grupoId, callback) {
 }
 
 /**
+ * Migração: seta tipo='despesa' em categorias legado que não possuem o campo tipo.
+ * Executa uma única vez por sessão; é idempotente.
+ */
+export async function migrarCategoriasLegado(grupoId) {
+  const q = query(
+    collection(db, 'categorias'),
+    where('grupoId', '==', grupoId),
+    where('ativa', '==', true),
+  );
+  const snap = await getDocs(q);
+  const semTipo = snap.docs.filter((d) => !d.data().tipo);
+  if (!semTipo.length) return;
+  await Promise.all(semTipo.map((d) => updateDoc(d.ref, { tipo: 'despesa' })));
+}
+
+/**
  * Cria categorias de receita padrão caso o grupo ainda não tenha nenhuma.
  * Chamado ao iniciar o app para garantir que grupos existentes também recebam as categorias.
  */

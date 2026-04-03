@@ -458,6 +458,62 @@ a:hover { text-decoration: underline; }
   white-space: nowrap;
 }
 
+/* ── Títulos de seção (Despesa / Receita) ── */
+.cat-section-titulo,
+.orc-section-titulo {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-text);
+  margin: var(--space-5) 0 var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 2px solid var(--color-border);
+}
+.cat-section-titulo:first-of-type,
+.orc-section-titulo:first-of-type { margin-top: var(--space-3); }
+
+/* ── Seletor de tipo no modal de categoria ── */
+.cat-tipo-selector {
+  display: flex; gap: var(--space-2);
+}
+.cat-tipo-btn {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  transition: all var(--transition);
+  text-align: center;
+}
+.cat-tipo-btn:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-text);
+}
+.cat-tipo-btn.active {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+}
+.cat-tipo-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Chips resumo de receitas (orçamentos) ── */
+.orc-resumo-receitas { margin-bottom: var(--space-3); }
+.orc-chip-meta { background: #e8f5e9; border-color: #81c784; border-top: 3px solid #66bb6a; }
+.orc-chip-meta .orc-chip-label,
+.orc-chip-meta .orc-chip-valor { color: #2e7d32; }
+.orc-chip-recebido { background: #e0f2f1; border-color: #4db6ac; border-top: 3px solid #26a69a; }
+.orc-chip-recebido .orc-chip-label,
+.orc-chip-recebido .orc-chip-valor { color: #00695c; }
+.orc-chip-faltante { background: #fff3e0; border-color: #ffb74d; border-top: 3px solid #ffa726; }
+.orc-chip-faltante .orc-chip-label,
+.orc-chip-faltante .orc-chip-valor { color: #e65100; }
+
 /* ── Chip "Meu Bolso" na página de despesas ── */
 .desp-chip-meu-bolso {
   background: #e8eaf6;
