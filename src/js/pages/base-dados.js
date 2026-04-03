@@ -218,7 +218,7 @@ function preencherFiltrosResponsaveis() {
       .filter(Boolean)
   )].sort((a, b) => a.localeCompare(b));
   sel.innerHTML = '<option value="">Todos os responsáveis</option>' +
-    nomes.map(n => `<option value="${n}">${n}</option>`).join('');
+    nomes.map(n => `<option value="${escHTML(n)}">${escHTML(n)}</option>`).join('');
   if (atual) sel.value = atual;
 }
 
@@ -508,13 +508,7 @@ function configurarLimpeza() {
       const resultado = await purgeGrupoCompleto(_grupoId);
       modal?.classList.add('hidden');
       const total = resultado.despesas + resultado.receitas + resultado.parcelamentos;
-      alert(
-        `✅ Purge concluído!\n\n` +
-        `Despesas removidas: ${resultado.despesas}\n` +
-        `Receitas removidas: ${resultado.receitas}\n` +
-        `Parcelamentos removidos: ${resultado.parcelamentos}\n` +
-        `Total: ${total} registros`
-      );
+      mostrarToast(`✅ Purge concluído — ${total} registros removidos (${resultado.despesas} despesas, ${resultado.receitas} receitas, ${resultado.parcelamentos} parcelamentos)`);
       // Limpar cache local
       _todasTransacoes = [];
       _filtradas = [];
