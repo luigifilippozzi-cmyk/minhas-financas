@@ -597,9 +597,9 @@ function mostrarToast(mensagem, isErro = false) {
     document.body.appendChild(toast);
   }
   toast.textContent = mensagem;
-  toast.style.background = isErro ? '#fef2f2'  : '#f0fdf4';
-  toast.style.color      = isErro ? '#dc2626'  : '#166534';
-  toast.style.border     = isErro ? '1px solid #fca5a5' : '1px solid #86efac';
+  toast.style.background = isErro ? 'var(--color-danger-light)'  : 'var(--color-income-bg)';
+  toast.style.color      = isErro ? 'var(--color-danger)'       : 'var(--color-income-dark)';
+  toast.style.border     = isErro ? '1px solid var(--color-danger)' : '1px solid var(--color-income-border)';
   toast.style.opacity    = '1';
   clearTimeout(toast._timer);
   toast._timer = setTimeout(() => { toast.style.opacity = '0'; }, 3500);

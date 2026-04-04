@@ -597,7 +597,7 @@ function _renderizarPreviewRec() {
     // Valor — positivo (receita)
     const tdVal = document.createElement('td');
     tdVal.textContent = isNaN(l.valor) ? '—' : formatarMoeda(l.valor);
-    tdVal.style.cssText = 'text-align:right;font-weight:600;color:#2e7d32;';
+    tdVal.style.cssText = 'text-align:right;font-weight:600;color:var(--color-income-dark);';
 
     // Categoria (receita)
     const tdCat  = document.createElement('td');
