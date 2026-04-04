@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="css/variables.css" />
   <link rel="stylesheet" href="css/components.css" />
   <link rel="stylesheet" href="css/main.css" />
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
 </head>
 <body>
 
@@ -17,21 +18,21 @@
   <header class="navbar">
     <div class="navbar-brand">
       <a href="dashboard.html" style="text-decoration:none;color:inherit;display:flex;gap:.4rem;align-items:center;">
-        <span>💰</span>
+        <i data-lucide="wallet" class="brand-icon"></i>
         <span>Minhas Finanças</span>
       </a>
     </div>
     <div class="navbar-user">
       <span id="usuario-nome">Carregando...</span>
-      <a href="dashboard.html"      class="btn btn-outline btn-sm">🏠 Dashboard</a>
-      <a href="planejamento.html"   class="btn btn-outline btn-sm">📋 Planejamento</a>
-      <a href="despesas.html"   class="btn btn-outline btn-sm">💸 Despesas</a>
-      <a href="receitas.html"   class="btn btn-primary  btn-sm">📥 Receitas</a>
-      <a href="orcamentos.html"  class="btn btn-outline btn-sm">💰 Orçamentos</a>
-      <a href="fluxo-caixa.html" class="btn btn-outline btn-sm">📈 Fluxo de Caixa</a>
-      <a href="categorias.html"  class="btn btn-outline btn-sm">🏷️ Categorias</a>
-      <a href="fatura.html"      class="btn btn-outline btn-sm">💳 Fatura</a>
-      <a href="base-dados.html" class="btn btn-outline btn-sm">📦 Base de Dados</a>
+      <a href="dashboard.html"      class="btn btn-outline btn-sm"><i data-lucide="layout-dashboard" class="nav-icon"></i> Dashboard</a>
+      <a href="planejamento.html"   class="btn btn-outline btn-sm"><i data-lucide="clipboard-list" class="nav-icon"></i> Planejamento</a>
+      <a href="despesas.html"   class="btn btn-outline btn-sm"><i data-lucide="trending-down" class="nav-icon"></i> Despesas</a>
+      <a href="receitas.html"   class="btn btn-primary  btn-sm"><i data-lucide="wallet" class="nav-icon"></i> Receitas</a>
+      <a href="orcamentos.html"  class="btn btn-outline btn-sm"><i data-lucide="piggy-bank" class="nav-icon"></i> Orçamentos</a>
+      <a href="fluxo-caixa.html" class="btn btn-outline btn-sm"><i data-lucide="line-chart" class="nav-icon"></i> Fluxo de Caixa</a>
+      <a href="categorias.html"  class="btn btn-outline btn-sm"><i data-lucide="tags" class="nav-icon"></i> Categorias</a>
+      <a href="fatura.html"      class="btn btn-outline btn-sm"><i data-lucide="credit-card" class="nav-icon"></i> Fatura</a>
+      <a href="base-dados.html" class="btn btn-outline btn-sm"><i data-lucide="database" class="nav-icon"></i> Base de Dados</a>
       <button id="btn-logout"   class="btn btn-outline btn-sm">Sair</button>
     </div>
   </header>
@@ -263,6 +264,7 @@
 
   <!-- SheetJS — necessário para leitura e geração do template xlsx -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => lucide.createIcons());</script>
   <script type="module" src="js/pages/receitas.js"></script>
 
 </body>
