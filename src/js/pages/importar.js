@@ -90,14 +90,14 @@ let _contaMap = {};         // NRF-004: id → conta
 let _unsubCats = null;
 let _unsubContas = null;    // NRF-004
 let _linhas = [];
-let _chavesExistentes = new Set();
+let _chavesExistentes = new Map();
 let _projecaoDocMap = new Map();
 let _mapaCategoriasHist = {};
 let _projecoesDetalhadas = [];  // NRF-002: dados completos para fuzzy matching
 // NRF-006: tipo do extrato detectado/selecionado — 'cartao' | 'banco' | 'receita' | 'despesa'
 let _tipoExtrato = 'despesa';
 let _mesFatura = '';            // NRF-002.1: "YYYY-MM" selecionado pelo usuário
-let _chavesExistentesRec = new Set(); // NRF-006: dedup receitas (modo banco)
+let _chavesExistentesRec = new Map(); // NRF-006: dedup receitas (modo banco)
 // RF-020: estado específico de PDF
 let _origemPDF = false;         // true quando o arquivo carregado é PDF
 let _sinaisInvertidos = false;  // toggle: inverte a convenção de sinal do banco
@@ -344,7 +344,7 @@ async function marcarDuplicatas() {
   // não recebem atualização de mesFatura em imports de ciclos futuros.
   _chavesExistentesRec = deveCarregarChavesReceitas(_tipoExtrato)
     ? await buscarChavesDedupReceitas(_grupoId)
-    : new Set();
+    : new Map();
   _projecaoDocMap      = await buscarMapaProjecoes(_grupoId);
   _mapaCategoriasHist  = await buscarMapaCategorias(_grupoId);
   // NRF-002: busca projeções apenas para tipos que geram parcelas
@@ -381,6 +381,10 @@ function _mostrarModalConfirmacaoTipo(deteccao) {
       const tipo = document.getElementById('modal-sel-tipo-confirm').value;
       document.getElementById('modal-confirmacao-tipo').classList.add('hidden');
       resolve(tipo);
+    };
+    document.getElementById('modal-tipo-cancelar').onclick = () => {
+      document.getElementById('modal-confirmacao-tipo').classList.add('hidden');
+      resolve(deteccao.tipo);  // resolve com sugestão original ao cancelar
     };
   });
 }
@@ -940,7 +944,7 @@ async function executarImportacao() {
         }
       }
       sucesso++;
-    } catch { falha++; }
+    } catch (err) { console.error('[importar] erro na linha', idx, err); falha++; }
   }
   // BUG-021: propaga mesFatura nas duplicatas detectadas (parceladas de meses anteriores)
   // BUG-024: distingue receitas (estornos) de despesas ao atualizar mesFatura
