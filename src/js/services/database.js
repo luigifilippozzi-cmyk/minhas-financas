@@ -18,6 +18,9 @@ import {
   orderBy,
   onSnapshot,
   serverTimestamp,
+  limit,
+  startAfter,
+  getCountFromServer,
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 // ── Usuários ─────────────────────────────────────────────────
@@ -711,6 +714,124 @@ export async function buscarTodasTransacoes(grupoId) {
     const dateB = b.data?.toDate?.() ?? new Date(b.data);
     return dateB - da;
   });
+}
+
+// ── RF-025: Filtragem server-side, real-time e contagem ──────
+
+/**
+ * RF-025.1 + RF-025.3: Escuta transações (despesas + receitas) do grupo
+ * filtradas por período (mês/ano) via server-side where clauses.
+ * Retorna uma função unsubscribe que cancela AMBOS os listeners.
+ */
+export function ouvirTransacoesPeriodo(grupoId, mes, ano, callback) {
+  const inicio = new Date(ano, mes - 1, 1);
+  const fim    = new Date(ano, mes, 1);
+
+  let despesas = [];
+  let receitas = [];
+  let despReady = false;
+  let recReady  = false;
+
+  function merge() {
+    if (!despReady || !recReady) return;
+    const merged = [...despesas, ...receitas].sort((a, b) => {
+      const da = a.data?.toDate?.() ?? new Date(a.data);
+      const db2 = b.data?.toDate?.() ?? new Date(b.data);
+      return db2 - da;
+    });
+    callback(merged);
+  }
+
+  const qDesp = query(
+    collection(db, 'despesas'),
+    where('grupoId', '==', grupoId),
+    where('data', '>=', inicio),
+    where('data', '<', fim),
+    orderBy('data', 'desc'),
+  );
+  const qRec = query(
+    collection(db, 'receitas'),
+    where('grupoId', '==', grupoId),
+    where('data', '>=', inicio),
+    where('data', '<', fim),
+    orderBy('data', 'desc'),
+  );
+
+  const unsubDesp = onSnapshot(qDesp,
+    (snap) => { despesas = snap.docs.map(d => ({ id: d.id, _tipo: 'despesa', ...d.data() })); despReady = true; merge(); },
+    (err) => { console.error('[ouvirTransacoesPeriodo] despesas:', err); },
+  );
+  const unsubRec = onSnapshot(qRec,
+    (snap) => { receitas = snap.docs.map(d => ({ id: d.id, _tipo: 'receita', ...d.data() })); recReady = true; merge(); },
+    (err) => { console.error('[ouvirTransacoesPeriodo] receitas:', err); },
+  );
+
+  return () => { unsubDesp(); unsubRec(); };
+}
+
+/**
+ * RF-025.2 + RF-025.5: Busca uma página de transações com cursor pagination.
+ * Usado no modo "Carregar tudo" (sem filtro de período).
+ * @param {string} grupoId
+ * @param {{despesas?: DocumentSnapshot, receitas?: DocumentSnapshot}} cursores
+ * @param {number} limite — docs por coleção por página (default 100, 200 total merged)
+ * @returns {Promise<{dados: Array, proximosCursores: object, temMais: boolean}>}
+ */
+export async function buscarTransacoesPaginadas(grupoId, cursores = {}, limite = 100) {
+  function buildQ(col, cursor) {
+    const constraints = [
+      where('grupoId', '==', grupoId),
+      orderBy('data', 'desc'),
+      limit(limite),
+    ];
+    if (cursor) constraints.push(startAfter(cursor));
+    return query(collection(db, col), ...constraints);
+  }
+
+  const [snapDesp, snapRec] = await Promise.all([
+    getDocs(buildQ('despesas', cursores.despesas ?? null)),
+    getDocs(buildQ('receitas', cursores.receitas ?? null)),
+  ]);
+
+  const despesas = snapDesp.docs.map(d => ({ id: d.id, _tipo: 'despesa', ...d.data() }));
+  const receitas = snapRec.docs.map(d => ({ id: d.id, _tipo: 'receita', ...d.data() }));
+
+  const proximosCursores = {
+    despesas: snapDesp.docs.length ? snapDesp.docs[snapDesp.docs.length - 1] : null,
+    receitas: snapRec.docs.length ? snapRec.docs[snapRec.docs.length - 1] : null,
+  };
+
+  const temMais = snapDesp.docs.length === limite || snapRec.docs.length === limite;
+
+  const dados = [...despesas, ...receitas].sort((a, b) => {
+    const da = a.data?.toDate?.() ?? new Date(a.data);
+    const db2 = b.data?.toDate?.() ?? new Date(b.data);
+    return db2 - da;
+  });
+
+  return { dados, proximosCursores, temMais };
+}
+
+/**
+ * RF-025.4: Conta transações do grupo (estimativa server-side, sem custo por doc).
+ * Se mes/ano fornecidos, conta apenas aquele período.
+ */
+export async function contarTransacoesPeriodo(grupoId, mes = null, ano = null) {
+  function buildConstraints(col) {
+    const c = [where('grupoId', '==', grupoId)];
+    if (mes && ano) {
+      c.push(where('data', '>=', new Date(ano, mes - 1, 1)));
+      c.push(where('data', '<', new Date(ano, mes, 1)));
+    }
+    return query(collection(db, col), ...c);
+  }
+
+  const [snapDesp, snapRec] = await Promise.all([
+    getCountFromServer(buildConstraints('despesas')),
+    getCountFromServer(buildConstraints('receitas')),
+  ]);
+
+  return snapDesp.data().count + snapRec.data().count;
 }
 
 /**
