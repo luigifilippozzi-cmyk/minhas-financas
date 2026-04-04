@@ -27,6 +27,7 @@ import { renderizarDashboardReceitas } from './controllers/receitas-dashboard.js
 import { CATEGORIAS_RECEITA_PADRAO } from './models/Receita.js';
 import { CONTAS_PADRAO } from './models/Conta.js';            // NRF-004
 import { mesAnoAtual, definirTexto } from './utils/helpers.js';
+import { coresGrafico } from './utils/chartColors.js';
 import { nomeMes } from './utils/formatters.js';
 
 // ── Estado Global ─────────────────────────────────────────────
@@ -285,15 +286,15 @@ function renderizarGraficoCategorias() {
         {
           label: 'Receitas',
           data: recData,
-          backgroundColor: 'rgba(46,125,50,0.75)',
-          borderColor: '#2e7d32',
+          backgroundColor: coresGrafico().receita.bg,
+          borderColor: coresGrafico().receita.border,
           borderWidth: 1,
         },
         {
           label: 'Despesas',
           data: despData,
-          backgroundColor: 'rgba(198,40,40,0.75)',
-          borderColor: '#c62828',
+          backgroundColor: coresGrafico().despesa.bg,
+          borderColor: coresGrafico().despesa.border,
           borderWidth: 1,
         },
       ],
@@ -376,19 +377,19 @@ function renderizarGraficoEvolucao() {
       datasets: [
         {
           type: 'bar', label: 'Receitas', data: recData, order: 2,
-          backgroundColor: dadosAcum.map(d => d.isFuturo ? 'rgba(46,125,50,0.3)' : 'rgba(46,125,50,0.7)'),
-          borderColor: '#2e7d32', borderWidth: 1,
+          backgroundColor: dadosAcum.map(d => d.isFuturo ? coresGrafico().receitaFade : coresGrafico().receita.bg),
+          borderColor: coresGrafico().receita.border, borderWidth: 1,
         },
         {
           type: 'bar', label: 'Despesas', data: despData, order: 2,
-          backgroundColor: dadosAcum.map(d => d.isFuturo ? 'rgba(198,40,40,0.3)' : 'rgba(198,40,40,0.7)'),
-          borderColor: '#c62828', borderWidth: 1,
+          backgroundColor: dadosAcum.map(d => d.isFuturo ? coresGrafico().despesaFade : coresGrafico().despesa.bg),
+          borderColor: coresGrafico().despesa.border, borderWidth: 1,
         },
         {
           type: 'line', label: 'Saldo Acumulado', data: acumData, order: 1,
-          borderColor: '#1565c0', backgroundColor: 'rgba(21,101,192,0.08)',
+          borderColor: coresGrafico().saldo.border, backgroundColor: coresGrafico().saldo.bg,
           borderWidth: 2.5, tension: 0.35, fill: true, pointRadius: 4,
-          pointBackgroundColor: acumData.map(v => v >= 0 ? '#1565c0' : '#c62828'),
+          pointBackgroundColor: acumData.map(v => v >= 0 ? coresGrafico().pontoPositivo : coresGrafico().pontoNegativo),
           pointBorderColor: '#fff', pointBorderWidth: 1.5,
           yAxisID: 'yAcum',
         },
