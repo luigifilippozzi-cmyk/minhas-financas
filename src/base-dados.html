@@ -390,8 +390,16 @@
     ══════════════════════════════════════════════════════════ -->
     <div id="tab-gerenciar" class="base-tab-content hidden">
       <div class="card imp-card">
-        <h3 class="imp-step-titulo">🗂️ Todas as Transações</h3>
-        <p class="imp-step-desc">Filtre, selecione e gerencie transações em lote.</p>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.5rem;">
+          <div>
+            <h3 class="imp-step-titulo" style="margin-bottom:0;">🗂️ Todas as Transações</h3>
+            <p class="imp-step-desc" style="margin-bottom:0;">Filtre, selecione e gerencie transações em lote.</p>
+          </div>
+          <div style="display:flex;align-items:center;gap:.75rem;">
+            <span id="ger-contagem-total" style="font-size:.82rem;color:var(--text-muted);"></span>
+            <span id="ger-sync-status" style="font-size:.8rem;"></span>
+          </div>
+        </div>
 
         <!-- Filtros -->
         <div class="ger-filtros">
@@ -440,6 +448,17 @@
         <div id="ger-loading" class="hidden" style="text-align:center;padding:2rem;color:var(--text-muted);">⏳ Carregando transações…</div>
         <div id="ger-empty" class="hidden empty-state">Nenhuma transação encontrada para os filtros selecionados.</div>
 
+        <!-- RF-025.5: mensagem quando nenhum filtro de período selecionado -->
+        <div id="ger-sem-filtro" class="hidden" style="text-align:center;padding:2rem;">
+          <p style="font-size:1rem;color:var(--text-muted);margin-bottom:.75rem;">
+            Selecione um mês e ano para carregar as transações em tempo real.
+          </p>
+          <span id="ger-contagem-total-fallback" style="font-size:.85rem;color:var(--text-muted);display:block;margin-bottom:1rem;"></span>
+          <button id="ger-btn-carregar-tudo" class="btn btn-outline btn-sm">
+            📦 Carregar tudo (sem filtro de período)
+          </button>
+        </div>
+
         <!-- Tabela -->
         <div class="imp-table-wrap hidden" id="ger-tabela-wrap">
           <table class="imp-table ger-tabela" id="ger-tabela">
@@ -463,6 +482,9 @@
           <button id="ger-btn-prev" class="btn btn-outline btn-sm">‹ Anterior</button>
           <span id="ger-pagina-info" style="font-size:.85rem;color:var(--text-muted);">Página 1</span>
           <button id="ger-btn-next" class="btn btn-outline btn-sm">Próxima ›</button>
+          <button id="ger-btn-carregar-mais" class="btn btn-outline btn-sm hidden" style="margin-left:auto;">
+            📥 Carregar mais transações
+          </button>
         </div>
       </div>
 
