@@ -512,6 +512,83 @@ body {
 }
 
 /* ══════════════════════════════════════════════════════════════
+   SKELETON LOADER (Épico D — feedback)
+   ══════════════════════════════════════════════════════════════ */
+
+@keyframes skeleton-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  display: block;
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-alt) 25%,
+    var(--color-border) 50%,
+    var(--color-surface-alt) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+}
+
+.skeleton-line {
+  height: 0.875rem;
+  margin-bottom: var(--space-2);
+}
+.skeleton-line:last-child { margin-bottom: 0; }
+.skeleton-line--sm { height: 0.75rem; width: 60%; }
+.skeleton-line--lg { height: 1.25rem; width: 40%; }
+
+.skeleton-card {
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+/* Respeita usuários que preferem menos movimento */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ERROR STATE (Épico D — feedback)
+   ══════════════════════════════════════════════════════════════ */
+
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  text-align: center;
+  padding: var(--space-8) var(--space-6);
+  color: var(--color-danger-text);
+  background: var(--color-danger-light);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+}
+.error-state__title { font-weight: 600; font-size: var(--font-size-md); }
+.error-state__hint  { color: var(--color-text-secondary); font-size: var(--font-size-xs); }
+
+/* ══════════════════════════════════════════════════════════════
+   FADE-IN (Épico D — microinteração)
+   ══════════════════════════════════════════════════════════════ */
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-in { animation: fade-in-up var(--transition-slow) ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in { animation: none; }
+}
+
+/* ══════════════════════════════════════════════════════════════
    SCROLLBAR CUSTOMIZADA (webkit)
    ══════════════════════════════════════════════════════════════ */
 
