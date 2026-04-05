@@ -11,6 +11,23 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [3.13.0] - 2026-04-05
+
+### Adicionado — RF-025: Filtragem Server-Side em Gerenciar (PR #114)
+- Queries Firestore server-side com filtros de período, tipo, categoria, portador e conta.
+- Sincronização em tempo real via `onSnapshot` substituindo carregamento em memória.
+- Novos helpers em `src/js/services/database.js`.
+
+### Alterado — Épico B: Sistema Visual Unificado (PR #115)
+- **Tokens:** novos tokens semânticos em `variables.css` (`--color-info`, `--color-conjunta`, `--color-income-dark`, `--color-balance-dark`, `--color-budget-dark`, entre outros) e tokens de `line-height`.
+- **CSS:** substituição de 100+ cores hardcoded por tokens em `main.css`, `dashboard.css`, `components.css`, `planejamento.css`.
+- **planejamento.css:** correção crítica — arquivo usava nomes de variáveis inexistentes (`--border`, `--text-muted`, `--success`) mascarados por fallbacks; todos renomeados para tokens corretos.
+- **Tipografia e espaçamento:** font-sizes e valores `rem` hardcoded substituídos por tokens `--font-size-*` e `--space-*`.
+- **Chart.js:** novo utilitário `src/js/utils/chartColors.js` lendo tokens via `getComputedStyle` — gráficos agora respeitam a paleta central.
+- **Ícones:** emojis da navbar substituídos por [Lucide Icons](https://lucide.dev/) via CDN em todas as 9 páginas HTML (🏠→`layout-dashboard`, 📋→`clipboard-list`, 💸→`trending-down`, 📥→`wallet`, 💰→`piggy-bank`, 📈→`line-chart`, 🏷️→`tags`, 💳→`credit-card`, 📦→`database`).
+
+---
+
 ## [3.12.0] - 2026-04-03
 
 ### Adicionado — RF-061: Categorias e Orçamentos — Separação Despesa vs Receita

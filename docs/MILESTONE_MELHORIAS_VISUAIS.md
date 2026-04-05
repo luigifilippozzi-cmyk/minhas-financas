@@ -54,13 +54,13 @@ Elevar a qualidade visual e de usabilidade do produto com foco em:
 
 **Entregável:** dashboard com escaneabilidade melhorada e foco em decisão rápida.
 
-### Épico B — Sistema visual unificado
+### Épico B — Sistema visual unificado ✅ *2026-04-04*
 **Objetivo:** criar consistência entre páginas e componentes.
 
-- [ ] Padronizar paleta (primária, sucesso, alerta, crítico, neutros).
-- [ ] Definir tipografia base (H1/H2/corpo/legenda).
-- [ ] Aplicar grid de espaçamento em múltiplos de 8px.
-- [ ] Substituir emojis de ações por ícones consistentes.
+- [x] Padronizar paleta (primária, sucesso, alerta, crítico, neutros).
+- [x] Definir tipografia base (H1/H2/corpo/legenda).
+- [x] Aplicar grid de espaçamento em múltiplos de 8px.
+- [x] Substituir emojis de ações por ícones consistentes (Lucide Icons).
 
 **Entregável:** base visual coesa e reutilizável.
 
