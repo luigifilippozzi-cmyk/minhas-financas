@@ -11,6 +11,13 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [3.13.1] - 2026-04-05
+
+### Corrigido — Acessibilidade (PR #116)
+- `--color-text-muted` ajustado de Slate 400 (#94a3b8) para Slate 500 (#64748b), passando de ~3.3:1 para ~5.6:1 de contraste sobre fundo claro (WCAG AA).
+
+---
+
 ## [3.13.0] - 2026-04-05
 
 ### Adicionado — RF-025: Filtragem Server-Side em Gerenciar (PR #114)
