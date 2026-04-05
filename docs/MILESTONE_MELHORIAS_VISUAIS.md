@@ -74,13 +74,13 @@ Elevar a qualidade visual e de usabilidade do produto com foco em:
 
 **Entregável:** navegação fluida em telas pequenas e médias.
 
-### Épico D — Feedback e microinterações
+### Épico D — Feedback e microinterações *(parcial — 2026-04-05)*
 **Objetivo:** aumentar previsibilidade e sensação de qualidade.
 
-- [ ] Implementar estados visuais de **carregando/vazio/erro**.
-- [ ] Adotar skeleton loading para blocos de dados.
-- [ ] Definir transições curtas e consistentes (150–220ms).
-- [ ] Aplicar semáforo de orçamento (<70 / 70–89 / >=90).
+- [x] Implementar estados visuais de **carregando/vazio/erro** (`.empty-state`, `.error-state`).
+- [x] Adotar skeleton loading para blocos de dados (`.skeleton`, `.skeleton-line`, `.skeleton-card`).
+- [x] Definir transições curtas e consistentes (tokens `--transition` 160ms / `--transition-slow` 280ms + `.fade-in`).
+- [x] Aplicar semáforo de orçamento (<70 / 70–89 / >=90 / >100 crítico).
 
 **Entregável:** interface mais clara, estável e reativa.
 
