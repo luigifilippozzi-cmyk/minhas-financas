@@ -11,6 +11,18 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [3.14.0] - 2026-04-05
+
+### Adicionado — Épico D: Feedback e Microinterações (PR #117)
+- **Skeleton loader** com shimmer animado: `.skeleton`, `.skeleton-line` (variantes `--sm` / `--lg`), `.skeleton-card`.
+- **Error state** (`.error-state`, `.error-state__title`, `.error-state__hint`) para exibir falhas de carregamento.
+- **Fade-in** (`.fade-in`) para entrada suave de conteúdo, usando `--transition-slow`.
+- Todas as animações respeitam `prefers-reduced-motion`.
+
+Milestone Melhorias Visuais: Épico D concluído (semáforo de orçamento já existia em `Orcamento.js`).
+
+---
+
 ## [3.13.1] - 2026-04-05
 
 ### Corrigido — Acessibilidade (PR #116)
