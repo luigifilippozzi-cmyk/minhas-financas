@@ -91,7 +91,7 @@ Elevar a qualidade visual e de usabilidade do produto com foco em:
 ### Sprint 1 — Fundação visual
 - [x] Simplificar navbar e hierarquia do dashboard.
 - [x] Aplicar tokens de tipografia e espaçamento.
-- [ ] Validar contraste básico e leitura.
+- [x] Validar contraste básico e leitura. *(2026-04-05 — `--color-text-muted` ajustado para Slate 500)*
 
 ### Sprint 2 — Responsividade e interação
 - [ ] Ajustes mobile/tablet nas principais páginas.
