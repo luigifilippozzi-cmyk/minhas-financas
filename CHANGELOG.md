@@ -11,6 +11,18 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [3.15.0] - 2026-04-06
+
+### Adicionado — Épico C: Fluidez e Responsividade
+- **MV-C01 — Breakpoints padronizados:** tokens de referência (`--bp-mobile`, `--bp-tablet`) em `variables.css`; novo breakpoint tablet (1024px) em dashboard, main, planejamento e components.
+- **MV-C02 — Layout 1 coluna em mobile:** KPIs colapsam para 1 coluna em <480px; filtros e headers de despesas/receitas empilhados em <640px; planejamento KPIs em coluna única.
+- **MV-C03 — FAB (Floating Action Button):** botão flutuante fixo "+" em despesas e receitas, visível apenas em mobile (<640px), delegando ao CTA existente. Respeita `prefers-reduced-motion`.
+- **MV-C04 — Filtros touch-friendly:** chips de resumo roláveis horizontalmente em mobile; área de toque mínima 44×44px para botões, selects e inputs (WCAG 2.5.5). Modal responsivo em telas pequenas.
+
+Milestone Melhorias Visuais: Épico C concluído (20/26 tarefas — 77%).
+
+---
+
 ## [3.14.0] - 2026-04-05
 
 ### Adicionado — Épico D: Feedback e Microinterações (PR #117)

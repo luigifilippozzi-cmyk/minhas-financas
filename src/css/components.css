@@ -589,6 +589,56 @@ body {
 }
 
 /* ══════════════════════════════════════════════════════════════
+   FAB (Floating Action Button) — mobile only
+   ══════════════════════════════════════════════════════════════ */
+
+.fab {
+  display: none;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVO — COMPONENTES
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Mobile (<640px) ── */
+@media (max-width: 640px) {
+  .modal-card {
+    max-width: calc(100vw - 32px);
+    margin: var(--space-4);
+  }
+
+  .fab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    bottom: var(--space-6);
+    right: var(--space-5);
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-full);
+    background: var(--color-primary);
+    color: var(--color-text-inverse);
+    border: none;
+    box-shadow: var(--shadow-lg);
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 90;
+    transition: transform var(--transition), box-shadow var(--transition);
+  }
+  .fab:active { transform: scale(0.93); }
+  .fab--success { background: var(--color-income); }
+
+  /* MV-C04 — Área de toque mínima 44x44px (WCAG 2.5.5) */
+  .btn, .select-input, .input-field { min-height: 44px; }
+  .desp-chip, .orc-chip { min-height: 44px; padding: var(--space-2) var(--space-3); }
+}
+
+@media (max-width: 640px) and (prefers-reduced-motion: reduce) {
+  .fab { transition: none; }
+}
+
+/* ══════════════════════════════════════════════════════════════
    SCROLLBAR CUSTOMIZADA (webkit)
    ══════════════════════════════════════════════════════════════ */
 
