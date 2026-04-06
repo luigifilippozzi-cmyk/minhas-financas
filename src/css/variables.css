@@ -116,4 +116,11 @@
   /* ── Transições ──────────────────────────────────────────── */
   --transition:      0.16s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ── Breakpoints (referência — usar nos @media) ────────── */
+  /* CSS custom properties não funcionam em @media(),          */
+  /* mas servem como fonte de verdade canônica do design system */
+  --bp-mobile:  640px;    /* < 640 px  = mobile   */
+  --bp-tablet: 1024px;    /* 640–1024  = tablet   */
+  /* > 1024 px = desktop                           */
 }
