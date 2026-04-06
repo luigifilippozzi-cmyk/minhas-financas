@@ -391,6 +391,14 @@
    RESPONSIVO
    ══════════════════════════════════════════════════════════════ */
 
+/* ── Tablet (640–1024px) ── */
+@media (max-width: 1024px) {
+  .resumo-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ── Mobile (<640px) ── */
 @media (max-width: 640px) {
   .main-content {
     padding: var(--space-4);
@@ -420,6 +428,7 @@
   .navbar-user > span#usuario-nome { display: none; }
 }
 
+/* ── Small mobile (<480px) ── */
 @media (max-width: 480px) {
-  .resumo-cards { grid-template-columns: 1fr 1fr; }
+  .resumo-cards { grid-template-columns: 1fr; }
 }
