@@ -257,11 +257,17 @@
 
 /* ── Responsive ───────────────────────────────────────────── */
 
+/* ── Tablet (640–1024px) ── */
+@media (max-width: 1024px) {
+  .plan-resumo { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ── Mobile (<640px) ── */
 @media (max-width: 640px) {
   .plan-header { flex-direction: column; align-items: stretch; }
   .plan-nav-mes { justify-content: center; }
   .plan-acoes { justify-content: center; }
-  .plan-resumo { grid-template-columns: repeat(2, 1fr); }
+  .plan-resumo { grid-template-columns: 1fr; }
   .plan-tabela { font-size: .8rem; }
   .plan-tabela th, .plan-tabela td { padding: .4rem .5rem; }
 }

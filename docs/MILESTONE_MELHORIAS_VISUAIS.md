@@ -67,10 +67,10 @@ Elevar a qualidade visual e de usabilidade do produto com foco em:
 ### Épico C — Fluidez e responsividade
 **Objetivo:** melhorar experiência em diferentes tamanhos de tela.
 
-- [ ] Ajustar breakpoints (mobile/tablet/desktop).
-- [ ] Garantir layout de 1 coluna em mobile para áreas críticas.
-- [ ] Preservar CTA principal visível em mobile (ex.: Nova Despesa).
-- [ ] Melhorar filtros para uso por toque (barra rolável ou sheet).
+- [x] Ajustar breakpoints (mobile/tablet/desktop).
+- [x] Garantir layout de 1 coluna em mobile para áreas críticas.
+- [x] Preservar CTA principal visível em mobile (ex.: Nova Despesa).
+- [x] Melhorar filtros para uso por toque (barra rolável ou sheet).
 
 **Entregável:** navegação fluida em telas pequenas e médias.
 
