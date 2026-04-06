@@ -7,6 +7,7 @@
 import { onAuthChange, logout } from '../services/auth.js';
 import { buscarPerfil } from '../services/database.js';
 import { formatarMoeda, nomeMes, escHTML } from '../utils/formatters.js';
+import { skeletonTableRows } from '../utils/skeletons.js';
 import {
   gerarPlanoPara,
   autoMatch,
@@ -64,6 +65,10 @@ onAuthChange(async (user) => {
 function iniciarApp() {
   pararListeners();
   atualizarTituloMes();
+
+  // Skeleton enquanto dados carregam
+  const tbody = document.getElementById('plan-tbody');
+  if (tbody && !_planItems.length) tbody.innerHTML = skeletonTableRows(5, 7);
 
   _unsubCats = ouvirCategorias(_grupoId, (cats) => {
     _categorias = cats
@@ -224,6 +229,7 @@ function renderizarTabela() {
   }
 
   tbody.innerHTML = html;
+  tbody.classList.add('fade-in');
 
   tbody.querySelectorAll('.btn-del-item').forEach(btn =>
     btn.addEventListener('click', () => handleExcluirItem(btn.dataset.id)));

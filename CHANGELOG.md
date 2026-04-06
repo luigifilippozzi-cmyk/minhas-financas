@@ -11,6 +11,20 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [3.16.0] - 2026-04-06
+
+### Adicionado — Sprint 2: Estados, Responsividade e Microinterações
+- **MV-S2b — Loading/Empty/Error States:** novo módulo `skeletons.js` com geradores de skeleton, empty-state e error-state. Skeleton shimmer exibido durante carregamento inicial em despesas, receitas, fatura, planejamento e dashboard. Empty-states com ícone e mensagem contextual. Error-states com botão "Tentar novamente" em caso de falha de conexão.
+- **MV-S2b — CSS:** classes `.skeleton-item`, `.skeleton-circle`, `.skeleton-lines`, `.skeleton-amount` para cards skeleton; `.empty-state__icon`/`__title`/`__hint` para estados vazios enriquecidos; margin no botão retry do error-state.
+- **MV-S2a — Fatura mobile:** filtros empilham verticalmente, tabs roláveis horizontalmente, tabela com font-size reduzido, estabelecimento truncado com ellipsis em <640px. Modal com `max-height: 100dvh - 32px` para evitar overflow em mobile.
+- **MV-S2c — Hover/focus:** transição sutil de `border-color` e `box-shadow` em `.desp-item`, `.rec-item` e `.desp-chip` no hover. Focus-visible global para `a`, `select`, `input`, `textarea`, `[role="button"]` e `summary`. Todas as transições respeitam `prefers-reduced-motion`.
+- **Segurança:** `escHTML()` aplicado em descrições renderizadas via `innerHTML` em despesas, receitas e fatura.
+- **Fade-in:** animação de entrada aplicada nas listas de despesas, receitas, fatura, planejamento e grid de categorias do dashboard.
+
+Milestone Melhorias Visuais: Sprint 2 concluído (23/26 tarefas — 88%).
+
+---
+
 ## [3.15.0] - 2026-04-06
 
 ### Adicionado — Épico C: Fluidez e Responsividade

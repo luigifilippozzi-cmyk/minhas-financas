@@ -11,7 +11,8 @@
 
 import { onAuthChange, logout } from '../services/auth.js';
 import { buscarPerfil, buscarGrupo, ouvirContas, ouvirCategorias, ouvirDespesas, ouvirDespesasPorMesFatura, garantirContasPadrao } from '../services/database.js';
-import { formatarMoeda, formatarData, nomeMes } from '../utils/formatters.js';
+import { formatarMoeda, formatarData, nomeMes, escHTML } from '../utils/formatters.js';
+import { skeletonTableRows, errorStateHTML } from '../utils/skeletons.js';
 import { CONTAS_PADRAO } from '../models/Conta.js';
 
 // ── Estado ────────────────────────────────────────────────────
@@ -129,6 +130,10 @@ function recarregarDespesas() {
   let _calendarSet   = [];
   let _mesFaturaSet  = [];
 
+  // Skeleton enquanto dados carregam
+  const tbody = document.getElementById('fat-tbody-todas');
+  if (tbody) tbody.innerHTML = skeletonTableRows(6, 8);
+
   function _merge() {
     const seen = new Set();
     _despesas = [..._calendarSet, ..._mesFaturaSet].filter(d => {
@@ -142,15 +147,24 @@ function recarregarDespesas() {
     carregarProjecoes();
   }
 
-  _unsubDesp = ouvirDespesas(_grupoId, _mes, _ano, (todas) => {
-    _calendarSet = todas;
-    _merge();
-  });
+  try {
+    _unsubDesp = ouvirDespesas(_grupoId, _mes, _ano, (todas) => {
+      _calendarSet = todas;
+      _merge();
+    });
 
-  _unsubDespMesFatura = ouvirDespesasPorMesFatura(_grupoId, mesFaturaStr, (todas) => {
-    _mesFaturaSet = todas;
-    _merge();
-  });
+    _unsubDespMesFatura = ouvirDespesasPorMesFatura(_grupoId, mesFaturaStr, (todas) => {
+      _mesFaturaSet = todas;
+      _merge();
+    });
+  } catch (err) {
+    console.error('Erro ao ouvir fatura:', err);
+    const conteudo = document.getElementById('fat-conteudo');
+    if (conteudo) {
+      conteudo.innerHTML = errorStateHTML('Erro ao carregar fatura', 'Verifique sua conexão e tente novamente.');
+      conteudo.querySelector('.error-retry')?.addEventListener('click', recarregarDespesas);
+    }
+  }
 }
 
 // ── Render principal ──────────────────────────────────────────
@@ -163,7 +177,8 @@ function renderizarTudo() {
   membros.forEach(m => renderizarTabela(m.key));
   renderizarResumoDetalhado(membros);
   document.getElementById('fat-resumo-cards').style.display = '';
-  document.getElementById('fat-conteudo').style.display = '';
+  const conteudo = document.getElementById('fat-conteudo');
+  if (conteudo) { conteudo.style.display = ''; conteudo.classList.add('fade-in'); }
 }
 
 // ── Membros do grupo ──────────────────────────────────────────
@@ -289,7 +304,7 @@ function renderizarTabela(tipo) {
     tbody.innerHTML = conj.map(d => `
       <tr>
         <td>${formatarData(d.data?.toDate?.() ?? d.data)}</td>
-        <td class="fat-td-estab">${d.descricao ?? '—'}</td>
+        <td class="fat-td-estab">${escHTML(d.descricao ?? '—')}</td>
         <td><span class="fat-badge fat-badge--${d.parcela && d.parcela !== '-' ? 'parc' : 'vista'}">${d.parcela && d.parcela !== '-' ? 'P' : 'V'}</span></td>
         <td>${d.parcela && d.parcela !== '-' ? d.parcela : '—'}</td>
         <td>${_catMap[d.categoriaId]?.nome ?? '—'}</td>
@@ -317,7 +332,7 @@ function renderizarTabela(tipo) {
   tbody.innerHTML = rows.map(d => `
     <tr>
       <td>${formatarData(d.data?.toDate?.() ?? d.data)}</td>
-      <td class="fat-td-estab">${d.descricao ?? '—'}</td>
+      <td class="fat-td-estab">${escHTML(d.descricao ?? '—')}</td>
       <td><span class="fat-badge fat-badge--${d.parcela && d.parcela !== '-' ? 'parc' : 'vista'}">${d.parcela && d.parcela !== '-' ? 'P' : 'V'}</span></td>
       <td>${d.parcela && d.parcela !== '-' ? d.parcela : '—'}</td>
       <td>${_catMap[d.categoriaId]?.nome ?? '—'}</td>
@@ -332,7 +347,7 @@ function _rowTodas(d) {
   const tipo   = d.parcela && d.parcela !== '-' ? 'P' : 'V';
   return `<tr class="${isConj ? 'fat-tr-conjunta' : ''}">
     <td>${formatarData(d.data?.toDate?.() ?? d.data)}</td>
-    <td class="fat-td-estab">${d.descricao ?? '—'}</td>
+    <td class="fat-td-estab">${escHTML(d.descricao ?? '—')}</td>
     <td><span class="fat-resp-chip">${resp.split(' ')[0]}</span></td>
     <td><span class="fat-badge fat-badge--${tipo === 'P' ? 'parc' : 'vista'}">${tipo}</span></td>
     <td>${d.parcela && d.parcela !== '-' ? d.parcela : '—'}</td>

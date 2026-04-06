@@ -93,10 +93,10 @@ Elevar a qualidade visual e de usabilidade do produto com foco em:
 - [x] Aplicar tokens de tipografia e espaçamento.
 - [x] Validar contraste básico e leitura. *(2026-04-05 — `--color-text-muted` ajustado para Slate 500)*
 
-### Sprint 2 — Responsividade e interação
-- [ ] Ajustes mobile/tablet nas principais páginas.
-- [ ] Estados de carregamento/vazio/erro.
-- [ ] Microinterações (hover/focus/transições).
+### Sprint 2 — Responsividade e interação ✅ *2026-04-06*
+- [x] Ajustes mobile/tablet nas principais páginas.
+- [x] Estados de carregamento/vazio/erro.
+- [x] Microinterações (hover/focus/transições).
 
 ### Sprint 3 — Polimento e validação
 - [ ] Ajustes finais orientados por uso real.

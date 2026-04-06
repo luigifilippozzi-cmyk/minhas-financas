@@ -15,8 +15,9 @@ import {
   buscarChavesDedupReceitas,
 } from '../services/database.js';
 import { modelReceita, CATEGORIAS_RECEITA_PADRAO } from '../models/Receita.js';
-import { formatarMoeda, formatarData, nomeMes } from '../utils/formatters.js';
+import { formatarMoeda, formatarData, nomeMes, escHTML } from '../utils/formatters.js';
 import { dataHoje } from '../utils/helpers.js';
+import { skeletonCards, emptyStateHTML, errorStateHTML } from '../utils/skeletons.js';
 
 // ── Estado da página ──────────────────────────────────────────
 let _usuario    = null;
@@ -75,17 +76,29 @@ function iniciarListeners() {
   if (_unsubRec)    _unsubRec();
   if (_unsubCatRec) _unsubCatRec();
 
+  // Skeleton enquanto dados carregam
+  const container = document.getElementById('rec-lista');
+  if (container && !_receitas.length) container.innerHTML = skeletonCards(5);
+
   _unsubCatRec = ouvirCategoriasReceita(_grupoId, (cats) => {
     _categorias = cats.sort((a, b) => a.nome.localeCompare(b.nome));
     _catMap     = Object.fromEntries(_categorias.map((c) => [c.id, c]));
     preencherSelectCategorias();
   });
 
-  _unsubRec = ouvirReceitas(_grupoId, _mes, _ano, (recs) => {
-    _receitas = recs;
-    renderizarLista();
-    atualizarChips();
-  });
+  try {
+    _unsubRec = ouvirReceitas(_grupoId, _mes, _ano, (recs) => {
+      _receitas = recs;
+      renderizarLista();
+      atualizarChips();
+    });
+  } catch (err) {
+    console.error('Erro ao ouvir receitas:', err);
+    if (container) {
+      container.innerHTML = errorStateHTML('Erro ao carregar receitas', 'Verifique sua conexão e tente novamente.');
+      container.querySelector('.error-retry')?.addEventListener('click', iniciarListeners);
+    }
+  }
 }
 
 // ── Renderização da Lista ──────────────────────────────────────
@@ -94,7 +107,7 @@ function renderizarLista() {
   if (!container) return;
 
   if (!_receitas.length) {
-    container.innerHTML = '<p class="empty-state">Nenhuma receita registrada neste mês.</p>';
+    container.innerHTML = emptyStateHTML('💰', 'Nenhuma receita registrada neste mês.', 'Clique em + Nova Receita para começar.');
     return;
   }
 
@@ -116,7 +129,7 @@ function renderizarLista() {
       <div class="rec-item">
         <span class="rec-item-emoji">${emoji}</span>
         <div class="rec-item-info">
-          <div class="rec-item-desc">${r.descricao || catNome}</div>
+          <div class="rec-item-desc">${escHTML(r.descricao || catNome)}</div>
           <div class="rec-item-meta">${catNome} &middot; ${dataFmt}</div>
         </div>
         <span class="rec-item-valor">${formatarMoeda(r.valor ?? 0)}</span>
@@ -127,6 +140,7 @@ function renderizarLista() {
       </div>
     `;
   }).join('');
+  container.classList.add('fade-in');
 }
 
 function atualizarChips() {
