@@ -28,7 +28,7 @@ body {
   position: sticky;
   top: 0;
   height: var(--navbar-height);
-  background: rgba(255,255,255,0.92);
+  background: var(--color-surface-glass);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--color-border);
@@ -201,12 +201,12 @@ body {
   background: var(--color-primary);
   color: var(--color-text-inverse);
   border-color: var(--color-primary);
-  box-shadow: 0 1px 3px rgba(99,102,241,0.25);
+  box-shadow: 0 1px 3px var(--color-primary-shadow-25);
 }
 .btn-primary:hover {
   background: var(--color-primary-hover);
   border-color: var(--color-primary-hover);
-  box-shadow: 0 4px 12px rgba(99,102,241,0.32);
+  box-shadow: 0 4px 12px var(--color-primary-shadow-32);
   color: var(--color-text-inverse);
 }
 
@@ -387,10 +387,24 @@ body {
   padding: var(--space-4);
 }
 
+/* Variante usada em receitas e base-dados (overlay + backdrop unificados) */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: var(--space-4);
+  background: var(--color-backdrop);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
 .modal-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(15,23,42, 0.45);
+  background: var(--color-backdrop);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   animation: fadeIn 0.16s ease;

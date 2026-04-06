@@ -71,6 +71,29 @@
   --color-conjunta-border:#ce93d8;
   --color-conjunta-dark:  #4a148c;
 
+  /* ── Overlays e efeitos ────────────────────────────────────── */
+  --color-surface-glass:       rgba(255, 255, 255, 0.92);
+  --color-backdrop:            rgba(15, 23, 42, 0.45);
+  --color-text-inverse-muted:  rgba(255, 255, 255, 0.85);
+  --color-primary-shadow-25:   rgba(99, 102, 241, 0.25);
+  --color-primary-shadow-32:   rgba(99, 102, 241, 0.32);
+  --color-info-row:            rgba(21, 101, 192, 0.05);
+
+  /* ── Fuzzy / Reconciliação ───────────────────────────────── */
+  --color-fuzzy-bg:            #fff8e1;
+  --color-fuzzy-text:          #e65100;
+  --color-fuzzy-border:        #ffcc02;
+  --color-fuzzy-row:           rgba(255, 193, 7, 0.08);
+  --color-fuzzy-row-hover:     rgba(255, 193, 7, 0.14);
+
+  /* ── Importação — erro e estados de linha ────────────────── */
+  --color-import-error-bg:     #fff8f0;
+  --color-import-error-text:   #b26a00;
+  --color-import-hint-bg:      #f8faff;
+  --color-import-hint-border:  #e0e7ff;
+  --color-import-invert-bg:    #fff7ed;
+  --color-import-invert-border:#fed7aa;
+
   /* ── Sombras refinadas ───────────────────────────────────── */
   --shadow-xs:  0 1px 2px  rgba(15,23,42, 0.04);
   --shadow-sm:  0 1px 3px  rgba(15,23,42, 0.07), 0 1px 2px rgba(15,23,42,0.04);
