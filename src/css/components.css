@@ -474,6 +474,9 @@ body {
   font-size: var(--font-size-sm);
   padding: var(--space-10) var(--space-6);
 }
+.empty-state__icon  { font-size: 2rem; line-height: 1; }
+.empty-state__title { font-weight: 600; font-size: var(--font-size-md); }
+.empty-state__hint  { font-size: var(--font-size-xs); }
 
 /* Badge genérico */
 .badge {
@@ -548,6 +551,35 @@ body {
   border: 1px solid var(--color-border);
 }
 
+/* Skeleton item — card-list (despesas/receitas) */
+.skeleton-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-2);
+}
+.skeleton-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+.skeleton-lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.skeleton-amount {
+  width: 80px;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
 /* Respeita usuários que preferem menos movimento */
 @media (prefers-reduced-motion: reduce) {
   .skeleton { animation: none; }
@@ -573,6 +605,7 @@ body {
 }
 .error-state__title { font-weight: 600; font-size: var(--font-size-md); }
 .error-state__hint  { color: var(--color-text-secondary); font-size: var(--font-size-xs); }
+.error-state .btn   { margin-top: var(--space-3); }
 
 /* ══════════════════════════════════════════════════════════════
    FADE-IN (Épico D — microinteração)
@@ -604,7 +637,9 @@ body {
 @media (max-width: 640px) {
   .modal-card {
     max-width: calc(100vw - 32px);
+    max-height: calc(100dvh - 32px);
     margin: var(--space-4);
+    overflow-y: auto;
   }
 
   .fab {
@@ -646,3 +681,29 @@ body {
 ::-webkit-scrollbar-track  { background: transparent; }
 ::-webkit-scrollbar-thumb  { background: var(--color-border-hover); border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-text-muted); }
+
+/* ══════════════════════════════════════════════════════════════
+   FOCUS-VISIBLE GLOBAL (Sprint 2 — acessibilidade)
+   ══════════════════════════════════════════════════════════════ */
+
+a:focus-visible,
+select:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible,
+summary:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-primary-ring);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PREFERS-REDUCED-MOTION — Sprint 2 transitions
+   ══════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  .desp-item,
+  .rec-item,
+  .desp-chip {
+    transition: none !important;
+  }
+}

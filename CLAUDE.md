@@ -8,7 +8,7 @@
 
 - **Usuários:** Luigi + Ana (casal)
 - **Dev:** Luigi (solo developer)
-- **Versão atual:** v3.15.0
+- **Versão atual:** v3.16.0
 - **Repo:** https://github.com/luigifilippozzi-cmyk/minhas-financas
 - **Stack:** HTML5 · CSS3 · JS ES6+ (módulos nativos) · Firebase Auth · Cloud Firestore · Chart.js v4 · SheetJS (XLSX)
 
@@ -196,7 +196,7 @@ Todas as cores, sombras e fontes estão em `variables.css` como CSS custom prope
 | Milestone | Progresso | Status |
 |-----------|-----------|--------|
 | Requisitos Funcionais | 35/35 (100%) | ✅ Concluído |
-| Melhorias Visuais | 20/26 (77%) | 🟡 Em andamento |
+| Melhorias Visuais | 23/26 (88%) | 🟡 Em andamento |
 | iOS App (Fases 0–5) | 0/17 issues | ⚪ Não iniciado |
 | Tech Debt | 0/2 | ⚪ Não iniciado |
 

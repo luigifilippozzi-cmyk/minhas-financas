@@ -29,6 +29,7 @@ import { CONTAS_PADRAO } from './models/Conta.js';            // NRF-004
 import { mesAnoAtual, definirTexto } from './utils/helpers.js';
 import { coresGrafico } from './utils/chartColors.js';
 import { nomeMes } from './utils/formatters.js';
+import { skeletonCards, errorStateHTML } from './utils/skeletons.js';
 
 // ── Estado Global ─────────────────────────────────────────────
 let estadoApp = {
@@ -123,10 +124,20 @@ function iniciarListeners() {
   if (_unsubOrc)  _unsubOrc();
   if (_unsubRec)  _unsubRec();
 
+  // Skeleton enquanto dados carregam
+  const catGrid = document.getElementById('categorias-grid');
+  if (catGrid && !estadoApp.categorias.length) catGrid.innerHTML = skeletonCards(6);
+  ['total-orcado', 'total-gasto', 'total-disponivel', 'rec-total', 'rec-saldo'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = '<span class="skeleton skeleton-line--lg" style="display:inline-block;width:80px"></span>';
+  });
+
   // Categorias — não filtram por mês
   _unsubCats = iniciarListenerCategorias(grupoId, (cats) => {
     estadoApp.categorias = cats;
     renderizarDashboard(estadoApp.categorias, estadoApp.despesas, estadoApp.orcamentos, estadoApp.nomeAtual);
+    const cg = document.getElementById('categorias-grid');
+    if (cg) cg.classList.add('fade-in');
     if (_filtroCat === 'mes') renderizarGraficoCategorias(); // RF-017
   });
 
@@ -203,6 +214,8 @@ async function carregarDadosMeses() {
     if (_filtroCat === '3meses') renderizarGraficoCategorias();
   } catch (err) {
     console.error('[dashboard] Erro ao carregar dados de gráficos:', err);
+    const wrap = document.getElementById('section-graficos');
+    if (wrap) wrap.innerHTML = errorStateHTML('Erro ao carregar gráficos', 'Verifique sua conexão e tente novamente.');
   }
 }
 
