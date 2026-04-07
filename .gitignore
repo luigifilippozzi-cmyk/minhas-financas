@@ -23,6 +23,9 @@ npm-debug.log*
 Thumbs.db
 desktop.ini
 
+# Lock files (LibreOffice/Excel)
+.~lock.*#
+
 # Editor
 .vscode/settings.json
 .idea/

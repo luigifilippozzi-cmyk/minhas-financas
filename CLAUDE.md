@@ -8,7 +8,7 @@
 
 - **Usuários:** Luigi + Ana (casal)
 - **Dev:** Luigi (solo developer)
-- **Versão atual:** v3.16.0
+- **Versão atual:** v3.17.0
 - **Repo:** https://github.com/luigifilippozzi-cmyk/minhas-financas
 - **Stack:** HTML5 · CSS3 · JS ES6+ (módulos nativos) · Firebase Auth · Cloud Firestore · Chart.js v4 · SheetJS (XLSX)
 
@@ -190,27 +190,28 @@ Todas as cores, sombras e fontes estão em `variables.css` como CSS custom prope
 
 ---
 
-## Estado Atual do Projeto (2026-04-04)
+## Estado Atual do Projeto (2026-04-06)
 
 ### Milestones
 | Milestone | Progresso | Status |
 |-----------|-----------|--------|
 | Requisitos Funcionais | 35/35 (100%) | ✅ Concluído |
-| Melhorias Visuais | 23/26 (88%) | 🟡 Em andamento |
+| Melhorias Visuais | 26/26 (100%) | ✅ Concluído |
 | iOS App (Fases 0–5) | 0/17 issues | ⚪ Não iniciado |
-| Tech Debt | 0/2 | ⚪ Não iniciado |
+| Tech Debt | 1/2 (50%) | ⚪ Backlog |
 
 ### Próximas prioridades
-1. **Melhorias Visuais** — milestone ativo. Ver `docs/MILESTONE_MELHORIAS_VISUAIS.md` para épicos A–D e checklists
-2. **iOS App Fase 0** — migrar para Vite bundler + Firebase via npm (issues #73, #74)
-3. **Tech Debt** — paginação server-side na aba Gerenciar (#95) e unificação de pipeline (#96)
+1. **iOS App Fase 0** — migrar para Vite bundler + Firebase via npm (issues #73, #74)
+2. **Tech Debt** — unificação de pipeline (#96)
+3. **iOS App Fase 1** — Capacitor + iOS setup (issues #75, #76)
 
 ### Documentação de referência
 | Arquivo | Conteúdo |
 |---------|----------|
 | `docs/ARQUITETURA_TECNICA.md` | Firestore schema completo, índices, fluxo de dados |
+| `docs/DESIGN_SYSTEM.md` | Paleta, tipografia, espaçamento, componentes, acessibilidade |
 | `docs/REQUISITOS_FUNCIONAIS.md` | 35 RF + NRF implementados com descrição detalhada |
-| `docs/MILESTONE_MELHORIAS_VISUAIS.md` | Checklist de épicos A–D e sprints |
+| `docs/MILESTONE_MELHORIAS_VISUAIS.md` | Checklist de épicos A–D e sprints (concluído) |
 | `docs/MILESTONE_iOS_App.md` | Fases 0–5 do app iOS com Capacitor |
 | `docs/BUGS.md` | Registro de 27 bugs com root cause e fix |
 | `docs/GUIA_VERSIONAMENTO.md` | Conventional commits + SemVer + workflow git |
