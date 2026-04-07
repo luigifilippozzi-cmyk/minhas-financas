@@ -7,7 +7,23 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
-*(sem mudancas pendentes)*
+*(sem mudanças pendentes)*
+
+---
+
+## [3.18.0] - 2026-04-07
+
+### Adicionado — Fase 0: Vite + Firebase npm (Milestone iOS)
+
+- **Vite como bundler MPA (#73):** configurado Vite 5 com 13 entry points HTML. Novos scripts: `npm run dev`, `npm run build`, `npm run preview`. Firebase Hosting agora serve de `dist/` em vez de `src/`. Deploy faz build automaticamente.
+- **Firebase CDN → npm (#74):** todos os 7 imports via `gstatic.com` CDN substituídos por pacotes npm (`firebase/app`, `firebase/auth`, `firebase/firestore`). Script inline de `index.html` extraído para `js/pages/index.js`. Vite faz tree-shaking do Firebase SDK (~102 kB gzip).
+- **Funções CRUD de planejamento:** implementadas 6 funções faltantes em `database.js` (`buscarDespesasMes`, `existePlanejamento`, `ouvirPlanejamento`, `salvarItemPlanejamento`, `salvarItensPlanejamentoBatch`, `excluirItemPlanejamento`) detectadas pelo Rollup durante build.
+
+### Corrigido
+- **CI do PR #108:** testes de integração excluídos do `vitest.config.js` padrão (requerem Firebase Emulator). Disponíveis via `npm run test:integration`.
+- **7 bugs em importar.js (BUG-025 a BUG-031):** `_chavesExistentes` como Map, sanitização XSS em `chaveInfo`, pluralização em português, badge e seletor de conta.
+
+**Fase 0 do Milestone iOS: CONCLUÍDA.** Issues #73 e #74 fechadas. Próximo: Fase 1 (Capacitor + iOS platform).
 
 ---
 
