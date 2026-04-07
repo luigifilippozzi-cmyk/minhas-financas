@@ -39,25 +39,40 @@
 
 ```bash
 # Clone o repositório
-git clone https://github.com/SEU_USUARIO/minhas-financas.git
+git clone https://github.com/luigifilippozzi-cmyk/minhas-financas.git
 cd minhas-financas
 
 # Instale as dependências
 npm install
 
-# Configure as variáveis de ambiente
-cp .env.example .env
-# Edite .env com suas credenciais Firebase
+# Execute em modo de desenvolvimento (Vite com HMR)
+npm run dev
 
-# Execute localmente
+# Ou execute via Firebase serve (sem bundler)
 npm start
+```
+
+### Build e Deploy
+
+```bash
+npm run build       # Gera dist/ otimizado (Vite)
+npm run preview     # Preview do build de produção
+npm run deploy      # Build + deploy no Firebase Hosting
+```
+
+### Testes
+
+```bash
+npm test                  # 194+ testes unitários (Vitest)
+npm run test:coverage     # Com relatório de cobertura
+npm run test:integration  # Testes de integração (requer Firebase Emulator)
 ```
 
 ## 🏗️ Tecnologias
 
 | Camada | Tecnologia |
 |--------|-----------|
-| Frontend | HTML5, CSS3, JavaScript ES6+ |
+| Frontend | HTML5, CSS3, JavaScript ES6+ (Vite 5) |
 | Autenticação | Firebase Authentication |
 | Banco de Dados | Cloud Firestore |
 | Hospedagem | Firebase Hosting |
@@ -115,7 +130,12 @@ minhas-financas/
 - [x] v3.8.0 — Fix BUG-021/022: ciclo de faturamento modelado com campo `mesFatura`
 - [x] v3.9.x — Correções BUG-023 a BUG-027: reconciliação de parcelas, propagação de `mesFatura`, suporte a extrato Bradesco (Crédito/Débito separados)
 - [x] v3.10.0 — RF-024: Importação via template XLSX padronizado (3 colunas, classificação por sinal)
-- [ ] v4.0.0 — App iOS via Capacitor (projeto paralelo em andamento)
+- [x] v3.11.0 — RF-060: Planejamento Mensal (geração automática, auto-matching, análise de gaps)
+- [x] v3.15.0 — Épico C: Responsividade mobile/tablet (breakpoints, FAB, touch-friendly)
+- [x] v3.16.0 — Épico D: Skeleton loading, empty/error states, fade-in
+- [x] v3.17.0 — Milestone Melhorias Visuais concluído (26/26 itens)
+- [x] v3.18.0 — Fase 0 iOS: Vite bundler MPA + Firebase CDN → npm
+- [ ] v4.0.0 — App iOS via Capacitor (Fase 1+: plataforma iOS, Firebase nativo, TestFlight)
 
 ## 🤝 Contribuindo
 
