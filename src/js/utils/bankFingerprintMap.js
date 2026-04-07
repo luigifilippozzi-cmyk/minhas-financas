@@ -40,8 +40,8 @@ export const BANK_FINGERPRINTS = [
     emoji: '🔴',
     filePatterns: [/bradesco/i],
     keywords: {
-      high:   ['banco bradesco s.a.', 'bradesco s.a.'],
-      medium: ['bradesco'],
+      high:   ['banco bradesco s.a.', 'bradesco s.a.', 'rentab.invest facilcred', 'facilcred'],
+      medium: ['bradesco', 'extrato de: ag:'],
     },
   },
   {

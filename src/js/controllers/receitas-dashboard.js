@@ -41,7 +41,7 @@ export function renderizarDashboardReceitas(categoriasReceita, receitas, totalDe
 
   grid.innerHTML = categoriasReceita.map((cat) => {
     const total = gastoMap[cat.id] ?? 0;
-    const cor   = cat.cor ?? '#2E7D32';
+    const cor   = cat.cor ?? 'var(--color-income-dark)';
 
     return `
       <div class="card categoria-card rec-categoria-card">

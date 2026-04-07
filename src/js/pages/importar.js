@@ -6,6 +6,8 @@
 // • CSV do extrato bancário (separador ";")
 //   Layout: Data;Estabelecimento;Portador;Valor;Parcela
 // • Excel (.xlsx) com o mesmo layout (template disponível)
+// • Excel (.xlsx) — template padronizado RF-024 (aba "Extrato", 3 colunas: Data|Descrição|Valor)
+//   Positivo = receita, negativo = despesa; valor zero descartado silenciosamente
 // • PDF de extrato bancário (via PDF.js — RF-020)
 //
 // RF-014 — Funcionalidades:
@@ -60,16 +62,19 @@ import {
   criarParcelamento, reconciliarParcela, atualizarDespesa, atualizarReceita,
   criarReceita,                                    // NRF-006: salvar receitas do extrato bancário
   purgarDuplicatasDespesas, purgarDuplicatasReceitas,
+  garantirContasPadrao,
 } from '../services/database.js';
 import { modelDespesa } from '../models/Despesa.js';
 import { modelReceita } from '../models/Receita.js';  // NRF-006
-import { formatarMoeda, formatarData } from '../utils/formatters.js';
+import { CONTAS_PADRAO } from '../models/Conta.js';
+import { formatarMoeda, formatarData, escHTML } from '../utils/formatters.js';
 import { extrairTransacoesPDF } from '../utils/pdfParser.js';              // RF-020
 import { detectarOrigemArquivo } from '../utils/detectorOrigemArquivo.js';     // RF-021
 import { categorizarTransacao }  from '../utils/categorizer.js';               // RF-022
 // RF-013: pipeline modules
 import { parsearCSVTexto, parsearLinhasCSVXLSX, parsearParcela, inferirContaDaDescricao } from '../utils/normalizadorTransacoes.js';
 import { marcarLinhasDuplicatas } from '../utils/deduplicador.js';
+import { deveCarregarChavesReceitas } from '../utils/importarDedup.js';
 import { parsearLinhasPDF, classificarBanco } from './pipelineBanco.js';
 import { filtrarCreditos, aplicarMesFatura, gerarProjecoes } from './pipelineCartao.js';
 
@@ -85,14 +90,14 @@ let _contaMap = {};         // NRF-004: id → conta
 let _unsubCats = null;
 let _unsubContas = null;    // NRF-004
 let _linhas = [];
-let _chavesExistentes = new Set();
+let _chavesExistentes = new Map();
 let _projecaoDocMap = new Map();
 let _mapaCategoriasHist = {};
 let _projecoesDetalhadas = [];  // NRF-002: dados completos para fuzzy matching
 // NRF-006: tipo do extrato detectado/selecionado — 'cartao' | 'banco' | 'receita' | 'despesa'
 let _tipoExtrato = 'despesa';
 let _mesFatura = '';            // NRF-002.1: "YYYY-MM" selecionado pelo usuário
-let _chavesExistentesRec = new Set(); // NRF-006: dedup receitas (modo banco)
+let _chavesExistentesRec = new Map(); // NRF-006: dedup receitas (modo banco)
 // RF-020: estado específico de PDF
 let _origemPDF = false;         // true quando o arquivo carregado é PDF
 let _sinaisInvertidos = false;  // toggle: inverte a convenção de sinal do banco
@@ -116,6 +121,8 @@ onAuthChange(async (user) => {
   const grupo = await buscarGrupo(_grupoId);
   _nomesMembros = grupo?.nomesMembros ?? {};
   preencherSelRespLote();
+  // Garante que contas padrão existam antes de carregar o formulário de importação
+  await garantirContasPadrao(_grupoId, CONTAS_PADRAO).catch(() => {});
   _chavesExistentes   = await buscarChavesDedup(_grupoId);
   _projecaoDocMap     = await buscarMapaProjecoes(_grupoId);
   _mapaCategoriasHist = await buscarMapaCategorias(_grupoId);
@@ -172,6 +179,7 @@ function configurarEventos() {
       sel.value = e.target.value;
       _linhas[+sel.dataset.idx].contaId = e.target.value;
     });
+    _atualizarBadgeConta();
   });
   // Responsável em lote: aplica a todas as linhas de cartão no preview
   // NRF-010: 'conjunto' marca isConjunta=true em todas as linhas
@@ -306,7 +314,7 @@ async function processarArquivo(file) {
     try {
       const data = new Uint8Array(e.target.result);
       const wb   = XLSX.read(data, { type: 'array', cellDates: true });
-      const name = wb.SheetNames.find(n => /transa/i.test(n)) ?? wb.SheetNames[0];
+      const name = wb.SheetNames.find(n => /extrato|transa/i.test(n)) ?? wb.SheetNames[0];
       const ws   = wb.Sheets[name];
       const rows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, dateNF: 'DD/MM/YYYY' });
       _linhas = parsearLinhasCSVXLSX(rows, { contas: _contas, categorias: _categorias, mapaHist: _mapaCategoriasHist, origemBanco: 'desconhecido' });
@@ -332,9 +340,12 @@ async function processarArquivo(file) {
 async function marcarDuplicatas() {
   _chavesExistentes    = await buscarChavesDedup(_grupoId);
   // NRF-006: carrega chaves de receitas quando em modo banco (mixed credits/debits)
-  _chavesExistentesRec = (_tipoExtrato === 'banco' || _tipoExtrato === 'receita')
+  // Cartão também pode conter estornos/créditos (tipoLinha='receita') no mesmo arquivo.
+  // Sem carregar chaves de receitas aqui, duplicatas de estorno passam batido e
+  // não recebem atualização de mesFatura em imports de ciclos futuros.
+  _chavesExistentesRec = deveCarregarChavesReceitas(_tipoExtrato)
     ? await buscarChavesDedupReceitas(_grupoId)
-    : new Set();
+    : new Map();
   _projecaoDocMap      = await buscarMapaProjecoes(_grupoId);
   _mapaCategoriasHist  = await buscarMapaCategorias(_grupoId);
   // NRF-002: busca projeções apenas para tipos que geram parcelas
@@ -371,6 +382,10 @@ function _mostrarModalConfirmacaoTipo(deteccao) {
       const tipo = document.getElementById('modal-sel-tipo-confirm').value;
       document.getElementById('modal-confirmacao-tipo').classList.add('hidden');
       resolve(tipo);
+    };
+    document.getElementById('modal-tipo-cancelar').onclick = () => {
+      document.getElementById('modal-confirmacao-tipo').classList.add('hidden');
+      resolve(deteccao.tipo);  // resolve com sugestão original ao cancelar
     };
   });
 }
@@ -698,7 +713,7 @@ function renderizarPreview() {
 
     const tdStatus = document.createElement('td');
     tdStatus.style.textAlign = 'center';
-    const chaveInfo = l.chave_dedup ? '\nchave: ' + l.chave_dedup : '';
+    const chaveInfo = l.chave_dedup ? '\nchave: ' + escHTML(l.chave_dedup) : '';
     if (l.substitui_projecao_fuzzy) {
       // NRF-002: badge de reconciliação fuzzy com % de similaridade
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--fuzzy" title="Reconciliação fuzzy — similaridade ' + l.projecao_sim + '% com parcela projetada' + chaveInfo + '">🔍 ' + l.projecao_sim + '%</span>';
@@ -819,7 +834,12 @@ function atualizarChipsPreview() {
 // ── NRF-002 + RF-014: Importação em lote ────────────────────────
 async function executarImportacao() {
   const idxs = [...document.querySelectorAll('.chk-linha:checked')].map(cb => +cb.dataset.idx);
-  if (!idxs.length) { document.getElementById('imp-aviso-zero').classList.remove('hidden'); return; }
+  // BUG-027: verifica se há duplicatas de cartão que precisam de mesFatura mesmo sem novas seleções
+  const temDuplicatasCartao = _tipoExtrato === 'cartao' && _mesFatura &&
+    _linhas.some(l => l.duplicado && l.duplicado_docId);
+  if (!idxs.length && !temDuplicatasCartao) {
+    document.getElementById('imp-aviso-zero').classList.remove('hidden'); return;
+  }
   document.getElementById('imp-aviso-zero').classList.add('hidden');
   const btn = document.getElementById('btn-importar');
   btn.disabled = true; btn.textContent = 'Importando…';
@@ -925,7 +945,7 @@ async function executarImportacao() {
         }
       }
       sucesso++;
-    } catch { falha++; }
+    } catch (err) { console.error('[importar] falha na linha', idx, err); falha++; }
   }
   // BUG-021: propaga mesFatura nas duplicatas detectadas (parceladas de meses anteriores)
   // BUG-024: distingue receitas (estornos) de despesas ao atualizar mesFatura
@@ -942,11 +962,13 @@ async function executarImportacao() {
       }
     }
   }
-  mostrarResultado(sucesso, falha, projGeradas, reconciliacoes, reconciliacoesFuzzy);
+  // Conta duplicatas atualizadas com mesFatura para exibir no resultado
+  const dupAtualizadas = _linhas.filter(l => l.duplicado && l.duplicado_docId).length;
+  mostrarResultado(sucesso, falha, projGeradas, reconciliacoes, reconciliacoesFuzzy, dupAtualizadas);
 }
 
 // ── Resultado ─────────────────────────────────────────────────────
-function mostrarResultado(sucesso, falha, projGeradas, reconciliacoes, reconciliacoesFuzzy) {
+function mostrarResultado(sucesso, falha, projGeradas, reconciliacoes, reconciliacoesFuzzy, dupAtualizadas = 0) {
   if (projGeradas === undefined)         projGeradas = 0;
   if (reconciliacoes === undefined)      reconciliacoes = 0;
   if (reconciliacoesFuzzy === undefined) reconciliacoesFuzzy = 0;
@@ -956,10 +978,15 @@ function mostrarResultado(sucesso, falha, projGeradas, reconciliacoes, reconcili
   const titulo = document.getElementById('resultado-titulo');
   const msg    = document.getElementById('resultado-msg');
   const projEl = document.getElementById('resultado-proj');
-  if (falha === 0) {
+  // BUG-027: caso especial — apenas duplicatas atualizadas com mesFatura, sem novas importações
+  if (sucesso === 0 && falha === 0 && dupAtualizadas > 0) {
+    icon.textContent   = '✅';
+    titulo.textContent = 'Fatura sincronizada!';
+    msg.textContent    = dupAtualizadas + ' transaç' + (dupAtualizadas !== 1 ? 'ões já existentes foram' : 'ão já existente foi') + ' vinculada' + (dupAtualizadas !== 1 ? 's' : '') + ' ao mês ' + _mesFatura + ' e agora aparece' + (dupAtualizadas !== 1 ? 'm' : '') + ' na aba Fatura.';
+  } else if (falha === 0) {
     icon.textContent   = '⛅';
     titulo.textContent = 'Importação concluída com sucesso!';
-    msg.textContent    = sucesso + ' despesa' + (sucesso !== 1 ? 's' : '') + ' importada' + (sucesso !== 1 ? 's' : '') + ' e sincronizadas com o grupo.';
+    msg.textContent    = sucesso + ' transaç' + (sucesso !== 1 ? 'ões' : 'ão') + ' importada' + (sucesso !== 1 ? 's' : '') + ' e sincronizada' + (sucesso !== 1 ? 's' : '') + ' com o grupo.';
   } else {
     icon.textContent   = '⚠️';
     titulo.textContent = 'Importação concluída com avisos';
@@ -1052,6 +1079,9 @@ function resetarUpload() {
   _origemLabel = '';
   _origemEmoji = '';
   _atualizarBancoBadge();
+  const selGlobal = document.getElementById('sel-conta-global');
+  if (selGlobal) selGlobal.value = '';
+  _atualizarBadgeConta();
 }
 function resetarTudo() {
   resetarUpload();
@@ -1142,7 +1172,8 @@ async function executarPurga() {
     document.getElementById('purga-dup-rec').textContent    = 0;
     btnPurgar.classList.add('hidden');
     // Recarrega chaves de dedup para o próximo import
-    _chavesExistentes = await buscarChavesDedup(_grupoId);
+    _chavesExistentes    = await buscarChavesDedup(_grupoId);
+    _chavesExistentesRec = await buscarChavesDedupReceitas(_grupoId);
   } catch (err) {
     console.error('[executarPurga]', err);
     resultEl.textContent = '❌ Erro durante a purga: ' + err.message;

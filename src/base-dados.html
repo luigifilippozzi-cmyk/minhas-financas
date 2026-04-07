@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="css/variables.css" />
   <link rel="stylesheet" href="css/components.css" />
   <link rel="stylesheet" href="css/main.css" />
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
 </head>
 <body>
 
@@ -17,20 +18,21 @@
   <header class="navbar">
     <div class="navbar-brand">
       <a href="dashboard.html" style="text-decoration:none;color:inherit;display:flex;gap:.4rem;align-items:center;">
-        <span>💰</span>
+        <i data-lucide="database" class="brand-icon"></i>
         <span>Minhas Finanças</span>
       </a>
     </div>
     <div class="navbar-user">
       <span id="usuario-nome">Carregando...</span>
-      <a href="dashboard.html"   class="btn btn-outline btn-sm">🏠 Dashboard</a>
-      <a href="despesas.html"    class="btn btn-outline btn-sm">💸 Despesas</a>
-      <a href="receitas.html"    class="btn btn-outline btn-sm">📥 Receitas</a>
-      <a href="orcamentos.html"  class="btn btn-outline btn-sm">💰 Orçamentos</a>
-      <a href="fluxo-caixa.html" class="btn btn-outline btn-sm">📈 Fluxo de Caixa</a>
-      <a href="categorias.html"  class="btn btn-outline btn-sm">🏷️ Categorias</a>
-      <a href="fatura.html"      class="btn btn-outline btn-sm">💳 Fatura</a>
-      <a href="base-dados.html"  class="btn btn-primary  btn-sm">📦 Base de Dados</a>
+      <a href="dashboard.html"      class="btn btn-outline btn-sm"><i data-lucide="layout-dashboard" class="nav-icon"></i> Dashboard</a>
+      <a href="planejamento.html"   class="btn btn-outline btn-sm"><i data-lucide="clipboard-list" class="nav-icon"></i> Planejamento</a>
+      <a href="despesas.html"    class="btn btn-outline btn-sm"><i data-lucide="trending-down" class="nav-icon"></i> Despesas</a>
+      <a href="receitas.html"    class="btn btn-outline btn-sm"><i data-lucide="wallet" class="nav-icon"></i> Receitas</a>
+      <a href="orcamentos.html"  class="btn btn-outline btn-sm"><i data-lucide="piggy-bank" class="nav-icon"></i> Orçamentos</a>
+      <a href="fluxo-caixa.html" class="btn btn-outline btn-sm"><i data-lucide="line-chart" class="nav-icon"></i> Fluxo de Caixa</a>
+      <a href="categorias.html"  class="btn btn-outline btn-sm"><i data-lucide="tags" class="nav-icon"></i> Categorias</a>
+      <a href="fatura.html"      class="btn btn-outline btn-sm"><i data-lucide="credit-card" class="nav-icon"></i> Fatura</a>
+      <a href="base-dados.html"  class="btn btn-primary  btn-sm"><i data-lucide="database" class="nav-icon"></i> Base de Dados</a>
       <button id="btn-logout"    class="btn btn-outline btn-sm">Sair</button>
     </div>
   </header>
@@ -306,6 +308,7 @@
             </select>
           </div>
           <div class="modal-footer" style="display:flex;gap:.75rem;justify-content:flex-end;">
+            <button id="modal-tipo-cancelar" class="btn btn-secondary btn-sm">Cancelar</button>
             <button id="modal-tipo-confirmar" class="btn btn-primary btn-sm">Confirmar tipo</button>
           </div>
         </div>
@@ -388,8 +391,16 @@
     ══════════════════════════════════════════════════════════ -->
     <div id="tab-gerenciar" class="base-tab-content hidden">
       <div class="card imp-card">
-        <h3 class="imp-step-titulo">🗂️ Todas as Transações</h3>
-        <p class="imp-step-desc">Filtre, selecione e gerencie transações em lote.</p>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.5rem;">
+          <div>
+            <h3 class="imp-step-titulo" style="margin-bottom:0;">🗂️ Todas as Transações</h3>
+            <p class="imp-step-desc" style="margin-bottom:0;">Filtre, selecione e gerencie transações em lote.</p>
+          </div>
+          <div style="display:flex;align-items:center;gap:.75rem;">
+            <span id="ger-contagem-total" style="font-size:.82rem;color:var(--text-muted);"></span>
+            <span id="ger-sync-status" style="font-size:.8rem;"></span>
+          </div>
+        </div>
 
         <!-- Filtros -->
         <div class="ger-filtros">
@@ -438,6 +449,17 @@
         <div id="ger-loading" class="hidden" style="text-align:center;padding:2rem;color:var(--text-muted);">⏳ Carregando transações…</div>
         <div id="ger-empty" class="hidden empty-state">Nenhuma transação encontrada para os filtros selecionados.</div>
 
+        <!-- RF-025.5: mensagem quando nenhum filtro de período selecionado -->
+        <div id="ger-sem-filtro" class="hidden" style="text-align:center;padding:2rem;">
+          <p style="font-size:1rem;color:var(--text-muted);margin-bottom:.75rem;">
+            Selecione um mês e ano para carregar as transações em tempo real.
+          </p>
+          <span id="ger-contagem-total-fallback" style="font-size:.85rem;color:var(--text-muted);display:block;margin-bottom:1rem;"></span>
+          <button id="ger-btn-carregar-tudo" class="btn btn-outline btn-sm">
+            📦 Carregar tudo (sem filtro de período)
+          </button>
+        </div>
+
         <!-- Tabela -->
         <div class="imp-table-wrap hidden" id="ger-tabela-wrap">
           <table class="imp-table ger-tabela" id="ger-tabela">
@@ -461,6 +483,9 @@
           <button id="ger-btn-prev" class="btn btn-outline btn-sm">‹ Anterior</button>
           <span id="ger-pagina-info" style="font-size:.85rem;color:var(--text-muted);">Página 1</span>
           <button id="ger-btn-next" class="btn btn-outline btn-sm">Próxima ›</button>
+          <button id="ger-btn-carregar-mais" class="btn btn-outline btn-sm hidden" style="margin-left:auto;">
+            📥 Carregar mais transações
+          </button>
         </div>
       </div>
 
@@ -559,6 +584,7 @@
   <!-- importar.js: lógica das abas Importar e Duplicatas -->
   <script type="module" src="js/pages/importar.js"></script>
   <!-- base-dados.js: tabs + Gerenciar + Limpeza -->
+  <script>document.addEventListener('DOMContentLoaded', () => lucide.createIcons());</script>
   <script type="module" src="js/pages/base-dados.js"></script>
 </body>
 </html>

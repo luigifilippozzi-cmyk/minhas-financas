@@ -24,7 +24,7 @@
 - 👫 Divisão de contas conjuntas com chips por usuário
 - 🏦 Identificação de conta/banco por transação (Itaú, Bradesco, XP, Santander, BTG, Nubank, Inter, Caixa, BB, Cartão de Crédito…)
 - 💳 **Fatura do Cartão de Crédito**: fechamento mensal automático com segregação por responsável, divisão 50/50 de conjuntas, projeções de parcelas futuras e exportação Excel
-- 📤 Importação de extratos Excel/CSV com reconhecimento automático de banco, deduplicação e projeção de parcelas
+- 📤 Importação de extratos Excel/CSV com reconhecimento automático de banco, deduplicação e projeção de parcelas — inclui **template XLSX padronizado** (3 colunas: Data, Descrição, Valor) com classificação automática por sinal
 - 🔄 Sincronização em tempo real entre membros (Firestore onSnapshot)
 
 ## 🚀 Como Executar Localmente
@@ -113,6 +113,8 @@ minhas-financas/
 - [x] v3.6.0 — Fix importação: estornos importáveis, valores decimais corretos, última parcela incluída
 - [x] v3.7.0 — Fix BUG-019: estornos marcados por padrão no preview (créditos da fatura)
 - [x] v3.8.0 — Fix BUG-021/022: ciclo de faturamento modelado com campo `mesFatura`
+- [x] v3.9.x — Correções BUG-023 a BUG-027: reconciliação de parcelas, propagação de `mesFatura`, suporte a extrato Bradesco (Crédito/Débito separados)
+- [x] v3.10.0 — RF-024: Importação via template XLSX padronizado (3 colunas, classificação por sinal)
 - [ ] v4.0.0 — App iOS via Capacitor (projeto paralelo em andamento)
 
 ## 🤝 Contribuindo

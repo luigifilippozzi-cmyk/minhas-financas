@@ -66,6 +66,9 @@ Formato: `MAJOR.MINOR.PATCH` — ex: `v1.2.3`
 | v3.7.0 | 2026-03-27 | BUG-019: estornos auto-desmarcados no preview (créditos da fatura não importados) |
 | v3.8.0 | 2026-03-29 | BUG-020 + BUG-021 + BUG-022: ciclo de faturamento mesFatura não modelado |
 | v3.9.0 | 2026-03-29 | BUG-023 + BUG-024: double-counting projecao_paga + mesFatura estornos duplicados |
+| v3.9.1 | 2026-03-30 | BUG-025: fatura não carrega após import — garantirContasPadrao ausente em fatura.js/importar.js |
+
+| v3.11.0 | 2026-04-02 | RF-060 Planejamento Mensal — visão unificada de despesas previstas |
 
 ### Próximas Versões (Backlog)
 
