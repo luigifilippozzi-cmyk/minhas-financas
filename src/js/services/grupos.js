@@ -16,7 +16,7 @@ import {
   getDocs,
   arrayUnion,
   serverTimestamp,
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+} from 'firebase/firestore';
 import { criarGrupo } from '../models/Grupo.js';
 import { CATEGORIAS_PADRAO } from '../models/Categoria.js';
 
