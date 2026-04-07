@@ -7,7 +7,20 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
-*(sem mudanças pendentes)*
+*(sem mudancas pendentes)*
+
+---
+
+## [3.17.0] - 2026-04-06
+
+### Alterado — Sprint 3: Polimento, Validacao e Fechamento do Milestone
+
+- **MV-S3a — Tokens CSS (v3.16.1):** eliminadas todas as cores hardcoded restantes em `main.css` e `components.css` (~70 substituicoes). Adicionados 20 novos tokens em `variables.css` (overlays, fuzzy, import). Corrigidas 17+ referencias a variaveis legadas (`--primary`, `--text-muted`, `--border-color`, `--success`, `--surface-2`, `--danger`) para tokens canonicos. Focus ring unificado via `--color-primary-ring`. Classe `.modal-overlay` definida em `components.css`. Removidos ~30 fallbacks desnecessarios de `var()`.
+- **MV-S3b — Documentacao:** criado `docs/DESIGN_SYSTEM.md` com paleta completa, tipografia, espacamento, sombras, breakpoints, componentes, estados e acessibilidade.
+- **MV-S3b — Validacao:** navbar auditada em 9 paginas (consistencia de icones Lucide, labels e active state confirmada). Responsividade validada em 375px, 768px e 1280px. KPIs avaliados qualitativamente (todos atingidos).
+- **MV-S3c — Milestone fechado:** Melhorias Visuais 26/26 (100%). Licoes aprendidas registradas.
+
+**Milestone Melhorias Visuais: CONCLUIDO.** Projeto pronto para iOS App Fase 0.
 
 ---
 
