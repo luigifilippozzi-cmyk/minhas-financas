@@ -67,7 +67,7 @@ import {
 import { modelDespesa } from '../models/Despesa.js';
 import { modelReceita } from '../models/Receita.js';  // NRF-006
 import { CONTAS_PADRAO } from '../models/Conta.js';
-import { formatarMoeda, formatarData } from '../utils/formatters.js';
+import { formatarMoeda, formatarData, escHTML } from '../utils/formatters.js';
 import { extrairTransacoesPDF } from '../utils/pdfParser.js';              // RF-020
 import { detectarOrigemArquivo } from '../utils/detectorOrigemArquivo.js';     // RF-021
 import { categorizarTransacao }  from '../utils/categorizer.js';               // RF-022
@@ -179,6 +179,7 @@ function configurarEventos() {
       sel.value = e.target.value;
       _linhas[+sel.dataset.idx].contaId = e.target.value;
     });
+    _atualizarBadgeConta();
   });
   // Responsável em lote: aplica a todas as linhas de cartão no preview
   // NRF-010: 'conjunto' marca isConjunta=true em todas as linhas
@@ -712,7 +713,7 @@ function renderizarPreview() {
 
     const tdStatus = document.createElement('td');
     tdStatus.style.textAlign = 'center';
-    const chaveInfo = l.chave_dedup ? '\nchave: ' + l.chave_dedup : '';
+    const chaveInfo = l.chave_dedup ? '\nchave: ' + escHTML(l.chave_dedup) : '';
     if (l.substitui_projecao_fuzzy) {
       // NRF-002: badge de reconciliação fuzzy com % de similaridade
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--fuzzy" title="Reconciliação fuzzy — similaridade ' + l.projecao_sim + '% com parcela projetada' + chaveInfo + '">🔍 ' + l.projecao_sim + '%</span>';
@@ -944,7 +945,7 @@ async function executarImportacao() {
         }
       }
       sucesso++;
-    } catch (err) { console.error('[importar] erro na linha', idx, err); falha++; }
+    } catch (err) { console.error('[importar] falha na linha', idx, err); falha++; }
   }
   // BUG-021: propaga mesFatura nas duplicatas detectadas (parceladas de meses anteriores)
   // BUG-024: distingue receitas (estornos) de despesas ao atualizar mesFatura
@@ -985,7 +986,7 @@ function mostrarResultado(sucesso, falha, projGeradas, reconciliacoes, reconcili
   } else if (falha === 0) {
     icon.textContent   = '⛅';
     titulo.textContent = 'Importação concluída com sucesso!';
-    msg.textContent    = sucesso + ' despesa' + (sucesso !== 1 ? 's' : '') + ' importada' + (sucesso !== 1 ? 's' : '') + ' e sincronizadas com o grupo.';
+    msg.textContent    = sucesso + ' transaç' + (sucesso !== 1 ? 'ões' : 'ão') + ' importada' + (sucesso !== 1 ? 's' : '') + ' e sincronizada' + (sucesso !== 1 ? 's' : '') + ' com o grupo.';
   } else {
     icon.textContent   = '⚠️';
     titulo.textContent = 'Importação concluída com avisos';
@@ -1078,6 +1079,9 @@ function resetarUpload() {
   _origemLabel = '';
   _origemEmoji = '';
   _atualizarBancoBadge();
+  const selGlobal = document.getElementById('sel-conta-global');
+  if (selGlobal) selGlobal.value = '';
+  _atualizarBadgeConta();
 }
 function resetarTudo() {
   resetarUpload();
@@ -1168,7 +1172,8 @@ async function executarPurga() {
     document.getElementById('purga-dup-rec').textContent    = 0;
     btnPurgar.classList.add('hidden');
     // Recarrega chaves de dedup para o próximo import
-    _chavesExistentes = await buscarChavesDedup(_grupoId);
+    _chavesExistentes    = await buscarChavesDedup(_grupoId);
+    _chavesExistentesRec = await buscarChavesDedupReceitas(_grupoId);
   } catch (err) {
     console.error('[executarPurga]', err);
     resultEl.textContent = '❌ Erro durante a purga: ' + err.message;
