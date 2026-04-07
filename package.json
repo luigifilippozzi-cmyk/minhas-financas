@@ -10,7 +10,9 @@
     "emulate": "firebase emulators:start",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "test:integration": "firebase emulators:exec --only firestore \"vitest run --config vitest.integration.config.js\"",
+    "test:all": "npm test && npm run test:integration"
   },
   "keywords": [
     "firebase",
@@ -23,6 +25,8 @@
   "license": "MIT",
   "devDependencies": {
     "firebase-tools": "^13.0.0",
+    "firebase": "^10.7.1",
+    "@firebase/rules-unit-testing": "^3.0.0",
     "vitest": "^2.0.0",
     "@vitest/coverage-v8": "^2.0.0"
   }
