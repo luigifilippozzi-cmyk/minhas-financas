@@ -8,23 +8,26 @@
 
 - **Usuários:** Luigi + Ana (casal)
 - **Dev:** Luigi (solo developer)
-- **Versão atual:** v3.17.0
+- **Versão atual:** v3.18.0
 - **Repo:** https://github.com/luigifilippozzi-cmyk/minhas-financas
-- **Stack:** HTML5 · CSS3 · JS ES6+ (módulos nativos) · Firebase Auth · Cloud Firestore · Chart.js v4 · SheetJS (XLSX)
+- **Stack:** HTML5 · CSS3 · JS ES6+ · **Vite 5** (bundler MPA) · Firebase Auth · Cloud Firestore (via npm) · Chart.js v4 · SheetJS (XLSX)
 
 ---
 
 ## Comandos Essenciais
 
 ```bash
-npm test                    # Vitest — roda suite de 181+ testes unitários
+npm run dev                 # Vite dev server (HMR, hot reload)
+npm run build               # Vite build → dist/ (produção)
+npm run preview             # Preview do build de produção
+npm test                    # Vitest — roda suite de 194+ testes unitários
 npm run test:watch          # Vitest em modo watch
 npm run test:coverage       # Coverage com V8
-npm start                   # firebase serve (dev local)
+npm run test:integration    # Testes de integração (requer Firebase Emulator)
+npm run test:all            # Unitários + integração
+npm start                   # firebase serve (dev local, serve src/ sem build)
 npm run emulate             # Firebase emulators (Auth + Firestore locais)
-firebase deploy             # Deploy completo (hosting + regras)
-firebase deploy --only hosting   # Só frontend
-node serve-local.js         # Servidor local alternativo (ESM)
+npm run deploy              # Build + firebase deploy --only hosting
 ```
 
 **Sempre rodar `npm test` antes de commit.** Os testes cobrem parsers, deduplicador, ajusteDetector e normalizador.
@@ -184,26 +187,29 @@ Todas as cores, sombras e fontes estão em `variables.css` como CSS custom prope
 
 - Framework: **Vitest** com `@vitest/coverage-v8`
 - Localização: `tests/` (espelho de `src/js/utils/` e `src/js/services/`)
-- 181+ testes unitários cobrindo: parsers, dedup, ajusteDetector, normalizador
+- **194+ testes unitários** cobrindo: parsers, dedup, ajusteDetector, normalizador, pipelineCartao, importarDedup
+- **26 testes de integração** (Firebase Emulator): regras Firestore, CRUD despesas, purge em lote
 - **Rodar antes de qualquer commit:** `npm test`
+- Testes de integração: `npm run test:integration` (requer emulador na porta 8080)
 - Mocks de Firestore em `tests/` — não dependem de emulador
 
 ---
 
-## Estado Atual do Projeto (2026-04-06)
+## Estado Atual do Projeto (2026-04-07)
 
 ### Milestones
 | Milestone | Progresso | Status |
 |-----------|-----------|--------|
 | Requisitos Funcionais | 35/35 (100%) | ✅ Concluído |
 | Melhorias Visuais | 26/26 (100%) | ✅ Concluído |
-| iOS App (Fases 0–5) | 0/17 issues | ⚪ Não iniciado |
+| iOS App Fase 0 (Vite + Firebase npm) | 2/2 (100%) | ✅ Concluído |
+| iOS App (Fases 1–5) | 0/15 issues | ⚪ Não iniciado |
 | Tech Debt | 1/2 (50%) | ⚪ Backlog |
 
 ### Próximas prioridades
-1. **iOS App Fase 0** — migrar para Vite bundler + Firebase via npm (issues #73, #74)
+1. **iOS App Fase 1** — instalar Capacitor + adicionar plataforma iOS (issues #75, #76)
 2. **Tech Debt** — unificação de pipeline (#96)
-3. **iOS App Fase 1** — Capacitor + iOS setup (issues #75, #76)
+3. **iOS App Fase 2** — Firebase nativo via plugins (issues #77–#80)
 
 ### Documentação de referência
 | Arquivo | Conteúdo |
@@ -253,4 +259,4 @@ firebase deploy --only hosting
 - ❌ Modificar `chave_dedup` após salvar — quebra deduplicação histórica
 - ❌ Omitir `mesFatura` em despesas de cartão — quebra a tela de fatura
 - ❌ Usar `deleteDoc` em lote sem batch — viola regras Firestore
-- ❌ `import` de Firebase via CDN em módulos novos — usar SDK modular (`firebase/firestore`)
+- ❌ `import` de Firebase via CDN (`gstatic.com`) — usar pacotes npm (`firebase/app`, `firebase/auth`, `firebase/firestore`)
