@@ -887,3 +887,88 @@ export async function purgeGrupoCompleto(grupoId) {
   }
   return resultado;
 }
+
+// ── Planejamento Mensal (RF-060) ────────────────────────────
+
+/**
+ * Busca despesas de um mês específico (leitura única).
+ */
+export async function buscarDespesasMes(grupoId, mes, ano) {
+  const inicio = new Date(ano, mes - 1, 1);
+  const fim    = new Date(ano, mes, 0, 23, 59, 59);
+  const q = query(
+    collection(db, 'despesas'),
+    where('grupoId', '==', grupoId),
+    where('data', '>=', inicio),
+    where('data', '<=', fim),
+    orderBy('data', 'desc'),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+/**
+ * Verifica se já existe planejamento para grupoId/mes/ano.
+ */
+export async function existePlanejamento(grupoId, mes, ano) {
+  const q = query(
+    collection(db, 'planejamento_items'),
+    where('grupoId', '==', grupoId),
+    where('mes', '==', mes),
+    where('ano', '==', ano),
+    limit(1),
+  );
+  const snap = await getDocs(q);
+  return !snap.empty;
+}
+
+/**
+ * Listener real-time para itens de planejamento de um mês.
+ */
+export function ouvirPlanejamento(grupoId, mes, ano, callback) {
+  const q = query(
+    collection(db, 'planejamento_items'),
+    where('grupoId', '==', grupoId),
+    where('mes', '==', mes),
+    where('ano', '==', ano),
+  );
+  return onSnapshot(q, (snap) => {
+    callback(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+  });
+}
+
+/**
+ * Salva (cria ou atualiza) um item de planejamento.
+ */
+export async function salvarItemPlanejamento(dados) {
+  if (dados.id) {
+    const { id, ...rest } = dados;
+    return updateDoc(doc(db, 'planejamento_items', id), rest);
+  }
+  return addDoc(collection(db, 'planejamento_items'), {
+    ...dados,
+    criadoEm: serverTimestamp(),
+  });
+}
+
+/**
+ * Salva múltiplos itens de planejamento em batch.
+ */
+export async function salvarItensPlanejamentoBatch(items) {
+  const BATCH_SIZE = 500;
+  for (let i = 0; i < items.length; i += BATCH_SIZE) {
+    const batch = writeBatch(db);
+    items.slice(i, i + BATCH_SIZE).forEach((item) => {
+      const ref = doc(collection(db, 'planejamento_items'));
+      batch.set(ref, { ...item, criadoEm: serverTimestamp() });
+    });
+    await batch.commit();
+  }
+}
+
+/**
+ * Exclui um item de planejamento.
+ */
+export async function excluirItemPlanejamento(itemId) {
+  return deleteDoc(doc(db, 'planejamento_items', itemId));
+}
