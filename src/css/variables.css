@@ -25,7 +25,7 @@
   /* ── Texto ───────────────────────────────────────────────── */
   --color-text:           #0f172a;   /* Slate 900 */
   --color-text-secondary: #475569;   /* Slate 600 */
-  --color-text-muted:     #94a3b8;   /* Slate 400 */
+  --color-text-muted:     #64748b;   /* Slate 500 — contraste 5.6:1 (WCAG AA) */
   --color-text-inverse:   #ffffff;
 
   /* ── Status orçamentos ───────────────────────────────────── */
@@ -45,12 +45,54 @@
   /* ── Finanças (semântica clara) ──────────────────────────── */
   --color-income:         #10b981;   /* Verde — receitas */
   --color-income-bg:      #f0fdf4;
+  --color-income-dark:    #166534;   /* Verde escuro para texto */
+  --color-income-border:  #86efac;
   --color-expense:        #f43f5e;   /* Rose — despesas */
   --color-expense-bg:     #fff1f2;
+  --color-expense-dark:   #9f1239;   /* Rose escuro para texto */
   --color-balance:        #3b82f6;   /* Blue — saldo */
   --color-balance-bg:     #eff6ff;
+  --color-balance-dark:   #1e40af;   /* Blue escuro para texto */
+  --color-balance-border: #93c5fd;
   --color-budget:         #8b5cf6;   /* Violet — orçado */
   --color-budget-bg:      #f5f3ff;
+  --color-budget-dark:    #5b21b6;   /* Violet escuro para texto */
+
+  /* ── Info (azul funcional — fatura, parcelas) ────────────── */
+  --color-info:           #1565c0;   /* Blue 800 */
+  --color-info-light:     #e3f2fd;   /* Blue 50 */
+  --color-info-bg:        #f0f7ff;
+  --color-info-border:    #bbdefb;   /* Blue 100 */
+  --color-info-text:      #1565c0;   /* Blue 800 */
+
+  /* ── Conjunta (roxo — despesas compartilhadas) ───────────── */
+  --color-conjunta:       #7b1fa2;
+  --color-conjunta-light: #f3e5f5;
+  --color-conjunta-border:#ce93d8;
+  --color-conjunta-dark:  #4a148c;
+
+  /* ── Overlays e efeitos ────────────────────────────────────── */
+  --color-surface-glass:       rgba(255, 255, 255, 0.92);
+  --color-backdrop:            rgba(15, 23, 42, 0.45);
+  --color-text-inverse-muted:  rgba(255, 255, 255, 0.85);
+  --color-primary-shadow-25:   rgba(99, 102, 241, 0.25);
+  --color-primary-shadow-32:   rgba(99, 102, 241, 0.32);
+  --color-info-row:            rgba(21, 101, 192, 0.05);
+
+  /* ── Fuzzy / Reconciliação ───────────────────────────────── */
+  --color-fuzzy-bg:            #fff8e1;
+  --color-fuzzy-text:          #e65100;
+  --color-fuzzy-border:        #ffcc02;
+  --color-fuzzy-row:           rgba(255, 193, 7, 0.08);
+  --color-fuzzy-row-hover:     rgba(255, 193, 7, 0.14);
+
+  /* ── Importação — erro e estados de linha ────────────────── */
+  --color-import-error-bg:     #fff8f0;
+  --color-import-error-text:   #b26a00;
+  --color-import-hint-bg:      #f8faff;
+  --color-import-hint-border:  #e0e7ff;
+  --color-import-invert-bg:    #fff7ed;
+  --color-import-invert-border:#fed7aa;
 
   /* ── Sombras refinadas ───────────────────────────────────── */
   --shadow-xs:  0 1px 2px  rgba(15,23,42, 0.04);
@@ -76,6 +118,9 @@
   --font-size-lg:   17px;
   --font-size-xl:   22px;
   --font-size-2xl:  28px;
+  --line-height-tight:   1.2;
+  --line-height-normal:  1.5;
+  --line-height-relaxed: 1.65;
 
   /* ── Espaçamento ─────────────────────────────────────────── */
   --space-1:  4px;
@@ -94,4 +139,11 @@
   /* ── Transições ──────────────────────────────────────────── */
   --transition:      0.16s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ── Breakpoints (referência — usar nos @media) ────────── */
+  /* CSS custom properties não funcionam em @media(),          */
+  /* mas servem como fonte de verdade canônica do design system */
+  --bp-mobile:  640px;    /* < 640 px  = mobile   */
+  --bp-tablet: 1024px;    /* 640–1024  = tablet   */
+  /* > 1024 px = desktop                           */
 }

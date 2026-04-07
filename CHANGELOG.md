@@ -5,22 +5,288 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [Unreleased]
+
+*(sem mudancas pendentes)*
+
 ---
 
-## [Unreleased]
+## [3.17.0] - 2026-04-06
+
+### Alterado — Sprint 3: Polimento, Validacao e Fechamento do Milestone
+
+- **MV-S3a — Tokens CSS (v3.16.1):** eliminadas todas as cores hardcoded restantes em `main.css` e `components.css` (~70 substituicoes). Adicionados 20 novos tokens em `variables.css` (overlays, fuzzy, import). Corrigidas 17+ referencias a variaveis legadas (`--primary`, `--text-muted`, `--border-color`, `--success`, `--surface-2`, `--danger`) para tokens canonicos. Focus ring unificado via `--color-primary-ring`. Classe `.modal-overlay` definida em `components.css`. Removidos ~30 fallbacks desnecessarios de `var()`.
+- **MV-S3b — Documentacao:** criado `docs/DESIGN_SYSTEM.md` com paleta completa, tipografia, espacamento, sombras, breakpoints, componentes, estados e acessibilidade.
+- **MV-S3b — Validacao:** navbar auditada em 9 paginas (consistencia de icones Lucide, labels e active state confirmada). Responsividade validada em 375px, 768px e 1280px. KPIs avaliados qualitativamente (todos atingidos).
+- **MV-S3c — Milestone fechado:** Melhorias Visuais 26/26 (100%). Licoes aprendidas registradas.
+
+**Milestone Melhorias Visuais: CONCLUIDO.** Projeto pronto para iOS App Fase 0.
+
+---
+
+## [3.16.0] - 2026-04-06
+
+### Adicionado — Sprint 2: Estados, Responsividade e Microinterações
+- **MV-S2b — Loading/Empty/Error States:** novo módulo `skeletons.js` com geradores de skeleton, empty-state e error-state. Skeleton shimmer exibido durante carregamento inicial em despesas, receitas, fatura, planejamento e dashboard. Empty-states com ícone e mensagem contextual. Error-states com botão "Tentar novamente" em caso de falha de conexão.
+- **MV-S2b — CSS:** classes `.skeleton-item`, `.skeleton-circle`, `.skeleton-lines`, `.skeleton-amount` para cards skeleton; `.empty-state__icon`/`__title`/`__hint` para estados vazios enriquecidos; margin no botão retry do error-state.
+- **MV-S2a — Fatura mobile:** filtros empilham verticalmente, tabs roláveis horizontalmente, tabela com font-size reduzido, estabelecimento truncado com ellipsis em <640px. Modal com `max-height: 100dvh - 32px` para evitar overflow em mobile.
+- **MV-S2c — Hover/focus:** transição sutil de `border-color` e `box-shadow` em `.desp-item`, `.rec-item` e `.desp-chip` no hover. Focus-visible global para `a`, `select`, `input`, `textarea`, `[role="button"]` e `summary`. Todas as transições respeitam `prefers-reduced-motion`.
+- **Segurança:** `escHTML()` aplicado em descrições renderizadas via `innerHTML` em despesas, receitas e fatura.
+- **Fade-in:** animação de entrada aplicada nas listas de despesas, receitas, fatura, planejamento e grid de categorias do dashboard.
+
+Milestone Melhorias Visuais: Sprint 2 concluído (23/26 tarefas — 88%).
+
+---
+
+## [3.15.0] - 2026-04-06
+
+### Adicionado — Épico C: Fluidez e Responsividade
+- **MV-C01 — Breakpoints padronizados:** tokens de referência (`--bp-mobile`, `--bp-tablet`) em `variables.css`; novo breakpoint tablet (1024px) em dashboard, main, planejamento e components.
+- **MV-C02 — Layout 1 coluna em mobile:** KPIs colapsam para 1 coluna em <480px; filtros e headers de despesas/receitas empilhados em <640px; planejamento KPIs em coluna única.
+- **MV-C03 — FAB (Floating Action Button):** botão flutuante fixo "+" em despesas e receitas, visível apenas em mobile (<640px), delegando ao CTA existente. Respeita `prefers-reduced-motion`.
+- **MV-C04 — Filtros touch-friendly:** chips de resumo roláveis horizontalmente em mobile; área de toque mínima 44×44px para botões, selects e inputs (WCAG 2.5.5). Modal responsivo em telas pequenas.
+
+Milestone Melhorias Visuais: Épico C concluído (20/26 tarefas — 77%).
+
+---
+
+## [3.14.0] - 2026-04-05
+
+### Adicionado — Épico D: Feedback e Microinterações (PR #117)
+- **Skeleton loader** com shimmer animado: `.skeleton`, `.skeleton-line` (variantes `--sm` / `--lg`), `.skeleton-card`.
+- **Error state** (`.error-state`, `.error-state__title`, `.error-state__hint`) para exibir falhas de carregamento.
+- **Fade-in** (`.fade-in`) para entrada suave de conteúdo, usando `--transition-slow`.
+- Todas as animações respeitam `prefers-reduced-motion`.
+
+Milestone Melhorias Visuais: Épico D concluído (semáforo de orçamento já existia em `Orcamento.js`).
+
+---
+
+## [3.13.1] - 2026-04-05
+
+### Corrigido — Acessibilidade (PR #116)
+- `--color-text-muted` ajustado de Slate 400 (#94a3b8) para Slate 500 (#64748b), passando de ~3.3:1 para ~5.6:1 de contraste sobre fundo claro (WCAG AA).
+
+---
+
+## [3.13.0] - 2026-04-05
+
+### Adicionado — RF-025: Filtragem Server-Side em Gerenciar (PR #114)
+- Queries Firestore server-side com filtros de período, tipo, categoria, portador e conta.
+- Sincronização em tempo real via `onSnapshot` substituindo carregamento em memória.
+- Novos helpers em `src/js/services/database.js`.
+
+### Alterado — Épico B: Sistema Visual Unificado (PR #115)
+- **Tokens:** novos tokens semânticos em `variables.css` (`--color-info`, `--color-conjunta`, `--color-income-dark`, `--color-balance-dark`, `--color-budget-dark`, entre outros) e tokens de `line-height`.
+- **CSS:** substituição de 100+ cores hardcoded por tokens em `main.css`, `dashboard.css`, `components.css`, `planejamento.css`.
+- **planejamento.css:** correção crítica — arquivo usava nomes de variáveis inexistentes (`--border`, `--text-muted`, `--success`) mascarados por fallbacks; todos renomeados para tokens corretos.
+- **Tipografia e espaçamento:** font-sizes e valores `rem` hardcoded substituídos por tokens `--font-size-*` e `--space-*`.
+- **Chart.js:** novo utilitário `src/js/utils/chartColors.js` lendo tokens via `getComputedStyle` — gráficos agora respeitam a paleta central.
+- **Ícones:** emojis da navbar substituídos por [Lucide Icons](https://lucide.dev/) via CDN em todas as 9 páginas HTML (🏠→`layout-dashboard`, 📋→`clipboard-list`, 💸→`trending-down`, 📥→`wallet`, 💰→`piggy-bank`, 📈→`line-chart`, 🏷️→`tags`, 💳→`credit-card`, 📦→`database`).
+
+---
+
+## [3.12.0] - 2026-04-03
+
+### Adicionado — RF-061: Categorias e Orçamentos — Separação Despesa vs Receita
+
+Categorias agora possuem campo `tipo` (`despesa` | `receita`), permitindo gerenciamento e orçamentos separados por natureza.
+
+#### `src/js/models/Categoria.js`
+- Campo `tipo` (default `'despesa'`) no modelo `criarCategoria()` e em `CATEGORIAS_PADRAO`.
+
+#### `src/js/services/database.js`
+- `migrarCategoriasLegado(grupoId)` — migração idempotente para categorias sem campo `tipo`.
+
+#### `src/js/controllers/categorias.js`
+- `tipo` incluído no payload de `salvarCategoria()`.
+
+#### `src/categorias.html`
+- Seletor de tipo (Despesa / Receita) no modal de criação/edição.
+- Lista separada em duas seções: "Categorias de Despesa" e "Categorias de Receita".
+
+#### `src/js/pages/categorias.js`
+- Renderização em 2 seções com `renderItemCategoria()`.
+- Labels contextuais: Orçamento vs Meta, toggle conjunta oculto para receitas.
+- Migração automática chamada no bootstrap.
+
+#### `src/css/main.css`
+- Estilos para `.cat-section-titulo`, `.orc-section-titulo`, `.cat-tipo-selector`, `.cat-tipo-btn`.
+- Chips de resumo de receitas: `.orc-chip-meta`, `.orc-chip-recebido`, `.orc-chip-faltante`.
+
+#### `src/orcamentos.html`
+- Duas seções: "Orçamentos de Despesa" (chips Orçado/Gasto/Disponível) e "Metas de Receita" (chips Meta/Recebido/Faltante).
+
+#### `src/js/pages/orcamentos.js`
+- Filtragem de categorias por `tipo`, `renderOrcItem()` reutilizável.
+- Listener de receitas (`ouvirReceitas`) para calcular "Recebido" nas metas.
+- `atualizarChipsReceitas()` para totais de receita.
+
+---
+
+## [3.11.0] - 2026-04-02
+
+### Adicionado — RF-060: Planejamento Mensal
+
+Nova aba "📋 Planejamento" com visão unificada de despesas previstas para o mês, combinando despesas recorrentes, parcelas de cartão e orçamentos — com tracking de realizado vs. planejado em tempo real.
+
+#### `src/planejamento.html` *(novo)*
+- Página completa com KPIs (Previsto / Realizado / Diferença / Cobertura), checklist agrupada por categoria, análise de gaps e seção de despesas não planejadas.
+
+#### `src/js/pages/planejamento.js` *(novo)*
+- Entry point com autenticação, navegação de mês, listeners real-time (Firestore onSnapshot) para itens do plano, despesas e orçamentos.
+- Auto-matching: ao registrar uma despesa em qualquer aba, o plano atualiza automaticamente via comparação de `categoriaId` + `descricao` fuzzy ou `parcelamento_id`.
+
+#### `src/js/controllers/planejamento.js` *(novo)*
+- `gerarPlanoPara(grupoId, mes, ano)` — gera plano combinando recorrentes + parcelas (`tipo='projecao'`) + orçamentos.
+- `autoMatch(planItems, despesas)` — matching automático por parcelamentoId ou categoriaId+descrição.
+- `analisarGaps(orcamentos, planItems, categorias)` — identifica categorias sem plano e planejado acima do orçamento.
+- `despesasNaoPlanejadas(despesas, planItems)` — lista despesas realizadas fora do plano.
+
+#### `src/js/utils/recurringDetector.js` *(novo)*
+- `detectarRecorrentes(despN1, despN2)` — compara meses N-1 e N-2 para identificar despesas fixas.
+- Três níveis de confiança: alta (variação ≤5%), média (≤15%), baixa (>15% ou descrição genérica).
+- Exclusão automática de descrições genéricas: "PIX", "transferência", "pagamento", etc.
+
+#### `src/css/planejamento.css` *(novo)*
+- Estilos para KPIs, checklist, badges de tipo (Recorrente/Parcela/Orçamento/Manual), status icons, análise de gaps, formulário inline, layout responsivo.
+
+#### `src/js/services/database.js`
+- `buscarDespesasMes(grupoId, mes, ano)` — leitura única para detecção de recorrentes.
+- `salvarItemPlanejamento(dados)` — upsert com ID composto (grupoId_ano_mes_hash).
+- `salvarItensPlanejamentoBatch(items)` — batch write para geração inicial do plano.
+- `ouvirPlanejamento(grupoId, mes, ano, cb)` — listener real-time.
+- `excluirItemPlanejamento(itemId)` — exclusão de item manual.
+- `existePlanejamento(grupoId, mes, ano)` — verifica se plano já existe.
+
+#### `firestore.rules`
+- Regras de segurança para `/planejamento_items/{itemId}` — acesso restrito a membros do grupo.
+
+#### `firestore.indexes.json`
+- Índice composto: `planejamento_items / grupoId ASC + mes ASC + ano ASC`.
+
+#### Navegação (8 páginas)
+- Link "📋 Planejamento" adicionado na navbar de todas as páginas, posicionado após Dashboard.
+
+#### Nova coleção Firestore: `planejamento_items`
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| grupoId | string | Grupo do usuário |
+| ano | number | Ano do planejamento |
+| mes | number | Mês (1-12) |
+| categoriaId | string | Categoria da despesa |
+| descricao | string | Descrição do item |
+| valorPrevisto | number | Valor esperado |
+| origem | string | 'recorrente' / 'parcela' / 'manual' / 'orcamento' |
+| status | string | 'pendente' / 'realizado' / 'parcial' / 'cancelado' |
+| despesaId | string? | Link para despesa realizada |
+| valorRealizado | number? | Valor efetivo |
+| parcelamentoId | string? | Link para parcelamento mestre |
+
+---
+
+## [3.10.0] - 2026-04-02
+
+### Adicionado — RF-024: Importação de Extrato Bancário via Template XLSX
+
+#### `src/js/utils/normalizadorTransacoes.js`
+- **Descarte silencioso de linhas com valor zero:** adicionado `if (valorBruto === 0) continue` após cálculo do valor bruto — linhas de saldo/marcadores (ex: COD. LANC. 0) são ignoradas sem gerar erro no preview.
+
+#### `src/js/utils/detectorOrigemArquivo.js`
+- **Detecção de alta confiança para template de 3 colunas:** arquivo com exatamente 3 colunas (Data, Descrição, Valor) sem portador/parcela/categoria passa a retornar `tipo: 'banco'` com `confiança: 'alta'` (90%), eliminando o modal de confirmação de tipo nesses casos.
+
+#### `src/js/pages/importar.js`
+- **Reconhecimento da aba "Extrato":** seleção de aba no XLSX expandida de `/transa/i` para `/extrato|transa/i`, permitindo que o template oficial (aba "Extrato") seja lido diretamente sem fallback para a primeira aba.
+
+#### `src/templates/template-importacao.xlsx` *(substituído)*
+- Template recriado com aba nomeada **Extrato** e cabeçalho de 3 colunas: `Data | Descrição | Valor`.
+- Inclui 3 linhas de exemplo: receita positiva (`476,00`), despesa negativa (`-250,00`) e marcador de saldo descartado (`0`).
+- Valor com sinal determina classificação: positivo → receita, negativo → despesa.
+
+#### Regras de classificação por sinal (RF-024)
+| Condição | Classificação |
+|----------|--------------|
+| Valor > 0 | Receita (crédito) |
+| Valor < 0 | Despesa (débito) |
+| Valor = 0 ou vazio | Descartado silenciosamente |
+
+---
+
+## [3.9.4] - 2026-03-30
+
+### Corrigido — BUG-027: botão "Importar" retornava cedo quando todos são duplicados — mesFatura nunca atualizado
+
+#### `src/js/pages/importar.js`
+- **Causa raiz:** `executarImportacao()` fazia `return` imediato quando `idxs.length === 0` (nenhum checkbox marcado), antes de executar o loop de atualização de `mesFatura` nos duplicados (linhas 940-951). Com 102 duplicados e 0 selecionados, o update nunca rodava.
+- **Fix:** guarda agora verifica também `temDuplicatasCartao` antes de sair — se há duplicatas de cartão com `duplicado_docId`, o fluxo continua e atualiza `mesFatura` em todos eles.
+- **UX:** tela de resultado exibe mensagem específica ("Fatura sincronizada! X transações vinculadas ao mês YYYY-MM") quando 0 novas importadas mas duplicatas foram atualizadas.
+
+---
+
+## [3.9.3] - 2026-03-30
+
+### Corrigido — BUG-026: `mesFatura` nunca salvo no Firestore — transações de cartão invisíveis na fatura
+
+#### `src/js/pages/pipelineCartao.js`
+- **Causa raiz:** `aplicarMesFatura()` ajustava `l.data` para parceladas mas nunca atribuía `l.mesFatura` às linhas. O campo só era propagado por `processarFaturaCartao()`, que **não é chamado** pelo fluxo de importação (`importar.js` chama `parsearLinhasCSVXLSX` + `_aplicarTipo` diretamente).
+- **Impacto:** guarda `...(l.mesFatura ? { mesFatura: l.mesFatura } : {})` em importar.js nunca disparava → zero transações salvas com `mesFatura` → `fatura.js` não encontrava nenhuma delas via `ouvirDespesasPorMesFatura`.
+- **Fix:** adicionada linha `l.mesFatura = mesFatura` dentro do `forEach` de `aplicarMesFatura`, garantindo propagação para todos os callers (import page + `processarFaturaCartao`).
+
+#### `tests/pages/pipelineCartao.test.js` *(novo)*
+- 9 testes cobrindo `aplicarMesFatura` (BUG-026), `filtrarCreditos` e integração via `processarFaturaCartao`.
+
+---
+
+## [3.9.2] - 2026-03-30
+
+### Corrigido — BUG-024 (follow-up): deduplicação de estornos em import de cartão
+
+#### `src/js/pages/importar.js`
+- **Problema residual:** mesmo após BUG-024 (v3.9.0), o fluxo `cartao` não carregava `buscarChavesDedupReceitas` durante `marcarDuplicatas()`.
+- **Impacto:** estornos/créditos (`tipoLinha='receita'`) vindos de fatura de cartão podiam não ser marcados como duplicados, impedindo propagação de `mesFatura` em reimports de ciclos futuros.
+- **Fix:** condição de carga das chaves de receita passou a incluir `_tipoExtrato === 'cartao'`.
+
+---
+
+## [3.9.1] - 2026-03-30
+
+### Corrigido — BUG-025: Aba "Fatura do Cartão" não carrega após importação de dados de cartão
+
+#### `src/js/pages/fatura.js` + `src/js/pages/importar.js`
+- **Problema:** `garantirContasPadrao` era chamada exclusivamente em `app.js` (carregado apenas por `dashboard.html`). Usuários que acessavam `base-dados.html` para importar e depois navegavam para `fatura.html` sem visitar o dashboard nunca tinham as contas padrão criadas. A coleção `contas` ficava vazia → `ouvirContas` retornava `[]` → seletor de cartão só exibia "— selecione —" → nenhum auto-select → página presa no estado vazio indefinidamente.
+- **Impacto secundário:** sem contas disponíveis durante o import, `contaId` ficava `undefined` em todas as transações importadas, tornando-as invisíveis na fatura mesmo após o problema principal ser corrigido.
+- **Fix `fatura.js`:** importa `garantirContasPadrao` + `CONTAS_PADRAO`; chama `await garantirContasPadrao(_grupoId, CONTAS_PADRAO).catch(() => {})` antes de `ouvirContas` — garante que `💳 Cartão de Crédito` (`tipo:'cartao'`) exista para o auto-select funcionar.
+- **Fix `importar.js`:** mesma chamada antes de montar o preview — garante que o seletor de conta esteja populado no momento do import, evitando `contaId: undefined` nas despesas importadas.
+
+---
+
+## [3.9.0] - 2026-03-27
+
+### Corrigido — BUG-023: `projecao_paga` incluída no total da fatura — double-counting de parceladas reconciliadas
+
+#### `src/js/pages/fatura.js`
+- **Problema:** `_merge()` excluía `tipo === 'projecao'` mas não `tipo === 'projecao_paga'` — parceladas reconciliadas apareciam duas vezes (despesa real + projeção paga), dobrando o total.
+- **Fix:** `if (d.tipo === 'projecao' || d.tipo === 'projecao_paga') return false;`
+
+### Corrigido — BUG-024 (parcial): `buscarChavesDedupReceitas` retorna `Set` — mesFatura não propagado para estornos
+
+#### `src/js/services/database.js` + `src/js/pages/importar.js`
+- **Problema:** `buscarChavesDedupReceitas` retornava `Set` (sem `docId`), impedindo atualização de `mesFatura` em estornos duplicados. Post-loop chamava `atualizarDespesa` para todos os duplicados sem distinguir receitas.
+- **Fix parcial:** `buscarChavesDedupReceitas` passa a retornar `Map<chave_dedup, docId>`; post-loop distingue `tipoLinha === 'receita'` e chama `atualizarReceita` ou `atualizarDespesa` conforme o tipo.
+- **Fix completo em v3.9.2:** cobertura de `_tipoExtrato === 'cartao'` no carregamento de chaves de receita em `marcarDuplicatas`.
 
 ### Melhorado — Épico A: Hierarquia e composição do dashboard
 
 #### `src/dashboard.html`
 - **KPIs unificados no topo:** Total Orçado, Total Gasto, Total Receitas, Saldo e Disponível agora aparecem juntos em um único bloco visível sem scroll
-- **Seção de Receitas eliminada como seção separada:** KPIs de receitas movidos para o bloco principal; categorias de receitas passam a ser sub-bloco dentro da mesma seção, separado por `.section-subtitle`
-- **Widget de parcelamentos realocado:** movido para após os grids de categorias (antes interrompia o fluxo KPIs → categorias)
-- **Ações centralizadas no header:** "+ Nova Receita" e "+ Nova Despesa" agora ficam no cabeçalho principal junto aos seletores de período
+- **Seção de Receitas eliminada como seção separada:** categorias de receitas passam a ser sub-bloco dentro da mesma seção, separado por `.section-subtitle`
+- **Widget de parcelamentos realocado:** movido para após os grids de categorias
+- **Ações centralizadas no header:** "+ Nova Receita" e "+ Nova Despesa" no cabeçalho junto aos seletores de período
 
 #### `src/css/dashboard.css`
-- **`.section-subtitle`:** novo estilo de sub-título uppercase/small para separar blocos dentro de uma seção sem criar seções HTML independentes
-- **Cores semânticas por card KPI:** `.resumo-card--gasto` (rose), `.resumo-card--disponivel` (indigo suave) adicionados
-- **`.resumo-cards`:** `minmax` reduzido de 175px para 160px para acomodar 5 KPIs na mesma linha em telas médias
+- **`.section-subtitle`:** novo estilo de sub-título para separar blocos sem criar seções HTML independentes
+- **Cores semânticas por card KPI:** `.resumo-card--gasto` (rose), `.resumo-card--disponivel` (indigo suave)
+- **`.resumo-cards`:** `minmax` reduzido de 175px → 160px para acomodar 5 KPIs em telas médias
 
 ---
 

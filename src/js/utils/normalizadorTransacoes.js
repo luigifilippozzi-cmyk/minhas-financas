@@ -46,10 +46,10 @@ export function parsearLinhasCSVXLSX(rows, {
   if (!rows.length) return [];
   let headerIdx = -1;
   for (let i = 0; i < Math.min(rows.length, 10); i++) {
-    const r = rows[i].map(c => String(c ?? '').toLowerCase().trim());
+    const r = rows[i].map(c => String(c ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim());
     if (r.some(c => c === 'data') &&
-        r.some(c => c.includes('estabelecimento') || c.includes('descri')) &&
-        r.some(c => c.includes('valor'))) {
+        r.some(c => c.includes('estabelecimento') || c.includes('descri') || c === 'historico') &&
+        r.some(c => c.includes('valor') || c.includes('credito') || c.includes('debito'))) {
       headerIdx = i; break;
     }
   }
@@ -58,23 +58,32 @@ export function parsearLinhasCSVXLSX(rows, {
     throw new Error('Arquivo parece usar vírgula como separador. Exporte o CSV usando ponto-e-vírgula (;).');
   }
   let idxData = 0, idxEstab = 1, idxPortador = 2, idxValor = 3, idxParcela = 4, idxConta = -1;
+  let idxCredito = -1, idxDebito = -1;
   if (headerIdx >= 0) {
-    const h = rows[headerIdx].map(c => String(c ?? '').toLowerCase().trim());
+    const h = rows[headerIdx].map(c => String(c ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim());
     idxData     = h.findIndex(c => c === 'data');
-    idxEstab    = h.findIndex(c => c.includes('estabelecimento') || c.includes('descri'));
+    idxEstab    = h.findIndex(c => c.includes('estabelecimento') || c.includes('descri') || c === 'historico');
     idxPortador = h.findIndex(c => c.includes('portador') || c.includes('titular'));
-    idxValor    = h.findIndex(c => c.includes('valor'));
+    idxValor    = h.findIndex(c => c.includes('valor') && !c.includes('credito') && !c.includes('debito'));
     idxParcela  = h.findIndex(c => c.includes('parcela'));
     idxConta    = h.findIndex(c => c.includes('conta') || c.includes('banco'));
+    idxCredito  = h.findIndex(c => c.includes('credito'));
+    idxDebito   = h.findIndex(c => c.includes('debito'));
     if (idxData < 0)     idxData = 0;
     if (idxEstab < 0)    idxEstab = 1;
     if (idxPortador < 0) idxPortador = 2;
-    if (idxValor < 0)    idxValor = 3;
+    if (idxValor < 0 && idxCredito < 0) idxValor = 3;
   }
   const dataRows = headerIdx >= 0 ? rows.slice(headerIdx + 1) : rows.slice(1);
   const resultado = [];
+  const _normCell = s => String(s ?? '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   for (const row of dataRows) {
     if (!row?.some(c => c)) continue;
+    // Para ao encontrar seções de rodapé (ex: Bradesco "Últimos Lançamentos", "Filtro de resultados")
+    const c0 = _normCell(row[0]);
+    if (/^(filtro\s+de\s+res|os\s+dados\s+acima|ultimos\s+lanc)/.test(c0)) break;
+    // Para ao encontrar header repetido (segunda seção do extrato Bradesco)
+    if (c0 === 'data' && _normCell(row[1]) === 'historico') break;
     const dataRaw  = String(row[idxData]     ?? '').trim();
     const estab    = String(row[idxEstab]    ?? '').trim();
     const portador = String(row[idxPortador] ?? '').trim();
@@ -95,7 +104,19 @@ export function parsearLinhasCSVXLSX(rows, {
     if (!dataRaw && !estab && !valorRaw) continue;
     const estabLow = estab.toLowerCase();
     if (/pagamento de fatura|inclusao de pagamento|inclusão de pagamento|parcela de fatura rotativo/i.test(estabLow)) continue; // BUG-016: removido 'credito de refinanciamento' — é transação legítima
-    const valorBruto = normalizarValorXP(valorRaw);
+    // Bradesco (e similares): colunas separadas Crédito / Débito
+    let valorBruto;
+    if (idxCredito >= 0 && idxDebito >= 0) {
+      const cred = normalizarValorXP(String(row[idxCredito] ?? '').trim());
+      const deb  = normalizarValorXP(String(row[idxDebito]  ?? '').trim());
+      const c = isNaN(cred) ? 0 : cred;
+      const d = isNaN(deb)  ? 0 : deb;
+      valorBruto = c > 0 ? c : -d;  // crédito = positivo, débito = negativo
+    } else {
+      valorBruto = normalizarValorXP(valorRaw);
+    }
+    // RF-024: valor zero = saldo/marcador (ex: COD. LANC. 0), descarte silencioso
+    if (valorBruto === 0) continue;
     const valor = Math.abs(valorBruto);
     const isNegativo = valorBruto < 0;  // BUG-011: true = valor negativo (crédito/estorno em fatura)
     const dataFmt = normalizarData(dataRaw);

@@ -10,14 +10,14 @@ import { detectarAjustesParciais } from './ajusteDetector.js';  // NRF-002.2
 // Mantém Firestore fora: o chamador fornece os conjuntos pré-buscados.
 //
 // params:
-//   chavesDesp: Set<string>          — chaves de despesas existentes no Firestore
-//   chavesRec: Set<string>           — chaves de receitas existentes no Firestore
+//   chavesDesp: Map<string,string>    — chave_dedup → docId de despesas existentes no Firestore
+//   chavesRec: Map<string,string>    — chave_dedup → docId de receitas existentes no Firestore
 //   projecaoDocMap: Map<string,string> — chave_dedup → docId das projeções
 //   projecoesDetalhadas: Array       — projeções completas para fuzzy matching
 //   tipoExtrato: string              — 'cartao'|'banco'|'receita'|'despesa'
 export function marcarLinhasDuplicatas(linhas, {
-  chavesDesp = new Set(),
-  chavesRec = new Set(),
+  chavesDesp = new Map(),
+  chavesRec = new Map(),
   projecaoDocMap = new Map(),
   projecoesDetalhadas = [],
   tipoExtrato = 'despesa',
