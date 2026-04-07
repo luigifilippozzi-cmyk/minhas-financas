@@ -10,8 +10,7 @@
 // ============================================================
 
 import { onAuthChange, logout } from '../services/auth.js';
-import { buscarPerfil } from '../services/database.js';
-import { ouvirCategorias } from '../services/database.js';
+import { buscarPerfil, ouvirCategorias, ouvirReceitas } from '../services/database.js';
 import {
   iniciarListenerOrcamentos,
   iniciarListenerDespesasOrcamento,
@@ -26,6 +25,7 @@ let _grupoId    = null;
 let _categorias = [];
 let _orcamentos = {};   // { [categoriaId]: valorLimite }
 let _despesas   = [];
+let _receitas   = [];
 
 let _mes = new Date().getMonth() + 1;
 let _ano = new Date().getFullYear();
@@ -33,6 +33,7 @@ let _ano = new Date().getFullYear();
 let _unsubCats = null;
 let _unsubOrc  = null;
 let _unsubDesp = null;
+let _unsubRec  = null;
 
 // Debounce timers por categoriaId para salvar enquanto o usuário digita
 const _debounceTimers = {};
@@ -65,6 +66,7 @@ function iniciarApp() {
   if (_unsubCats)  _unsubCats();
   if (_unsubOrc)   _unsubOrc();
   if (_unsubDesp)  _unsubDesp();
+  if (_unsubRec)   _unsubRec();
 
   atualizarTituloMes();
 
@@ -75,8 +77,6 @@ function iniciarApp() {
   });
 
   // 2. Listener de orçamentos — SYNC BIDIRECIONAL
-  //    Quando o parceiro altera um orçamento, este callback é chamado
-  //    e a tela é atualizada automaticamente.
   _unsubOrc = iniciarListenerOrcamentos(_grupoId, _mes, _ano, (orcs) => {
     _orcamentos = {};
     orcs.forEach((o) => { _orcamentos[o.categoriaId] = o.valorLimite; });
@@ -86,6 +86,12 @@ function iniciarApp() {
   // 3. Listener de despesas do mês — para mostrar gasto atual
   _unsubDesp = iniciarListenerDespesasOrcamento(_grupoId, _mes, _ano, (desp) => {
     _despesas = desp;
+    renderizarLista();
+  });
+
+  // 4. Listener de receitas do mês — para mostrar recebido nas metas
+  _unsubRec = ouvirReceitas(_grupoId, _mes, _ano, (recs) => {
+    _receitas = recs;
     renderizarLista();
   });
 }
@@ -98,101 +104,70 @@ function atualizarTituloMes() {
 }
 
 function renderizarLista() {
-  const lista = document.getElementById('orc-lista');
-  if (!_categorias.length) {
-    lista.innerHTML = '<p class="empty-state">Nenhuma categoria cadastrada. <a href="categorias.html">Criar categorias →</a></p>';
-    atualizarChips(0, 0);
-    return;
-  }
+  const listaDespesas  = document.getElementById('orc-lista');
+  const listaReceitas  = document.getElementById('orc-lista-receitas');
 
-  // Soma gasto por categoria
+  // Separa categorias por tipo
+  const catsDespesa = _categorias.filter((c) => (c.tipo ?? 'despesa') === 'despesa');
+  const catsReceita = _categorias.filter((c) => c.tipo === 'receita');
+
+  // === DESPESAS ===
   const gastoMap = {};
   _despesas.forEach((d) => {
     gastoMap[d.categoriaId] = (gastoMap[d.categoriaId] ?? 0) + d.valor;
   });
 
-  // Totais
-  const totalOrcado    = Object.values(_orcamentos).reduce((a, b) => a + b, 0);
-  const totalGasto     = Object.values(gastoMap).reduce((a, b) => a + b, 0);
+  // Totais despesa (apenas categorias de despesa)
+  let totalOrcado = 0, totalGasto = 0;
+  catsDespesa.forEach((cat) => {
+    totalOrcado += _orcamentos[cat.id] ?? 0;
+    totalGasto  += gastoMap[cat.id] ?? 0;
+  });
   atualizarChips(totalOrcado, totalGasto);
 
-  lista.innerHTML = _categorias.map((cat) => {
-    const limite = _orcamentos[cat.id] ?? 0;
-    const gasto  = gastoMap[cat.id] ?? 0;
-    const { percentual, classe } = calcularStatusOrcamento(gasto, limite);
-    const largura = Math.min(percentual, 100);
-    const inputId = `input-orc-${cat.id}`;
+  if (!catsDespesa.length) {
+    listaDespesas.innerHTML = '<p class="empty-state">Nenhuma categoria de despesa. <a href="categorias.html">Criar categorias →</a></p>';
+  } else {
+    listaDespesas.innerHTML = catsDespesa.map((cat) => {
+      const limite = _orcamentos[cat.id] ?? 0;
+      const gasto  = gastoMap[cat.id] ?? 0;
+      return renderOrcItem(cat, limite, gasto, 'Gasto', 'utilizado', 'Excedeu');
+    }).join('');
+  }
 
-    return `
-      <div class="orc-item" data-cat-id="${cat.id}">
+  // === RECEITAS ===
+  const recebidoMap = {};
+  _receitas.forEach((r) => {
+    recebidoMap[r.categoriaId] = (recebidoMap[r.categoriaId] ?? 0) + r.valor;
+  });
 
-        <!-- Identidade da categoria -->
-        <div class="orc-item-top">
-          <div class="orc-item-cat">
-            <span class="orc-emoji">${cat.emoji}</span>
-            <div class="orc-item-info">
-              <span class="orc-item-nome">${cat.nome}</span>
-              <span class="orc-item-gasto">
-                Gasto: <strong>${formatarMoeda(gasto)}</strong>
-                ${limite ? ` de ${formatarMoeda(limite)}` : ''}
-              </span>
-            </div>
-          </div>
+  let totalMeta = 0, totalRecebido = 0;
+  catsReceita.forEach((cat) => {
+    totalMeta     += _orcamentos[cat.id] ?? 0;
+    totalRecebido += recebidoMap[cat.id] ?? 0;
+  });
+  atualizarChipsReceitas(totalMeta, totalRecebido);
 
-          <!-- Campo de edição do orçamento -->
-          <div class="orc-input-wrap">
-            <span class="orc-input-prefix">R$</span>
-            <input
-              type="number"
-              id="${inputId}"
-              class="orc-input"
-              value="${limite > 0 ? limite : ''}"
-              placeholder="0"
-              min="0"
-              step="0.01"
-              data-cat-id="${cat.id}"
-              title="Digite o limite mensal para ${cat.nome}"
-            />
-          </div>
-        </div>
-
-        <!-- Barra de progresso -->
-        <div class="orc-progress-track ${!limite ? 'orc-sem-limite' : ''}">
-          <div
-            class="orc-progress-fill ${classe ? `orc-fill-${classe}` : ''}"
-            style="width: ${largura}%"
-          ></div>
-        </div>
-
-        <!-- Legenda da barra -->
-        <div class="orc-item-legenda">
-          ${limite
-            ? `<span class="${getClasseTexto(classe)}">${percentual}% utilizado</span>`
-            : '<span class="orc-sem-limite-texto">Sem limite definido</span>'}
-          ${gasto > limite && limite > 0
-            ? `<span class="orc-excedeu">⚠️ Excedeu ${formatarMoeda(gasto - limite)}</span>`
-            : ''}
-        </div>
-
-      </div>
-    `;
-  }).join('');
+  if (!catsReceita.length) {
+    listaReceitas.innerHTML = '<p class="empty-state">Nenhuma categoria de receita. <a href="categorias.html">Criar categorias →</a></p>';
+  } else {
+    listaReceitas.innerHTML = catsReceita.map((cat) => {
+      const meta     = _orcamentos[cat.id] ?? 0;
+      const recebido = recebidoMap[cat.id] ?? 0;
+      return renderOrcItem(cat, meta, recebido, 'Recebido', 'recebido', 'Acima da meta');
+    }).join('');
+  }
 
   // Reconecta os listeners de input APÓS renderizar
-  _categorias.forEach((cat) => {
+  [...catsDespesa, ...catsReceita].forEach((cat) => {
     const input = document.getElementById(`input-orc-${cat.id}`);
     if (!input) return;
 
-    // Salva com debounce de 800ms após o usuário parar de digitar
     input.addEventListener('input', () => agendarSalvamento(cat.id, input.value));
-
-    // Salva imediatamente ao perder o foco
     input.addEventListener('blur', () => {
       clearTimeout(_debounceTimers[cat.id]);
       executarSalvamento(cat.id, input.value);
     });
-
-    // Salva ao pressionar Enter
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         clearTimeout(_debounceTimers[cat.id]);
@@ -201,6 +176,62 @@ function renderizarLista() {
       }
     });
   });
+}
+
+/** Renderiza um item de orçamento (reutilizado para despesa e receita) */
+function renderOrcItem(cat, limite, valor, labelValor, labelPct, labelExcedeu) {
+  const { percentual, classe } = calcularStatusOrcamento(valor, limite);
+  const largura = Math.min(percentual, 100);
+  const inputId = `input-orc-${cat.id}`;
+  const isReceita = cat.tipo === 'receita';
+  const titleInput = isReceita
+    ? `Digite a meta mensal para ${cat.nome}`
+    : `Digite o limite mensal para ${cat.nome}`;
+
+  return `
+    <div class="orc-item" data-cat-id="${cat.id}">
+      <div class="orc-item-top">
+        <div class="orc-item-cat">
+          <span class="orc-emoji">${cat.emoji}</span>
+          <div class="orc-item-info">
+            <span class="orc-item-nome">${cat.nome}</span>
+            <span class="orc-item-gasto">
+              ${labelValor}: <strong>${formatarMoeda(valor)}</strong>
+              ${limite ? ` de ${formatarMoeda(limite)}` : ''}
+            </span>
+          </div>
+        </div>
+        <div class="orc-input-wrap">
+          <span class="orc-input-prefix">R$</span>
+          <input
+            type="number"
+            id="${inputId}"
+            class="orc-input"
+            value="${limite > 0 ? limite : ''}"
+            placeholder="0"
+            min="0"
+            step="0.01"
+            data-cat-id="${cat.id}"
+            title="${titleInput}"
+          />
+        </div>
+      </div>
+      <div class="orc-progress-track ${!limite ? 'orc-sem-limite' : ''}">
+        <div
+          class="orc-progress-fill ${classe ? `orc-fill-${classe}` : ''}"
+          style="width: ${largura}%"
+        ></div>
+      </div>
+      <div class="orc-item-legenda">
+        ${limite
+          ? `<span class="${getClasseTexto(classe)}">${percentual}% ${labelPct}</span>`
+          : `<span class="orc-sem-limite-texto">${isReceita ? 'Sem meta definida' : 'Sem limite definido'}</span>`}
+        ${valor > limite && limite > 0
+          ? `<span class="orc-excedeu">⚠️ ${labelExcedeu} ${formatarMoeda(valor - limite)}</span>`
+          : ''}
+      </div>
+    </div>
+  `;
 }
 
 function getClasseTexto(classe) {
@@ -217,6 +248,16 @@ function atualizarChips(totalOrcado, totalGasto) {
   // Cor do disponível fica vermelha se negativo
   const chipDisp = document.getElementById('chip-total-disponivel');
   chipDisp.closest('.orc-chip')?.classList.toggle('orc-chip-negativo', disponivel < 0);
+}
+
+function atualizarChipsReceitas(totalMeta, totalRecebido) {
+  const faltante = totalMeta - totalRecebido;
+  const elMeta     = document.getElementById('chip-total-meta');
+  const elRecebido = document.getElementById('chip-total-recebido');
+  const elFaltante = document.getElementById('chip-total-faltante');
+  if (elMeta)     elMeta.textContent     = formatarMoeda(totalMeta);
+  if (elRecebido) elRecebido.textContent = formatarMoeda(totalRecebido);
+  if (elFaltante) elFaltante.textContent = formatarMoeda(Math.max(0, faltante));
 }
 
 // ── Salvamento com debounce ───────────────────────────────────

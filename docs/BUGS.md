@@ -537,6 +537,8 @@ l.duplicado = true;  // ← faltava: l.duplicado_docId = Map.get(chave)
 4. `importar.js` salva `mesFatura` no Firestore (despesas, receitas e projeções).
 5. Após o loop de importação, itera `_linhas` e chama `atualizarDespesa(docId, { mesFatura })` para cada duplicata detectada em imports de cartão.
 
+> **Nota:** a correção em `processarFaturaCartao` cobriu o caminho XLSX/processamento interno. O caminho direto de `importar.js → parsearLinhasCSVXLSX` (CSV) nunca chamava `processarFaturaCartao` e permaneceu com o gap — coberto pelo **BUG-026** (v3.9.3).
+
 ---
 
 ### BUG-022 — `fatura.js` filtra por mês calendário: transações de ciclos cross-month nunca aparecem
@@ -559,7 +561,7 @@ l.duplicado = true;  // ← faltava: l.duplicado_docId = Map.get(chave)
 ### BUG-023 — `projecao_paga` incluída no total da fatura — double-counting de parceladas reconciliadas
 **Severidade:** 🔴 Crítico
 **Versão introduzida:** v1.8.0 (NRF-005 — fatura.js)
-**Versão corrigida:** v3.9.0
+**Versão corrigida:** v3.9.0 (parcial) / v3.9.2 (completa)
 **Arquivo:** `src/js/pages/fatura.js`
 
 **Descrição:**
@@ -591,7 +593,7 @@ if (d.tipo === 'projecao' || d.tipo === 'projecao_paga') return false;  // BUG-0
 ### BUG-024 — `buscarChavesDedupReceitas` retorna `Set` — mesFatura não propagado para estornos duplicados
 **Severidade:** 🟠 Médio
 **Versão introduzida:** v3.8.0 (BUG-021)
-**Versão corrigida:** v3.9.0
+**Versão corrigida:** v3.9.0 (parcial) / v3.9.2 (completa)
 **Arquivos:** `src/js/services/database.js`, `src/js/pages/importar.js`
 
 **Descrição:**
@@ -606,6 +608,139 @@ Se um estorno/crédito da fatura já havia sido importado em ciclo anterior, o c
 **Correção aplicada:**
 1. `database.js`: `buscarChavesDedupReceitas` agora retorna `Map<chave_dedup, docId>` (mesmo padrão de `buscarChavesDedup`)
 2. `importar.js`: adicionado `atualizarReceita` ao import; post-loop distingue `tipoLinha === 'receita'` e chama `atualizarReceita` ou `atualizarDespesa` conforme o tipo do duplicado
+3. **Follow-up v3.9.2:** em `marcarDuplicatas`, o carregamento de chaves de receita também passou a cobrir `_tipoExtrato === 'cartao'` (antes cobria apenas `banco|receita`). Isso fecha o gap de dedup para estornos em fatura de cartão.
+
+---
+
+### BUG-025 — `garantirContasPadrao` ausente em `fatura.js` e `importar.js` — aba fatura não carrega após import
+**Severidade:** 🔴 Crítico
+**Versão introduzida:** v1.8.0 (NRF-004 — adicionou coleção `contas`)
+**Versão corrigida:** v3.9.1
+**Arquivos:** `src/js/pages/fatura.js`, `src/js/pages/importar.js`
+
+**Descrição:**
+`garantirContasPadrao` (que cria as contas padrão do grupo, incluindo `💳 Cartão de Crédito` com `tipo:'cartao'`) era chamada **apenas** em `app.js`, carregado exclusivamente por `dashboard.html`. Usuários que acessavam `base-dados.html` para importar dados e depois navegavam para `fatura.html` sem nunca ter visitado o dashboard nunca tinham as contas criadas.
+
+**Código problemático (antes):**
+```javascript
+// app.js (carregado APENAS por dashboard.html)
+garantirContasPadrao(estadoApp.perfil.grupoId, CONTAS_PADRAO).catch(() => {});
+
+// fatura.js e importar.js — garantirContasPadrao NUNCA chamada
+_unsubContas = ouvirContas(_grupoId, (contas) => {
+  // contas = [] se usuário não visitou o dashboard
+  preencherSeletorCartao();  // dropdown fica só com "— selecione —"
+});
+```
+
+**Cadeia de impacto:**
+1. Usuário registra conta → vai para `base-dados.html` sem passar pelo dashboard
+2. `garantirContasPadrao` nunca chamada → coleção `contas` vazia para o grupo
+3. Durante o import: `ouvirContas` retorna `[]` → seletor de conta vazio → `contaId: undefined` em todas as transações importadas
+4. Em `fatura.html`: `ouvirContas` retorna `[]` → `preencherSeletorCartao` não encontra conta com `tipo:'cartao'` → nenhum auto-select → `_cartaoId` nunca definido → `recarregarDespesas()` nunca chamado → página presa no estado vazio indefinidamente
+
+**Correção aplicada:**
+- `fatura.js`: importa `garantirContasPadrao` e `CONTAS_PADRAO`; chama `await garantirContasPadrao(_grupoId, CONTAS_PADRAO).catch(() => {})` antes de `ouvirContas` — garante que `💳 Cartão de Crédito` exista para o auto-select funcionar
+- `importar.js`: mesma chamada antes de carregar o preview — garante que o seletor de conta esteja populado no momento do import, evitando `contaId: undefined` nas despesas
+
+```javascript
+// fatura.js e importar.js — DEPOIS do fix
+await garantirContasPadrao(_grupoId, CONTAS_PADRAO).catch(() => {});
+_unsubContas = ouvirContas(_grupoId, (contas) => {
+  // contas agora sempre inclui as contas padrão
+  preencherSeletorCartao();  // auto-seleciona "Cartão de Crédito"
+});
+```
+
+---
+
+### BUG-026 — `aplicarMesFatura` não atribui `l.mesFatura` — todas as transações de cartão invisíveis na fatura
+**Severidade:** 🔴 Crítico
+**Versão introduzida:** v3.8.0 (BUG-021 — adicionou campo `mesFatura`)
+**Versão corrigida:** v3.9.3
+**Arquivos:** `src/js/pages/pipelineCartao.js`
+
+**Descrição:**
+`aplicarMesFatura()` ajustava `l.data` (movendo parceladas para o dia 01 do mês da fatura) mas **nunca atribuía `l.mesFatura`** em cada linha. O setter `l.mesFatura = mesFatura` existia apenas em `processarFaturaCartao()` — função que o `importar.js` **nunca chama** (o fluxo de importação usa diretamente `parsearLinhasCSVXLSX` + `_aplicarTipo`).
+
+**Código problemático (antes):**
+```javascript
+// pipelineCartao.js — aplicarMesFatura
+linhas.forEach((l) => {
+  // l.mesFatura nunca atribuído aqui ← raiz do bug
+  l.data = l.dataOriginal instanceof Date ? l.dataOriginal : new Date(l.dataOriginal);
+  if (!l.erro && l.parcela && l.parcela !== '-') {
+    l.data = new Date(dataFatura);
+    l.dataAjustada = true;
+  } else {
+    l.dataAjustada = false;
+  }
+});
+
+// importar.js — save loop
+...(l.mesFatura ? { mesFatura: l.mesFatura } : {}),  // ← nunca disparava (undefined)
+```
+
+**Cadeia de impacto:**
+1. Usuário importa CSV de fatura de cartão
+2. `_aplicarTipo('cartao')` chama `aplicarMesFatura(_linhas, _mesFatura)` — ajusta datas, mas `l.mesFatura` permanece `undefined`
+3. Save loop: `l.mesFatura` é `undefined` → guard falso → campo `mesFatura` **nunca enviado ao Firestore**
+4. `fatura.js` usa `ouvirDespesasPorMesFatura` para buscar transações por `mesFatura` → retorna vazio → **todas as transações ficam invisíveis na fatura**
+
+**Correção aplicada:**
+```javascript
+// pipelineCartao.js — aplicarMesFatura — DEPOIS do fix
+linhas.forEach((l) => {
+  l.mesFatura = mesFatura;  // BUG-026: propaga campo para todos os callers
+  l.data = l.dataOriginal instanceof Date ? l.dataOriginal : new Date(l.dataOriginal);
+  if (!l.erro && l.parcela && l.parcela !== '-') {
+    l.data = new Date(dataFatura);
+    l.dataAjustada = true;
+  } else {
+    l.dataAjustada = false;
+  }
+});
+```
+
+**Nota operacional:** transações importadas antes de v3.9.3 foram salvas sem `mesFatura`. Para que apareçam na fatura é necessário re-importar o CSV — o dedup existente reconhece os duplicados e apenas atualiza o campo sem criar novas entradas.
+
+---
+
+### BUG-027 — `executarImportacao` retorna cedo quando todos são duplicados — mesFatura nunca atualizado
+**Severidade:** 🔴 Crítico
+**Versão introduzida:** v3.8.0 (BUG-021 — adicionou update de mesFatura em duplicatas)
+**Versão corrigida:** v3.9.4
+**Arquivos:** `src/js/pages/importar.js`
+
+**Descrição:**
+`executarImportacao()` fazia `return` imediato na linha 830 quando `idxs.length === 0` (nenhum checkbox selecionado). O loop de atualização de `mesFatura` nos duplicados existia **após** esse guard — portanto, quando o CSV de re-import detectava todos os registros como duplicados (todos desmarcados), o botão "Importar" saía sem fazer nada.
+
+**Código problemático (antes):**
+```javascript
+async function executarImportacao() {
+  const idxs = [...document.querySelectorAll('.chk-linha:checked')].map(cb => +cb.dataset.idx);
+  if (!idxs.length) { mostrarAvisoZero(); return; }  // ← sai aqui quando todos são dups
+  ...
+  // BUG-021: loop que atualiza mesFatura nos duplicados — NUNCA chegava aqui
+  if (_tipoExtrato === 'cartao' && _mesFatura) {
+    for (const l of _linhas) {
+      if (l.duplicado && l.duplicado_docId) { await atualizarDespesa(...); }
+    }
+  }
+}
+```
+
+**Correção aplicada:**
+```javascript
+// BUG-027: early return só quando não há novas seleções E não há duplicatas a atualizar
+const temDuplicatasCartao = _tipoExtrato === 'cartao' && _mesFatura &&
+  _linhas.some(l => l.duplicado && l.duplicado_docId);
+if (!idxs.length && !temDuplicatasCartao) {
+  mostrarAvisoZero(); return;
+}
+```
+
+**UX:** tela de resultado exibe mensagem dedicada ("Fatura sincronizada! X transações vinculadas ao mês YYYY-MM") quando 0 novas importadas mas duplicatas foram atualizadas com `mesFatura`.
 
 ---
 

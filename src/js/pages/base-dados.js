@@ -13,6 +13,9 @@ import {
   buscarPerfil,
   buscarGrupo,
   buscarTodasTransacoes,
+  ouvirTransacoesPeriodo,        // RF-025.1 + RF-025.3
+  buscarTransacoesPaginadas,     // RF-025.5
+  contarTransacoesPeriodo,       // RF-025.4
   excluirEmMassa,
   atualizarResponsavelEmMassa,   // RF-023
   purgeGrupoCompleto,
@@ -34,6 +37,13 @@ let _selecionados    = new Set(); // ids selecionados
 let _categorias      = [];   // Bug 2: categorias do grupo para filtro e exibição
 let _unsubCats       = null;
 let _nomesMembros    = {};   // RF-023: { uid: nome } — membros do grupo
+
+// RF-025: real-time + paginação server-side
+let _unsubTransacoes = null;     // unsubscribe do listener ouvirTransacoesPeriodo
+let _modoCarregarTudo = false;   // true = fallback getDocs com cursor
+let _cursores = {};              // { despesas: Snap|null, receitas: Snap|null }
+let _temMaisPaginas = false;
+let _contagemEstimada = null;
 
 // ── Inicialização ───────────────────────────────────────────────
 onAuthChange(async (user) => {
@@ -77,6 +87,9 @@ function configurarTabs() {
     btn.addEventListener('click', () => {
       const tab = btn.dataset.tab;
 
+      // RF-025.3: desinscrever listener ao sair da aba Gerenciar
+      if (tab !== 'gerenciar') desinscreverTransacoes();
+
       // Ativar botão
       document.querySelectorAll('.base-tab-btn').forEach(b => b.classList.remove('base-tab-btn--ativo'));
       btn.classList.add('base-tab-btn--ativo');
@@ -93,10 +106,56 @@ function configurarTabs() {
   });
 }
 
+function desinscreverTransacoes() {
+  if (_unsubTransacoes) { _unsubTransacoes(); _unsubTransacoes = null; }
+}
+
+function atualizarIndicadorSync(conectado) {
+  const el = document.getElementById('ger-sync-status');
+  if (!el) return;
+  el.innerHTML = conectado
+    ? '<span style="color:#16a34a;">● Sincronizado</span>'
+    : '<span style="color:#f59e0b;">● Conectando…</span>';
+}
+
+function atualizarInfoContagem() {
+  const el = document.getElementById('ger-contagem-total');
+  if (el && _contagemEstimada != null) {
+    el.textContent = `~${_contagemEstimada.toLocaleString('pt-BR')} transações`;
+  }
+}
+
 // ── Gerenciar: filtros + paginação + exclusão ───────────────────
 
 function configurarGerenciar() {
   document.getElementById('ger-btn-carregar')?.addEventListener('click', () => carregarTransacoes());
+
+  // RF-025.1: mês/ano change → re-query server-side
+  document.getElementById('ger-fil-mes')?.addEventListener('change', () => carregarTransacoes());
+  document.getElementById('ger-fil-ano')?.addEventListener('change', () => carregarTransacoes());
+
+  // RF-025: filtros client-side (tipo, categoria, responsável)
+  document.getElementById('ger-fil-tipo')?.addEventListener('change', () => aplicarFiltros());
+  document.getElementById('ger-fil-cat')?.addEventListener('change', () => aplicarFiltros());
+  document.getElementById('ger-fil-resp')?.addEventListener('change', () => aplicarFiltros());
+
+  // RF-025.5: fallback "Carregar tudo"
+  document.getElementById('ger-btn-carregar-tudo')?.addEventListener('click', () => {
+    _modoCarregarTudo = true;
+    carregarTransacoes();
+  });
+  document.getElementById('ger-btn-carregar-mais')?.addEventListener('click', () => {
+    carregarPaginaCursor(false);
+  });
+
+  // RF-025: pre-selecionar mês/ano atual + popular selects estáticos
+  preencherFiltrosAnos();
+  preencherFiltrosMeses();
+  const hoje = new Date();
+  const selMes = document.getElementById('ger-fil-mes');
+  const selAno = document.getElementById('ger-fil-ano');
+  if (selMes && !selMes.value) selMes.value = hoje.getMonth() + 1;
+  if (selAno && !selAno.value) selAno.value = hoje.getFullYear();
 
   document.getElementById('ger-chk-todos')?.addEventListener('change', (e) => {
     const checks = document.querySelectorAll('.ger-row-chk');
@@ -125,48 +184,124 @@ function configurarGerenciar() {
 async function carregarTransacoes() {
   if (!_grupoId) return;
 
-  const loading = document.getElementById('ger-loading');
-  const empty   = document.getElementById('ger-empty');
-  const wrap    = document.getElementById('ger-tabela-wrap');
-  const pagin   = document.getElementById('ger-paginacao');
-  const lote    = document.getElementById('ger-acoes-lote');
+  const loading   = document.getElementById('ger-loading');
+  const empty     = document.getElementById('ger-empty');
+  const wrap      = document.getElementById('ger-tabela-wrap');
+  const pagin     = document.getElementById('ger-paginacao');
+  const lote      = document.getElementById('ger-acoes-lote');
+  const noFilter  = document.getElementById('ger-sem-filtro');
 
   loading?.classList.remove('hidden');
   empty?.classList.add('hidden');
   wrap?.classList.add('hidden');
   pagin?.classList.add('hidden');
   lote?.classList.add('hidden');
+  noFilter?.classList.add('hidden');
   _selecionados.clear();
   atualizarContagem();
 
+  // RF-025: desinscrever listener anterior
+  desinscreverTransacoes();
+
+  const mes = document.getElementById('ger-fil-mes')?.value;
+  const ano = document.getElementById('ger-fil-ano')?.value;
+
+  if (mes && ano) {
+    // ── MODO FILTRADO: real-time onSnapshot (RF-025.1 + RF-025.3) ──
+    _modoCarregarTudo = false;
+    _cursores = {};
+
+    // RF-025.4: contagem estimada (non-blocking)
+    contarTransacoesPeriodo(_grupoId, Number(mes), Number(ano))
+      .then(n => { _contagemEstimada = n; atualizarInfoContagem(); })
+      .catch(() => { _contagemEstimada = null; });
+
+    atualizarIndicadorSync(false);
+
+    _unsubTransacoes = ouvirTransacoesPeriodo(_grupoId, Number(mes), Number(ano), (transacoes) => {
+      _todasTransacoes = transacoes;
+      loading?.classList.add('hidden');
+      atualizarIndicadorSync(true);
+      preencherFiltrosCategorias();
+      preencherFiltrosResponsaveis();
+      aplicarFiltros();
+    });
+
+  } else if (_modoCarregarTudo) {
+    // ── MODO FALLBACK: cursor pagination (RF-025.5) ──
+    await carregarPaginaCursor(true);
+
+  } else {
+    // ── SEM FILTRO: mensagem orientativa ──
+    loading?.classList.add('hidden');
+    noFilter?.classList.remove('hidden');
+    atualizarIndicadorSync(false);
+    document.getElementById('ger-sync-status').innerHTML = '';
+
+    // RF-025.4: contagem total (non-blocking)
+    contarTransacoesPeriodo(_grupoId)
+      .then(n => {
+        _contagemEstimada = n;
+        const span = document.getElementById('ger-contagem-total-fallback');
+        if (span) span.textContent = `~${n.toLocaleString('pt-BR')} transações no total`;
+        atualizarInfoContagem();
+      })
+      .catch(() => {});
+  }
+}
+
+async function carregarPaginaCursor(reset = false) {
+  if (reset) {
+    _cursores = {};
+    _todasTransacoes = [];
+  }
+
+  const loading = document.getElementById('ger-loading');
+  loading?.classList.remove('hidden');
+  document.getElementById('ger-sync-status').innerHTML = '';
+
   try {
-    _todasTransacoes = await buscarTodasTransacoes(_grupoId);
+    const { dados, proximosCursores, temMais } = await buscarTransacoesPaginadas(_grupoId, _cursores);
+    _cursores = proximosCursores;
+    _temMaisPaginas = temMais;
+    _todasTransacoes = reset ? dados : [..._todasTransacoes, ...dados];
   } catch (e) {
-    console.error('Erro ao buscar transações:', e);
+    console.error('Erro ao buscar transações paginadas:', e);
     _todasTransacoes = [];
   }
 
   loading?.classList.add('hidden');
+  document.getElementById('ger-sem-filtro')?.classList.add('hidden');
 
-  // Preencher filtros dinâmicos
   preencherFiltrosAnos();
   preencherFiltrosMeses();
   preencherFiltrosCategorias();
-  preencherFiltrosResponsaveis();  // RF-023
-
+  preencherFiltrosResponsaveis();
   aplicarFiltros();
+
+  const btnMais = document.getElementById('ger-btn-carregar-mais');
+  if (btnMais) btnMais.classList.toggle('hidden', !_temMaisPaginas);
 }
 
 function preencherFiltrosAnos() {
   const sel = document.getElementById('ger-fil-ano');
   if (!sel) return;
-  const anos = [...new Set(_todasTransacoes.map(t => {
-    const d = t.data?.toDate ? t.data.toDate() : new Date(t.data);
-    return isNaN(d) ? null : d.getFullYear();
-  }).filter(Boolean))].sort((a, b) => b - a);
-
-  // Manter seleção atual
   const atual = sel.value;
+
+  let anos;
+  if (_modoCarregarTudo && _todasTransacoes.length) {
+    // Modo fallback: extrair dos dados carregados
+    anos = [...new Set(_todasTransacoes.map(t => {
+      const d = t.data?.toDate ? t.data.toDate() : new Date(t.data);
+      return isNaN(d) ? null : d.getFullYear();
+    }).filter(Boolean))].sort((a, b) => b - a);
+  } else {
+    // RF-025: anos estáticos (anoAtual-5 a anoAtual+1)
+    const anoAtual = new Date().getFullYear();
+    anos = [];
+    for (let a = anoAtual + 1; a >= anoAtual - 5; a--) anos.push(a);
+  }
+
   sel.innerHTML = '<option value="">Todos os anos</option>';
   anos.forEach(ano => {
     const opt = document.createElement('option');
@@ -218,7 +353,7 @@ function preencherFiltrosResponsaveis() {
       .filter(Boolean)
   )].sort((a, b) => a.localeCompare(b));
   sel.innerHTML = '<option value="">Todos os responsáveis</option>' +
-    nomes.map(n => `<option value="${n}">${n}</option>`).join('');
+    nomes.map(n => `<option value="${escHTML(n)}">${escHTML(n)}</option>`).join('');
   if (atual) sel.value = atual;
 }
 
@@ -246,7 +381,8 @@ function aplicarFiltros() {
     }
     if (cat && t.categoriaId !== cat) return false;  // Bug 2: comparar por categoriaId
     if (resp && (t.responsavel ?? t.portador ?? '') !== resp) return false;  // RF-023
-    if (mes || ano) {
+    // RF-025: no modo filtrado, mês/ano já é server-side; só filtrar client-side no fallback
+    if (_modoCarregarTudo && (mes || ano)) {
       const d = t.data?.toDate ? t.data.toDate() : new Date(t.data);
       if (isNaN(d)) return false;
       if (mes && (d.getMonth() + 1) !== Number(mes)) return false;
@@ -461,9 +597,9 @@ function mostrarToast(mensagem, isErro = false) {
     document.body.appendChild(toast);
   }
   toast.textContent = mensagem;
-  toast.style.background = isErro ? '#fef2f2'  : '#f0fdf4';
-  toast.style.color      = isErro ? '#dc2626'  : '#166534';
-  toast.style.border     = isErro ? '1px solid #fca5a5' : '1px solid #86efac';
+  toast.style.background = isErro ? 'var(--color-danger-light)'  : 'var(--color-income-bg)';
+  toast.style.color      = isErro ? 'var(--color-danger)'       : 'var(--color-income-dark)';
+  toast.style.border     = isErro ? '1px solid var(--color-danger)' : '1px solid var(--color-income-border)';
   toast.style.opacity    = '1';
   clearTimeout(toast._timer);
   toast._timer = setTimeout(() => { toast.style.opacity = '0'; }, 3500);
@@ -508,13 +644,7 @@ function configurarLimpeza() {
       const resultado = await purgeGrupoCompleto(_grupoId);
       modal?.classList.add('hidden');
       const total = resultado.despesas + resultado.receitas + resultado.parcelamentos;
-      alert(
-        `✅ Purge concluído!\n\n` +
-        `Despesas removidas: ${resultado.despesas}\n` +
-        `Receitas removidas: ${resultado.receitas}\n` +
-        `Parcelamentos removidos: ${resultado.parcelamentos}\n` +
-        `Total: ${total} registros`
-      );
+      mostrarToast(`✅ Purge concluído — ${total} registros removidos (${resultado.despesas} despesas, ${resultado.receitas} receitas, ${resultado.parcelamentos} parcelamentos)`);
       // Limpar cache local
       _todasTransacoes = [];
       _filtradas = [];
@@ -529,3 +659,9 @@ function configurarLimpeza() {
     }
   });
 }
+
+// RF-025: cleanup de listeners ao fechar/recarregar a página
+window.addEventListener('beforeunload', () => {
+  desinscreverTransacoes();
+  if (_unsubCats) { _unsubCats(); _unsubCats = null; }
+});

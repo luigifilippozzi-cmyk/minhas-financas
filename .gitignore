@@ -23,6 +23,9 @@ npm-debug.log*
 Thumbs.db
 desktop.ini
 
+# Lock files (LibreOffice/Excel)
+.~lock.*#
+
 # Editor
 .vscode/settings.json
 .idea/
@@ -35,3 +38,6 @@ build/
 
 # Claude Code (config local, não vai ao repositório)
 .claude/
+
+# Scripts de debug/dev local (snapshots temporários do importar.js)
+importar-*.js

@@ -91,11 +91,11 @@
 .resumo-card--receita::before   { background: var(--color-income); opacity: 1; }
 .resumo-card--saldo::before     { background: var(--color-balance); opacity: 1; }
 .resumo-card--disponivel::before { background: var(--color-primary); opacity: 0.5; }
-.resumo-card--meu-bolso::before { background: #818cf8; opacity: 1; }
+.resumo-card--meu-bolso::before { background: var(--color-budget); opacity: 1; }
 .resumo-card--familia::before   { background: var(--color-ok); opacity: 1; }
 
 .resumo-label {
-  font-size: 0.7rem;
+  font-size: var(--font-size-xs);
   text-transform: uppercase;
   letter-spacing: 0.07em;
   color: var(--color-text-muted);
@@ -112,7 +112,7 @@
 }
 
 .resumo-sublabel {
-  font-size: 0.72rem;
+  font-size: var(--font-size-xs);
   color: var(--color-text-muted);
   margin-top: 2px;
 }
@@ -154,7 +154,7 @@
 }
 
 .categoria-percentual {
-  font-size: 0.72rem;
+  font-size: var(--font-size-xs);
   font-weight: 700;
   padding: 3px var(--space-2);
   border-radius: var(--radius-full);
@@ -188,7 +188,7 @@
 .despesas-lista {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--space-2);
 }
 
 .despesa-item {
@@ -227,11 +227,11 @@
 }
 
 .despesa-meta {
-  font-size: 0.72rem;
+  font-size: var(--font-size-xs);
   color: var(--color-text-muted);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   flex-wrap: wrap;
 }
 
@@ -239,8 +239,8 @@
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  font-size: 0.72rem;
-  padding: 2px 8px;
+  font-size: var(--font-size-xs);
+  padding: 2px var(--space-2);
   border-radius: var(--radius-full);
   background: var(--color-surface-alt);
   color: var(--color-text-secondary);
@@ -279,8 +279,8 @@
   align-items: center;
   justify-content: space-between;
   padding: var(--space-4) var(--space-5);
-  background: linear-gradient(135deg, #f0f0ff 0%, #f5f3ff 100%);
-  border-bottom: 1px solid #e0e7ff;
+  background: linear-gradient(135deg, var(--color-budget-bg) 0%, var(--color-critical-light) 100%);
+  border-bottom: 1px solid var(--color-info-border);
   font-weight: 600;
   font-size: var(--font-size-sm);
   color: var(--color-text);
@@ -326,7 +326,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  font-size: 0.78rem;
+  font-size: var(--font-size-sm);
   padding: 3px 0;
   border-top: 1px solid var(--color-border);
 }
@@ -391,6 +391,14 @@
    RESPONSIVO
    ══════════════════════════════════════════════════════════════ */
 
+/* ── Tablet (640–1024px) ── */
+@media (max-width: 1024px) {
+  .resumo-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ── Mobile (<640px) ── */
 @media (max-width: 640px) {
   .main-content {
     padding: var(--space-4);
@@ -420,6 +428,7 @@
   .navbar-user > span#usuario-nome { display: none; }
 }
 
+/* ── Small mobile (<480px) ── */
 @media (max-width: 480px) {
-  .resumo-cards { grid-template-columns: 1fr 1fr; }
+  .resumo-cards { grid-template-columns: 1fr; }
 }

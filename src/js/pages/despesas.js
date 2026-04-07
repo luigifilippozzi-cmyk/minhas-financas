@@ -17,8 +17,9 @@ import {
   salvarDespesa,
   deletarDespesa,
 } from '../controllers/despesas.js';
-import { formatarMoeda, formatarData, nomeMes } from '../utils/formatters.js';
+import { formatarMoeda, formatarData, nomeMes, escHTML } from '../utils/formatters.js';
 import { dataHoje } from '../utils/helpers.js';
+import { skeletonCards, emptyStateHTML, errorStateHTML } from '../utils/skeletons.js';
 
 // ── Estado da página ──────────────────────────────────────────
 let _usuario    = null;
@@ -107,6 +108,10 @@ function iniciarListeners() {
   if (_unsubDesp) _unsubDesp();
   if (_unsubCats) _unsubCats();
 
+  // Skeleton enquanto dados carregam
+  const lista = document.getElementById('despesas-lista');
+  if (lista && !_despesas.length) lista.innerHTML = skeletonCards(5);
+
   _unsubCats = ouvirCategorias(_grupoId, (cats) => {
     _categorias = cats.sort((a, b) => a.nome.localeCompare(b.nome));
     _catMap = Object.fromEntries(_categorias.map((c) => [c.id, c]));
@@ -120,19 +125,27 @@ function iniciarListeners() {
     }
   });
 
-  _unsubDesp = iniciarListenerDespesas(_grupoId, _mes, _ano, (despesas) => {
-    _despesas = despesas;
-    atualizarChips();
-    renderizarLista();
-    renderizarChipsResponsavel();
-    renderizarChipsCompartilhadas();
-    preencherFiltroResponsavel();
-    // Atalho ?editar=ID: abre modal com a despesa assim que dados chegam
-    if (_atalhoAbrirEditar) {
-      const d = _despesas.find(d => d.id === _atalhoAbrirEditar);
-      if (d) { _atalhoAbrirEditar = null; abrirModalDespesa(d); }
+  try {
+    _unsubDesp = iniciarListenerDespesas(_grupoId, _mes, _ano, (despesas) => {
+      _despesas = despesas;
+      atualizarChips();
+      renderizarLista();
+      renderizarChipsResponsavel();
+      renderizarChipsCompartilhadas();
+      preencherFiltroResponsavel();
+      // Atalho ?editar=ID: abre modal com a despesa assim que dados chegam
+      if (_atalhoAbrirEditar) {
+        const d = _despesas.find(d => d.id === _atalhoAbrirEditar);
+        if (d) { _atalhoAbrirEditar = null; abrirModalDespesa(d); }
+      }
+    });
+  } catch (err) {
+    console.error('Erro ao ouvir despesas:', err);
+    if (lista) {
+      lista.innerHTML = errorStateHTML('Erro ao carregar despesas', 'Verifique sua conexão e tente novamente.');
+      lista.querySelector('.error-retry')?.addEventListener('click', iniciarListeners);
     }
-  });
+  }
 }
 
 // ── RF-014: Painel de Parcelamentos em Aberto ─────────────────
@@ -323,11 +336,9 @@ function renderizarLista() {
   });
 
   if (!filtradas.length) {
-    lista.innerHTML = `<p class="empty-state">${
-      _despesas.length
-        ? 'Nenhuma despesa encontrada com os filtros aplicados.'
-        : 'Nenhuma despesa registrada neste período.<br>Clique em <strong>+ Nova Despesa</strong> para começar.'
-    }</p>`;
+    lista.innerHTML = _despesas.length
+      ? emptyStateHTML('🔍', 'Nenhuma despesa encontrada com os filtros aplicados.')
+      : emptyStateHTML('📋', 'Nenhuma despesa registrada neste período.', 'Clique em + Nova Despesa para começar.');
     return;
   }
 
@@ -366,7 +377,7 @@ function renderizarLista() {
     <div class="desp-item card${isProj ? ' desp-item--proj' : ''}">
       <div class="desp-item-left">
         ${badge}
-        <span class="desp-item-descricao">${d.descricao}</span>
+        <span class="desp-item-descricao">${escHTML(d.descricao)}</span>
         <div class="desp-item-meta">
           <span class="desp-item-data">${dataFmt}</span>
           ${contaBadge}${portBadge}${parcelaBadge}${projBadge}${conjuntaBadge}
@@ -389,6 +400,7 @@ function renderizarLista() {
       </div>
     </div>`;
   }).join('');
+  lista.classList.add('fade-in');
 }
 
 function atualizarChips() {
@@ -400,10 +412,13 @@ function atualizarChips() {
   if (chipTotal) chipTotal.textContent = formatarMoeda(total);
   if (chipCount) chipCount.textContent = count;
 
-  // NRF-001: "Meu Bolso" = individuais + valorAlocado das conjuntas
+  // NRF-001: "Meu Bolso" = minhas individuais + valorAlocado das conjuntas (fix convidado)
+  const nomeUsuarioAtual = (_grupo?.nomesMembros?.[_usuario?.uid] ?? '').trim();
   const meuBolso = reais.reduce((s, d) => {
     if (d.isConjunta) return s + (d.valorAlocado ?? d.valor / 2);
-    return s + d.valor;
+    const resp = (d.responsavel || d.portador || '').trim();
+    if (nomeUsuarioAtual && resp === nomeUsuarioAtual) return s + d.valor;
+    return s;
   }, 0);
   const chipMB    = document.getElementById('chip-meu-bolso');
   const chipMBVal = document.getElementById('chip-meu-bolso-valor');
