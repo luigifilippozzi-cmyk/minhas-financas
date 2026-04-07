@@ -7,12 +7,12 @@
 // ⚠️  NUNCA commite credenciais reais no GitHub!
 // ============================================================
 
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { initializeApp } from 'firebase/app';
 import {
   initializeAuth,
   browserSessionPersistence,
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-import { getFirestore }  from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+} from 'firebase/auth';
+import { getFirestore }  from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey:            'AIzaSyCm0DBw1sFiUG59_iL8Ofht7QJrcvssMc4',
