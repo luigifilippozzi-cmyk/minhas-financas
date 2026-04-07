@@ -19,10 +19,10 @@ export function renderizarDashboard(categorias, despesas, orcamentos, nomeAtual 
   // Mapeia orçamentos por categoriaId
   const orcMap = Object.fromEntries(orcamentos.map((o) => [o.categoriaId, o.valorLimite]));
 
-  // Soma despesas por categoria
+  // Soma despesas reais por categoria (exclui projeções — parcelas futuras do cartão)
   const gastoMap = {};
-  despesas.forEach((d) => {
-    gastoMap[d.categoriaId] = (gastoMap[d.categoriaId] ?? 0) + d.valor;
+  despesas.filter(d => d.tipo !== 'projecao').forEach((d) => {
+    gastoMap[d.categoriaId] = (gastoMap[d.categoriaId] ?? 0) + (d.valor ?? 0);
   });
 
   // Totais gerais
@@ -44,9 +44,11 @@ export function renderizarDashboard(categorias, despesas, orcamentos, nomeAtual 
       // Despesa compartilhada: conta 50% independentemente de quem lançou
       return s + (d.valorAlocado ?? (d.valor ?? 0) / 2);
     }
-    // Despesa individual: conta apenas se o responsável for o usuário logado
+    // Despesa individual: conta apenas se o responsável for o usuário logado.
+    // Se nomeAtual for vazio (usuário sem nome configurado), não inclui nada para
+    // evitar que o convidado veja despesas alheias como se fossem suas.
     const resp = (d.responsavel || d.portador || '').trim();
-    if (!nomeAtual || resp === nomeAtual) return s + (d.valor ?? 0);
+    if (nomeAtual && resp === nomeAtual) return s + (d.valor ?? 0);
     return s;
   }, 0);
 

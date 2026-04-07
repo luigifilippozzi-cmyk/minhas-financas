@@ -7,7 +7,34 @@ import { categorizarTransacao } from './categorizer.js';
 // ── Parser CSV com separador ";" ────────────────────────────────
 export function parsearCSVTexto(content) {
   const texto = content.replace(/^\uFEFF/, '');
-  return texto.split(/\r?\n/).filter(l => l.trim()).map(l => l.split(';').map(c => c.trim()));
+  return texto
+    .split(/\r?\n/)
+    .filter(l => l.trim())
+    .map(parseLinhaCSVSemicolon);
+}
+
+function parseLinhaCSVSemicolon(linha) {
+  const out = [];
+  let atual = '';
+  let emAspas = false;
+  for (let i = 0; i < linha.length; i++) {
+    const ch = linha[i];
+    const prox = linha[i + 1];
+    if (ch === '"') {
+      // CSV padrão: "" representa aspas literal dentro do campo
+      if (emAspas && prox === '"') { atual += '"'; i++; continue; }
+      emAspas = !emAspas;
+      continue;
+    }
+    if (ch === ';' && !emAspas) {
+      out.push(atual.trim());
+      atual = '';
+      continue;
+    }
+    atual += ch;
+  }
+  out.push(atual.trim());
+  return out;
 }
 
 // ── Parser de linhas — layout do extrato/fatura (CSV ou XLSX) ──
@@ -19,10 +46,10 @@ export function parsearLinhasCSVXLSX(rows, {
   if (!rows.length) return [];
   let headerIdx = -1;
   for (let i = 0; i < Math.min(rows.length, 10); i++) {
-    const r = rows[i].map(c => String(c ?? '').toLowerCase().trim());
+    const r = rows[i].map(c => String(c ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim());
     if (r.some(c => c === 'data') &&
-        r.some(c => c.includes('estabelecimento') || c.includes('descri')) &&
-        r.some(c => c.includes('valor'))) {
+        r.some(c => c.includes('estabelecimento') || c.includes('descri') || c === 'historico') &&
+        r.some(c => c.includes('valor') || c.includes('credito') || c.includes('debito'))) {
       headerIdx = i; break;
     }
   }
@@ -31,23 +58,32 @@ export function parsearLinhasCSVXLSX(rows, {
     throw new Error('Arquivo parece usar vírgula como separador. Exporte o CSV usando ponto-e-vírgula (;).');
   }
   let idxData = 0, idxEstab = 1, idxPortador = 2, idxValor = 3, idxParcela = 4, idxConta = -1;
+  let idxCredito = -1, idxDebito = -1;
   if (headerIdx >= 0) {
-    const h = rows[headerIdx].map(c => String(c ?? '').toLowerCase().trim());
+    const h = rows[headerIdx].map(c => String(c ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim());
     idxData     = h.findIndex(c => c === 'data');
-    idxEstab    = h.findIndex(c => c.includes('estabelecimento') || c.includes('descri'));
+    idxEstab    = h.findIndex(c => c.includes('estabelecimento') || c.includes('descri') || c === 'historico');
     idxPortador = h.findIndex(c => c.includes('portador') || c.includes('titular'));
-    idxValor    = h.findIndex(c => c.includes('valor'));
+    idxValor    = h.findIndex(c => c.includes('valor') && !c.includes('credito') && !c.includes('debito'));
     idxParcela  = h.findIndex(c => c.includes('parcela'));
     idxConta    = h.findIndex(c => c.includes('conta') || c.includes('banco'));
+    idxCredito  = h.findIndex(c => c.includes('credito'));
+    idxDebito   = h.findIndex(c => c.includes('debito'));
     if (idxData < 0)     idxData = 0;
     if (idxEstab < 0)    idxEstab = 1;
     if (idxPortador < 0) idxPortador = 2;
-    if (idxValor < 0)    idxValor = 3;
+    if (idxValor < 0 && idxCredito < 0) idxValor = 3;
   }
   const dataRows = headerIdx >= 0 ? rows.slice(headerIdx + 1) : rows.slice(1);
   const resultado = [];
+  const _normCell = s => String(s ?? '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   for (const row of dataRows) {
     if (!row?.some(c => c)) continue;
+    // Para ao encontrar seções de rodapé (ex: Bradesco "Últimos Lançamentos", "Filtro de resultados")
+    const c0 = _normCell(row[0]);
+    if (/^(filtro\s+de\s+res|os\s+dados\s+acima|ultimos\s+lanc)/.test(c0)) break;
+    // Para ao encontrar header repetido (segunda seção do extrato Bradesco)
+    if (c0 === 'data' && _normCell(row[1]) === 'historico') break;
     const dataRaw  = String(row[idxData]     ?? '').trim();
     const estab    = String(row[idxEstab]    ?? '').trim();
     const portador = String(row[idxPortador] ?? '').trim();
@@ -68,7 +104,19 @@ export function parsearLinhasCSVXLSX(rows, {
     if (!dataRaw && !estab && !valorRaw) continue;
     const estabLow = estab.toLowerCase();
     if (/pagamento de fatura|inclusao de pagamento|inclusão de pagamento|parcela de fatura rotativo/i.test(estabLow)) continue; // BUG-016: removido 'credito de refinanciamento' — é transação legítima
-    const valorBruto = normalizarValorXP(valorRaw);
+    // Bradesco (e similares): colunas separadas Crédito / Débito
+    let valorBruto;
+    if (idxCredito >= 0 && idxDebito >= 0) {
+      const cred = normalizarValorXP(String(row[idxCredito] ?? '').trim());
+      const deb  = normalizarValorXP(String(row[idxDebito]  ?? '').trim());
+      const c = isNaN(cred) ? 0 : cred;
+      const d = isNaN(deb)  ? 0 : deb;
+      valorBruto = c > 0 ? c : -d;  // crédito = positivo, débito = negativo
+    } else {
+      valorBruto = normalizarValorXP(valorRaw);
+    }
+    // RF-024: valor zero = saldo/marcador (ex: COD. LANC. 0), descarte silencioso
+    if (valorBruto === 0) continue;
     const valor = Math.abs(valorBruto);
     const isNegativo = valorBruto < 0;  // BUG-011: true = valor negativo (crédito/estorno em fatura)
     const dataFmt = normalizarData(dataRaw);
@@ -114,8 +162,18 @@ export function normalizarValorXP(val) {
 
 // ── Normalização de data ─────────────────────────────────────────
 export function normalizarData(val) {
-  if (!val) return null;
-  if (val instanceof Date && !isNaN(val)) return val;
+  if (val === null || val === undefined || val === '') return null;
+  if (val instanceof Date) return isNaN(val.getTime()) ? null : val;
+
+  // XLSX: datas podem vir como serial numérico (dias desde 1899-12-30)
+  if (typeof val === 'number' && isFinite(val)) {
+    const base = new Date(Date.UTC(1899, 11, 30));
+    const ms = Math.round(val * 86400000);
+    const d = new Date(base.getTime() + ms);
+    d.setUTCHours(12, 0, 0, 0); // reduz risco de virar dia por timezone
+    return isNaN(d.getTime()) ? null : d;
+  }
+
   const s  = String(val).trim();
   const m1 = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
   if (m1) return new Date(m1[3] + '-' + m1[2].padStart(2,'0') + '-' + m1[1].padStart(2,'0') + 'T12:00:00');
@@ -156,7 +214,9 @@ export function gerarChaveDedup(data, estab, valor, portador, parcela) {
   const portNorm  = String(portador ?? '').toLowerCase().trim().substring(0, 30);
   const parc = parcela && String(parcela).trim() !== '-' ? String(parcela).trim() : null;
   if (parc) return estabNorm + '||' + Number(valor).toFixed(2) + '||' + portNorm + '||' + parc;
-  const dataISO = (data instanceof Date ? data : new Date(data)).toISOString().slice(0, 10);
+  const dataObj = data instanceof Date ? data : new Date(data);
+  if (isNaN(dataObj.getTime())) return null;
+  const dataISO = dataObj.toISOString().slice(0, 10);
   return dataISO + '||' + estabNorm + '||' + Number(valor).toFixed(2) + '||' + portNorm;
 }
 

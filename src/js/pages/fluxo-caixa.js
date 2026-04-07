@@ -10,6 +10,7 @@ import {
   buscarReceitasAno,
   buscarOrcamentosAno,
 } from '../services/database.js';
+import { coresGrafico } from '../utils/chartColors.js';
 
 // ── Constantes ────────────────────────────────────────────────
 
@@ -188,8 +189,8 @@ function renderizarGrafico(dados) {
           type: 'bar',
           label: 'Receitas',
           data: recData,
-          backgroundColor: 'rgba(46, 125, 50, 0.75)',
-          borderColor: '#2e7d32',
+          backgroundColor: coresGrafico().receita.bg,
+          borderColor: coresGrafico().receita.border,
           borderWidth: 1,
           order: 2,
         },
@@ -199,10 +200,10 @@ function renderizarGrafico(dados) {
           data: despData,
           backgroundColor: dados.map((d) =>
             d.isFuturo
-              ? 'rgba(198, 40, 40, 0.35)'   // futuro: tom mais claro
-              : 'rgba(198, 40, 40, 0.75)',
+              ? coresGrafico().despesaFade
+              : coresGrafico().despesa.bg,
           ),
-          borderColor: '#c62828',
+          borderColor: coresGrafico().despesa.border,
           borderWidth: 1,
           order: 2,
         },
@@ -210,8 +211,8 @@ function renderizarGrafico(dados) {
           type: 'bar',
           label: 'Orçado',
           data: orcData,
-          backgroundColor: 'rgba(120, 120, 120, 0.18)',
-          borderColor: '#9e9e9e',
+          backgroundColor: coresGrafico().orcado.bg,
+          borderColor: coresGrafico().orcado.border,
           borderWidth: 1,
           borderDash: [4, 4],
           order: 3,
@@ -220,13 +221,13 @@ function renderizarGrafico(dados) {
           type: 'line',
           label: 'Saldo Acumulado',
           data: acumData,
-          borderColor: '#1565c0',
-          backgroundColor: 'rgba(21, 101, 192, 0.08)',
+          borderColor: coresGrafico().saldo.border,
+          backgroundColor: coresGrafico().saldo.bg,
           borderWidth: 2.5,
           tension: 0.35,
           fill: true,
           pointRadius: 4,
-          pointBackgroundColor: acumData.map((v) => (v >= 0 ? '#1565c0' : '#c62828')),
+          pointBackgroundColor: acumData.map((v) => (v >= 0 ? coresGrafico().pontoPositivo : coresGrafico().pontoNegativo)),
           pointBorderColor: '#fff',
           pointBorderWidth: 1.5,
           yAxisID: 'yAcum',
