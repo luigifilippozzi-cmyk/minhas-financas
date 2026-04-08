@@ -36,6 +36,18 @@ desktop.ini
 dist/
 build/
 
+# iOS / Xcode (Capacitor)
+ios/App/App/public/
+ios/App/Pods/
+ios/App/output/
+ios/capacitor-cordova-ios-plugins/
+*.xcworkspace
+xcuserdata/
+DerivedData/
+*.ipa
+*.dSYM.zip
+*.dSYM
+
 # Claude Code (config local, não vai ao repositório)
 .claude/
 
