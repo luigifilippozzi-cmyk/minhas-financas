@@ -60,6 +60,15 @@ npm run preview     # Preview do build de produção
 npm run deploy      # Build + deploy no Firebase Hosting
 ```
 
+### Build iOS (Capacitor)
+
+```bash
+npm run cap:sync          # Build Vite + sync com projeto iOS
+npm run cap:open:ios      # Abre o projeto no Xcode
+```
+
+> Requer macOS com Xcode instalado para compilar e rodar no simulador iOS.
+
 ### Testes
 
 ```bash
@@ -135,7 +144,8 @@ minhas-financas/
 - [x] v3.16.0 — Épico D: Skeleton loading, empty/error states, fade-in
 - [x] v3.17.0 — Milestone Melhorias Visuais concluído (26/26 itens)
 - [x] v3.18.0 — Fase 0 iOS: Vite bundler MPA + Firebase CDN → npm
-- [ ] v4.0.0 — App iOS via Capacitor (Fase 1+: plataforma iOS, Firebase nativo, TestFlight)
+- [x] v3.19.0 — Fase 1 iOS: Capacitor + safe areas para notch/Dynamic Island
+- [ ] v4.0.0 — App iOS via Capacitor (Fase 2+: Firebase nativo, TestFlight)
 
 ## 🤝 Contribuindo
 

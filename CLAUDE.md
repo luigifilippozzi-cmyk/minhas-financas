@@ -8,9 +8,9 @@
 
 - **Usuários:** Luigi + Ana (casal)
 - **Dev:** Luigi (solo developer)
-- **Versão atual:** v3.18.0
+- **Versão atual:** v3.19.0
 - **Repo:** https://github.com/luigifilippozzi-cmyk/minhas-financas
-- **Stack:** HTML5 · CSS3 · JS ES6+ · **Vite 5** (bundler MPA) · Firebase Auth · Cloud Firestore (via npm) · Chart.js v4 · SheetJS (XLSX)
+- **Stack:** HTML5 · CSS3 · JS ES6+ · **Vite 5** (bundler MPA) · **Capacitor 8** (iOS) · Firebase Auth · Cloud Firestore (via npm) · Chart.js v4 · SheetJS (XLSX)
 
 ---
 
@@ -203,13 +203,14 @@ Todas as cores, sombras e fontes estão em `variables.css` como CSS custom prope
 | Requisitos Funcionais | 35/35 (100%) | ✅ Concluído |
 | Melhorias Visuais | 26/26 (100%) | ✅ Concluído |
 | iOS App Fase 0 (Vite + Firebase npm) | 2/2 (100%) | ✅ Concluído |
-| iOS App (Fases 1–5) | 0/15 issues | ⚪ Não iniciado |
+| iOS App Fase 1 (Capacitor + safe areas) | 2/2 (100%) | ✅ Concluído |
+| iOS App (Fases 2–5) | 0/13 issues | ⚪ Não iniciado |
 | Tech Debt | 1/2 (50%) | ⚪ Backlog |
 
 ### Próximas prioridades
-1. **iOS App Fase 1** — instalar Capacitor + adicionar plataforma iOS (issues #75, #76)
+1. **iOS App Fase 2** — Firebase nativo via plugins (issues #77–#80)
 2. **Tech Debt** — unificação de pipeline (#96)
-3. **iOS App Fase 2** — Firebase nativo via plugins (issues #77–#80)
+3. **iOS App Fase 3** — Ajustes UX mobile (issues #81–#83)
 
 ### Documentação de referência
 | Arquivo | Conteúdo |

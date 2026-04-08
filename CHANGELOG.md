@@ -11,6 +11,18 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [3.19.0] - 2026-04-07
+
+### Adicionado — Fase 1: Capacitor + Safe Areas (Milestone iOS)
+
+- **Capacitor instalado (#75):** `@capacitor/core`, `@capacitor/cli` e `@capacitor/ios` configurados. Projeto Xcode gerado em `ios/`. `capacitor.config.json` com `webDir: "dist"`. Novos scripts: `npm run cap:sync`, `npm run cap:open:ios`.
+- **Safe areas para iPhone (#76):** `viewport-fit=cover` em todos os 13 HTMLs. CSS custom properties para `env(safe-area-inset-*)` em `variables.css`. Navbar e `.main-content` ajustados para respeitar notch/Dynamic Island. `@capacitor/status-bar` instalado com inicialização condicional (`capacitor.js`).
+- **`.gitignore` atualizado** com entradas para artefatos iOS/Xcode.
+
+**Fase 1 do Milestone iOS: CONCLUÍDA.** Issues #75 e #76 fechadas. Próximo: Fase 2 (Firebase nativo via plugins — issues #77–#80).
+
+---
+
 ## [3.18.0] - 2026-04-07
 
 ### Adicionado — Fase 0: Vite + Firebase npm (Milestone iOS)
