@@ -136,7 +136,7 @@ a:hover { text-decoration: underline; }
 
 /* ── Mobile (<640px) ── */
 @media (max-width: 640px) {
-  .main-content { padding: var(--space-4); }
+  .main-content { padding: var(--space-4) calc(var(--space-4) + var(--safe-area-right)) calc(var(--space-4) + var(--safe-area-bottom)) calc(var(--space-4) + var(--safe-area-left)); }
   .section-header { flex-direction: column; align-items: flex-start; }
   .resumo-cards { grid-template-columns: 1fr 1fr; }
   .categorias-grid { grid-template-columns: 1fr; }
