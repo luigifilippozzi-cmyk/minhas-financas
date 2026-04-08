@@ -132,6 +132,12 @@
   --space-8:  32px;
   --space-10: 40px;
 
+  /* ── Safe Areas (iOS notch / Dynamic Island) ─────────────── */
+  --safe-area-top:    env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left:   env(safe-area-inset-left, 0px);
+  --safe-area-right:  env(safe-area-inset-right, 0px);
+
   /* ── Layout ──────────────────────────────────────────────── */
   --navbar-height: 58px;
   --max-width:     1140px;

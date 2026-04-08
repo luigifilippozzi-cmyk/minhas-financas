@@ -30,6 +30,7 @@ import { mesAnoAtual, definirTexto } from './utils/helpers.js';
 import { coresGrafico } from './utils/chartColors.js';
 import { nomeMes } from './utils/formatters.js';
 import { skeletonCards, errorStateHTML } from './utils/skeletons.js';
+import { inicializarCapacitor } from './utils/capacitor.js';
 
 // ── Estado Global ─────────────────────────────────────────────
 let estadoApp = {
@@ -75,6 +76,8 @@ function _ultimos6Meses(mesAtual, anoAtual) {
 }
 
 // ── Inicialização ─────────────────────────────────────────────
+
+inicializarCapacitor();
 
 onAuthChange(async (user) => {
   if (!user) {

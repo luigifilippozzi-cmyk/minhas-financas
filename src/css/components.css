@@ -27,7 +27,7 @@ body {
 .navbar {
   position: sticky;
   top: 0;
-  height: var(--navbar-height);
+  min-height: var(--navbar-height);
   background: var(--color-surface-glass);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -35,7 +35,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--space-6);
+  padding: var(--safe-area-top) calc(var(--space-6) + var(--safe-area-right)) 0 calc(var(--space-6) + var(--safe-area-left));
   z-index: 50;
   box-shadow: var(--shadow-xs);
   gap: var(--space-4);
