@@ -61,6 +61,12 @@ jobs:
         with:
           node-version: '20'
 
+      - name: 📦 Instala dependências
+        run: npm ci
+
+      - name: 🏗️ Build (Vite)
+        run: npm run build
+
       - name: 📦 Instala Firebase CLI
         run: npm install -g firebase-tools
 
