@@ -18,6 +18,11 @@ import { modelReceita, CATEGORIAS_RECEITA_PADRAO } from '../models/Receita.js';
 import { formatarMoeda, formatarData, nomeMes, escHTML } from '../utils/formatters.js';
 import { dataHoje } from '../utils/helpers.js';
 import { skeletonCards, emptyStateHTML, errorStateHTML } from '../utils/skeletons.js';
+import {
+  detectarFormato, lerArquivoCSV, lerArquivoXLSX,
+  parsearLinhasReceita, mostrarArquivoUI, mostrarErroUI,
+  preencherSelectsContasUI, resetarUploadUI,
+} from '../utils/importacaoComum.js';
 
 // ── Estado da página ──────────────────────────────────────────
 let _usuario    = null;
@@ -407,179 +412,32 @@ function _gerarTemplateRec() {
   XLSX.writeFile(wb, 'template-receitas.xlsx');
 }
 
-// ── Parser de arquivo (CSV ou XLSX) ──────────────────────────
+// ── Parser de arquivo (CSV ou XLSX) — delegado a importacaoComum.js ──
 async function _processarArquivoRec(file) {
   document.getElementById('erro-leitura-rec').classList.add('hidden');
-  const isCSV  = /\.csv$/i.test(file.name);
-  const isXLSX = /\.(xlsx|xls)$/i.test(file.name);
-  if (!isCSV && !isXLSX) {
-    _mostrarErroRec('Formato não suportado. Use o template Excel (.xlsx) ou CSV.');
+  const formato = detectarFormato(file.name);
+  if (formato !== 'csv' && formato !== 'xlsx') {
+    mostrarErroUI('Formato não suportado. Use o template Excel (.xlsx) ou CSV.', 'erro-leitura-rec');
     return;
   }
-  // Carrega chaves de dedup da coleção receitas (corrigido: busca em receitas, não despesas)
   _chavesRec = await buscarChavesDedupReceitas(_grupoId).catch(() => new Set());
-
-  const _parse = (rows) => {
-    _linhasRec = _parsearLinhasRec(rows);
-    if (!_linhasRec.length) { _mostrarErroRec('Nenhuma receita encontrada no arquivo.'); return; }
-    _mostrarArquivoRec(file.name);
+  try {
+    const rows = formato === 'csv'
+      ? await lerArquivoCSV(file)
+      : await lerArquivoXLSX(file, /receit/i);
+    const contaGlobalId = document.getElementById('sel-conta-global-rec')?.value ?? '';
+    _linhasRec = parsearLinhasReceita(rows, { categorias: _categorias, contas: _contas, chavesRec: _chavesRec, contaGlobalId });
+    if (!_linhasRec.length) { mostrarErroUI('Nenhuma receita encontrada no arquivo.', 'erro-leitura-rec'); return; }
+    mostrarArquivoUI(file.name, { dropAreaId: 'drop-area-rec', arquivoInfoId: 'arquivo-info-rec', arquivoNomeId: 'arquivo-nome-rec' });
     _renderizarPreviewRec();
-  };
-
-  if (isCSV) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const texto = e.target.result.replace(/^\uFEFF/, '');
-        const rows  = texto.split(/\r?\n/).filter(l => l.trim()).map(l => l.split(';').map(c => c.trim()));
-        _parse(rows);
-      } catch (err) { _mostrarErroRec('Erro ao ler o CSV: ' + err.message); }
-    };
-    reader.readAsText(file, 'UTF-8');
-  } else {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const wb   = XLSX.read(new Uint8Array(e.target.result), { type: 'array', cellDates: true });
-        const name = wb.SheetNames.find(n => /receit/i.test(n)) ?? wb.SheetNames[0];
-        const rows = XLSX.utils.sheet_to_json(wb.Sheets[name], { header: 1, raw: false, dateNF: 'DD/MM/YYYY' });
-        _parse(rows);
-      } catch (err) { _mostrarErroRec('Erro ao ler o Excel: ' + err.message); }
-    };
-    reader.readAsArrayBuffer(file);
+  } catch (err) {
+    mostrarErroUI('Erro ao ler o arquivo: ' + err.message, 'erro-leitura-rec');
   }
 }
 
-// ── Parse das linhas do extrato ───────────────────────────────
-function _parsearLinhasRec(rows) {
-  if (!rows.length) return [];
-  // Detecta linha de cabeçalho
-  let headerIdx = -1;
-  for (let i = 0; i < Math.min(rows.length, 10); i++) {
-    const r = rows[i].map(c => String(c ?? '').toLowerCase().trim());
-    if (r.some(c => c === 'data') && r.some(c => c.includes('descri') || c.includes('estabele'))) {
-      headerIdx = i; break;
-    }
-  }
-  let idxData = 0, idxDesc = 1, idxValor = 2, idxCat = 3, idxConta = 4;
-  if (headerIdx >= 0) {
-    const h = rows[headerIdx].map(c => String(c ?? '').toLowerCase().trim());
-    idxData  = h.findIndex(c => c === 'data');
-    idxDesc  = h.findIndex(c => c.includes('descri') || c.includes('estabele'));
-    idxValor = h.findIndex(c => c.includes('valor'));
-    idxCat   = h.findIndex(c => c.includes('categ'));
-    idxConta = h.findIndex(c => c.includes('conta') || c.includes('banco'));
-    if (idxData < 0)  idxData  = 0;
-    if (idxDesc < 0)  idxDesc  = 1;
-    if (idxValor < 0) idxValor = 2;
-  }
-  const dataRows = headerIdx >= 0 ? rows.slice(headerIdx + 1) : rows.slice(1);
-  const resultado = [];
-  for (const row of dataRows) {
-    if (!row?.some(c => c)) continue;
-    const dataRaw  = String(row[idxData]  ?? '').trim();
-    const desc     = String(row[idxDesc]  ?? '').trim();
-    const valorRaw = String(row[idxValor] ?? '').trim();
-    const catNome  = idxCat   >= 0 ? String(row[idxCat]   ?? '').trim() : '';
-    const contaNome = idxConta >= 0 ? String(row[idxConta] ?? '').trim() : '';
-    if (!dataRaw && !desc && !valorRaw) continue;
-    const valor = _normalizarValorRec(valorRaw);
-    const data  = _normalizarDataRec(dataRaw);
-    const erros = [];
-    if (!data)                         erros.push('Data inválida');
-    if (!desc)                         erros.push('Descrição vazia');
-    if (isNaN(valor) || valor <= 0)    erros.push('Valor inválido');
-    // Resolve categoria por nome (match case-insensitive)
-    const catObj  = catNome ? _categorias.find(c => c.nome.toLowerCase().includes(catNome.toLowerCase()) || catNome.toLowerCase().includes(c.nome.toLowerCase())) : null;
-    const catId   = catObj?.id ?? '';
-    // Resolve conta por nome (normalização de acentos para cobrir "Itau" → "Banco Itaú")
-    const _norm      = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    const contaNomeN = _norm(contaNome);
-    const contaObj   = contaNome ? _contas.find(c => {
-      const n = _norm(c.nome);
-      return n.includes(contaNomeN) || contaNomeN.includes(n);
-    }) : null;
-    // Prioridade: coluna Conta → inferência pelo valor da coluna → inferência pela descrição → seletor global
-    const contaId = contaObj?.id
-      || _inferirContaDaDescricao(contaNome, _contas)
-      || _inferirContaDaDescricao(desc, _contas)
-      || (document.getElementById('sel-conta-global-rec')?.value ?? '');
-    const chave    = erros.length ? null : _chaveDedup(data, desc, valor);
-    const duplicado = chave ? _chavesRec.has(chave) : false;
-    resultado.push({ _idx: resultado.length, data, descricao: desc, valor, categoriaId: catId, contaId, chave_dedup: chave, duplicado, erro: erros.length ? erros.join(', ') : null });
-  }
-  return resultado;
-}
-
-// ── NRF-004: Infere conta/banco a partir de palavras-chave na descrição ─────
-function _inferirContaDaDescricao(descricao, contas) {
-  if (!descricao || !contas.length) return '';
-  const d = descricao.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-
-  // 1. Match direto contra nomes das contas do grupo
-  for (const c of contas) {
-    const palavras = c.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').split(/\s+/);
-    if (palavras.some(p => p.length > 3 && d.includes(p))) return c.id;
-  }
-
-  // 2. Mapa de palavras-chave → trecho do nome da conta
-  const BANCO_KEYWORDS = [
-    { keys: ['itau', 'itaú'],                              conta: 'itaú'       },
-    { keys: ['bradesco'],                                  conta: 'bradesco'   },
-    { keys: ['santander'],                                 conta: 'santander'  },
-    { keys: ['btg'],                                       conta: 'btg'        },
-    { keys: ['xp invest', 'xpinvest', 'xp corret', 'xp pagamento'], conta: 'xp' },
-    { keys: ['nubank', 'nu pagamento', 'nu financ'],       conta: 'nubank'     },
-    { keys: ['banco inter', 'inter pagamento'],            conta: 'inter'      },
-    { keys: ['c6 bank', 'c6bank', 'c6 pagamento'],         conta: 'c6'         },
-    { keys: ['caixa eco', 'cef ', 'cx eco'],               conta: 'caixa'      },
-    { keys: ['banco do brasil', 'bb seg', 'bb pag'],       conta: 'brasil'     },
-    { keys: ['sicoob', 'sicredi'],                         conta: 'sicoob'     },
-    { keys: ['original'],                                  conta: 'original'   },
-    { keys: ['next bank', 'next pag'],                     conta: 'next'       },
-    { keys: ['neon'],                                      conta: 'neon'       },
-    { keys: ['picpay'],                                    conta: 'picpay'     },
-    { keys: ['mercado pago', 'mercadopago'],               conta: 'mercado'    },
-    { keys: ['facilcred'],                                 conta: 'facilcred'  },
-  ];
-
-  for (const regra of BANCO_KEYWORDS) {
-    if (regra.keys.some(k => d.includes(k))) {
-      const match = contas.find(c =>
-        c.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(regra.conta)
-      );
-      if (match) return match.id;
-    }
-  }
-
-  return '';
-}
-
-function _normalizarValorRec(val) {
-  if (!val && val !== 0) return NaN;
-  if (typeof val === 'number') return Math.abs(val); // aceita negativos (extrato bancário)
-  const s = String(val).trim().replace(/R\$\s*/i, '').replace(/\./g, '').replace(',', '.');
-  return Math.abs(parseFloat(s));
-}
-
-function _normalizarDataRec(val) {
-  if (!val) return null;
-  if (val instanceof Date && !isNaN(val)) return val;
-  const s  = String(val).trim();
-  const m1 = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-  if (m1) return new Date(`${m1[3]}-${m1[2].padStart(2,'0')}-${m1[1].padStart(2,'0')}T12:00:00`);
-  const m2 = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (m2) return new Date(s + 'T12:00:00');
-  const d = new Date(s);
-  return isNaN(d) ? null : d;
-}
-
-function _chaveDedup(data, desc, valor) {
-  if (!data || isNaN(valor)) return null;
-  const iso  = (data instanceof Date ? data : new Date(data)).toISOString().slice(0, 10);
-  const norm = String(desc).toLowerCase().trim().replace(/\s+/g, ' ').substring(0, 60);
-  return `rec||${iso}||${norm}||${Number(valor).toFixed(2)}`;
-}
+// ── Parse de linhas e funções de normalização delegadas a importacaoComum.js ──
+// _parsearLinhasRec, _inferirContaDaDescricao, _normalizarValorRec,
+// _normalizarDataRec e _chaveDedup foram unificados em importacaoComum.js (TD-006)
 
 // ── Renderização da tabela de preview ────────────────────────
 function _renderizarPreviewRec() {
@@ -712,17 +570,7 @@ async function _executarImportacaoRec() {
   _mostrarResultadoRec(sucesso, falha);
 }
 
-// ── Helpers de UI ─────────────────────────────────────────────
-function _mostrarArquivoRec(nome) {
-  document.getElementById('drop-area-rec')?.classList.add('hidden');
-  document.getElementById('arquivo-info-rec')?.classList.remove('hidden');
-  document.getElementById('arquivo-nome-rec').textContent = nome;
-}
-
-function _mostrarErroRec(msg) {
-  const el = document.getElementById('erro-leitura-rec');
-  if (el) { el.textContent = msg; el.classList.remove('hidden'); }
-}
+// ── Helpers de UI — mostrarArquivo e mostrarErro delegados a importacaoComum.js ──
 
 function _mostrarResultadoRec(sucesso, falha) {
   document.getElementById('sec-preview-rec')?.classList.add('hidden');
@@ -742,11 +590,7 @@ function _mostrarResultadoRec(sucesso, falha) {
 }
 
 function _resetarUploadRec() {
-  document.getElementById('file-input-rec').value = '';
-  document.getElementById('drop-area-rec')?.classList.remove('hidden');
-  document.getElementById('arquivo-info-rec')?.classList.add('hidden');
-  document.getElementById('erro-leitura-rec')?.classList.add('hidden');
-  document.getElementById('sec-preview-rec')?.classList.add('hidden');
+  resetarUploadUI({ fileInputId: 'file-input-rec', dropAreaId: 'drop-area-rec', arquivoInfoId: 'arquivo-info-rec', erroId: 'erro-leitura-rec', previewSecId: 'sec-preview-rec' });
   _linhasRec = [];
 }
 
@@ -766,17 +610,8 @@ function _preencherLoteCatRec() {
 }
 
 function _preencherSelectsContasRec() {
-  const optStr = '<option value="">— sem conta —</option>' +
-    _contas.map(c => `<option value="${c.id}">${c.emoji} ${c.nome}</option>`).join('');
-  const optLote = '<option value="">— manter individual —</option>' +
-    _contas.map(c => `<option value="${c.id}">${c.emoji} ${c.nome}</option>`).join('');
-  const selGlobal = document.getElementById('sel-conta-global-rec');
-  if (selGlobal) { const v = selGlobal.value; selGlobal.innerHTML = optStr; selGlobal.value = v; }
-  const selLote = document.getElementById('sel-conta-lote-rec');
-  if (selLote) { const v = selLote.value; selLote.innerHTML = optLote; selLote.value = v; }
-  document.querySelectorAll('.sel-conta-linha-rec').forEach((sel) => {
-    const idx = +sel.dataset.idx, v = sel.value;
-    sel.innerHTML = optStr;
-    sel.value = v || _linhasRec[idx]?.contaId || '';
+  preencherSelectsContasUI(_contas, {
+    globalId: 'sel-conta-global-rec', loteId: 'sel-conta-lote-rec',
+    linhaClass: 'sel-conta-linha-rec', linhasArray: _linhasRec,
   });
 }
