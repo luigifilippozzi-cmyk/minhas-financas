@@ -75,6 +75,7 @@ import { categorizarTransacao }  from '../utils/categorizer.js';               /
 import { parsearCSVTexto, parsearLinhasCSVXLSX, parsearParcela, inferirContaDaDescricao } from '../utils/normalizadorTransacoes.js';
 import { marcarLinhasDuplicatas } from '../utils/deduplicador.js';
 import { deveCarregarChavesReceitas } from '../utils/importarDedup.js';
+import { detectarFormato, lerArquivoCSV, lerArquivoXLSX, mostrarArquivoUI, mostrarErroUI, preencherSelectsContasUI, resetarUploadUI } from '../utils/importacaoComum.js';
 import { parsearLinhasPDF, classificarBanco } from './pipelineBanco.js';
 import { filtrarCreditos, aplicarMesFatura, gerarProjecoes } from './pipelineCartao.js';
 
@@ -245,24 +246,21 @@ function configurarEventos() {
 // ── Processar arquivo ───────────────────────────────────────────
 async function processarArquivo(file) {
   document.getElementById('erro-leitura').classList.add('hidden');
-  const isCSV  = /\.csv$/i.test(file.name);
-  const isXLSX = /\.(xlsx|xls)$/i.test(file.name);
-  const isPDF  = /\.pdf$/i.test(file.name);
-  if (!isCSV && !isXLSX && !isPDF) {
-    mostrarErroLeitura('Formato não suportado. Use extrato CSV, Excel (.xlsx) ou PDF bancário.');
+  const formato = detectarFormato(file.name);
+  if (!formato) {
+    mostrarErroUI('Formato não suportado. Use extrato CSV, Excel (.xlsx) ou PDF bancário.', 'erro-leitura');
     return;
   }
   // RF-020: pipeline PDF
-  if (isPDF) {
+  if (formato === 'pdf') {
     _origemPDF = true;
     _sinaisInvertidos = false;
     try {
       const raw = await extrairTransacoesPDF(file);
-      if (!raw.length) { mostrarErroLeitura('Nenhuma transação encontrada no PDF. Verifique se é um extrato bancário com texto selecionável.'); return; }
+      if (!raw.length) { mostrarErroUI('Nenhuma transação encontrada no PDF. Verifique se é um extrato bancário com texto selecionável.', 'erro-leitura'); return; }
       const contaGlobal = document.getElementById('sel-conta-global')?.value ?? '';
       _linhas = parsearLinhasPDF(raw, { contas: _contas, categorias: _categorias, mapaHist: _mapaCategoriasHist, origemBanco: 'desconhecido', contaGlobal });
-      if (!_linhas.length) { mostrarErroLeitura('Nenhuma linha válida extraída do PDF.'); return; }
-      // RF-021: detecta banco pelo nome do arquivo + descrições extraídas
+      if (!_linhas.length) { mostrarErroUI('Nenhuma linha válida extraída do PDF.', 'erro-leitura'); return; }
       const detPDF = detectarOrigemArquivo({ fileName: file.name, textLines: raw.map(r => r.desc) });
       _origemBanco = detPDF.origem;
       _origemLabel = detPDF.origemLabel;
@@ -273,10 +271,10 @@ async function processarArquivo(file) {
       _atualizarUIInverterSinais(true);
       _atualizarBancoBadge();
       _autoSelecionarConta(_origemBanco);
-      mostrarArquivoSelecionado(file.name);
-      await _reprocessarLinhas(); // TD-002
+      _mostrarArquivoSelecionado(file.name);
+      await _reprocessarLinhas();
     } catch (err) {
-      mostrarErroLeitura('Erro ao ler o PDF: ' + err.message);
+      mostrarErroUI('Erro ao ler o PDF: ' + err.message, 'erro-leitura');
     }
     return;
   }
@@ -286,14 +284,13 @@ async function processarArquivo(file) {
   _origemLabel = '';
   _origemEmoji = '';
   _atualizarUIInverterSinais(false);
-  if (isCSV) {
+  if (formato === 'csv') {
     const reader = new FileReader();
     reader.onload = async (e) => {
       try {
         const rows = parsearCSVTexto(e.target.result);
         _linhas = parsearLinhasCSVXLSX(rows, { contas: _contas, categorias: _categorias, mapaHist: _mapaCategoriasHist, origemBanco: 'desconhecido' });
-        if (!_linhas.length) { mostrarErroLeitura('Nenhuma transação encontrada. Verifique se o arquivo està no formato correto.'); return; }
-        // RF-021: detecta tipo + banco
+        if (!_linhas.length) { mostrarErroUI('Nenhuma transação encontrada. Verifique se o arquivo està no formato correto.', 'erro-leitura'); return; }
         const det1 = detectarOrigemArquivo({ fileName: file.name, rows });
         _origemBanco = det1.origem; _origemLabel = det1.origemLabel; _origemEmoji = det1.origemEmoji;
         _recategorizarComOrigem();
@@ -302,37 +299,29 @@ async function processarArquivo(file) {
         _atualizarUITipo();
         _atualizarBancoBadge();
         _autoSelecionarConta(_origemBanco);
-        mostrarArquivoSelecionado(file.name);
+        _mostrarArquivoSelecionado(file.name);
         await _reprocessarLinhas(); // TD-002
-      } catch (err) { mostrarErroLeitura('Erro ao ler o CSV: ' + err.message); }
+      } catch (err) { mostrarErroUI('Erro ao ler o CSV: ' + err.message, 'erro-leitura'); }
     };
     reader.readAsText(file, 'UTF-8');
     return;
   }
-  const reader = new FileReader();
-  reader.onload = async (e) => {
-    try {
-      const data = new Uint8Array(e.target.result);
-      const wb   = XLSX.read(data, { type: 'array', cellDates: true });
-      const name = wb.SheetNames.find(n => /extrato|transa/i.test(n)) ?? wb.SheetNames[0];
-      const ws   = wb.Sheets[name];
-      const rows = XLSX.utils.sheet_to_json(ws, { header: 1, raw: false, dateNF: 'DD/MM/YYYY' });
-      _linhas = parsearLinhasCSVXLSX(rows, { contas: _contas, categorias: _categorias, mapaHist: _mapaCategoriasHist, origemBanco: 'desconhecido' });
-      if (!_linhas.length) { mostrarErroLeitura('Nenhuma transação encontrada no arquivo.'); return; }
-      // RF-021: detecta tipo + banco
-      const det2 = detectarOrigemArquivo({ fileName: file.name, rows });
-      _origemBanco = det2.origem; _origemLabel = det2.origemLabel; _origemEmoji = det2.origemEmoji;
-      _recategorizarComOrigem();
-      const tipo2 = det2.confianca === 'baixa' ? await _mostrarModalConfirmacaoTipo(det2) : det2.tipo;
-      _aplicarTipo(tipo2);
-      _atualizarUITipo();
-      _atualizarBancoBadge();
-      _autoSelecionarConta(_origemBanco);
-      mostrarArquivoSelecionado(file.name);
-      await _reprocessarLinhas(); // TD-002
-    } catch (err) { mostrarErroLeitura('Erro ao ler o Excel: ' + err.message); }
-  };
-  reader.readAsArrayBuffer(file);
+  // XLSX
+  try {
+    const rows = await lerArquivoXLSX(file, /extrato|transa/i);
+    _linhas = parsearLinhasCSVXLSX(rows, { contas: _contas, categorias: _categorias, mapaHist: _mapaCategoriasHist, origemBanco: 'desconhecido' });
+    if (!_linhas.length) { mostrarErroUI('Nenhuma transação encontrada no arquivo.', 'erro-leitura'); return; }
+    const det2 = detectarOrigemArquivo({ fileName: file.name, rows });
+    _origemBanco = det2.origem; _origemLabel = det2.origemLabel; _origemEmoji = det2.origemEmoji;
+    _recategorizarComOrigem();
+    const tipo2 = det2.confianca === 'baixa' ? await _mostrarModalConfirmacaoTipo(det2) : det2.tipo;
+    _aplicarTipo(tipo2);
+    _atualizarUITipo();
+    _atualizarBancoBadge();
+    _autoSelecionarConta(_origemBanco);
+    _mostrarArquivoSelecionado(file.name);
+    await _reprocessarLinhas(); // TD-002
+  } catch (err) { mostrarErroUI('Erro ao ler o Excel: ' + err.message, 'erro-leitura'); }
 }
 
 
@@ -1006,15 +995,9 @@ function mostrarResultado(sucesso, falha, projGeradas, reconciliacoes, reconcili
   document.getElementById('sec-resultado').classList.remove('hidden');
 }
 
-// ── Helpers de UI ;
-function mostrarArquivoSelecionado(nome) {
-  document.getElementById('drop-area').classList.add('hidden');
-  document.getElementById('arquivo-info').classList.remove('hidden');
-  document.getElementById('arquivo-nome').textContent = nome;
-}
-function mostrarErroLeitura(msg) {
-  const el = document.getElementById('erro-leitura');
-  el.textContent = msg; el.classList.remove('hidden');
+// ── Helpers de UI — mostrarErroLeitura delegado a importacaoComum.mostrarErroUI ──
+function _mostrarArquivoSelecionado(nome) {
+  mostrarArquivoUI(nome, { dropAreaId: 'drop-area', arquivoInfoId: 'arquivo-info', arquivoNomeId: 'arquivo-nome' });
 }
 function preencherSelCatLote() {
   const sel = document.getElementById('sel-cat-lote');
@@ -1044,29 +1027,15 @@ function preencherSelRespLote() {
     `<option value="${RESP_CONJUNTO}">👥 Conjunto</option>`;
 }
 
-// NRF-004: preenche todos os selects de conta (global, lote e por linha)
+// NRF-004: preenche todos os selects de conta — delegado a importacaoComum.js
 function preencherSelectsContas() {
-  const optStr = '<option value="">— sem conta —</option>' +
-    _contas.map(c => '<option value="' + c.id + '">' + c.emoji + ' ' + c.nome + '</option>').join('');
-  const optStrNeutro = '<option value="">— manter individual —</option>' +
-    _contas.map(c => '<option value="' + c.id + '">' + c.emoji + ' ' + c.nome + '</option>').join('');
-  const selGlobal = document.getElementById('sel-conta-global');
-  if (selGlobal) { const v = selGlobal.value; selGlobal.innerHTML = optStr; selGlobal.value = v; }
-  const selLote = document.getElementById('sel-conta-lote');
-  if (selLote)   { const v = selLote.value;   selLote.innerHTML = optStrNeutro; selLote.value = v; }
-  // Por linha (no preview)
-  document.querySelectorAll('.sel-conta-linha').forEach((sel) => {
-    const idx = +sel.dataset.idx, atual = sel.value;
-    sel.innerHTML = optStr;
-    sel.value = atual || _linhas[idx]?.contaId || '';
+  preencherSelectsContasUI(_contas, {
+    globalId: 'sel-conta-global', loteId: 'sel-conta-lote',
+    linhaClass: 'sel-conta-linha', linhasArray: _linhas,
   });
 }
 function resetarUpload() {
-  document.getElementById('file-input').value = '';
-  document.getElementById('drop-area').classList.remove('hidden');
-  document.getElementById('arquivo-info').classList.add('hidden');
-  document.getElementById('erro-leitura').classList.add('hidden');
-  document.getElementById('sec-preview').classList.add('hidden');
+  resetarUploadUI({ fileInputId: 'file-input', dropAreaId: 'drop-area', arquivoInfoId: 'arquivo-info', erroId: 'erro-leitura', previewSecId: 'sec-preview' });
   document.getElementById('tipo-extrato-wrap')?.classList.add('hidden'); // NRF-006
   _linhas = [];
   _tipoExtrato = 'despesa';         // NRF-006
