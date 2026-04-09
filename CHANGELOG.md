@@ -11,6 +11,20 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [3.20.0] - 2026-04-08
+
+### Refatorado
+
+- **Unificação da lógica de importação (#96):** criado módulo genérico `importacaoComum.js` com funções compartilhadas entre `importar.js` e `receitas.js` — leitura de CSV/XLSX, normalização de valores para receitas, resolução de contas/categorias por nome, parser de linhas de receitas e helpers de UI. Eliminadas ~200 linhas de código duplicado em `receitas.js` e ~70 linhas em `importar.js`.
+
+### Adicionado
+
+- Testes unitários para `importacaoComum.js` (34 testes) e `capacitor.js` (3 testes). Suite total: 231 testes.
+
+**Milestone "Melhoria de Manutenibilidade e Arquitetura": CONCLUÍDO** (issue #96 fechada).
+
+---
+
 ## [3.19.0] - 2026-04-07
 
 ### Adicionado — Fase 1: Capacitor + Safe Areas (Milestone iOS)
