@@ -62,11 +62,12 @@ body {
   color: var(--color-text-muted);
   overflow-x: auto;
   scrollbar-width: none;
-  /* RF-062: fade hint indicando que há mais links à direita */
-  mask-image: linear-gradient(to right, #000 92%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, #000 92%, transparent 100%);
 }
 .navbar-user::-webkit-scrollbar { display: none; }
+
+/* Ícones ocultos na navbar — texto é suficiente e mais legível */
+.navbar-user a.btn .nav-icon,
+.navbar-user a.btn i[data-lucide] { display: none; }
 
 /* Separador visual antes do nome do usuário e do botão Sair */
 .navbar-user > span#usuario-nome {
@@ -161,28 +162,24 @@ body {
   flex-shrink: 0;
 }
 
-/* RF-062: navbar responsiva — em telas < 1440px, mostra apenas ícones */
-@media (max-width: 1440px) {
-  .navbar-user a.btn .nav-icon { margin-right: 0; }
-  .navbar-user a.btn {
-    font-size: 0;         /* oculta texto */
-    padding: var(--space-1) var(--space-2);
-  }
-  .navbar-user a.btn .nav-icon {
-    width: 18px;
-    height: 18px;
-  }
-  .navbar-user a.btn i[data-lucide] {
-    font-size: var(--font-size-sm);  /* mantém ícone visível */
-  }
-  .navbar-user #btn-logout {
-    font-size: var(--font-size-sm);  /* Sair mantém texto */
-  }
-}
-/* Em telas muito pequenas, oculta nome do usuário */
-@media (max-width: 1024px) {
+/* Navbar responsiva — telas médias: oculta nome do usuário */
+@media (max-width: 1280px) {
   .navbar-user > span#usuario-nome {
     display: none;
+  }
+}
+/* Navbar responsiva — telas pequenas: reduz padding e fonte */
+@media (max-width: 1024px) {
+  .navbar-user a.btn {
+    padding: var(--space-1) 6px;
+    font-size: 12px;
+  }
+  .navbar-user #btn-logout {
+    padding: var(--space-1) 6px;
+    font-size: 12px;
+  }
+  .navbar-brand span {
+    display: none;  /* mostra só o ícone da marca */
   }
 }
 
