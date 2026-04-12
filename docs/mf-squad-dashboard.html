@@ -450,27 +450,24 @@
 // Dashboard state — PM Agent updates this section, Dev Manager reads it
 const DASHBOARD_DATA = {
   // PM Agent atualiza estes campos:
-  lastUpdate: "2026-04-12 22:30",
-  version: "v3.21.1",
+  lastUpdate: "2026-04-12 23:00",
+  version: "v3.22.0",
   health: "green", // green | yellow | red
-  healthText: "Projeto saudavel — 252 testes passando, CI verde, deploy OK, 0 PRs abertos, 0 branches ativas",
-  testsUnit: "252",
-  testsUnitStatus: "Todos passando",
+  healthText: "RF-063 concluido e mergeado — 284 testes passando, deploy em andamento, RF-064 desbloqueado",
+  testsUnit: "284",
+  testsUnitStatus: "284 passando",
   testsInt: "26",
-  issuesOpen: 15,
-  issuesSub: "P0: 2 (RF-063/064) | P1: 0 | iOS backlog: 13 (Fases 2-5)",
+  issuesOpen: 14,
+  issuesSub: "P0: 1 (RF-064) | Test plan: 1 (#129) | iOS backlog: 13 (Fases 2-5)",
   // Dev Manager atualiza via PR + merge
   activity: [
+    { time: "Apr 12", color: "var(--green)", msg: "<strong>Merge PR #132</strong> RF-063 Transferencias intra-grupo — v3.22.0 (18 arquivos, +32 testes)", tag: "merge" },
     { time: "Apr 12", color: "var(--green)", msg: "<strong>Merge PR #131</strong> fix(css): navbar com texto sempre visivel — v3.21.1", tag: "merge" },
     { time: "Apr 12", color: "var(--green)", msg: "<strong>Merge PR #130</strong> fix(css): navbar responsiva — resolver overflow 10 links", tag: "merge" },
     { time: "Apr 12", color: "var(--blue)", msg: "<strong>Issue #129</strong> Plano de testes RF-062 (50 test cases manuais)", tag: "issue" },
     { time: "Apr 12", color: "var(--green)", msg: "<strong>Merge PR #128</strong> RF-062 Cartoes como contas individuais — v3.21.0 (+21 testes)", tag: "merge" },
-    { time: "Apr 12", color: "var(--purple)", msg: "<strong>test</strong> 252 testes unitarios passando (+21 novos)", tag: "test" },
-    { time: "Apr 12", color: "var(--accent)", msg: "<strong>PM Agent</strong> 2a revisao diaria — saude verde, 15 issues abertas, RF-062 concluido (#125 fechada)", tag: "pm" },
-    { time: "Apr 12", color: "var(--blue)", msg: "<strong>Issues</strong> #125 #126 #127 criadas — cadeia RF-062/063/064 (reconciliacao fatura)", tag: "issue" },
     { time: "Apr 10", color: "var(--accent)", msg: "<strong>Migration</strong> PR #124 — repo migrado de OneDrive para C:\\Dev\\minhas-financas", tag: "infra" },
     { time: "Apr 9", color: "var(--green)", msg: "<strong>Merge PR #123</strong> TD-006 unificacao importacao — v3.20.0", tag: "merge" },
-    { time: "Apr 8", color: "var(--green)", msg: "<strong>Merge PR #122</strong> Fase 1 iOS — Capacitor + safe areas", tag: "merge" },
   ]
 };
 
