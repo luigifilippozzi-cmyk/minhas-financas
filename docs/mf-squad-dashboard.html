@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MF Squad Control Panel</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #242834;
+    --border: #2e3344;
+    --text: #e4e6ed;
+    --text2: #8b90a0;
+    --accent: #6366f1;
+    --accent2: #818cf8;
+    --green: #22c55e;
+    --green-bg: rgba(34,197,94,.12);
+    --yellow: #eab308;
+    --yellow-bg: rgba(234,179,8,.12);
+    --red: #ef4444;
+    --red-bg: rgba(239,68,68,.12);
+    --blue: #3b82f6;
+    --blue-bg: rgba(59,130,246,.12);
+    --purple: #a855f7;
+    --purple-bg: rgba(168,85,247,.12);
+    --cyan: #06b6d4;
+    --orange: #f97316;
+    --orange-bg: rgba(249,115,22,.12);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+
+  .header { background:var(--surface); border-bottom:1px solid var(--border); padding:16px 32px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+  .header-left { display:flex; align-items:center; gap:16px; }
+  .logo { width:36px; height:36px; background:linear-gradient(135deg,#22c55e,#06b6d4); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:16px; }
+  .header h1 { font-size:18px; font-weight:600; }
+  .header h1 span { color:var(--text2); font-weight:400; font-size:14px; margin-left:8px; }
+  .pulse-dot { width:8px; height:8px; background:var(--green); border-radius:50%; animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.3)} }
+  .header-right { display:flex; align-items:center; gap:16px; font-size:13px; color:var(--text2); }
+  .refresh-btn { background:var(--surface2); border:1px solid var(--border); color:var(--text); padding:6px 14px; border-radius:6px; cursor:pointer; font-size:13px; display:flex; align-items:center; gap:6px; transition:all .2s; }
+  .refresh-btn:hover { border-color:var(--accent); color:var(--accent2); }
+
+  .container { max-width:1440px; margin:0 auto; padding:24px 32px; }
+
+  /* Health Banner */
+  .health-banner { padding:12px 20px; border-radius:10px; margin-bottom:24px; display:flex; align-items:center; gap:12px; font-size:14px; font-weight:500; }
+  .health-green { background:var(--green-bg); border:1px solid rgba(34,197,94,.25); color:var(--green); }
+  .health-yellow { background:var(--yellow-bg); border:1px solid rgba(234,179,8,.25); color:var(--yellow); }
+  .health-red { background:var(--red-bg); border:1px solid rgba(239,68,68,.25); color:var(--red); }
+
+  .kpi-row { display:grid; grid-template-columns:repeat(5,1fr); gap:16px; margin-bottom:24px; }
+  .kpi-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; }
+  .kpi-label { font-size:12px; color:var(--text2); text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px; }
+  .kpi-value { font-size:28px; font-weight:700; }
+  .kpi-sub { font-size:12px; color:var(--text2); margin-top:4px; display:flex; align-items:center; gap:4px; }
+  .kpi-sub .up { color:var(--green); }
+  .kpi-sub .neutral { color:var(--yellow); }
+
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px; }
+  .grid-3 { display:grid; grid-template-columns:2fr 1fr; gap:16px; margin-bottom:24px; }
+
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+  .card-header { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+  .card-header h2 { font-size:14px; font-weight:600; }
+  .card-body { padding:20px; }
+  .badge { display:inline-flex; align-items:center; padding:2px 8px; border-radius:99px; font-size:11px; font-weight:500; }
+  .badge-green { background:var(--green-bg); color:var(--green); }
+  .badge-yellow { background:var(--yellow-bg); color:var(--yellow); }
+  .badge-blue { background:var(--blue-bg); color:var(--blue); }
+  .badge-purple { background:var(--purple-bg); color:var(--purple); }
+  .badge-red { background:var(--red-bg); color:var(--red); }
+  .badge-orange { background:var(--orange-bg); color:var(--orange); }
+
+  .agents-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:16px; margin-bottom:24px; }
+  .agent-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; position:relative; transition:all .3s; cursor:default; }
+  .agent-card:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.3); }
+  .agent-icon { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; margin-bottom:12px; }
+  .agent-card h3 { font-size:13px; font-weight:600; margin-bottom:4px; }
+  .agent-card .role { font-size:11px; color:var(--text2); margin-bottom:12px; }
+  .agent-card .status-line { display:flex; align-items:center; gap:6px; font-size:12px; margin-bottom:8px; }
+  .status-dot { width:6px; height:6px; border-radius:50%; }
+  .status-dot.active { background:var(--green); box-shadow:0 0 6px var(--green); }
+  .status-dot.idle { background:var(--yellow); }
+  .status-dot.standby { background:var(--text2); }
+  .agent-stat { display:flex; justify-content:space-between; font-size:11px; color:var(--text2); padding:4px 0; border-top:1px solid var(--border); }
+  .agent-stat span:last-child { color:var(--text); font-weight:500; }
+
+  .timeline { list-style:none; }
+  .timeline li { display:flex; gap:12px; padding:10px 0; border-bottom:1px solid var(--border); font-size:13px; }
+  .timeline li:last-child { border-bottom:none; }
+  .timeline .time { color:var(--text2); min-width:80px; font-size:11px; padding-top:2px; }
+  .timeline .dot { width:8px; height:8px; border-radius:50%; margin-top:5px; flex-shrink:0; }
+  .timeline .msg { flex:1; line-height:1.5; }
+  .timeline .msg strong { color:var(--text); }
+  .timeline .msg .tag { color:var(--accent2); font-size:11px; }
+
+  .bar-chart { display:flex; align-items:flex-end; gap:8px; height:180px; padding-top:20px; }
+  .bar-col { display:flex; flex-direction:column; align-items:center; flex:1; gap:4px; }
+  .bar { width:100%; border-radius:4px 4px 0 0; transition:height .6s ease; min-height:2px; }
+  .bar-label { font-size:10px; color:var(--text2); }
+  .bar-value { font-size:10px; color:var(--text); font-weight:600; }
+
+  .mod-table { width:100%; border-collapse:collapse; }
+  .mod-table th { text-align:left; font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:.5px; padding:8px 12px; border-bottom:1px solid var(--border); }
+  .mod-table td { padding:10px 12px; font-size:13px; border-bottom:1px solid var(--border); }
+  .mod-table tr:last-child td { border-bottom:none; }
+  .mod-table .mod-name { display:flex; align-items:center; gap:8px; }
+  .mod-dot { width:8px; height:8px; border-radius:2px; }
+  .progress-bar { height:6px; background:var(--surface2); border-radius:3px; overflow:hidden; width:100%; }
+  .progress-fill { height:100%; border-radius:3px; transition:width 1s ease; }
+
+  /* Milestone cards */
+  .milestone-row { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--border); }
+  .milestone-row:last-child { border-bottom:none; }
+  .ms-badge { font-size:11px; font-weight:700; padding:4px 10px; border-radius:6px; min-width:72px; text-align:center; white-space:nowrap; }
+  .ms-info { flex:1; }
+  .ms-info h4 { font-size:13px; font-weight:600; margin-bottom:2px; }
+  .ms-info p { font-size:11px; color:var(--text2); }
+  .ms-progress { display:flex; align-items:center; gap:8px; }
+  .ms-pct { font-size:13px; font-weight:700; min-width:40px; text-align:right; }
+
+  /* Pipeline section */
+  .pipeline-step { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--border); }
+  .pipeline-step:last-child { border-bottom:none; }
+  .pipe-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
+  .pipe-info { flex:1; }
+  .pipe-info h4 { font-size:12px; font-weight:600; }
+  .pipe-info p { font-size:11px; color:var(--text2); }
+
+  .scroll-area { max-height:400px; overflow-y:auto; }
+  .scroll-area::-webkit-scrollbar { width:4px; }
+  .scroll-area::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+  @media(max-width:1200px) { .agents-grid { grid-template-columns:repeat(3,1fr); } .kpi-row { grid-template-columns:repeat(3,1fr); } }
+  @media(max-width:768px) { .agents-grid { grid-template-columns:1fr; } .kpi-row { grid-template-columns:repeat(2,1fr); } .grid-2,.grid-3 { grid-template-columns:1fr; } .container { padding:16px; } }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo">$</div>
+    <h1>MF Squad Control Panel <span>v1.0</span></h1>
+    <div class="pulse-dot" title="Dashboard Active"></div>
+  </div>
+  <div class="header-right">
+    <span id="lastUpdate">Atualizado: --</span>
+    <button class="refresh-btn" onclick="location.reload()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+      Refresh
+    </button>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Health Banner -->
+  <div id="healthBanner" class="health-banner health-green">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    <span id="healthText">Projeto saudavel — CI verde, testes passando, deploy OK</span>
+  </div>
+
+  <!-- KPI Row -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-label">Versao</div>
+      <div class="kpi-value" id="kpiVersion">v3.19.0</div>
+      <div class="kpi-sub" id="kpiVersionSub">Fase 1 iOS + Tech Debt concluidos</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Testes Unitarios</div>
+      <div class="kpi-value" id="kpiTests">194+</div>
+      <div class="kpi-sub"><span class="up" id="kpiTestsSub">Todos passando</span></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Testes Integracao</div>
+      <div class="kpi-value" id="kpiIntTests">26</div>
+      <div class="kpi-sub">Firebase Emulator</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Issues Abertas</div>
+      <div class="kpi-value" id="kpiIssues">16</div>
+      <div class="kpi-sub"><span class="neutral" id="kpiIssuesSub">P0: 2 | P1: 1 | iOS: 13</span></div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Bugs Historicos</div>
+      <div class="kpi-value">27</div>
+      <div class="kpi-sub"><span class="up">Todos resolvidos</span></div>
+    </div>
+  </div>
+
+  <!-- Squad Agents -->
+  <div style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">
+    <h2 style="font-size:16px;font-weight:600;">Squad Agents</h2>
+    <span style="font-size:12px;color:var(--text2);">Configurado via AGENTS.md + .auto-memory/</span>
+  </div>
+  <div class="agents-grid">
+    <!-- PM Agent -->
+    <div class="agent-card" style="border-top:3px solid var(--blue);">
+      <div class="agent-icon" style="background:var(--blue-bg);color:var(--blue);">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      </div>
+      <h3>PM Agent</h3>
+      <div class="role">Status Diario + Metricas</div>
+      <div class="status-line"><div class="status-dot" id="pmStatus"></div> <span id="pmStatusText">--</span></div>
+      <div class="agent-stat"><span>Frequencia</span><span>Diario</span></div>
+      <div class="agent-stat"><span>Escopo</span><span>Read-only</span></div>
+      <div class="agent-stat"><span>Output</span><span>Relatorio + Dashboard</span></div>
+    </div>
+    <!-- Dev Manager -->
+    <div class="agent-card" style="border-top:3px solid var(--accent);">
+      <div class="agent-icon" style="background:rgba(99,102,241,.15);color:var(--accent2);">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4m0 14v4m-9-9H1m22 0h-2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42m0-16.56l-1.42 1.42M5.64 18.36l-1.42 1.42"/></svg>
+      </div>
+      <h3>Dev Manager</h3>
+      <div class="role">Implementacao + Orquestracao</div>
+      <div class="status-line"><div class="status-dot" id="dmStatus"></div> <span id="dmStatusText">--</span></div>
+      <div class="agent-stat"><span>Autoridade</span><span>Execucao tecnica</span></div>
+      <div class="agent-stat"><span>Subagentes</span><span>3 disponiveis</span></div>
+      <div class="agent-stat"><span>Git</span><span>Feature branches</span></div>
+    </div>
+    <!-- Test Runner -->
+    <div class="agent-card" style="border-top:3px solid var(--green);">
+      <div class="agent-icon" style="background:var(--green-bg);color:var(--green);">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      </div>
+      <h3>test-runner</h3>
+      <div class="role">Vitest + Coverage</div>
+      <div class="status-line"><div class="status-dot standby"></div> Standby</div>
+      <div class="agent-stat"><span>Framework</span><span>Vitest</span></div>
+      <div class="agent-stat"><span>Testes</span><span id="trTests">194+ unit + 26 int</span></div>
+      <div class="agent-stat"><span>Trigger</span><span>Sempre pre-PR</span></div>
+    </div>
+    <!-- Security Reviewer -->
+    <div class="agent-card" style="border-top:3px solid var(--red);">
+      <div class="agent-icon" style="background:var(--red-bg);color:var(--red);">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <h3>security-reviewer</h3>
+      <div class="role">Firestore + XSS + Auth</div>
+      <div class="status-line"><div class="status-dot standby"></div> Standby</div>
+      <div class="agent-stat"><span>Foco</span><span>grupoId, escHTML</span></div>
+      <div class="agent-stat"><span>Checks</span><span>5 categorias</span></div>
+      <div class="agent-stat"><span>Trigger</span><span>auth/db/innerHTML</span></div>
+    </div>
+    <!-- Import Pipeline Reviewer -->
+    <div class="agent-card" style="border-top:3px solid var(--orange);">
+      <div class="agent-icon" style="background:var(--orange-bg);color:var(--orange);">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      </div>
+      <h3>import-pipeline</h3>
+      <div class="role">Parser + Dedup + Ajuste</div>
+      <div class="status-line"><div class="status-dot standby"></div> Standby</div>
+      <div class="agent-stat"><span>Bancos</span><span>15 emissores</span></div>
+      <div class="agent-stat"><span>Bugs hist.</span><span>27 resolvidos</span></div>
+      <div class="agent-stat"><span>Trigger</span><span>Pipeline alterado</span></div>
+    </div>
+  </div>
+
+  <!-- Activity + Milestones -->
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-header">
+        <h2>Atividade Recente</h2>
+        <span class="badge badge-green" id="activityBadge">Live</span>
+      </div>
+      <div class="card-body scroll-area" id="activityTimeline" style="max-height:420px;">
+        <ul class="timeline">
+          <li>
+            <span class="time">--</span>
+            <div class="dot" style="background:var(--text2);"></div>
+            <div class="msg">Aguardando dados do PM Agent...</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h2>Milestones</h2>
+        <span class="badge badge-blue" id="milestoneBadge">6 fases</span>
+      </div>
+      <div class="card-body scroll-area" id="milestoneList">
+        <div class="milestone-row">
+          <div class="ms-badge" style="background:var(--green-bg);color:var(--green);">RF</div>
+          <div class="ms-info"><h4>Requisitos Funcionais</h4><p>35/35 implementados</p></div>
+          <div class="ms-progress"><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:100%;background:var(--green);"></div></div><span class="ms-pct" style="color:var(--green);">100%</span></div>
+        </div>
+        <div class="milestone-row">
+          <div class="ms-badge" style="background:var(--green-bg);color:var(--green);">Visual</div>
+          <div class="ms-info"><h4>Melhorias Visuais</h4><p>26/26 concluidas</p></div>
+          <div class="ms-progress"><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:100%;background:var(--green);"></div></div><span class="ms-pct" style="color:var(--green);">100%</span></div>
+        </div>
+        <div class="milestone-row">
+          <div class="ms-badge" style="background:var(--green-bg);color:var(--green);">iOS F0</div>
+          <div class="ms-info"><h4>Fase 0 — Vite + Firebase npm</h4><p>2/2 concluidas</p></div>
+          <div class="ms-progress"><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:100%;background:var(--green);"></div></div><span class="ms-pct" style="color:var(--green);">100%</span></div>
+        </div>
+        <div class="milestone-row">
+          <div class="ms-badge" style="background:var(--green-bg);color:var(--green);">iOS F1</div>
+          <div class="ms-info"><h4>Fase 1 — Capacitor + Safe Areas</h4><p>2/2 concluidas (#75, #76)</p></div>
+          <div class="ms-progress"><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:100%;background:var(--green);"></div></div><span class="ms-pct" style="color:var(--green);">100%</span></div>
+        </div>
+        <div class="milestone-row">
+          <div class="ms-badge" style="background:var(--blue-bg);color:var(--blue);">iOS F2</div>
+          <div class="ms-info"><h4>Fase 2 — Firebase Nativo</h4><p>0/4 issues (#77-#80)</p></div>
+          <div class="ms-progress"><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:0%;background:var(--blue);"></div></div><span class="ms-pct" style="color:var(--blue);">0%</span></div>
+        </div>
+        <div class="milestone-row">
+          <div class="ms-badge" style="background:rgba(139,144,160,.12);color:var(--text2);">iOS F3</div>
+          <div class="ms-info"><h4>Fase 3 — UX Mobile</h4><p>0/3 issues (#81-#83)</p></div>
+          <div class="ms-progress"><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:0%;background:var(--text2);"></div></div><span class="ms-pct" style="color:var(--text2);">0%</span></div>
+        </div>
+        <div class="milestone-row">
+          <div class="ms-badge" style="background:rgba(139,144,160,.12);color:var(--text2);">iOS F4-5</div>
+          <div class="ms-info"><h4>Fases 4-5 — Push + Offline + Store</h4><p>0/6 issues (#84-#89)</p></div>
+          <div class="ms-progress"><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:0%;background:var(--text2);"></div></div><span class="ms-pct" style="color:var(--text2);">0%</span></div>
+        </div>
+        <div class="milestone-row">
+          <div class="ms-badge" style="background:var(--yellow-bg);color:var(--yellow);">TD</div>
+          <div class="ms-info"><h4>Tech Debt</h4><p>2/2 concluidos (#96, #97)</p></div>
+          <div class="ms-progress"><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:100%;background:var(--green);"></div></div><span class="ms-pct" style="color:var(--green);">100%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modules + Pipeline -->
+  <div class="grid-2">
+    <!-- JS Modules Status -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Modulos JS — Cobertura de Testes</h2>
+        <span style="font-size:12px;color:var(--text2);">src/js/utils/</span>
+      </div>
+      <div class="card-body scroll-area" style="max-height:420px;">
+        <table class="mod-table">
+          <thead><tr><th>Modulo</th><th>Testes</th><th>Cobertura</th></tr></thead>
+          <tbody id="modulesTable">
+            <tr><td><div class="mod-name"><div class="mod-dot" style="background:var(--green);"></div>normalizadorTransacoes</div></td><td><span class="badge badge-green">Sim</span></td><td><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:90%;background:var(--green);"></div></div></td></tr>
+            <tr><td><div class="mod-name"><div class="mod-dot" style="background:var(--green);"></div>deduplicador</div></td><td><span class="badge badge-green">Sim</span></td><td><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:85%;background:var(--green);"></div></div></td></tr>
+            <tr><td><div class="mod-name"><div class="mod-dot" style="background:var(--green);"></div>ajusteDetector</div></td><td><span class="badge badge-green">Sim</span></td><td><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:85%;background:var(--green);"></div></div></td></tr>
+            <tr><td><div class="mod-name"><div class="mod-dot" style="background:var(--green);"></div>formatters</div></td><td><span class="badge badge-green">Sim</span></td><td><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:80%;background:var(--green);"></div></div></td></tr>
+            <tr><td><div class="mod-name"><div class="mod-dot" style="background:var(--green);"></div>helpers</div></td><td><span class="badge badge-green">Sim</span></td><td><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:75%;background:var(--green);"></div></div></td></tr>
+            <tr><td><div class="mod-name"><div class="mod-dot" style="background:var(--green);"></div>categorizer</div></td><td><span class="badge badge-green">Sim</span></td><td><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:70%;background:var(--green);"></div></div></td></tr>
+            <tr><td><div class="mod-name"><div class="mod-dot" style="background:var(--red);"></div>pdfParser</div></td><td><span class="badge badge-red">Nao</span></td><td><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:0%;background:var(--red);"></div></div></td></tr>
+            <tr><td><div class="mod-name"><div class="mod-dot" style="background:var(--red);"></div>recurringDetector</div></td><td><span class="badge badge-red">Nao</span></td><td><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:0%;background:var(--red);"></div></div></td></tr>
+            <tr><td><div class="mod-name"><div class="mod-dot" style="background:var(--red);"></div>detectorOrigemArquivo</div></td><td><span class="badge badge-red">Nao</span></td><td><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:0%;background:var(--red);"></div></div></td></tr>
+            <tr><td><div class="mod-name"><div class="mod-dot" style="background:var(--red);"></div>bankFingerprintMap</div></td><td><span class="badge badge-red">Nao</span></td><td><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:0%;background:var(--red);"></div></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Import Pipeline Health -->
+    <div class="card">
+      <div class="card-header">
+        <h2>Pipeline de Importacao</h2>
+        <span class="badge badge-orange">15 bancos</span>
+      </div>
+      <div class="card-body">
+        <div class="pipeline-step">
+          <div class="pipe-icon" style="background:var(--blue-bg);color:var(--blue);">1</div>
+          <div class="pipe-info"><h4>detectorOrigemArquivo</h4><p>Detecta tipo (banco/cartao) + emissor</p></div>
+          <span class="badge badge-yellow">Sem teste</span>
+        </div>
+        <div class="pipeline-step">
+          <div class="pipe-icon" style="background:var(--accent-bg, rgba(99,102,241,.12));color:var(--accent2);">2</div>
+          <div class="pipe-info"><h4>normalizadorTransacoes</h4><p>Parse CSV/XLSX/PDF para formato padrao</p></div>
+          <span class="badge badge-green">Testado</span>
+        </div>
+        <div class="pipeline-step">
+          <div class="pipe-icon" style="background:var(--purple-bg);color:var(--purple);">3</div>
+          <div class="pipe-info"><h4>deduplicador</h4><p>Matching exato + fuzzy via chave_dedup</p></div>
+          <span class="badge badge-green">Testado</span>
+        </div>
+        <div class="pipeline-step">
+          <div class="pipe-icon" style="background:var(--orange-bg);color:var(--orange);">4</div>
+          <div class="pipe-info"><h4>ajusteDetector</h4><p>Reconciliar parcelas marketplace</p></div>
+          <span class="badge badge-green">Testado</span>
+        </div>
+        <div class="pipeline-step">
+          <div class="pipe-icon" style="background:var(--green-bg);color:var(--green);">5</div>
+          <div class="pipe-info"><h4>pipelineBanco / pipelineCartao</h4><p>Roteamento final + propagacao mesFatura</p></div>
+          <span class="badge badge-green">Testado</span>
+        </div>
+        <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border);">
+          <div class="kpi-label" style="margin-bottom:8px;">Padroes Criticos</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <span class="badge badge-green">chave_dedup OK</span>
+            <span class="badge badge-green">mesFatura OK</span>
+            <span class="badge badge-green">buscarChavesDedup OK</span>
+            <span class="badge badge-yellow">4 modulos sem teste</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dividas Tecnicas + Issues P0/P1 -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header"><h2>Dividas Tecnicas</h2><span class="badge badge-yellow" id="debtCount">4 gaps</span></div>
+      <div class="card-body" id="debtList">
+        <table class="mod-table">
+          <thead><tr><th>Modulo</th><th>Gap</th><th>Prioridade</th></tr></thead>
+          <tbody>
+            <tr><td>pdfParser.js</td><td>Sem teste unitario</td><td><span class="badge badge-yellow">Divida</span></td></tr>
+            <tr><td>recurringDetector.js</td><td>Sem teste unitario</td><td><span class="badge badge-yellow">Divida</span></td></tr>
+            <tr><td>detectorOrigemArquivo.js</td><td>Sem teste unitario</td><td><span class="badge badge-yellow">Divida</span></td></tr>
+            <tr><td>bankFingerprintMap.js</td><td>Sem teste unitario</td><td><span class="badge badge-yellow">Divida</span></td></tr>
+            <tr><td>importar.js + receitas.js</td><td>Logica duplicada (#96)</td><td><span class="badge badge-blue">P1</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h2>Issues Prioritarias</h2><span class="badge badge-red" id="p0Count">2 P0</span></div>
+      <div class="card-body" id="issueList">
+        <table class="mod-table">
+          <thead><tr><th>#</th><th>Titulo</th><th>Prioridade</th><th>Milestone</th></tr></thead>
+          <tbody>
+            <tr><td>#75</td><td>Instalar Capacitor + iOS</td><td><span class="badge badge-green">Concluido</span></td><td>Fase 1</td></tr>
+            <tr><td>#76</td><td>Safe areas (notch/Dynamic Island)</td><td><span class="badge badge-green">Concluido</span></td><td>Fase 1</td></tr>
+            <tr><td>#96</td><td>TD-006: Unificar importacao</td><td><span class="badge badge-green">Concluido</span></td><td>Tech Debt</td></tr>
+            <tr><td>#77</td><td>Firebase Auth nativo</td><td><span class="badge badge-purple">Proximo</span></td><td>Fase 2</td></tr>
+            <tr><td>#78</td><td>Firestore nativo</td><td><span class="badge badge-purple">Proximo</span></td><td>Fase 2</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="text-align:center;padding:24px;color:var(--text2);font-size:12px;">
+    Minhas Financas Squad Dashboard v1.0 — Gerado pelo PM Agent | Atualizado pelo Dev Manager<br>
+    <span style="color:var(--accent2);">PO: Luigi</span> · <span style="color:var(--blue);">PM Agent: Diario</span> · <span style="color:var(--accent);">Dev Manager: Por sessao</span>
+  </div>
+
+</div>
+
+<script>
+// Dashboard state — PM Agent updates this section, Dev Manager reads it
+const DASHBOARD_DATA = {
+  // PM Agent atualiza estes campos:
+  lastUpdate: "2026-04-09 23:40",
+  version: "v3.20.0",
+  health: "green", // green | yellow | red
+  healthText: "Projeto saudavel — 231 testes passando, CI verde, deploy OK, 0 PRs abertos",
+  testsUnit: "231",
+  testsUnitStatus: "Todos passando",
+  testsInt: "26",
+  issuesOpen: 13,
+  issuesSub: "P0: 0 | P1: 0 | iOS backlog: 13 (Fases 2-5)",
+  // Dev Manager atualiza via PR + merge
+  activity: [
+    { time: "Apr 9", color: "var(--green)", msg: "<strong>Merge PR #123</strong> TD-006 unificacao importacao — v3.20.0", tag: "merge" },
+    { time: "Apr 9", color: "var(--purple)", msg: "<strong>test</strong> 231 testes unitarios passando (+37 novos)", tag: "test" },
+    { time: "Apr 9", color: "var(--accent)", msg: "<strong>Squad IA</strong> implantado — AGENTS.md + prompts + dashboard", tag: "squad" },
+    { time: "Apr 8", color: "var(--green)", msg: "<strong>Merge PR #122</strong> Fase 1 iOS — Capacitor + safe areas", tag: "merge" },
+    { time: "Apr 7", color: "var(--green)", msg: "<strong>Merge PR #121</strong> docs update v3.18.0", tag: "merge" },
+    { time: "Apr 1", color: "var(--green)", msg: "<strong>Merge PR #120</strong> Fase 0 iOS — Vite + Firebase npm", tag: "merge" },
+  ]
+};
+
+// Render
+function render() {
+  document.getElementById("lastUpdate").textContent = "Atualizado: " + DASHBOARD_DATA.lastUpdate;
+  document.getElementById("kpiVersion").textContent = DASHBOARD_DATA.version;
+  document.getElementById("kpiTests").textContent = DASHBOARD_DATA.testsUnit;
+  document.getElementById("kpiTestsSub").textContent = DASHBOARD_DATA.testsUnitStatus;
+  document.getElementById("kpiIntTests").textContent = DASHBOARD_DATA.testsInt;
+  document.getElementById("kpiIssues").textContent = DASHBOARD_DATA.issuesOpen;
+  document.getElementById("kpiIssuesSub").textContent = DASHBOARD_DATA.issuesSub;
+
+  const banner = document.getElementById("healthBanner");
+  banner.className = "health-banner health-" + DASHBOARD_DATA.health;
+  document.getElementById("healthText").textContent = DASHBOARD_DATA.healthText;
+
+  // Activity timeline
+  const tl = document.getElementById("activityTimeline");
+  if (DASHBOARD_DATA.activity.length) {
+    tl.innerHTML = '<ul class="timeline">' + DASHBOARD_DATA.activity.map(a =>
+      `<li><span class="time">${a.time}</span><div class="dot" style="background:${a.color};"></div><div class="msg">${a.msg} <span class="tag">${a.tag}</span></div></li>`
+    ).join("") + "</ul>";
+  }
+
+  // Agent status
+  const now = new Date();
+  const lastPM = new Date("2026-04-09T13:00:00");
+  const diffHrs = (now - lastPM) / 36e5;
+  const pmDot = document.getElementById("pmStatus");
+  const pmText = document.getElementById("pmStatusText");
+  if (diffHrs < 12) { pmDot.className = "status-dot active"; pmText.textContent = "Recente"; }
+  else if (diffHrs < 24) { pmDot.className = "status-dot idle"; pmText.textContent = "Desatualizado"; }
+  else { pmDot.className = "status-dot standby"; pmText.textContent = "Aguardando"; }
+
+  document.getElementById("dmStatus").className = "status-dot standby";
+  document.getElementById("dmStatusText").textContent = "Standby";
+}
+
+render();
+</script>
+</body>
+</html>

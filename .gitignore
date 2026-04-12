@@ -53,3 +53,10 @@ DerivedData/
 
 # Scripts de debug/dev local (snapshots temporários do importar.js)
 importar-*.js
+
+# Squad IA -- estado efemero (adicionado 2026-04-10, pre-migration para C:\Dev)
+.auto-memory/
+SESSAO_HOJE.md
+docs/relatorio-diario*.html
+docs/PROMPT_CLAUDE_CODE_20260407.md
+docs/PROMPT_SPRINT3_AGENTE.md
