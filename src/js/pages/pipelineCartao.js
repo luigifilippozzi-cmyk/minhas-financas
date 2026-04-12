@@ -64,6 +64,8 @@ export function gerarProjecoes(linha, parcelamentoId) {
       data: dataProj, portador: linha.portador ?? '', responsavel: linha.portador ?? '',
       parcela: parcelaStr, tipo: 'projecao', parcelamento_id: parcelamentoId,
       chave_dedup: chaveDedup, status: 'pendente',
+      contaId: linha.contaId ?? '',       // RF-062: propaga cartão para projeções
+      mesFatura: linha.mesFatura ?? '',   // BUG-026: propaga mesFatura para projeções
     });
   }
   return projecoes;
