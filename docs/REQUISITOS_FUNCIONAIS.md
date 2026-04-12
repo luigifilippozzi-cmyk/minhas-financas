@@ -39,6 +39,9 @@
 | RF-024 | Importação de Extrato Bancário via Template XLSX | Alta | ✅ Implementado |
 | RF-060 | Planejamento Mensal — Visão Unificada de Despesas Previstas | Alta | ✅ Implementado |
 | RF-061 | Categorias e Orçamentos — Separação Despesa vs Receita | Alta | ✅ Implementado |
+| RF-062 | Cartões de Crédito como Contas Individuais | Alta | ⚪ Pendente |
+| RF-063 | Transferências Intra-Grupo (Settlement entre Membros) | Alta | ⚪ Pendente |
+| RF-064 | Reconciliação de Pagamento de Fatura de Cartão | Alta | ⚪ Pendente |
 
 ---
 
@@ -1152,3 +1155,346 @@ Categorias agora possuem um campo `tipo` (`'despesa'` ou `'receita'`), permitind
 - [ ] Página de Orçamentos exibe seções separadas com semântica distinta
 - [ ] Chips de receita mostram Meta/Recebido/Faltante corretamente
 - [ ] Testes existentes continuam passando (194/194)
+
+---
+
+## Contexto: Cadeia Real de Pagamento de Fatura (aplicável a RF-062, RF-063, RF-064)
+
+O pagamento da fatura do cartão na família Luigi/Ana acontece em **três etapas**, não em uma:
+
+```
+Etapa 1  [Luigi bank]  --PIX/TED--> [Ana bank]         (transferência intra-grupo)
+Etapa 2  [Ana bank]    --PAG FAT--> [Cartão X]         (pagamento de fatura)
+Etapa 3  [Cartão X]    ciclo mesFatura=YYYY-MM liquidado (N compras fechadas)
+```
+
+Sem modelar a cadeia, o total de gastos do mês conta o mesmo dinheiro **três vezes**: as compras individuais da fatura (ex.: R$ 3.500), o PAG FATURA no extrato da Ana (R$ 3.500) e o PIX Luigi→Ana no extrato do Luigi (R$ 1.750). Valor somado: R$ 8.750. Valor real: R$ 3.500. Erro de 150%.
+
+**Pontos de verdade:** a fonte de gastos reais são as compras individuais da fatura (já tratadas por NRF-005/NRF-010). As etapas 1 e 2 são movimentações de liquidação e não devem compor totais de gasto familiar. Cada uma tem semântica distinta, por isso são tratadas em RFs separados:
+
+- RF-062 — pré-requisito de modelagem (cartões como contas individuais)
+- RF-063 — etapa 1 (transferência Luigi ↔ Ana)
+- RF-064 — etapa 2 (pagamento da fatura no extrato da Ana)
+
+## RF-062: Cartões de Crédito como Contas Individuais
+**Prioridade:** Alta | **Versão:** TBD | **Status:** ⚪ Pendente
+**Bloqueia:** RF-064
+
+Transforma a conta única genérica `'Cartão de Crédito'` em N contas individuais do tipo `'cartao'`, cada uma representando um cartão real da família (ex.: "Itaú Visa Luigi", "Nubank Ana", "BTG Black"). Modelagem pré-requisito para RF-064 (Reconciliação de Pagamento de Fatura), que precisa saber **qual cartão** está sendo pago pelo débito no extrato bancário.
+
+### Motivação
+
+Hoje, `CONTAS_PADRAO` em `models/Conta.js` cria uma única conta `tipo:'cartao'` chamada "Cartão de Crédito" para todo grupo novo. O campo `portador` é usado como identificador de pessoa/titular no upload da fatura (NRF-010), não como identificador de cartão. Com múltiplos cartões reais, o app hoje não distingue qual cartão gerou qual despesa, o que impede dashboards por cartão, limite de gasto por cartão, reconciliação do pagamento da fatura (RF-064) e visão agrupada "quanto devo no cartão X".
+
+### Funcionalidades
+
+- **Cartão como conta de primeira classe** — cada cartão real é uma conta `tipo:'cartao'` distinta
+- **Novos campos na conta do tipo cartão:**
+  - `bandeira` — `'visa'` | `'mastercard'` | `'elo'` | `'amex'` | `'hiper'` | `'outros'`
+  - `emissor` — slug do banco emissor (`'itau'`, `'nubank'`, `'btg'`, `'bradesco'`, etc.) reaproveitando `bankFingerprintMap.js`
+  - `ultimos4` — 4 últimos dígitos (opcional)
+  - `diaFechamento` — dia do mês em que o ciclo fecha (1–31, opcional)
+  - `diaVencimento` — dia do mês em que a fatura vence (1–31, opcional)
+  - `contaPagadoraId` — conta `tipo:'banco'` de débito padrão (opcional, usado como hint em RF-064)
+  - `titularPadraoId` — ref ao usuário que normalmente paga esse cartão (hint para RF-063 e RF-064)
+- **CRUD de cartões** em `contas.html` com seção dedicada "Cartões de Crédito"
+- **Ajuste no import de fatura:** dropdown "Cartão" listando só contas `tipo:'cartao'`; auto-detecção via `emissor` cruzado com `bankFingerprintMap`; prompt para criar cartão se não houver compatível
+- **Remoção da conta genérica no seed:** `CONTAS_PADRAO` não cria mais "Cartão de Crédito" para grupos novos
+- **Migração de dados existentes:** script idempotente `migrarCartaoGenerico` em `app.js`; marca conta legada como `_legado:true`; exibe banner persistente pedindo criação de cartões reais; despesas antigas continuam funcionando (backward compat)
+
+### Schema Firestore — coleção `contas`
+
+Campos novos aplicáveis apenas quando `tipo === 'cartao'`:
+
+| Campo | Tipo | Obrigatório | Descrição |
+|-------|------|-------------|-----------|
+| `bandeira` | string | Não | `'visa'`, `'mastercard'`, `'elo'`, `'amex'`, `'hiper'`, `'outros'` |
+| `emissor` | string | Não | Slug do banco emissor |
+| `ultimos4` | string | Não | 4 últimos dígitos |
+| `diaFechamento` | number | Não | 1–31 |
+| `diaVencimento` | number | Não | 1–31 |
+| `contaPagadoraId` | string | Não | Ref a conta `tipo:'banco'` |
+| `titularPadraoId` | string | Não | Ref ao usuário pagador default |
+| `_legado` | boolean | Não | Marca a conta genérica durante migração |
+
+### Arquivos alterados
+
+| Arquivo | Alteração |
+|---------|-----------|
+| `src/js/models/Conta.js` | Novos campos no `modelConta()`; remover "Cartão de Crédito" de `CONTAS_PADRAO` |
+| `src/js/services/database.js` | `migrarCartaoGenerico()`; helper `buscarCartoes(grupoId)` |
+| `src/js/app.js` | Chamar `migrarCartaoGenerico` no boot após auth |
+| `src/js/controllers/contas.js` | CRUD com novos campos |
+| `src/contas.html` | Seção "Cartões de Crédito" + modal estendido |
+| `src/js/pages/importar.js` | Dropdown "Cartão"; auto-detect via `emissor` |
+| `src/importar.html` | Campo "Cartão" no banner de fatura |
+| `tests/services/database.test.js` | Cobertura de `migrarCartaoGenerico` |
+| `tests/models/Conta.test.js` | Novos campos no `modelConta` |
+
+### Critérios de Aceitação
+
+- [ ] `CONTAS_PADRAO` não contém mais a conta genérica "Cartão de Crédito"
+- [ ] Grupo novo faz onboarding sem cartão genérico pré-criado
+- [ ] Grupo existente com conta genérica + despesas antigas continua funcionando (backward compat)
+- [ ] Banner de migração aparece para grupos legados e desaparece após criar ao menos um cartão real
+- [ ] Modal de Contas tem seção dedicada a Cartões com todos os novos campos
+- [ ] Import de fatura exige seleção de cartão (não mais contaId genérico)
+- [ ] Auto-detecção por emissor funciona para Itaú, Nubank, Bradesco, BTG, Santander, Inter
+- [ ] Testes existentes continuam verdes (231+ unitários, 26 integração)
+
+### Riscos
+
+- **BUG-021/022/026** — qualquer mexida no fluxo de fatura pode regredir `mesFatura`. `import-pipeline-reviewer` obrigatório no PR.
+- **Despesas históricas órfãs** — decisão: não migrar automaticamente, deixar a critério do usuário.
+- **NRF-010 (Portador "Conjunto")** — o campo `portador` continua significando titular/pessoa. Garantir que fatura conjunta (50/50) não quebra.
+
+## RF-063: Transferências Intra-Grupo (Settlement entre Membros)
+**Prioridade:** Alta | **Versão:** TBD | **Status:** ⚪ Pendente
+**Bloqueia:** RF-064
+
+Introduz o tipo `'transferencia_interna'` para representar movimentações financeiras **entre membros do mesmo grupo familiar** (Luigi ↔ Ana), como a transferência PIX/TED que Luigi faz para a Ana cobrir sua parte da fatura. Essas movimentações aparecem como despesa no extrato do remetente e como receita no extrato do destinatário, mas do ponto de vista familiar são **líquido zero** e não devem compor totais de gasto nem receita.
+
+### Motivação
+
+O workflow real da família é: Luigi transfere sua parte (~R$ 1.750) para a Ana, que então paga a fatura inteira (~R$ 3.500) do cartão. Hoje a saída do PIX no extrato do Luigi conta como `despesa` e a entrada na Ana como `receita`, inflando agregados brutos do dashboard, consumindo orçamentos indevidamente e mostrando picos artificiais no fluxo de caixa anual.
+
+### Funcionalidades
+
+**1. Novo tipo `'transferencia_interna'`**
+
+Aplicável tanto a `despesas` (remetente) quanto a `receitas` (destinatário). Seguindo o padrão do `'projecao'`:
+
+- Persistidas no Firestore mas **filtradas fora** de todos os agregados via novo helper `isMovimentacaoReal`
+- Aparecem no extrato da conta com badge visual diferenciado ("🔁 Transferência interna")
+- Nunca são `isConjunta` (rateio 50/50 não se aplica)
+- Não consomem `categoriaId`
+- **Emparelhamento:** cada despesa `'transferencia_interna'` tem uma receita par com `contrapartidaId` cruzado
+
+**2. Detecção automática no import**
+
+Novo módulo `utils/detectorTransferenciaInterna.js`:
+
+- **Regex no descritivo:** `/pix\s*(enviad|transfer|trans)|ted\s*enviad|transf\s*(para|enviad)/i`
+- **Regex no destinatário:** nome de outro membro do grupo
+- **Match com contraparte:** valor exato + janela temporal ±2 dias úteis + descritivo reverso no extrato da outra pessoa
+- **Contas envolvidas:** conta origem ≠ destino, ambas no mesmo `grupoId`
+
+Fluxo:
+1. Durante import, identifica candidatos por regex + nome de membro
+2. Busca contraparte já importada em `despesas`/`receitas` do grupo
+3. Com par: cria ambos como `'transferencia_interna'`, preenche `contrapartidaId` cruzado, marca `statusReconciliacao: 'auto'`
+4. Sem par: cria só um lado com `'pendente_contraparte'`
+5. Batch `reconciliarTransferenciasPendentes` completa pares retroativamente quando o segundo extrato chega
+
+**3. Registro manual**
+
+Botão "🔁 Marcar como transferência interna" em `despesas.html` e `receitas.html` que abre modal perguntando a pessoa destinatária/remetente e oferece criar a contraparte.
+
+**4. Hint opcional de fatura**
+
+Campos opcionais `mesFaturaRelacionado` + `contaCartaoIdRelacionado` como etiqueta visual (ex.: "Luigi → Ana — relativo à fatura Nubank 04/2026"). **Não é a reconciliação oficial da fatura** — isso acontece em RF-064.
+
+### Schema Firestore — coleções `despesas` e `receitas`
+
+Novos campos aplicáveis quando `tipo === 'transferencia_interna'`:
+
+| Campo | Tipo | Obrigatório | Descrição |
+|-------|------|-------------|-----------|
+| `tipo` | string | Sim | `'transferencia_interna'` |
+| `contrapartidaId` | string | Sim quando emparelhado | ID da contraparte (despesa ↔ receita) |
+| `membroDestinoId` | string | Sim (na despesa) | Usuário que recebeu |
+| `membroOrigemId` | string | Sim (na receita) | Usuário que enviou |
+| `statusReconciliacao` | string | Sim | `'auto'` \| `'manual'` \| `'pendente_contraparte'` |
+| `mesFaturaRelacionado` | string | Não | `"YYYY-MM"` (hint visual) |
+| `contaCartaoIdRelacionado` | string | Não | Ref a cartão (hint visual) |
+
+### Comportamento em agregados
+
+Novo helper em `utils/helpers.js`:
+
+```js
+export function isMovimentacaoReal(d) {
+  return d.tipo !== 'projecao'
+      && d.tipo !== 'transferencia_interna'
+      && d.tipo !== 'pagamento_fatura';  // introduzido em RF-064
+}
+```
+
+Todos os filtros existentes `tipo !== 'projecao'` devem migrar para este helper (dashboard, despesas, receitas, orçamentos, planejamento, fluxo de caixa).
+
+### Arquivos alterados
+
+| Arquivo | Alteração |
+|---------|-----------|
+| `src/js/models/Despesa.js` | Aceitar `'transferencia_interna'` + novos campos |
+| `src/js/models/Receita.js` | Mesmo |
+| `src/js/utils/helpers.js` | Novo helper `isMovimentacaoReal(d)` |
+| `src/js/utils/detectorTransferenciaInterna.js` | *(novo)* Heurísticas de detecção e match |
+| `src/js/pages/pipelineBanco.js` | Chamar detector após `classificarBanco` |
+| `src/js/services/database.js` | `reconciliarTransferenciasPendentes(grupoId)`; `listarMembrosGrupo(grupoId)` |
+| `src/js/controllers/dashboard.js` | Usar `isMovimentacaoReal` |
+| `src/js/pages/despesas.js` | Mesmo; ação "Marcar como transferência interna"; badge visual |
+| `src/js/pages/receitas.js` | Mesmo |
+| `src/js/controllers/orcamentos.js` | Mesmo |
+| `src/js/controllers/planejamento.js` | Mesmo |
+| `src/js/pages/fluxo-caixa.js` | Mesmo |
+| `tests/utils/detectorTransferenciaInterna.test.js` | *(novo)* |
+| `tests/integration/transferenciasInternas.test.js` | *(novo)* |
+
+### Critérios de Aceitação
+
+- [ ] Novo tipo `'transferencia_interna'` é aceito por Despesa e Receita
+- [ ] Helper `isMovimentacaoReal` é usado em todos os agregados
+- [ ] Dashboard não soma transferências internas em "gastos" nem "receita" do mês
+- [ ] Detector identifica PIX Luigi → Ana automaticamente pelo descritivo + nome do membro
+- [ ] Match com contraparte cria `contrapartidaId` cruzado quando ambos os extratos estão no banco
+- [ ] Transferência sem par fica como `'pendente_contraparte'`
+- [ ] Batch `reconciliarTransferenciasPendentes` completa pares retroativamente
+- [ ] Ação manual permite marcar despesa/receita existente como transferência interna
+- [ ] Badge visual "🔁 Transferência interna" no extrato da conta
+- [ ] Hint `mesFaturaRelacionado` aparece como etiqueta visual quando preenchido
+- [ ] Testes existentes continuam verdes
+
+### Riscos
+
+- **Falsos positivos** — um PIX real para terceiros pode ter nome "Ana". Mitigação: match só com membros cadastrados + valor ≥ R$ 100 + contas já mapeadas.
+- **NRF-010** — transferências internas nunca são `isConjunta`. Cobrir com teste.
+- **Histórico** — transferências antigas continuam como despesa/receita até reconciliação manual. Botão em massa na aba Gerenciar fica para release futura.
+
+## RF-064: Reconciliação de Pagamento de Fatura de Cartão
+**Prioridade:** Alta | **Versão:** TBD | **Status:** ⚪ Pendente
+**Depende de:** RF-062 e RF-063
+
+Introduz o tipo `'pagamento_fatura'` ligando a linha de débito no extrato bancário (PAG FATURA na conta pagadora) à fatura de cartão que ela liquida. Junto com RF-063, completa a modelagem da cadeia real de pagamento Luigi → Ana → Cartão.
+
+### Posição na cadeia
+
+```
+[Luigi bank] --PIX Ana--> [Ana bank]    ← RF-063 trata aqui (transferencia_interna)
+[Ana bank]   --PAG FAT--> [Cartão X]    ← RF-064 trata aqui (pagamento_fatura)
+[Cartão X]   ciclo mesFatura=YYYY-MM liquidado (compras do ciclo)
+```
+
+RF-064 **não** tenta rastrear quem financiou cada centavo do pagamento. A linha PAG FATURA no extrato é um evento único ligado a um ciclo único. Se o pagador usou dinheiro próprio + transferências recebidas, isso é tratado na etapa 1 (RF-063) e não afeta a reconciliação cartão↔extrato.
+
+### Motivação
+
+Hoje o app trata os dois lados do pagamento de fatura de forma inconsistente:
+
+- **Lado fatura** — `normalizadorTransacoes.js` linha 106 descarta silenciosamente linhas com `pagamento de fatura|inclusao de pagamento|parcela de fatura rotativo`
+- **Lado extrato** — `pipelineBanco.classificarBanco()` classifica toda linha negativa como `despesa`, sem regra especial para PAG FATURA
+
+Resultado: uma fatura de R$ 3.500 com 40 compras detalhadas + o pagamento de R$ 3.500 no extrato são contados como R$ 7.000 de gastos no mês.
+
+### Funcionalidades
+
+**1. Novo tipo `'pagamento_fatura'`**
+
+Adicionado ao enum de `tipo` existente. Linhas com `'pagamento_fatura'`:
+
+- Persistidas no Firestore normalmente
+- Filtradas fora dos agregados via `isMovimentacaoReal` (helper de RF-063)
+- Aparecem na página de Fatura como "liquidação do ciclo"
+- Aparecem no extrato da conta pagadora com badge visual diferenciado
+- Nunca são `isConjunta`
+- Não consomem `categoriaId`
+
+**2. Detecção automática no pipeline bancário**
+
+Novo módulo `utils/reconciliadorFatura.js`. Em `pipelineBanco.js`, após `classificarBanco()` e após o detector de transferências internas (RF-063), novo passo `detectarPagamentoFatura()` varre linhas `tipoLinha: 'despesa'` restantes:
+
+- **Regex:** `/pag(amento|to)?\s*(da\s*)?fatura|pag\s*cart[aã]o|pagto\s*cart|fatura\s*(itau|nubank|bradesco|btg|visa|mastercard)/i`
+- **Match de valor:** valor == total líquido da fatura de algum cartão (`soma(despesas where mesFatura=X and contaCartaoId=Y and tipo='despesa') - soma(estornos)`)
+- **Janela temporal:** ±5 dias úteis do `diaVencimento` do cartão candidato
+- **Conta de destino:** bate com `contaPagadoraId` do cartão (quando preenchido)
+
+Score 0–100 + candidatos:
+- **≥ 90 e candidato único** → auto-reconciliação silenciosa
+- **60–89 ou múltiplos candidatos** → `statusReconciliacao: 'pendente'`, aparece na UI
+- **< 60** → mantém como `'despesa'` normal
+
+**3. UI de Reconciliação**
+
+Nova aba "🔗 Reconciliação" em `fatura.html`, com quatro seções:
+
+- **Ciclos abertos** — faturas com `mesFatura` atual/futuro sem pagamento
+- **Ciclos fechados não pagos** — faturas passadas sem `pagamento_fatura` linkado (alerta)
+- **Ciclos pagos** — com pagamento linkado, mostrando data/valor/conta origem
+- **Pagamentos pendentes** — `'pagamento_fatura'` com `statusReconciliacao: 'pendente'`
+
+Ações:
+- **Linkar** — dropdown de ciclos candidatos; atualiza `mesFaturaPago` + `contaCartaoId` + `'manual'`
+- **Ignorar** — volta `tipo` para `'despesa'`
+- **Desvincular** — limpa os campos de reconciliação
+- **Registrar pagamento manual** — modal para criar `'pagamento_fatura'` manualmente
+
+**4. Tratamento de casos especiais**
+
+- **Pagamento parcial** — valor < total. Marca `'parcial'`, UI mostra "pagamento parcial de R$ X de R$ Y"
+- **Pagamento antecipado** — débito antes do fechamento. Auto-detecção encontra ciclo aberto mais próximo
+- **Refinanciamento/rotativo** — "parcela de fatura rotativo" continua descartada no pipelineCartao
+- **Fatura zerada por estornos** — ciclo com total líquido = 0 não gera candidato
+- **Importação em ordem errada** — extrato antes da fatura. Batch `reconciliarPagamentosPendentes` reavalia candidatos dos últimos 90 dias quando a fatura chega
+- **Cadeia Luigi → Ana → Cartão** — a transferência Luigi → Ana já foi tratada por RF-063 e não aparece como candidata (já marcada como `'transferencia_interna'`)
+
+### Schema Firestore — coleção `despesas`
+
+Novos campos aplicáveis quando `tipo === 'pagamento_fatura'`:
+
+| Campo | Tipo | Obrigatório | Descrição |
+|-------|------|-------------|-----------|
+| `tipo` | string | Sim | `'pagamento_fatura'` |
+| `mesFaturaPago` | string | Sim quando reconciliado | `"YYYY-MM"` do ciclo quitado |
+| `contaCartaoId` | string | Sim quando reconciliado | Ref a conta `tipo:'cartao'` |
+| `statusReconciliacao` | string | Sim | `'auto'` \| `'manual'` \| `'pendente'` \| `'parcial'` \| `'ignorado'` |
+| `reconciliadoEm` | timestamp | Não | Quando o link foi criado |
+| `contaId` | string | Sim | Conta bancária que debitou (NRF-004) |
+
+### Arquivos alterados
+
+| Arquivo | Alteração |
+|---------|-----------|
+| `src/js/models/Despesa.js` | Aceitar `'pagamento_fatura'` + novos campos |
+| `src/js/utils/helpers.js` | Atualizar `isMovimentacaoReal` para excluir `'pagamento_fatura'` |
+| `src/js/utils/reconciliadorFatura.js` | *(novo)* Heurísticas de match |
+| `src/js/pages/pipelineBanco.js` | Novo passo `detectarPagamentoFatura` após detector de transferências |
+| `src/js/pages/importar.js` | Integração no preview; badge visual |
+| `src/js/services/database.js` | `buscarFaturaLiquida()`; `listarPagamentosPendentes()`; `reconciliarPagamentosPendentes()` |
+| `src/js/pages/fatura.js` | Nova aba "Reconciliação" com 4 seções |
+| `src/fatura.html` | Markup da nova aba |
+| `src/css/main.css` | Classes `rec-*` |
+| `firestore.indexes.json` | Índice composto `grupoId + tipo + statusReconciliacao` |
+| `tests/utils/reconciliadorFatura.test.js` | *(novo)* |
+| `tests/pages/pipelineBanco.test.js` | Cobertura de `detectarPagamentoFatura` |
+| `tests/integration/reconciliacaoFatura.test.js` | *(novo)* End-to-end |
+
+### Critérios de Aceitação
+
+- [ ] Novo tipo `'pagamento_fatura'` aceito pelo modelo Despesa
+- [ ] Dashboard não soma `'pagamento_fatura'` em "gastos do mês"
+- [ ] Orçamento por categoria não é afetado
+- [ ] Pipeline detecta candidato por regex + valor + janela temporal + conta destino
+- [ ] Auto-reconciliação silenciosa quando score ≥ 90 e candidato único
+- [ ] Múltiplos candidatos → `'pendente'` para decisão manual
+- [ ] Pagamento parcial detectado e marcado como `'parcial'`
+- [ ] UI lista ciclos abertos/fechados/pagos/pendentes corretamente
+- [ ] Ações Linkar/Ignorar/Desvincular/Registrar Manual funcionam
+- [ ] Batch `reconciliarPagamentosPendentes` reavalia pendentes após import retroativo
+- [ ] Linhas `'pagamento_fatura'` aparecem no extrato com badge visual
+- [ ] Fatura mostra "ciclo liquidado em DD/MM/AAAA pelo débito X no Banco Y"
+- [ ] **Cadeia Luigi → Ana → Cartão funciona end-to-end nos testes de integração:**
+  - Import do extrato do Luigi → PIX para Ana vira `'transferencia_interna'`
+  - Import do extrato da Ana → PIX recebido emparelha; PAG FATURA vira `'pagamento_fatura'` linkado ao ciclo
+  - Dashboard mostra R$ 3.500 de gastos (valor real), não R$ 8.750
+- [ ] Testes existentes continuam verdes
+- [ ] Cobertura ≥ 85% em `reconciliadorFatura.js`
+- [ ] `import-pipeline-reviewer` aprova PR sem regressão em BUG-021/022/026
+- [ ] `security-reviewer` aprova uso de `escHTML` na nova UI
+
+### Riscos
+
+- **Double count histórico** — despesas antigas importadas como "pag fatura" continuam como `'despesa'`. Batch retroativo cobre 90 dias; casos mais antigos via Gerenciar (RF-018).
+- **BUG-021/022/026** — lógica nova vive em `reconciliadorFatura.js` sem tocar em `pipelineCartao.js` nem em `normalizadorTransacoes.js:106`
+- **Ordem de detecção** — RF-063 (transferência) deve rodar **antes** de RF-064 (pagamento) no pipeline bancário
+- **NRF-010** — pagamentos de fatura nunca são `isConjunta`
+- **Performance** — cachear fatura líquida em memória durante o import para evitar queries linha a linha
