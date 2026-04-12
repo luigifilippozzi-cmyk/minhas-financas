@@ -42,7 +42,7 @@ export function detectarMembroNaDescricao(descricao, nomesMembros, uidExcluir = 
     const partes = nomeCompleto.trim().split(/\s+/);
     // Tenta match com nome completo primeiro, depois primeiro nome (mín 3 chars)
     const nomeCompletoNorm = normalizarStr(nomeCompleto);
-    if (nomeCompletoNorm && descNorm.includes(nomeCompletoNorm)) {
+    if (nomeCompletoNorm && nomeCompletoNorm.length >= 3 && descNorm.includes(nomeCompletoNorm)) {
       return { uid, nome: nomeCompleto };
     }
     const primeiroNome = normalizarStr(partes[0]);
