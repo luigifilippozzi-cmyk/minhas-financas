@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { aplicarMesFatura, filtrarCreditos, processarFaturaCartao } from '../../src/js/pages/pipelineCartao.js';
+import { aplicarMesFatura, filtrarCreditos, processarFaturaCartao, gerarProjecoes } from '../../src/js/pages/pipelineCartao.js';
 
 // ── Helpers ──────────────────────────────────────────────────────
 function linha(overrides = {}) {
@@ -88,5 +88,53 @@ describe('processarFaturaCartao', () => {
     const estorno = linhas.find(l => l.descricao === 'ESTORNO XYZ');
     expect(estorno?.tipoLinha).toBe('receita');
     expect(estorno?.isEstorno).toBe(true);
+  });
+});
+
+// ── RF-062: gerarProjecoes propaga contaId e mesFatura ──────────
+describe('gerarProjecoes', () => {
+  it('propaga contaId para todas as projeções', () => {
+    const l = linha({
+      descricao: 'SHOPEE', valor: 100, parcela: '01/06',
+      portador: 'Ana', contaId: 'cartao-nubank-123',
+    });
+    const projs = gerarProjecoes(l, 'parc-001');
+    expect(projs).toHaveLength(5);
+    expect(projs.every(p => p.contaId === 'cartao-nubank-123')).toBe(true);
+  });
+
+  it('propaga mesFatura para todas as projeções', () => {
+    const l = linha({
+      descricao: 'SHOPEE', valor: 100, parcela: '01/06',
+      portador: 'Ana', mesFatura: '2026-04',
+    });
+    const projs = gerarProjecoes(l, 'parc-001');
+    expect(projs.every(p => p.mesFatura === '2026-04')).toBe(true);
+  });
+
+  it('contaId vazio quando não fornecido', () => {
+    const l = linha({
+      descricao: 'SHOPEE', valor: 100, parcela: '01/03',
+      portador: 'Ana',
+    });
+    const projs = gerarProjecoes(l, 'parc-001');
+    expect(projs.every(p => p.contaId === '')).toBe(true);
+  });
+
+  it('retorna vazio para linhas sem parcela', () => {
+    const l = linha({ descricao: 'NETFLIX', valor: 44.90, parcela: '-' });
+    const projs = gerarProjecoes(l, 'parc-001');
+    expect(projs).toHaveLength(0);
+  });
+
+  it('gera N-atual projeções com tipo "projecao"', () => {
+    const l = linha({
+      descricao: 'MAGAZINELUIZA', valor: 200, parcela: '02/05',
+      portador: 'Luigi',
+    });
+    const projs = gerarProjecoes(l, 'parc-002');
+    expect(projs).toHaveLength(3); // parcelas 3, 4, 5
+    expect(projs.every(p => p.tipo === 'projecao')).toBe(true);
+    expect(projs.every(p => p.parcelamento_id === 'parc-002')).toBe(true);
   });
 });
