@@ -7,6 +7,14 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.21.1] - 2026-04-12
+
+### Corrigido
+
+- **Navbar responsiva (#130/#131):** com 10 links após RF-062, a navbar ficava cortada em telas menores. Ícones removidos (texto sempre visível), padding reduzido, media queries para ≤1280px (oculta nome do usuário) e ≤1024px (fonte menor, oculta nome da marca).
+
+---
+
 ## [3.21.0] - 2026-04-12
 
 ### Adicionado
