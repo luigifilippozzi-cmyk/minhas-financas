@@ -8,7 +8,7 @@
 
 - **Usuários:** Luigi + Ana (casal)
 - **Dev:** Luigi (solo developer)
-- **Versão atual:** v3.21.1
+- **Versão atual:** v3.22.0
 - **Repo:** https://github.com/luigifilippozzi-cmyk/minhas-financas
 - **Stack:** HTML5 · CSS3 · JS ES6+ · **Vite 5** (bundler MPA) · **Capacitor 8** (iOS) · Firebase Auth · Cloud Firestore (via npm) · Chart.js v4 · SheetJS (XLSX)
 
@@ -20,7 +20,7 @@
 npm run dev                 # Vite dev server (HMR, hot reload)
 npm run build               # Vite build → dist/ (produção)
 npm run preview             # Preview do build de produção
-npm test                    # Vitest — roda suite de 252+ testes unitários
+npm test                    # Vitest — roda suite de 284 testes unitários
 npm run test:watch          # Vitest em modo watch
 npm run test:coverage       # Coverage com V8
 npm run test:integration    # Testes de integração (requer Firebase Emulator)
@@ -187,7 +187,7 @@ Todas as cores, sombras e fontes estão em `variables.css` como CSS custom prope
 
 - Framework: **Vitest** com `@vitest/coverage-v8`
 - Localização: `tests/` (espelho de `src/js/utils/` e `src/js/services/`)
-- **252+ testes unitários** cobrindo: parsers, dedup, ajusteDetector, normalizador, pipelineCartao, importarDedup
+- **284 testes unitários** cobrindo: parsers, dedup, ajusteDetector, normalizador, pipelineCartao, importarDedup, detectorTransferenciaInterna
 - **26 testes de integração** (Firebase Emulator): regras Firestore, CRUD despesas, purge em lote
 - **Rodar antes de qualquer commit:** `npm test`
 - Testes de integração: `npm run test:integration` (requer emulador na porta 8080)
@@ -201,7 +201,7 @@ Todas as cores, sombras e fontes estão em `variables.css` como CSS custom prope
 | Milestone | Progresso | Status |
 |-----------|-----------|--------|
 | Requisitos Funcionais (backlog anterior) | 42/42 (100%) | ✅ Concluído |
-| Reconciliação Fatura ↔ Extrato (RF-062/063/064) | 1/3 (33%) | 🔵 Em andamento |
+| Reconciliação Fatura ↔ Extrato (RF-062/063/064) | 2/3 (67%) | 🔵 Em andamento |
 | Melhorias Visuais | 26/26 (100%) | ✅ Concluído |
 | Manutenibilidade e Arquitetura | Completo | ✅ Concluído (v3.20.0) |
 | iOS App Fase 0 (Vite + Firebase npm) | 2/2 (100%) | ✅ Concluído |
@@ -214,7 +214,7 @@ Todas as cores, sombras e fontes estão em `variables.css` como CSS custom prope
 Luigi (Product Owner)
   ├── PM Agent          → Relatório diário, métricas, alertas (read-only)
   └── Dev Manager       → Executor de código, orquestrador de subagentes
-        ├── test-runner              → Vitest (252+ testes) + coverage
+        ├── test-runner              → Vitest (284 testes) + coverage
         ├── security-reviewer        → Firestore rules, escHTML/XSS, auth
         └── import-pipeline-reviewer → Pipeline de importação (parser, dedup, ajuste)
 ```
@@ -222,8 +222,8 @@ Detalhes completos em `AGENTS.md`. Memória persistente em `.auto-memory/project
 
 ### Próximas prioridades
 1. ~~**RF-062** — Cartões como contas individuais — issue `#125`~~ ✅ Concluído (v3.21.0, PR #128)
-2. **RF-063** — Transferências intra-grupo (Luigi ↔ Ana) — issue `#126` (pode iniciar agora)
-3. **RF-064** — Reconciliação de pagamento de fatura — issue `#127` (depende de #126)
+2. ~~**RF-063** — Transferências intra-grupo (Luigi ↔ Ana) — issue `#126`~~ ✅ Concluído (v3.22.0, PR #132)
+3. **RF-064** — Reconciliação de pagamento de fatura — issue `#127` (pode iniciar agora)
 4. **iOS App Fase 2** — Firebase nativo via plugins (issues #77–#80)
 5. **iOS App Fase 3** — Ajustes UX mobile (issues #81–#83)
 
@@ -263,7 +263,7 @@ git checkout -b feat/MF-{issue}-{descricao-kebab}   # ou fix/MF-{issue}-...
 # 3. Implementar (seguir padrões deste CLAUDE.md)
 
 # 4. Testar — OBRIGATÓRIO antes de commit
-npm test                    # 231+ testes devem passar
+npm test                    # 284 testes devem passar
 
 # 5. Acionar subagentes (ver AGENTS.md §6)
 #    - test-runner: SEMPRE antes de PR
