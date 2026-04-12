@@ -53,6 +53,21 @@ export function debounce(fn, delay = 300) {
   };
 }
 
+// ── RF-063: Filtro de movimentações reais ─────────────────────
+
+/**
+ * Retorna true se a despesa/receita representa uma movimentação financeira real
+ * (não é projeção nem transferência interna entre membros do grupo).
+ * Usar em todos os agregados de "gastos" e "receita" do mês.
+ * @param {{ tipo?: string }} d
+ * @returns {boolean}
+ */
+export function isMovimentacaoReal(d) {
+  return d.tipo !== 'projecao'
+      && d.tipo !== 'transferencia_interna';
+  // RF-064 (futuro): && d.tipo !== 'pagamento_fatura'
+}
+
 // ── NRF-002: Fuzzy Matching ─────────────────────────────────
 
 /**

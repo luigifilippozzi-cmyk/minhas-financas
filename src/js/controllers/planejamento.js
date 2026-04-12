@@ -218,7 +218,9 @@ export function analisarGaps(orcamentos, planejamentoItems, categorias) {
 export function despesasNaoPlanejadas(despesasRealizadas, planejamentoItems) {
   const idsMatch = new Set(planejamentoItems.filter(i => i.despesaId).map(i => i.despesaId));
   return despesasRealizadas.filter(d =>
-    d.tipo !== 'projecao' && d.tipo !== 'projecao_paga' && !idsMatch.has(d.id)
+    d.tipo !== 'projecao' && d.tipo !== 'projecao_paga'
+    && d.tipo !== 'transferencia_interna' // RF-063
+    && !idsMatch.has(d.id)
   );
 }
 

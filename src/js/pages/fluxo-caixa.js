@@ -11,6 +11,7 @@ import {
   buscarOrcamentosAno,
 } from '../services/database.js';
 import { coresGrafico } from '../utils/chartColors.js';
+import { isMovimentacaoReal } from '../utils/helpers.js';
 
 // ── Constantes ────────────────────────────────────────────────
 
@@ -115,8 +116,8 @@ function agregarMensalmente(despesas, receitas, orcamentos) {
     recMes[d.getMonth()] += r.valor ?? 0;
   });
 
-  // Exclui projeções (parcelamentos futuros) das despesas realizadas
-  despesas.filter((d) => d.tipo !== 'projecao').forEach((d) => {
+  // Exclui projeções e transferências internas das despesas realizadas
+  despesas.filter(isMovimentacaoReal).forEach((d) => {
     const dt = d.data?.toDate?.() ?? new Date(d.data);
     despMes[dt.getMonth()] += d.valor ?? 0;
   });
