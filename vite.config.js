@@ -21,6 +21,7 @@ export default defineConfig({
         'base-dados': resolve(__dirname, 'src/base-dados.html'),
         grupo:        resolve(__dirname, 'src/grupo.html'),
         planejamento: resolve(__dirname, 'src/planejamento.html'),
+        contas:       resolve(__dirname, 'src/contas.html'),
       },
     },
   },

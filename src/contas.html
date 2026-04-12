@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Contas e Cartões — Minhas Finanças</title>
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+
+  <!-- Header / Navbar -->
+  <header class="navbar">
+    <div class="navbar-brand">
+      <a href="dashboard.html" class="navbar-back" title="Voltar ao Dashboard"><i data-lucide="arrow-left"></i></a>
+      <i data-lucide="wallet" class="brand-icon"></i>
+      <span>Contas e Cartões</span>
+    </div>
+    <div class="navbar-user">
+      <span id="usuario-nome">Carregando...</span>
+      <a href="dashboard.html"      class="btn btn-outline btn-sm"><i data-lucide="layout-dashboard" class="nav-icon"></i> Dashboard</a>
+      <a href="planejamento.html"   class="btn btn-outline btn-sm"><i data-lucide="clipboard-list" class="nav-icon"></i> Planejamento</a>
+      <a href="despesas.html"    class="btn btn-outline btn-sm"><i data-lucide="trending-down" class="nav-icon"></i> Despesas</a>
+      <a href="receitas.html"    class="btn btn-outline btn-sm"><i data-lucide="wallet" class="nav-icon"></i> Receitas</a>
+      <a href="orcamentos.html"  class="btn btn-outline btn-sm"><i data-lucide="piggy-bank" class="nav-icon"></i> Orçamentos</a>
+      <a href="fluxo-caixa.html" class="btn btn-outline btn-sm"><i data-lucide="line-chart" class="nav-icon"></i> Fluxo de Caixa</a>
+      <a href="categorias.html"  class="btn btn-outline btn-sm"><i data-lucide="tags" class="nav-icon"></i> Categorias</a>
+      <a href="fatura.html"      class="btn btn-outline btn-sm"><i data-lucide="credit-card" class="nav-icon"></i> Fatura</a>
+      <a href="contas.html"      class="btn btn-primary  btn-sm"><i data-lucide="wallet" class="nav-icon"></i> Contas</a>
+      <a href="base-dados.html"  class="btn btn-outline btn-sm"><i data-lucide="database" class="nav-icon"></i> Base de Dados</a>
+      <button id="btn-logout"    class="btn btn-outline btn-sm">Sair</button>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="main-content">
+
+    <!-- RF-062: Banner de migração para grupos legados -->
+    <div id="banner-migracao" class="hidden" style="background:var(--warning-bg,#fff3cd);border:1px solid var(--warning-border,#ffc107);border-radius:var(--radius-md,8px);padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;">
+      <span style="font-size:1.5rem;">⚠️</span>
+      <div style="flex:1;min-width:200px;">
+        <strong>Migração necessária:</strong> Seu grupo usa a conta genérica "Cartão de Crédito".
+        Crie pelo menos um cartão real abaixo para identificar corretamente suas faturas.
+      </div>
+    </div>
+
+    <!-- Seção: Cartões de Crédito -->
+    <section class="section">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">💳 Cartões de Crédito</h2>
+          <p class="section-subtitle">Cada cartão real da família. Usado na importação de fatura e no dashboard.</p>
+        </div>
+        <button id="btn-novo-cartao" class="btn btn-primary">+ Novo Cartão</button>
+      </div>
+      <div id="cartoes-lista" class="cat-lista">
+        <p class="empty-state">Carregando cartões...</p>
+      </div>
+    </section>
+
+    <!-- Seção: Contas Bancárias -->
+    <section class="section">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">🏦 Contas Bancárias</h2>
+          <p class="section-subtitle">Contas de banco e dinheiro usadas no extrato.</p>
+        </div>
+      </div>
+      <div id="bancos-lista" class="cat-lista">
+        <p class="empty-state">Carregando contas...</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal: Criar/Editar Cartão -->
+  <div id="modal-cartao" class="modal hidden">
+    <div class="modal-content" style="max-width:520px;">
+      <div class="modal-header">
+        <h3 id="modal-cartao-titulo">Novo Cartão</h3>
+        <button id="btn-fechar-modal-cartao" class="modal-close">&times;</button>
+      </div>
+      <form id="form-cartao" autocomplete="off">
+        <div class="form-group">
+          <label for="inp-cartao-nome">Nome do cartão *</label>
+          <input id="inp-cartao-nome" class="form-input" type="text" placeholder="Ex: Nubank Ana, Itaú Visa Luigi" required />
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
+          <div class="form-group">
+            <label for="sel-cartao-emissor">Emissor</label>
+            <select id="sel-cartao-emissor" class="select-input">
+              <option value="">— selecione —</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="sel-cartao-bandeira">Bandeira</label>
+            <select id="sel-cartao-bandeira" class="select-input">
+              <option value="">— selecione —</option>
+              <option value="visa">Visa</option>
+              <option value="mastercard">Mastercard</option>
+              <option value="elo">Elo</option>
+              <option value="amex">American Express</option>
+              <option value="hiper">Hiper</option>
+              <option value="outros">Outros</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;">
+          <div class="form-group">
+            <label for="inp-cartao-ultimos4">Últimos 4 dígitos</label>
+            <input id="inp-cartao-ultimos4" class="form-input" type="text" maxlength="4" pattern="\d{0,4}" placeholder="1234" />
+          </div>
+          <div class="form-group">
+            <label for="inp-cartao-fechamento">Dia fechamento</label>
+            <input id="inp-cartao-fechamento" class="form-input" type="number" min="1" max="31" placeholder="Ex: 20" />
+          </div>
+          <div class="form-group">
+            <label for="inp-cartao-vencimento">Dia vencimento</label>
+            <input id="inp-cartao-vencimento" class="form-input" type="number" min="1" max="31" placeholder="Ex: 5" />
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
+          <div class="form-group">
+            <label for="sel-cartao-pagadora">Conta pagadora</label>
+            <select id="sel-cartao-pagadora" class="select-input">
+              <option value="">— nenhuma —</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="sel-cartao-titular">Titular padrão</label>
+            <select id="sel-cartao-titular" class="select-input">
+              <option value="">— nenhum —</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:.75rem;align-items:center;">
+          <div class="form-group" style="margin-bottom:0;">
+            <label for="inp-cartao-emoji">Emoji</label>
+            <input id="inp-cartao-emoji" class="form-input" type="text" value="💳" style="width:3.5rem;text-align:center;" />
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label for="inp-cartao-cor">Cor</label>
+            <input id="inp-cartao-cor" type="color" value="#7B1FA2" style="height:2.5rem;border:none;cursor:pointer;" />
+          </div>
+        </div>
+        <div class="modal-footer" style="margin-top:1.25rem;">
+          <button type="button" id="btn-cancelar-cartao" class="btn btn-outline">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="js/pages/contas.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => lucide.createIcons());</script>
+</body>
+</html>

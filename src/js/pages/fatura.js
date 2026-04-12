@@ -100,16 +100,21 @@ function configurarEventos() {
 function preencherSeletorCartao() {
   const sel = document.getElementById('sel-cartao');
   const anterior = sel.value;
-  // Mostra todos os tipos para permitir análise de qualquer conta
+  // RF-062: mostra cartões reais + legado (backward compat)
+  const cartoes = _contas.filter(c => c.tipo === 'cartao');
   sel.innerHTML = '<option value="">— selecione —</option>' +
-    _contas.map(c => `<option value="${c.id}">${c.emoji} ${c.nome}</option>`).join('');
-  if (anterior && _contas.find(c => c.id === anterior)) {
+    cartoes.map(c => {
+      const tag = c._legado ? ' (legado)' : '';
+      return `<option value="${c.id}">${c.emoji} ${c.nome}${tag}</option>`;
+    }).join('');
+  if (anterior && cartoes.find(c => c.id === anterior)) {
     sel.value = anterior;
     _cartaoId = anterior;
   }
-  // Auto-seleciona o primeiro cartão de crédito se nenhum selecionado
+  // Auto-seleciona o primeiro cartão real (não-legado) ou legado como fallback
   if (!_cartaoId) {
-    const cartao = _contas.find(c => c.tipo === 'cartao');
+    const real = cartoes.find(c => !c._legado);
+    const cartao = real ?? cartoes[0];
     if (cartao) { sel.value = cartao.id; _cartaoId = cartao.id; recarregarDespesas(); }
   }
 }
