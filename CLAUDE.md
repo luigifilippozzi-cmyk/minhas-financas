@@ -8,7 +8,7 @@
 
 - **Usuários:** Luigi + Ana (casal)
 - **Dev:** Luigi (solo developer)
-- **Versão atual:** v3.19.0
+- **Versão atual:** v3.20.0
 - **Repo:** https://github.com/luigifilippozzi-cmyk/minhas-financas
 - **Stack:** HTML5 · CSS3 · JS ES6+ · **Vite 5** (bundler MPA) · **Capacitor 8** (iOS) · Firebase Auth · Cloud Firestore (via npm) · Chart.js v4 · SheetJS (XLSX)
 
@@ -20,7 +20,7 @@
 npm run dev                 # Vite dev server (HMR, hot reload)
 npm run build               # Vite build → dist/ (produção)
 npm run preview             # Preview do build de produção
-npm test                    # Vitest — roda suite de 194+ testes unitários
+npm test                    # Vitest — roda suite de 231+ testes unitários
 npm run test:watch          # Vitest em modo watch
 npm run test:coverage       # Coverage com V8
 npm run test:integration    # Testes de integração (requer Firebase Emulator)
@@ -187,7 +187,7 @@ Todas as cores, sombras e fontes estão em `variables.css` como CSS custom prope
 
 - Framework: **Vitest** com `@vitest/coverage-v8`
 - Localização: `tests/` (espelho de `src/js/utils/` e `src/js/services/`)
-- **194+ testes unitários** cobrindo: parsers, dedup, ajusteDetector, normalizador, pipelineCartao, importarDedup
+- **231+ testes unitários** cobrindo: parsers, dedup, ajusteDetector, normalizador, pipelineCartao, importarDedup
 - **26 testes de integração** (Firebase Emulator): regras Firestore, CRUD despesas, purge em lote
 - **Rodar antes de qualquer commit:** `npm test`
 - Testes de integração: `npm run test:integration` (requer emulador na porta 8080)
@@ -213,7 +213,7 @@ Todas as cores, sombras e fontes estão em `variables.css` como CSS custom prope
 Luigi (Product Owner)
   ├── PM Agent          → Relatório diário, métricas, alertas (read-only)
   └── Dev Manager       → Executor de código, orquestrador de subagentes
-        ├── test-runner              → Vitest (194+ testes) + coverage
+        ├── test-runner              → Vitest (231+ testes) + coverage
         ├── security-reviewer        → Firestore rules, escHTML/XSS, auth
         └── import-pipeline-reviewer → Pipeline de importação (parser, dedup, ajuste)
 ```
@@ -263,7 +263,7 @@ git checkout -b feat/MF-{issue}-{descricao-kebab}   # ou fix/MF-{issue}-...
 # 3. Implementar (seguir padrões deste CLAUDE.md)
 
 # 4. Testar — OBRIGATÓRIO antes de commit
-npm test                    # 194+ testes devem passar
+npm test                    # 231+ testes devem passar
 
 # 5. Acionar subagentes (ver AGENTS.md §6)
 #    - test-runner: SEMPRE antes de PR
