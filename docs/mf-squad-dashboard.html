@@ -284,8 +284,13 @@
       <div class="card-body scroll-area" id="milestoneList">
         <div class="milestone-row">
           <div class="ms-badge" style="background:var(--green-bg);color:var(--green);">RF</div>
-          <div class="ms-info"><h4>Requisitos Funcionais</h4><p>35/35 implementados</p></div>
+          <div class="ms-info"><h4>Requisitos Funcionais</h4><p>42/42 implementados</p></div>
           <div class="ms-progress"><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:100%;background:var(--green);"></div></div><span class="ms-pct" style="color:var(--green);">100%</span></div>
+        </div>
+        <div class="milestone-row">
+          <div class="ms-badge" style="background:var(--blue-bg);color:var(--blue);">REC</div>
+          <div class="ms-info"><h4>Reconciliacao Fatura (RF-062/063/064)</h4><p>1/3 — RF-062 concluido (#125)</p></div>
+          <div class="ms-progress"><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:33%;background:var(--blue);"></div></div><span class="ms-pct" style="color:var(--blue);">33%</span></div>
         </div>
         <div class="milestone-row">
           <div class="ms-badge" style="background:var(--green-bg);color:var(--green);">Visual</div>
@@ -319,8 +324,8 @@
         </div>
         <div class="milestone-row">
           <div class="ms-badge" style="background:var(--yellow-bg);color:var(--yellow);">TD</div>
-          <div class="ms-info"><h4>Tech Debt</h4><p>2/2 concluidos (#96, #97)</p></div>
-          <div class="ms-progress"><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:100%;background:var(--green);"></div></div><span class="ms-pct" style="color:var(--green);">100%</span></div>
+          <div class="ms-info"><h4>Tech Debt</h4><p>1/2 — #96 concluido, 4 modulos sem teste</p></div>
+          <div class="ms-progress"><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:50%;background:var(--yellow);"></div></div><span class="ms-pct" style="color:var(--yellow);">50%</span></div>
         </div>
       </div>
     </div>
@@ -416,16 +421,17 @@
       </div>
     </div>
     <div class="card">
-      <div class="card-header"><h2>Issues Prioritarias</h2><span class="badge badge-red" id="p0Count">2 P0</span></div>
+      <div class="card-header"><h2>Issues Prioritarias</h2><span class="badge badge-red" id="p0Count">2 P0 + 1 QA</span></div>
       <div class="card-body" id="issueList">
         <table class="mod-table">
           <thead><tr><th>#</th><th>Titulo</th><th>Prioridade</th><th>Milestone</th></tr></thead>
           <tbody>
-            <tr><td>#75</td><td>Instalar Capacitor + iOS</td><td><span class="badge badge-green">Concluido</span></td><td>Fase 1</td></tr>
-            <tr><td>#76</td><td>Safe areas (notch/Dynamic Island)</td><td><span class="badge badge-green">Concluido</span></td><td>Fase 1</td></tr>
-            <tr><td>#96</td><td>TD-006: Unificar importacao</td><td><span class="badge badge-green">Concluido</span></td><td>Tech Debt</td></tr>
-            <tr><td>#77</td><td>Firebase Auth nativo</td><td><span class="badge badge-purple">Proximo</span></td><td>Fase 2</td></tr>
-            <tr><td>#78</td><td>Firestore nativo</td><td><span class="badge badge-purple">Proximo</span></td><td>Fase 2</td></tr>
+            <tr><td>#125</td><td>RF-062: Cartoes como contas individuais</td><td><span class="badge badge-green">Concluido</span></td><td>Reconciliacao</td></tr>
+            <tr><td>#126</td><td>RF-063: Transferencias intra-grupo</td><td><span class="badge badge-red">P0</span></td><td>Reconciliacao</td></tr>
+            <tr><td>#127</td><td>RF-064: Reconciliacao pagamento fatura</td><td><span class="badge badge-red">P0</span></td><td>Reconciliacao</td></tr>
+            <tr><td>#129</td><td>Plano de testes RF-062 (50 TCs)</td><td><span class="badge badge-blue">QA</span></td><td>Reconciliacao</td></tr>
+            <tr><td>#77</td><td>Firebase Auth nativo</td><td><span class="badge badge-purple">Proximo</span></td><td>iOS Fase 2</td></tr>
+            <tr><td>#78</td><td>Firestore nativo</td><td><span class="badge badge-purple">Proximo</span></td><td>iOS Fase 2</td></tr>
           </tbody>
         </table>
       </div>
@@ -444,8 +450,8 @@
 // Dashboard state — PM Agent updates this section, Dev Manager reads it
 const DASHBOARD_DATA = {
   // PM Agent atualiza estes campos:
-  lastUpdate: "2026-04-12 16:55",
-  version: "v3.21.0",
+  lastUpdate: "2026-04-12 22:30",
+  version: "v3.21.1",
   health: "green", // green | yellow | red
   healthText: "Projeto saudavel — 252 testes passando, CI verde, deploy OK, 0 PRs abertos, 0 branches ativas",
   testsUnit: "252",
@@ -455,14 +461,15 @@ const DASHBOARD_DATA = {
   issuesSub: "P0: 2 (RF-063/064) | P1: 0 | iOS backlog: 13 (Fases 2-5)",
   // Dev Manager atualiza via PR + merge
   activity: [
+    { time: "Apr 12", color: "var(--green)", msg: "<strong>Merge PR #131</strong> fix(css): navbar com texto sempre visivel — v3.21.1", tag: "merge" },
+    { time: "Apr 12", color: "var(--green)", msg: "<strong>Merge PR #130</strong> fix(css): navbar responsiva — resolver overflow 10 links", tag: "merge" },
+    { time: "Apr 12", color: "var(--blue)", msg: "<strong>Issue #129</strong> Plano de testes RF-062 (50 test cases manuais)", tag: "issue" },
     { time: "Apr 12", color: "var(--green)", msg: "<strong>Merge PR #128</strong> RF-062 Cartoes como contas individuais — v3.21.0 (+21 testes)", tag: "merge" },
     { time: "Apr 12", color: "var(--purple)", msg: "<strong>test</strong> 252 testes unitarios passando (+21 novos)", tag: "test" },
-    { time: "Apr 12", color: "var(--accent)", msg: "<strong>PM Agent</strong> revisao diaria — saude verde, 16 issues abertas (3 P0 novas)", tag: "pm" },
+    { time: "Apr 12", color: "var(--accent)", msg: "<strong>PM Agent</strong> 2a revisao diaria — saude verde, 15 issues abertas, RF-062 concluido (#125 fechada)", tag: "pm" },
     { time: "Apr 12", color: "var(--blue)", msg: "<strong>Issues</strong> #125 #126 #127 criadas — cadeia RF-062/063/064 (reconciliacao fatura)", tag: "issue" },
-    { time: "Apr 12", color: "var(--green)", msg: "<strong>Deploy</strong> 5 deploys Firebase bem-sucedidos (docs updates)", tag: "deploy" },
     { time: "Apr 10", color: "var(--accent)", msg: "<strong>Migration</strong> PR #124 — repo migrado de OneDrive para C:\\Dev\\minhas-financas", tag: "infra" },
     { time: "Apr 9", color: "var(--green)", msg: "<strong>Merge PR #123</strong> TD-006 unificacao importacao — v3.20.0", tag: "merge" },
-    { time: "Apr 9", color: "var(--purple)", msg: "<strong>test</strong> 231 testes unitarios passando (+37 novos)", tag: "test" },
     { time: "Apr 8", color: "var(--green)", msg: "<strong>Merge PR #122</strong> Fase 1 iOS — Capacitor + safe areas", tag: "merge" },
   ]
 };
