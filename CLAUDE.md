@@ -220,9 +220,9 @@ Luigi (Product Owner)
 Detalhes completos em `AGENTS.md`. Memória persistente em `.auto-memory/project_mf_status.md`.
 
 ### Próximas prioridades
-1. **RF-062** — Cartões como contas individuais (pré-requisito de RF-064) — issue `#MF-062`
-2. **RF-063** — Transferências intra-grupo (Luigi ↔ Ana) — issue `#MF-063` (pode rodar em paralelo com RF-062)
-3. **RF-064** — Reconciliação de pagamento de fatura — issue `#MF-064` (depende de 062 + 063)
+1. **RF-062** — Cartões como contas individuais (pré-requisito de RF-064) — issue `#125`
+2. **RF-063** — Transferências intra-grupo (Luigi ↔ Ana) — issue `#126` (pode rodar em paralelo com RF-062)
+3. **RF-064** — Reconciliação de pagamento de fatura — issue `#127` (depende de #125 + #126)
 4. **iOS App Fase 2** — Firebase nativo via plugins (issues #77–#80)
 5. **Tech Debt** — unificação de pipeline (#96)
 6. **iOS App Fase 3** — Ajustes UX mobile (issues #81–#83)
@@ -315,3 +315,4 @@ git push origin main
 - ❌ Omitir `mesFatura` em despesas de cartão — quebra a tela de fatura
 - ❌ Usar `deleteDoc` em lote sem batch — viola regras Firestore
 - ❌ `import` de Firebase via CDN (`gstatic.com`) — usar pacotes npm (`firebase/app`, `firebase/auth`, `firebase/firestore`)
+       
