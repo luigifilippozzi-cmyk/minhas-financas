@@ -183,7 +183,7 @@ Ver seção "Contexto: Cadeia Real de Pagamento de Fatura" em `docs/REQUISITOS_F
 ## Comando via gh CLI (terminal local)
 
 ```bash
-cd ~/OneDrive/'Área de Trabalho'/minhas-financas-main
+cd C:\Dev\minhas-financas
 gh auth status  # confirme que está autenticado
 
 # Abrir #MF-062 e #MF-063 em paralelo (copie title/body manualmente da UI,
