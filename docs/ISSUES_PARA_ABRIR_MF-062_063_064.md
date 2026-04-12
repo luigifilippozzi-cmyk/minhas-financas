@@ -1,12 +1,17 @@
-# Issues para abrir no GitHub — RF-062 / RF-063 / RF-064
+# Issues criadas no GitHub — RF-062 / RF-063 / RF-064
 
-> Cole os blocos abaixo diretamente na UI do GitHub ou use o `gh issue create` sugerido no fim deste arquivo. O sandbox do agente não tem `gh` autenticado, então a criação é manual. Após abrir este arquivo pode ser deletado.
+> **CONCLUÍDO em 2026-04-12** — Issues abertas via browser automation:
+> - RF-062 → **#125**
+> - RF-063 → **#126**
+> - RF-064 → **#127**
+>
+> Labels aplicados: `feature`, `prioridade: alta`. Este arquivo é referência histórica e pode ser deletado.
 
-Labels sugeridos: `feat`, `alta-prioridade`, `rf-064-chain`
+Labels aplicados: `feature`, `prioridade: alta`
 
 ---
 
-## Issue #MF-062 — RF-062: Cartões de Crédito como Contas Individuais
+## Issue #125 — RF-062: Cartões de Crédito como Contas Individuais
 
 **Title:**
 ```
@@ -40,10 +45,10 @@ Ver seção "Contexto: Cadeia Real de Pagamento de Fatura" em `docs/REQUISITOS_F
 - [ ] `npm test` verde (231+ unitários, 26 integração)
 
 ## Dependências
-- Nenhuma (pode rodar em paralelo com #MF-063)
+- Nenhuma (pode rodar em paralelo com #126)
 
 ## Bloqueia
-- #MF-064
+- #127
 
 ## Subagentes obrigatórios no PR
 - test-runner
@@ -55,7 +60,7 @@ Ver seção "Contexto: Cadeia Real de Pagamento de Fatura" em `docs/REQUISITOS_F
 
 ---
 
-## Issue #MF-063 — RF-063: Transferências Intra-Grupo (Settlement entre Membros)
+## Issue #126 — RF-063: Transferências Intra-Grupo (Settlement entre Membros)
 
 **Title:**
 ```
@@ -97,10 +102,10 @@ Ver seção "Contexto: Cadeia Real de Pagamento de Fatura" em `docs/REQUISITOS_F
 - [ ] `npm test` verde
 
 ## Dependências
-- Nenhuma (pode rodar em paralelo com #MF-062)
+- Nenhuma (pode rodar em paralelo com #125)
 
 ## Bloqueia
-- #MF-064
+- #127
 
 ## Subagentes obrigatórios no PR
 - test-runner
@@ -113,7 +118,7 @@ Ver seção "Contexto: Cadeia Real de Pagamento de Fatura" em `docs/REQUISITOS_F
 
 ---
 
-## Issue #MF-064 — RF-064: Reconciliação de Pagamento de Fatura de Cartão
+## Issue #127 — RF-064: Reconciliação de Pagamento de Fatura de Cartão
 
 **Title:**
 ```
@@ -126,11 +131,11 @@ feat(fatura): RF-064 — Reconciliação de Pagamento de Fatura
 Introduz o tipo `'pagamento_fatura'` ligando a linha de débito no extrato bancário (PAG FATURA na conta pagadora) à fatura de cartão que ela liquida. Completa a modelagem da cadeia real Luigi → Ana → Cartão e elimina o double count entre compras da fatura e pagamento no extrato.
 
 ## Contexto
-Ver seção "Contexto: Cadeia Real de Pagamento de Fatura" em `docs/REQUISITOS_FUNCIONAIS.md`. Hoje, uma fatura de R$ 3.500 com 40 compras + o PAG FATURA de R$ 3.500 no extrato são contados como R$ 7.000 de gastos. RF-064 resolve o double count na etapa 2 da cadeia (#MF-063 resolve a etapa 1).
+Ver seção "Contexto: Cadeia Real de Pagamento de Fatura" em `docs/REQUISITOS_FUNCIONAIS.md`. Hoje, uma fatura de R$ 3.500 com 40 compras + o PAG FATURA de R$ 3.500 no extrato são contados como R$ 7.000 de gastos. RF-064 resolve o double count na etapa 2 da cadeia (#126 resolve a etapa 1).
 
 ## Escopo
 - Novo `tipo: 'pagamento_fatura'` em despesas
-- Atualizar helper `isMovimentacaoReal` (criado em #MF-063) para excluir `'pagamento_fatura'`
+- Atualizar helper `isMovimentacaoReal` (criado em #126) para excluir `'pagamento_fatura'`
 - Novo módulo `utils/reconciliadorFatura.js` com heurísticas:
   - Regex de descritivo (PAG FATURA)
   - Match por valor = total líquido do ciclo (`soma(despesas where mesFatura=X and contaCartaoId=Y and tipo='despesa') - soma(estornos)`)
@@ -166,8 +171,8 @@ Ver seção "Contexto: Cadeia Real de Pagamento de Fatura" em `docs/REQUISITOS_F
 - [ ] `npm test` verde
 
 ## Dependências
-- #MF-062 (cartões como contas individuais)
-- #MF-063 (helper `isMovimentacaoReal` + ordem de detecção no pipeline)
+- #125 (cartões como contas individuais)
+- #126 (helper `isMovimentacaoReal` + ordem de detecção no pipeline)
 
 ## Subagentes obrigatórios no PR
 - test-runner
@@ -186,7 +191,7 @@ Ver seção "Contexto: Cadeia Real de Pagamento de Fatura" em `docs/REQUISITOS_F
 cd C:\Dev\minhas-financas
 gh auth status  # confirme que está autenticado
 
-# Abrir #MF-062 e #MF-063 em paralelo (copie title/body manualmente da UI,
+# Abrir #125 e #126 em paralelo (copie title/body manualmente da UI,
 # ou use --body-file apontando para um trecho salvo em /tmp)
 
 gh issue create \
@@ -197,10 +202,11 @@ gh issue create \
   --title "feat(despesas): RF-063 — Transferências Intra-Grupo (Luigi ↔ Ana)" \
   --label "feat,alta-prioridade"
 
-# Abrir #MF-064 por último, substituindo os números reais das issues criadas acima
+# Abrir #127 por último, substituindo os números reais das issues criadas acima
 gh issue create \
   --title "feat(fatura): RF-064 — Reconciliação de Pagamento de Fatura" \
   --label "feat,alta-prioridade"
 ```
 
-> Depois de criar as issues, atualize as referências cruzadas: o body de #MF-064 menciona `#MF-062` e `#MF-063`, mas os números reais podem ser diferentes (ex.: `#97`, `#98`, `#99`). Edite os bodies para refletir os números reais atribuídos.
+> Depois de criar as issues, atualize as referências cruzadas: o body de #127 menciona `#125` e `#126`, mas os números reais podem ser diferentes (ex.: `#97`, `#98`, `#99`). Edite os bodies para refletir os números reais atribuídos.
+                                                              
