@@ -7,6 +7,7 @@
 import { onAuthChange, logout } from '../services/auth.js';
 import { buscarPerfil } from '../services/database.js';
 import { formatarMoeda, nomeMes, escHTML } from '../utils/formatters.js';
+import { isMovimentacaoReal } from '../utils/helpers.js';
 import { skeletonTableRows } from '../utils/skeletons.js';
 import {
   gerarPlanoPara,
@@ -112,7 +113,7 @@ function executarAutoMatch() {
   _matchDebounce = setTimeout(async () => {
     if (!_planItems.length || !_despesas.length) return;
 
-    const realizadas = _despesas.filter(d => d.tipo !== 'projecao');
+    const realizadas = _despesas.filter(isMovimentacaoReal);
     const matches = autoMatch(_planItems, realizadas);
 
     const novos = matches.filter(m => {
@@ -291,7 +292,7 @@ function renderizarGaps() {
 // ── Despesas Não Planejadas ───────────────────────────────────
 
 function renderizarNaoPlanejadas() {
-  const realizadas = _despesas.filter(d => d.tipo !== 'projecao');
+  const realizadas = _despesas.filter(isMovimentacaoReal);
   const naoPlan = despesasNaoPlanejadas(realizadas, _planItems);
   const catMap = new Map(_categorias.map(c => [c.id, c]));
 

@@ -27,7 +27,7 @@ import { renderizarDashboard } from './controllers/dashboard.js';
 import { renderizarDashboardReceitas } from './controllers/receitas-dashboard.js';
 import { CATEGORIAS_RECEITA_PADRAO } from './models/Receita.js';
 import { CONTAS_PADRAO } from './models/Conta.js';            // NRF-004
-import { mesAnoAtual, definirTexto } from './utils/helpers.js';
+import { mesAnoAtual, definirTexto, isMovimentacaoReal } from './utils/helpers.js';
 import { coresGrafico } from './utils/chartColors.js';
 import { nomeMes } from './utils/formatters.js';
 import { skeletonCards, errorStateHTML } from './utils/skeletons.js';
@@ -155,7 +155,7 @@ function iniciarListeners() {
     renderizarDashboardReceitas(
       estadoApp.categoriasReceita,
       estadoApp.receitas,
-      estadoApp.despesas.filter(d => d.tipo !== 'projecao').reduce((s, d) => s + (d.valor ?? 0), 0),
+      estadoApp.despesas.filter(isMovimentacaoReal).reduce((s, d) => s + (d.valor ?? 0), 0),
     );
     if (_filtroCat === 'mes') renderizarGraficoCategorias(); // RF-017
     renderizarGraficoEvolucao(); // RF-017
@@ -174,7 +174,7 @@ function iniciarListeners() {
     renderizarDashboardReceitas(
       estadoApp.categoriasReceita,
       estadoApp.receitas,
-      estadoApp.despesas.filter(d => d.tipo !== 'projecao').reduce((s, d) => s + (d.valor ?? 0), 0),
+      estadoApp.despesas.filter(isMovimentacaoReal).reduce((s, d) => s + (d.valor ?? 0), 0),
     );
     if (_filtroCat === 'mes') renderizarGraficoCategorias(); // RF-017
     renderizarGraficoEvolucao(); // RF-017
@@ -190,7 +190,7 @@ function iniciarListenerCategoriasReceita(grupoId) {
     renderizarDashboardReceitas(
       estadoApp.categoriasReceita,
       estadoApp.receitas,
-      estadoApp.despesas.filter(d => d.tipo !== 'projecao').reduce((s, d) => s + (d.valor ?? 0), 0),
+      estadoApp.despesas.filter(isMovimentacaoReal).reduce((s, d) => s + (d.valor ?? 0), 0),
     );
     if (_filtroCat === 'mes') renderizarGraficoCategorias(); // RF-017
   });
@@ -249,13 +249,13 @@ function renderizarGraficoCategorias() {
   let despFiltradas, recFiltradas;
 
   if (_filtroCat === 'mes') {
-    despFiltradas = estadoApp.despesas.filter(d => d.tipo !== 'projecao');
+    despFiltradas = estadoApp.despesas.filter(isMovimentacaoReal);
     recFiltradas  = estadoApp.receitas;
   } else if (_filtroCat === '3meses') {
     if (!_dadosMeses) return;
     const meses3 = _dadosMeses.meses.slice(-3);
     despFiltradas = _dadosMeses.despesas.filter(d => {
-      if (d.tipo === 'projecao') return false;
+      if (!isMovimentacaoReal(d)) return false;
       const dt = d.data?.toDate?.() ?? new Date(d.data);
       return meses3.some(m => dt.getFullYear() === m.ano && dt.getMonth() + 1 === m.mes);
     });
@@ -265,7 +265,7 @@ function renderizarGraficoCategorias() {
     });
   } else { // 'ano'
     if (!_dadosAno) return;
-    despFiltradas = _dadosAno.despesas.filter(d => d.tipo !== 'projecao');
+    despFiltradas = _dadosAno.despesas.filter(isMovimentacaoReal);
     recFiltradas  = _dadosAno.receitas;
   }
 
@@ -362,11 +362,11 @@ function renderizarGraficoEvolucao() {
     let totalDesp, totalRec;
     if (isAtual) {
       // Usa dados do onSnapshot (mais recentes)
-      totalDesp = estadoApp.despesas.filter(d => d.tipo !== 'projecao').reduce((s, d) => s + (d.valor ?? 0), 0);
+      totalDesp = estadoApp.despesas.filter(isMovimentacaoReal).reduce((s, d) => s + (d.valor ?? 0), 0);
       totalRec  = estadoApp.receitas.reduce((s, r) => s + (r.valor ?? 0), 0);
     } else {
       totalDesp = _dadosMeses.despesas.filter(d => {
-        if (d.tipo === 'projecao') return false;
+        if (!isMovimentacaoReal(d)) return false;
         const dt = d.data?.toDate?.() ?? new Date(d.data);
         return dt.getFullYear() === mAno && dt.getMonth() + 1 === mes;
       }).reduce((s, d) => s + (d.valor ?? 0), 0);

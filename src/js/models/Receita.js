@@ -24,6 +24,11 @@ export function modelReceita(dados) {
     'chave_dedup',  // NRF-006: deduplicação
     'importadoEm',  // NRF-006: timestamp de importação
     'origemBanco',  // RF-021: banco/emissor detectado ('itau', 'nubank', ...)
+    'tipo',                    // RF-063: 'transferencia_interna' (receita-lado do par)
+    'contrapartidaId',         // RF-063: id da despesa/receita contraparte
+    'membroDestinoId',         // RF-063: uid do membro destinatário
+    'membroOrigemId',          // RF-063: uid do membro remetente
+    'statusReconciliacao',     // RF-063: 'auto' | 'manual' | 'pendente_contraparte'
   ];
   opcionais.forEach((k) => { if (dados[k] !== undefined) obj[k] = dados[k]; });
   return obj;

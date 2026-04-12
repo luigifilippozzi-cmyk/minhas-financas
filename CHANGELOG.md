@@ -7,6 +7,20 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.22.0] - 2026-04-12
+
+### Adicionado
+
+- **RF-063: Transferencias Intra-Grupo (#126):** novo tipo `'transferencia_interna'` para movimentacoes PIX/TED entre membros do grupo (Luigi <-> Ana), excluido automaticamente de todos os agregados financeiros.
+- Novo helper `isMovimentacaoReal()` em `helpers.js` — filtro centralizado substitui `d.tipo !== 'projecao'` em 14 locais.
+- Novo modulo `detectorTransferenciaInterna.js` — detecta automaticamente PIX/TED entre membros no pipeline de importacao bancaria.
+- Campos RF-063 nos modelos: `contrapartidaId`, `membroDestinoId`, `membroOrigemId`, `statusReconciliacao`, `mesFaturaRelacionado`.
+- Badge visual "🔁 transferencia interna" no extrato de despesas e receitas.
+- Acao manual "Marcar/Desmarcar como transferencia interna" nos botoes de despesas e receitas.
+- Funcoes `buscarTransferenciasPendentes()` e `reconciliarTransferenciasPendentes()` em `database.js` para reconciliacao em lote.
+- Badge no preview de importacao para transferencias detectadas.
+- 32 novos testes unitarios (detectorTransferenciaInterna + isMovimentacaoReal) — total: 284.
+
 ## [3.21.1] - 2026-04-12
 
 ### Corrigido

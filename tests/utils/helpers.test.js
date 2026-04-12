@@ -4,6 +4,7 @@ import {
   normalizarStr,
   similaridade,
   debounce,
+  isMovimentacaoReal,
 } from '../../src/js/utils/helpers.js';
 
 // ── levenshtein ───────────────────────────────────────────────────────────────
@@ -134,5 +135,29 @@ describe('debounce', () => {
 
     expect(fn).toHaveBeenCalledTimes(1);
     vi.useRealTimers();
+  });
+});
+
+// ── isMovimentacaoReal (RF-063) ──────────────────────────────────
+
+describe('isMovimentacaoReal', () => {
+  it('retorna true para despesa normal', () => {
+    expect(isMovimentacaoReal({ tipo: 'despesa' })).toBe(true);
+  });
+
+  it('retorna true para despesa sem tipo', () => {
+    expect(isMovimentacaoReal({})).toBe(true);
+  });
+
+  it('retorna true para projecao_paga', () => {
+    expect(isMovimentacaoReal({ tipo: 'projecao_paga' })).toBe(true);
+  });
+
+  it('retorna false para projecao', () => {
+    expect(isMovimentacaoReal({ tipo: 'projecao' })).toBe(false);
+  });
+
+  it('retorna false para transferencia_interna', () => {
+    expect(isMovimentacaoReal({ tipo: 'transferencia_interna' })).toBe(false);
   });
 });
