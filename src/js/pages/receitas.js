@@ -16,7 +16,7 @@ import {
 } from '../services/database.js';
 import { modelReceita, CATEGORIAS_RECEITA_PADRAO } from '../models/Receita.js';
 import { formatarMoeda, formatarData, nomeMes, escHTML } from '../utils/formatters.js';
-import { dataHoje } from '../utils/helpers.js';
+import { dataHoje, isMovimentacaoReal } from '../utils/helpers.js';
 import { skeletonCards, emptyStateHTML, errorStateHTML } from '../utils/skeletons.js';
 import {
   detectarFormato, lerArquivoCSV, lerArquivoXLSX,
@@ -130,16 +130,23 @@ function renderizarLista() {
     const d      = r.data?.toDate?.() ?? new Date(r.data);
     const dataFmt = formatarData(d);
 
+    // RF-063: badge transferência interna
+    const isTransf = r.tipo === 'transferencia_interna';
+    const transfBadge = isTransf
+      ? ' <span class="rec-transf-badge" title="Transferência entre membros do grupo — excluída dos agregados">🔁 transferência interna</span>'
+      : '';
+
     return `
-      <div class="rec-item">
+      <div class="rec-item${isTransf ? ' rec-item--transf' : ''}">
         <span class="rec-item-emoji">${emoji}</span>
         <div class="rec-item-info">
           <div class="rec-item-desc">${escHTML(r.descricao || catNome)}</div>
-          <div class="rec-item-meta">${catNome} &middot; ${dataFmt}</div>
+          <div class="rec-item-meta">${catNome} &middot; ${dataFmt}${transfBadge}</div>
         </div>
         <span class="rec-item-valor">${formatarMoeda(r.valor ?? 0)}</span>
         <div class="rec-item-acoes">
           <button class="btn btn-outline btn-sm" onclick="editarReceita('${r.id}')">✏️</button>
+          ${!isTransf ? `<button class="btn btn-outline btn-sm" onclick="window._recMarcarTransferencia('${r.id}')" title="Marcar como transferência interna">🔁</button>` : `<button class="btn btn-outline btn-sm" onclick="window._recDesmarcarTransferencia('${r.id}')" title="Desmarcar transferência interna">↩️</button>`}
           <button class="btn btn-danger  btn-sm" onclick="confirmarExclusaoReceita('${r.id}')">🗑️</button>
         </div>
       </div>
@@ -149,11 +156,13 @@ function renderizarLista() {
 }
 
 function atualizarChips() {
-  const total = _receitas.reduce((s, r) => s + (r.valor ?? 0), 0);
+  // RF-063: exclui transferências internas dos totais
+  const reais = _receitas.filter(r => r.tipo !== 'transferencia_interna');
+  const total = reais.reduce((s, r) => s + (r.valor ?? 0), 0);
   const el = document.getElementById('chip-total-rec');
   if (el) el.textContent = formatarMoeda(total);
   const cnt = document.getElementById('chip-count-rec');
-  if (cnt) cnt.textContent = String(_receitas.length);
+  if (cnt) cnt.textContent = String(reais.length);
 }
 
 // ── Modal ──────────────────────────────────────────────────────
@@ -371,6 +380,31 @@ window.editarReceita = (id) => {
 
 window.confirmarExclusaoReceita = (id) => {
   abrirConfirmarExclusao(id);
+};
+
+// RF-063: Marcar/desmarcar receita como transferência interna
+window._recMarcarTransferencia = async (id) => {
+  try {
+    await atualizarReceita(id, {
+      tipo: 'transferencia_interna',
+      statusReconciliacao: 'manual',
+    });
+  } catch (err) {
+    console.error('[receitas] Erro ao marcar transferência:', err);
+    alert('Erro ao marcar como transferência interna.');
+  }
+};
+window._recDesmarcarTransferencia = async (id) => {
+  try {
+    await atualizarReceita(id, {
+      tipo: null,
+      statusReconciliacao: null,
+      contrapartidaId: null,
+    });
+  } catch (err) {
+    console.error('[receitas] Erro ao desmarcar transferência:', err);
+    alert('Erro ao desmarcar transferência interna.');
+  }
 };
 
 // ============================================================

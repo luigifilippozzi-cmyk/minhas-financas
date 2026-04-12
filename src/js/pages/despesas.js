@@ -10,7 +10,7 @@
 // ============================================================
 
 import { onAuthChange, logout } from '../services/auth.js';
-import { buscarPerfil, buscarGrupo } from '../services/database.js';
+import { buscarPerfil, buscarGrupo, atualizarDespesa } from '../services/database.js';
 import { ouvirCategorias, ouvirParcelamentosAbertos, ouvirContas } from '../services/database.js';
 import {
   iniciarListenerDespesas,
@@ -18,7 +18,7 @@ import {
   deletarDespesa,
 } from '../controllers/despesas.js';
 import { formatarMoeda, formatarData, nomeMes, escHTML } from '../utils/formatters.js';
-import { dataHoje } from '../utils/helpers.js';
+import { dataHoje, isMovimentacaoReal } from '../utils/helpers.js';
 import { skeletonCards, emptyStateHTML, errorStateHTML } from '../utils/skeletons.js';
 
 // ── Estado da página ──────────────────────────────────────────
@@ -225,7 +225,7 @@ function renderizarChipsCompartilhadas() {
   const container = document.getElementById('chips-compartilhadas');
   if (!container) return;
 
-  const conjuntas = _despesas.filter(d => d.tipo !== 'projecao' && d.isConjunta);
+  const conjuntas = _despesas.filter(d => isMovimentacaoReal(d) && d.isConjunta);
   if (!conjuntas.length) {
     container.innerHTML = '';
     return;
@@ -253,7 +253,7 @@ function renderizarChipsResponsavel() {
 
   const porResp = {};
   _despesas
-    .filter(d => d.tipo !== 'projecao')
+    .filter(isMovimentacaoReal)
     .forEach(d => {
       if (d.isConjunta) {
         // Despesa conjunta 50/50: cada membro do grupo paga valorAlocado
@@ -372,15 +372,20 @@ function renderizarLista() {
     const conjuntaBadge = d.isConjunta
       ? `<span class="desp-conjunta-badge" title="Dividida 50/50 — Meu Bolso: ${formatarMoeda(d.valorAlocado ?? d.valor / 2)}">👫 conjunta</span>`
       : '';
+    // RF-063: badge transferência interna
+    const isTransf = d.tipo === 'transferencia_interna';
+    const transfBadge = isTransf
+      ? '<span class="desp-transf-badge" title="Transferência entre membros do grupo — excluída dos agregados">🔁 transferência interna</span>'
+      : '';
 
     return `
-    <div class="desp-item card${isProj ? ' desp-item--proj' : ''}">
+    <div class="desp-item card${isProj ? ' desp-item--proj' : ''}${isTransf ? ' desp-item--transf' : ''}">
       <div class="desp-item-left">
         ${badge}
         <span class="desp-item-descricao">${escHTML(d.descricao)}</span>
         <div class="desp-item-meta">
           <span class="desp-item-data">${dataFmt}</span>
-          ${contaBadge}${portBadge}${parcelaBadge}${projBadge}${conjuntaBadge}
+          ${contaBadge}${portBadge}${parcelaBadge}${projBadge}${conjuntaBadge}${transfBadge}
         </div>
       </div>
       <div class="desp-item-right">
@@ -391,6 +396,15 @@ function renderizarLista() {
             onclick="window._despEditar('${d.id}')"
             title="Editar"
           >✏️</button>
+          ${!isTransf ? `<button
+            class="btn btn-sm btn-outline"
+            onclick="window._despMarcarTransferencia('${d.id}')"
+            title="Marcar como transferência interna"
+          >🔁</button>` : `<button
+            class="btn btn-sm btn-outline"
+            onclick="window._despDesmarcarTransferencia('${d.id}')"
+            title="Desmarcar transferência interna"
+          >↩️</button>`}
           <button
             class="btn btn-sm btn-danger"
             onclick="window._despExcluir('${d.id}','${d.descricao.replace(/'/g, "\\'")}')"
@@ -404,7 +418,7 @@ function renderizarLista() {
 }
 
 function atualizarChips() {
-  const reais  = _despesas.filter(d => d.tipo !== 'projecao');
+  const reais  = _despesas.filter(isMovimentacaoReal);
   const total  = reais.reduce((s, d) => s + d.valor, 0);
   const count  = reais.length;
   const chipTotal = document.getElementById('chip-total');
@@ -734,7 +748,7 @@ function configurarEventos() {
 
 // ── Exportação CSV ────────────────────────────────────────────
 function exportarCSV() {
-  const exportaveis = _despesas.filter(d => d.tipo !== 'projecao');
+  const exportaveis = _despesas.filter(isMovimentacaoReal);
   if (!exportaveis.length) { alert('Nenhuma despesa para exportar neste período.'); return; }
 
   const cabecalho = ['Data', 'Descrição', 'Responsável', 'Categoria', 'Emoji', 'Parcela', 'Valor (R$)'];
@@ -772,3 +786,28 @@ window._despEditar = (id) => {
   if (despesa) abrirModalDespesa(despesa);
 };
 window._despExcluir = (id, descricao) => abrirModalExcluir(id, descricao);
+
+// RF-063: Marcar/desmarcar despesa como transferência interna
+window._despMarcarTransferencia = async (id) => {
+  try {
+    await atualizarDespesa(id, {
+      tipo: 'transferencia_interna',
+      statusReconciliacao: 'manual',
+    });
+  } catch (err) {
+    console.error('[despesas] Erro ao marcar transferência:', err);
+    alert('Erro ao marcar como transferência interna.');
+  }
+};
+window._despDesmarcarTransferencia = async (id) => {
+  try {
+    await atualizarDespesa(id, {
+      tipo: 'despesa',
+      statusReconciliacao: null,
+      contrapartidaId: null,
+    });
+  } catch (err) {
+    console.error('[despesas] Erro ao desmarcar transferência:', err);
+    alert('Erro ao desmarcar transferência interna.');
+  }
+};

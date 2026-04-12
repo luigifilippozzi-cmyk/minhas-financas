@@ -78,6 +78,7 @@ import { deveCarregarChavesReceitas } from '../utils/importarDedup.js';
 import { detectarFormato, lerArquivoCSV, lerArquivoXLSX, mostrarArquivoUI, mostrarErroUI, preencherSelectsContasUI, resetarUploadUI } from '../utils/importacaoComum.js';
 import { parsearLinhasPDF, classificarBanco } from './pipelineBanco.js';
 import { filtrarCreditos, aplicarMesFatura, gerarProjecoes } from './pipelineCartao.js';
+import { detectarTransferenciasInternas } from '../utils/detectorTransferenciaInterna.js';
 
 // ── Constantes ─────────────────────────────────────────────────
 const RESP_CONJUNTO = 'conjunto'; // NRF-010: valor controlado para portador/responsável conjunto
@@ -399,6 +400,10 @@ function _aplicarTipo(tipo) {
     // Auto-assign responsável = usuário do upload (banco: não editável no preview)
     const nomeUsuario = _usuario?.displayName ?? '';
     if (nomeUsuario) _linhas.forEach(l => { if (!l.erro && !l.portador) l.portador = nomeUsuario; });
+    // RF-063: detectar transferências internas (PIX/TED entre membros do grupo)
+    if (Object.keys(_nomesMembros).length >= 2) {
+      detectarTransferenciasInternas(_linhas, _nomesMembros, _usuario?.uid);
+    }
   } else if (tipo === 'receita') {
     _linhas.forEach((l) => { if (!l.erro) l.tipoLinha = 'receita'; });
   }
@@ -734,6 +739,11 @@ function renderizarPreview() {
     } else if (l.isEstorno && _tipoExtrato === 'cartao') {
       // BUG-013: crédito/estorno em fatura — usuário pode marcar para importar como receita
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--estorno" title="Crédito/estorno de fatura — será importado como Receita (desmarque para ignorar)' + chaveInfo + '">↩ Estorno</span>';
+    } else if (l._transferenciaInterna) {
+      // RF-063: badge de transferência interna detectada
+      const dir = l._transferenciaInterna.direcao === 'recebida' ? '📥' : '📤';
+      tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok" style="background:#dbeafe;color:#1e40af;" title="Transferência interna detectada (' + l._transferenciaInterna.membroNome + ')' + chaveInfo + '">' + dir + ' 🔁 Transf.</span>';
+      tr.classList.add('imp-row-transf');
     } else if (l.tipoLinha === 'receita') {
       // NRF-006: modo banco — badge de receita
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok" style="background:#dcfce7;color:#166534;" title="Será salva como Receita' + chaveInfo + '">📥 Receita</span>';
@@ -867,7 +877,7 @@ async function executarImportacao() {
     try {
       // NRF-006: modo banco — linhas de receita vão para coleção 'receitas'
       if (l.tipoLinha === 'receita') {
-        await criarReceita(modelReceita({
+        const recDados = {
           grupoId: _grupoId, usuarioId: _usuario.uid,
           descricao: l.descricao, valor: l.valor,
           data: l.data instanceof Date ? l.data : new Date(l.data),
@@ -876,13 +886,20 @@ async function executarImportacao() {
           origemBanco: _origemBanco,  // RF-021/RF-022
           responsavel: l.portador ?? '',  // Auto-atribuído no pipeline bancário
           ...(l.mesFatura ? { mesFatura: l.mesFatura } : {}),  // BUG-021
-        }));
+        };
+        // RF-063: marca receita como transferência interna se detectado
+        if (l._transferenciaInterna) {
+          recDados.tipo = 'transferencia_interna';
+          recDados.statusReconciliacao = 'pendente_contraparte';
+          recDados.membroOrigemId = l._transferenciaInterna.membroUid;
+        }
+        await criarReceita(modelReceita(recDados));
         sucesso++;
         continue;
       }
       // NRF-002: cria a despesa real primeiro (para obter despesaRef.id para reconciliação)
       // BUG-017: persiste valorBase (= valorLiquido se houver ajuste parcial, senão valor bruto)
-      const despesaRef = await criarDespesaDB(modelDespesa({
+      const despDados = {
         descricao: l.descricao, valor: valorBase, categoriaId: cat,
         data: l.data instanceof Date ? l.data : new Date(l.data),
         grupoId: _grupoId, usuarioId: _usuario.uid,
@@ -900,7 +917,16 @@ async function executarImportacao() {
           dataOriginal: l.dataOriginal instanceof Date ? l.dataOriginal : new Date(l.dataOriginal),
         } : {}),
         ...(l.mesFatura ? { mesFatura: l.mesFatura } : {}),  // BUG-021
-      }));
+      };
+      // RF-063: marca despesa como transferência interna se detectado
+      if (l._transferenciaInterna) {
+        despDados.tipo = 'transferencia_interna';
+        despDados.statusReconciliacao = 'pendente_contraparte';
+        despDados.membroDestinoId = l._transferenciaInterna.membroUid;
+        despDados.isConjunta = false; // transferências internas nunca são conjuntas
+        despDados.valorAlocado = null;
+      }
+      const despesaRef = await criarDespesaDB(modelDespesa(despDados));
       // NRF-002: reconciliação por matching exato
       if (l.substitui_projecao && l.chave_dedup && _projecaoDocMap.has(l.chave_dedup)) {
         const projecaoId = _projecaoDocMap.get(l.chave_dedup);

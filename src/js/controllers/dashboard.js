@@ -4,7 +4,7 @@
 
 import { formatarMoeda, formatarPercentual } from '../utils/formatters.js';
 import { calcularStatusOrcamento } from '../models/Orcamento.js';
-import { definirTexto } from '../utils/helpers.js';
+import { definirTexto, isMovimentacaoReal } from '../utils/helpers.js';
 
 /**
  * Renderiza o dashboard de orçamentos.
@@ -19,9 +19,9 @@ export function renderizarDashboard(categorias, despesas, orcamentos, nomeAtual 
   // Mapeia orçamentos por categoriaId
   const orcMap = Object.fromEntries(orcamentos.map((o) => [o.categoriaId, o.valorLimite]));
 
-  // Soma despesas reais por categoria (exclui projeções — parcelas futuras do cartão)
+  // Soma despesas reais por categoria (exclui projeções e transferências internas)
   const gastoMap = {};
-  despesas.filter(d => d.tipo !== 'projecao').forEach((d) => {
+  despesas.filter(isMovimentacaoReal).forEach((d) => {
     gastoMap[d.categoriaId] = (gastoMap[d.categoriaId] ?? 0) + (d.valor ?? 0);
   });
 
@@ -36,7 +36,7 @@ export function renderizarDashboard(categorias, despesas, orcamentos, nomeAtual 
   // NRF-001: cálculo "Meu Bolso" vs "Família" (fix #90)
   // totalFamilia  = soma de todos os gastos reais (valor inteiro de cada despesa)
   // totalMeuBolso = minhas individuais (responsavel == eu) + 50% das conjuntas (todas)
-  const despesasReais = despesas.filter(d => d.tipo !== 'projecao');
+  const despesasReais = despesas.filter(isMovimentacaoReal);
   const hasConjunta   = despesasReais.some(d => d.isConjunta);
   const totalFamilia  = despesasReais.reduce((s, d) => s + (d.valor ?? 0), 0);
   const totalMeuBolso = despesasReais.reduce((s, d) => {

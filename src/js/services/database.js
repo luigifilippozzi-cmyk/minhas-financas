@@ -943,6 +943,83 @@ export async function purgeGrupoCompleto(grupoId) {
   return resultado;
 }
 
+// ── RF-063: Transferências Internas ─────────────────────────
+
+/**
+ * Busca despesas e receitas pendentes de reconciliação de contraparte.
+ * Retorna itens com statusReconciliacao === 'pendente_contraparte'.
+ * @param {string} grupoId
+ * @returns {Promise<{ despesas: Array, receitas: Array }>}
+ */
+export async function buscarTransferenciasPendentes(grupoId) {
+  const despSnap = await getDocs(query(
+    collection(db, 'despesas'),
+    where('grupoId', '==', grupoId),
+    where('tipo', '==', 'transferencia_interna'),
+    where('statusReconciliacao', '==', 'pendente_contraparte'),
+  ));
+  const recSnap = await getDocs(query(
+    collection(db, 'receitas'),
+    where('grupoId', '==', grupoId),
+    where('tipo', '==', 'transferencia_interna'),
+    where('statusReconciliacao', '==', 'pendente_contraparte'),
+  ));
+  return {
+    despesas: despSnap.docs.map(d => ({ id: d.id, ...d.data() })),
+    receitas: recSnap.docs.map(d => ({ id: d.id, ...d.data() })),
+  };
+}
+
+/**
+ * Reconcilia pares de transferências internas pendentes.
+ * Para cada despesa 'pendente_contraparte', busca receita correspondente
+ * (mesmo valor, janela ±2 dias) e cross-linka via contrapartidaId.
+ * @param {string} grupoId
+ * @returns {Promise<number>} quantidade de pares reconciliados
+ */
+export async function reconciliarTransferenciasPendentes(grupoId) {
+  const { despesas, receitas } = await buscarTransferenciasPendentes(grupoId);
+  if (!despesas.length || !receitas.length) return 0;
+
+  const JANELA_MS = 2 * 24 * 60 * 60 * 1000; // 2 dias
+  const usados = new Set();
+  const pares = [];
+
+  for (const desp of despesas) {
+    const dataDesp = desp.data?.toDate?.() ?? new Date(desp.data);
+    for (const rec of receitas) {
+      if (usados.has(rec.id)) continue;
+      if (Math.abs((desp.valor ?? 0) - (rec.valor ?? 0)) > 0.01) continue;
+      const dataRec = rec.data?.toDate?.() ?? new Date(rec.data);
+      if (Math.abs(dataDesp - dataRec) > JANELA_MS) continue;
+      // Par encontrado
+      pares.push({ despId: desp.id, recId: rec.id });
+      usados.add(rec.id);
+      break;
+    }
+  }
+
+  if (!pares.length) return 0;
+
+  // Atualiza em batch
+  const BATCH_SIZE = 250; // cada par usa 2 ops
+  for (let i = 0; i < pares.length; i += BATCH_SIZE) {
+    const batch = writeBatch(db);
+    pares.slice(i, i + BATCH_SIZE).forEach(({ despId, recId }) => {
+      batch.update(doc(db, 'despesas', despId), {
+        contrapartidaId: recId,
+        statusReconciliacao: 'auto',
+      });
+      batch.update(doc(db, 'receitas', recId), {
+        contrapartidaId: despId,
+        statusReconciliacao: 'auto',
+      });
+    });
+    await batch.commit();
+  }
+  return pares.length;
+}
+
 // ── Planejamento Mensal (RF-060) ────────────────────────────
 
 /**

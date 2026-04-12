@@ -29,6 +29,12 @@ export function modelDespesa(dados) {
     'contaId',      // NRF-004: conta/banco de origem
     'dataOriginal', // NRF-002.1: data original da compra (parceladas com data ajustada)
     'origemBanco',  // RF-021: banco/emissor detectado ('itau', 'nubank', ...)
+    'contrapartidaId',         // RF-063: id da despesa/receita contraparte
+    'membroDestinoId',         // RF-063: uid do membro destinatário
+    'membroOrigemId',          // RF-063: uid do membro remetente
+    'statusReconciliacao',     // RF-063: 'auto' | 'manual' | 'pendente_contraparte'
+    'mesFaturaRelacionado',    // RF-063: hint visual para RF-064
+    'contaCartaoIdRelacionado', // RF-063: hint visual para RF-064
   ];
   opcionais.forEach((k) => { if (dados[k] !== undefined) obj[k] = dados[k]; });
   return obj;
