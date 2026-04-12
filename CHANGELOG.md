@@ -7,7 +7,30 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
-*(sem mudanças pendentes)*
+## [3.21.0] - 2026-04-12
+
+### Adicionado
+
+- **RF-062: Cartões de Crédito como Contas Individuais (#125):** cada cartão real da família agora é uma conta `tipo:'cartao'` distinta com campos `bandeira`, `emissor`, `ultimos4`, `diaFechamento`, `diaVencimento`, `contaPagadoraId`, `titularPadraoId`.
+- Nova página **Contas e Cartões** (`contas.html`) com CRUD completo de cartões e listagem de contas bancárias.
+- Link "Contas" adicionado à navbar de todas as páginas.
+- Migração automática e idempotente `migrarCartaoGenerico()`: marca a conta genérica "Cartão de Crédito" como `_legado:true` em grupos existentes.
+- Banner de migração em `contas.html` para grupos legados que ainda não criaram cartões reais.
+- Import de fatura filtra dropdowns para mostrar apenas cartões reais (`tipo:'cartao'`, não-legado).
+- Auto-detecção de cartão no import via campo `emissor` cruzado com `bankFingerprintMap` (Itaú, Nubank, Bradesco, BTG, Santander, Inter).
+- Fatura: seletor de cartão mostra apenas contas `tipo:'cartao'`, com preferência por cartões reais e fallback para legado.
+- Pipeline de projeções (`pipelineCartao.js`): propaga `contaId` e `mesFatura` para parcelas futuras.
+- 21 novos testes: 16 para `modelConta` + `CONTAS_PADRAO` + `BANDEIRAS_CARTAO`, 5 para `gerarProjecoes`. Suite total: 252 testes.
+- Export `BANDEIRAS_CARTAO` em `models/Conta.js`.
+
+### Removido
+
+- Conta genérica "Cartão de Crédito" removida de `CONTAS_PADRAO` (grupos novos não a criam mais).
+
+### Alterado
+
+- `modelConta()` aceita campos adicionais quando `tipo === 'cartao'`.
+- `CONTAS_PADRAO` reduzido de 11 para 10 contas (sem cartão genérico).
 
 ---
 

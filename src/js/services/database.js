@@ -288,6 +288,61 @@ export async function garantirContasPadrao(grupoId, contasPadrao) {
   ));
 }
 
+// ── RF-062: Migração de cartão genérico ──────────────────────────
+
+/**
+ * Migra a conta genérica "Cartão de Crédito" para _legado: true.
+ * Idempotente: se já migrada, não faz nada.
+ * @param {string} grupoId
+ * @returns {Promise<string|null>} ID da conta migrada ou null se não existia
+ */
+export async function migrarCartaoGenerico(grupoId) {
+  const q = query(
+    collection(db, 'contas'),
+    where('grupoId', '==', grupoId),
+    where('tipo', '==', 'cartao'),
+  );
+  const snap = await getDocs(q);
+  const legado = snap.docs.find(d => {
+    const data = d.data();
+    return data.nome?.toLowerCase().trim() === 'cartão de crédito' && !data._legado;
+  });
+  if (!legado) return null;
+  await updateDoc(doc(db, 'contas', legado.id), { _legado: true });
+  return legado.id;
+}
+
+/**
+ * RF-062: Verifica se o grupo tem a conta genérica legado sem migrar.
+ * @param {string} grupoId
+ * @returns {Promise<boolean>}
+ */
+export async function temCartaoLegado(grupoId) {
+  const q = query(
+    collection(db, 'contas'),
+    where('grupoId', '==', grupoId),
+    where('tipo', '==', 'cartao'),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.some(d => d.data()._legado === true);
+}
+
+/**
+ * RF-062: Verifica se o grupo já possui ao menos um cartão real (não-legado).
+ * @param {string} grupoId
+ * @returns {Promise<boolean>}
+ */
+export async function temCartaoReal(grupoId) {
+  const q = query(
+    collection(db, 'contas'),
+    where('grupoId', '==', grupoId),
+    where('tipo', '==', 'cartao'),
+    where('ativa', '==', true),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.some(d => !d.data()._legado);
+}
+
 // ── RF-014: Deduplicação ──────────────────────────────────────
 
 /**

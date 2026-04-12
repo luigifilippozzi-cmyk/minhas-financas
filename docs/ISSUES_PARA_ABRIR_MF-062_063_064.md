@@ -209,4 +209,3 @@ gh issue create \
 ```
 
 > Depois de criar as issues, atualize as referências cruzadas: o body de #127 menciona `#125` e `#126`, mas os números reais podem ser diferentes (ex.: `#97`, `#98`, `#99`). Edite os bodies para refletir os números reais atribuídos.
-                                                              

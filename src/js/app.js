@@ -12,6 +12,7 @@ import {
   ouvirCategoriasReceita,
   garantirCategoriasReceita,
   garantirContasPadrao,       // NRF-004
+  migrarCartaoGenerico,       // RF-062
   buscarDespesasPeriodo,      // RF-017: gráficos
   buscarReceitasPeriodo,      // RF-017: gráficos
   buscarDespesasAno,          // RF-017: filtro anual
@@ -111,6 +112,7 @@ onAuthChange(async (user) => {
   iniciarListenerCategoriasReceita(estadoApp.perfil.grupoId);
   garantirCategoriasReceita(estadoApp.perfil.grupoId, CATEGORIAS_RECEITA_PADRAO).catch(() => {});
   garantirContasPadrao(estadoApp.perfil.grupoId, CONTAS_PADRAO).catch(() => {}); // NRF-004
+  migrarCartaoGenerico(estadoApp.perfil.grupoId).catch(() => {}); // RF-062: marca cartão genérico como _legado
   configurarEventos();
   carregarDadosMeses(); // RF-017: carrega dados para gráficos (assíncrono)
 });

@@ -3,6 +3,11 @@
 // NRF-004: Identificação da conta/banco de origem de cada transação.
 // Contas são armazenadas em Firestore (coleção `contas`) e vinculadas
 // a um grupo. Cada despesa/receita pode referenciar uma contaId.
+//
+// RF-062: Cartões de crédito como contas individuais.
+// Quando `tipo === 'cartao'`, campos adicionais descrevem o cartão real:
+// bandeira, emissor, ultimos4, diaFechamento, diaVencimento,
+// contaPagadoraId, titularPadraoId, _legado.
 // ============================================================
 
 /**
@@ -11,7 +16,7 @@
  * @returns {object}
  */
 export function modelConta(dados) {
-  return {
+  const base = {
     grupoId: dados.grupoId,
     nome:    String(dados.nome ?? '').trim(),
     emoji:   dados.emoji   ?? '🏦',
@@ -19,14 +24,33 @@ export function modelConta(dados) {
     tipo:    dados.tipo    ?? 'banco',   // 'banco' | 'cartao' | 'dinheiro'
     ativa:   dados.ativa   !== false,    // default true
   };
+
+  // RF-062: campos adicionais para cartões de crédito
+  if (base.tipo === 'cartao') {
+    if (dados.bandeira)        base.bandeira        = dados.bandeira;
+    if (dados.emissor)         base.emissor          = dados.emissor;
+    if (dados.ultimos4)        base.ultimos4         = dados.ultimos4;
+    if (dados.diaFechamento)   base.diaFechamento    = Number(dados.diaFechamento);
+    if (dados.diaVencimento)   base.diaVencimento    = Number(dados.diaVencimento);
+    if (dados.contaPagadoraId) base.contaPagadoraId  = dados.contaPagadoraId;
+    if (dados.titularPadraoId) base.titularPadraoId  = dados.titularPadraoId;
+    if (dados._legado)         base._legado          = true;
+  }
+
+  return base;
 }
 
 /**
+ * RF-062: Bandeiras de cartão suportadas.
+ */
+export const BANDEIRAS_CARTAO = ['visa', 'mastercard', 'elo', 'amex', 'hiper', 'outros'];
+
+/**
  * NRF-004: Contas padrão criadas automaticamente para grupos novos.
- * Inclui os bancos solicitados + Cartão de Crédito genérico + Dinheiro.
+ * RF-062: A conta genérica "Cartão de Crédito" foi REMOVIDA.
+ * Cartões agora são criados individualmente pelo usuário.
  */
 export const CONTAS_PADRAO = [
-  { nome: 'Cartão de Crédito', emoji: '💳', cor: '#7B1FA2', tipo: 'cartao'   },
   { nome: 'Banco Itaú',        emoji: '🟠', cor: '#EC6600', tipo: 'banco'    },
   { nome: 'Banco Bradesco',    emoji: '🔴', cor: '#D32F2F', tipo: 'banco'    },
   { nome: 'Banco XP',          emoji: '📊', cor: '#1565C0', tipo: 'banco'    },

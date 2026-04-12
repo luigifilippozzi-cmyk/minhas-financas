@@ -8,7 +8,7 @@
 
 - **Usuários:** Luigi + Ana (casal)
 - **Dev:** Luigi (solo developer)
-- **Versão atual:** v3.20.0
+- **Versão atual:** v3.21.0
 - **Repo:** https://github.com/luigifilippozzi-cmyk/minhas-financas
 - **Stack:** HTML5 · CSS3 · JS ES6+ · **Vite 5** (bundler MPA) · **Capacitor 8** (iOS) · Firebase Auth · Cloud Firestore (via npm) · Chart.js v4 · SheetJS (XLSX)
 
@@ -20,7 +20,7 @@
 npm run dev                 # Vite dev server (HMR, hot reload)
 npm run build               # Vite build → dist/ (produção)
 npm run preview             # Preview do build de produção
-npm test                    # Vitest — roda suite de 231+ testes unitários
+npm test                    # Vitest — roda suite de 252+ testes unitários
 npm run test:watch          # Vitest em modo watch
 npm run test:coverage       # Coverage com V8
 npm run test:integration    # Testes de integração (requer Firebase Emulator)
@@ -187,7 +187,7 @@ Todas as cores, sombras e fontes estão em `variables.css` como CSS custom prope
 
 - Framework: **Vitest** com `@vitest/coverage-v8`
 - Localização: `tests/` (espelho de `src/js/utils/` e `src/js/services/`)
-- **231+ testes unitários** cobrindo: parsers, dedup, ajusteDetector, normalizador, pipelineCartao, importarDedup
+- **252+ testes unitários** cobrindo: parsers, dedup, ajusteDetector, normalizador, pipelineCartao, importarDedup
 - **26 testes de integração** (Firebase Emulator): regras Firestore, CRUD despesas, purge em lote
 - **Rodar antes de qualquer commit:** `npm test`
 - Testes de integração: `npm run test:integration` (requer emulador na porta 8080)
@@ -315,4 +315,3 @@ git push origin main
 - ❌ Omitir `mesFatura` em despesas de cartão — quebra a tela de fatura
 - ❌ Usar `deleteDoc` em lote sem batch — viola regras Firestore
 - ❌ `import` de Firebase via CDN (`gstatic.com`) — usar pacotes npm (`firebase/app`, `firebase/auth`, `firebase/firestore`)
-       

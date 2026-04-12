@@ -428,6 +428,7 @@ function _atualizarUITipo() {
   // RF-020: toggle de inversão de sinais só aparece em modo banco (e só quando relevante para PDF)
   _atualizarUIInverterSinais(_tipoExtrato === 'banco' && _origemPDF);
   _atualizarBancoBadge(); // RF-021
+  preencherSelectsContas(); // RF-062: re-filtra contas ao trocar tipo (cartao ↔ banco)
   // Responsável em lote: só visível no modo cartão
   const respWrap = document.getElementById('resp-lote-wrap');
   if (respWrap) respWrap.classList.toggle('hidden', _tipoExtrato !== 'cartao');
@@ -465,12 +466,23 @@ function _atualizarBancoBadge() {
   badge.classList.remove('hidden');
 }
 
-// ── RF-021: Auto-seleciona conta quando banco é identificado ─────
+// ── RF-021 + RF-062: Auto-seleciona conta quando banco é identificado ─────
 function _autoSelecionarConta(origemId) {
   if (!origemId || origemId === 'desconhecido') return;
   const sel = document.getElementById('sel-conta-global');
   if (!sel || sel.value) return;   // usuário já selecionou — não sobrescrever
-  // inferirContaDaDescricao já tem keywords para os principais bancos
+
+  // RF-062: em modo fatura, busca cartão pelo campo `emissor` primeiro
+  if (_tipoExtrato === 'cartao') {
+    const cartao = _contas.find(c => c.tipo === 'cartao' && !c._legado && c.emissor === origemId);
+    if (cartao) {
+      sel.value = cartao.id;
+      sel.dispatchEvent(new Event('change'));
+      return;
+    }
+  }
+
+  // Fallback: inferirContaDaDescricao (funciona para bancos e cartão legado)
   const contaId = inferirContaDaDescricao(origemId, _contas);
   if (contaId) {
     sel.value = contaId;
@@ -691,8 +703,12 @@ function renderizarPreview() {
     selConta.className = 'sel-conta-linha select-input';
     selConta.style.cssText = 'font-size:.85rem;padding:.2rem .4rem;';
     selConta.dataset.idx = l._idx;
+    // RF-062: em modo fatura de cartão, mostrar apenas cartões reais
+    const _contasLinha = _tipoExtrato === 'cartao'
+      ? _contas.filter(c => c.tipo === 'cartao' && !c._legado)
+      : _contas;
     selConta.innerHTML = '<option value="">— sem conta —</option>' +
-      _contas.map(c => '<option value="' + c.id + '">' + c.emoji + ' ' + c.nome + '</option>').join('');
+      _contasLinha.map(c => '<option value="' + c.id + '">' + c.emoji + ' ' + c.nome + '</option>').join('');
     // RF-019: global tem prioridade → arquivo → inferência → vazio
     const contaGlobal = document.getElementById('sel-conta-global')?.value ?? '';
     selConta.value = contaGlobal || l.contaId || '';
@@ -1029,7 +1045,11 @@ function preencherSelRespLote() {
 
 // NRF-004: preenche todos os selects de conta — delegado a importacaoComum.js
 function preencherSelectsContas() {
-  preencherSelectsContasUI(_contas, {
+  // RF-062: em modo fatura de cartão, mostrar apenas contas tipo 'cartao' (não-legado)
+  const contasFiltradas = _tipoExtrato === 'cartao'
+    ? _contas.filter(c => c.tipo === 'cartao' && !c._legado)
+    : _contas;
+  preencherSelectsContasUI(contasFiltradas, {
     globalId: 'sel-conta-global', loteId: 'sel-conta-lote',
     linhaClass: 'sel-conta-linha', linhasArray: _linhas,
   });
