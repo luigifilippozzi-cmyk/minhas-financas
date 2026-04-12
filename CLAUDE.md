@@ -141,7 +141,7 @@ chore: descrição                         ← manutenção
 style(css): descrição                    ← apenas CSS/formatação
 ```
 
-**Escopos frequentes:** `auth`, `dashboard`, `despesas`, `receitas`, `categorias`, `orcamentos`, `importar`, `base-dados`, `fatura`, `planejamento`, `pipelineCartao`, `pipelineBanco`, `database`, `hosting`
+**Escopos frequentes:** `auth`, `dashboard`, `despesas`, `receitas`, `categorias`, `orcamentos`, `importar`, `base-dados`, `fatura`, `planejamento`, `pipelineCartao`, `pipelineBanco`, `database`, `hosting`, `ios`
 
 ### Versionamento (SemVer)
 - `PATCH` → bug fix
@@ -195,59 +195,113 @@ Todas as cores, sombras e fontes estão em `variables.css` como CSS custom prope
 
 ---
 
-## Estado Atual do Projeto (2026-04-07)
+## Estado Atual do Projeto (2026-04-10)
 
 ### Milestones
 | Milestone | Progresso | Status |
 |-----------|-----------|--------|
-| Requisitos Funcionais | 35/35 (100%) | ✅ Concluído |
+| Requisitos Funcionais (backlog anterior) | 42/42 (100%) | ✅ Concluído |
+| Reconciliação Fatura ↔ Extrato (RF-062/063/064) | 0/3 | ⚪ Pendente |
 | Melhorias Visuais | 26/26 (100%) | ✅ Concluído |
 | iOS App Fase 0 (Vite + Firebase npm) | 2/2 (100%) | ✅ Concluído |
 | iOS App Fase 1 (Capacitor + safe areas) | 2/2 (100%) | ✅ Concluído |
 | iOS App (Fases 2–5) | 0/13 issues | ⚪ Não iniciado |
 | Tech Debt | 1/2 (50%) | ⚪ Backlog |
 
+### Estrutura de Desenvolvimento (Squad IA)
+```
+Luigi (Product Owner)
+  ├── PM Agent          → Relatório diário, métricas, alertas (read-only)
+  └── Dev Manager       → Executor de código, orquestrador de subagentes
+        ├── test-runner              → Vitest (194+ testes) + coverage
+        ├── security-reviewer        → Firestore rules, escHTML/XSS, auth
+        └── import-pipeline-reviewer → Pipeline de importação (parser, dedup, ajuste)
+```
+Detalhes completos em `AGENTS.md`. Memória persistente em `.auto-memory/project_mf_status.md`.
+
 ### Próximas prioridades
-1. **iOS App Fase 2** — Firebase nativo via plugins (issues #77–#80)
-2. **Tech Debt** — unificação de pipeline (#96)
-3. **iOS App Fase 3** — Ajustes UX mobile (issues #81–#83)
+1. **RF-062** — Cartões como contas individuais (pré-requisito de RF-064) — issue `#MF-062`
+2. **RF-063** — Transferências intra-grupo (Luigi ↔ Ana) — issue `#MF-063` (pode rodar em paralelo com RF-062)
+3. **RF-064** — Reconciliação de pagamento de fatura — issue `#MF-064` (depende de 062 + 063)
+4. **iOS App Fase 2** — Firebase nativo via plugins (issues #77–#80)
+5. **Tech Debt** — unificação de pipeline (#96)
+6. **iOS App Fase 3** — Ajustes UX mobile (issues #81–#83)
 
 ### Documentação de referência
 | Arquivo | Conteúdo |
 |---------|----------|
 | `docs/ARQUITETURA_TECNICA.md` | Firestore schema completo, índices, fluxo de dados |
 | `docs/DESIGN_SYSTEM.md` | Paleta, tipografia, espaçamento, componentes, acessibilidade |
-| `docs/REQUISITOS_FUNCIONAIS.md` | 35 RF + NRF implementados com descrição detalhada |
+| `docs/REQUISITOS_FUNCIONAIS.md` | 42 RF + NRF implementados + RF-062/063/064 pendentes (cadeia Luigi → Ana → Cartão) |
 | `docs/MILESTONE_MELHORIAS_VISUAIS.md` | Checklist de épicos A–D e sprints (concluído) |
 | `docs/MILESTONE_iOS_App.md` | Fases 0–5 do app iOS com Capacitor |
 | `docs/BUGS.md` | Registro de 27 bugs com root cause e fix |
 | `docs/GUIA_VERSIONAMENTO.md` | Conventional commits + SemVer + workflow git |
 | `docs/GUIA_DE_TESTES.md` | Como escrever e organizar testes |
+| `AGENTS.md` | Guia do squad IA — governança, subagentes, workflow git, checklist de PR |
+| `docs/MF_Prompts_Squad_IA.md` | 10 prompts operacionais para PM Agent e Dev Manager |
+| `docs/MF_Prompt_PMAgent_Squad.md` | Prompt autônomo do PM Agent (sessão diária) |
+| `docs/MF_Prompt_DevManager_Squad.md` | Prompt autônomo do Dev Manager (sessão de execução) |
+| `docs/MF_Templates_Sessao_Agentes.md` | 6 templates copy-paste para sessões de agentes |
+| `docs/mf-squad-dashboard.html` | Dashboard visual do squad (atualizado pelo PM Agent) |
 | `CHANGELOG.md` | Histórico completo de versões |
 
 ---
 
-## Workflow de Desenvolvimento (solo dev)
+## Workflow de Desenvolvimento (Squad IA — Híbrido)
 
+> Detalhes completos em `AGENTS.md`. Prompts operacionais em `docs/MF_Prompts_Squad_IA.md`.
+
+### Features e Bug Fixes → Feature Branch + PR
 ```bash
-# 1. Desenvolver
-# 2. Testar
-npm test
+# 1. Sincronizar
+git pull origin main
 
-# 3. Commit (Conventional Commits)
-git add <arquivos específicos>
+# 2. Criar branch
+git checkout -b feat/MF-{issue}-{descricao-kebab}   # ou fix/MF-{issue}-...
+
+# 3. Implementar (seguir padrões deste CLAUDE.md)
+
+# 4. Testar — OBRIGATÓRIO antes de commit
+npm test                    # 194+ testes devem passar
+
+# 5. Acionar subagentes (ver AGENTS.md §6)
+#    - test-runner: SEMPRE antes de PR
+#    - security-reviewer: se tocou em auth/database/firestore.rules/innerHTML
+#    - import-pipeline-reviewer: se tocou em pipeline de importação
+
+# 6. Commit (Conventional Commits)
+git add <arquivos específicos>   # NUNCA git add -A sem revisar
 git commit -m "feat(escopo): descrição (vX.Y.Z)"
 
-# 4. Push
-git push origin main
+# 7. Push + PR
+git push -u origin feat/MF-{issue}-{descricao}
+gh pr create --title "feat(escopo): descrição (#issue)" --body "..."
 
-# 5. Deploy (quando pronto para release)
-firebase deploy --only hosting
+# 8. CI verde → Merge → Delete branch
+gh pr checks {numero} --watch
+gh pr merge {numero} --merge --delete-branch
+git checkout main && git pull origin main
 
-# 6. Atualizar CHANGELOG.md e fechar issues GitHub
+# 9. Deploy (automático via CI após merge em main)
+# 10. Atualizar CHANGELOG.md e fechar issues
 ```
 
-> **Nota:** projeto pessoal — commits direto na `main`, sem PRs obrigatórios. PRs opcionais para features maiores.
+### Docs, Chore, Style → Commit direto na main
+```bash
+# 1. Sincronizar
+git pull origin main
+
+# 2. Fazer alteração
+
+# 3. Commit + Push
+git add <arquivos específicos>
+git commit -m "docs: descrição"
+git push origin main
+```
+
+> **Regra**: Qualquer alteração em `src/js/` ou `src/css/` **DEVE** usar feature branch + PR.
+> Alterações em `docs/`, `CHANGELOG.md`, `README.md`, `.auto-memory/` podem ir direto na main.
 
 ---
 
