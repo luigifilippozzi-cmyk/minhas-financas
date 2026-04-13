@@ -742,7 +742,7 @@ function renderizarPreview() {
     } else if (l._transferenciaInterna) {
       // RF-063: badge de transferência interna detectada
       const dir = l._transferenciaInterna.direcao === 'recebida' ? '📥' : '📤';
-      tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok" style="background:#dbeafe;color:#1e40af;" title="Transferência interna detectada (' + l._transferenciaInterna.membroNome + ')' + chaveInfo + '">' + dir + ' 🔁 Transf.</span>';
+      tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok" style="background:#dbeafe;color:#1e40af;" title="Transferência interna detectada (' + escHTML(l._transferenciaInterna.membroNome) + ')' + chaveInfo + '">' + dir + ' 🔁 Transf.</span>';
       tr.classList.add('imp-row-transf');
     } else if (l.tipoLinha === 'receita') {
       // NRF-006: modo banco — badge de receita
