@@ -64,8 +64,8 @@ export function debounce(fn, delay = 300) {
  */
 export function isMovimentacaoReal(d) {
   return d.tipo !== 'projecao'
-      && d.tipo !== 'transferencia_interna';
-  // RF-064 (futuro): && d.tipo !== 'pagamento_fatura'
+      && d.tipo !== 'transferencia_interna'
+      && d.tipo !== 'pagamento_fatura';  // RF-064: pagamento de fatura não é gasto real
 }
 
 // ── NRF-002: Fuzzy Matching ─────────────────────────────────
