@@ -7,6 +7,14 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.23.1] - 2026-04-13
+
+### Corrigido
+
+- **Segurança (XSS) — fatura.js (#135):** Nomes de membros do grupo (Firestore) eram inseridos no `innerHTML` sem `escHTML()` em 6 locais — botões de aba, atributos `id` dinâmicos, badges `fat-resp-chip`, cabeçalhos de resumo e projeções. Detectado pelo security-reviewer após PR #134. Corrigido com `escHTML()` em todos os pontos.
+
+---
+
 ## [3.23.0] - 2026-04-13
 
 ### Adicionado
