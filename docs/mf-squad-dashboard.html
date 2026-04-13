@@ -167,7 +167,7 @@
     <div class="kpi-card">
       <div class="kpi-label">Versao</div>
       <div class="kpi-value" id="kpiVersion">v3.19.0</div>
-      <div class="kpi-sub" id="kpiVersionSub">Fase 1 iOS + Tech Debt concluidos</div>
+      <div class="kpi-sub" id="kpiVersionSub">RF-062/063/064 concluidos — cadeia completa</div>
     </div>
     <div class="kpi-card">
       <div class="kpi-label">Testes Unitarios</div>
@@ -230,7 +230,7 @@
       <div class="role">Vitest + Coverage</div>
       <div class="status-line"><div class="status-dot standby"></div> Standby</div>
       <div class="agent-stat"><span>Framework</span><span>Vitest</span></div>
-      <div class="agent-stat"><span>Testes</span><span id="trTests">194+ unit + 26 int</span></div>
+      <div class="agent-stat"><span>Testes</span><span id="trTests">330 unit + 26 int</span></div>
       <div class="agent-stat"><span>Trigger</span><span>Sempre pre-PR</span></div>
     </div>
     <!-- Security Reviewer -->
@@ -288,9 +288,9 @@
           <div class="ms-progress"><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:100%;background:var(--green);"></div></div><span class="ms-pct" style="color:var(--green);">100%</span></div>
         </div>
         <div class="milestone-row">
-          <div class="ms-badge" style="background:var(--blue-bg);color:var(--blue);">REC</div>
-          <div class="ms-info"><h4>Reconciliacao Fatura (RF-062/063/064)</h4><p>1/3 — RF-062 concluido (#125)</p></div>
-          <div class="ms-progress"><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:33%;background:var(--blue);"></div></div><span class="ms-pct" style="color:var(--blue);">33%</span></div>
+          <div class="ms-badge" style="background:var(--green-bg);color:var(--green);">REC</div>
+          <div class="ms-info"><h4>Reconciliacao Fatura (RF-062/063/064)</h4><p>3/3 — RF-062/063/064 concluidos ✅</p></div>
+          <div class="ms-progress"><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:100%;background:var(--green);"></div></div><span class="ms-pct" style="color:var(--green);">100%</span></div>
         </div>
         <div class="milestone-row">
           <div class="ms-badge" style="background:var(--green-bg);color:var(--green);">Visual</div>
@@ -349,6 +349,7 @@
             <tr><td><div class="mod-name"><div class="mod-dot" style="background:var(--green);"></div>formatters</div></td><td><span class="badge badge-green">Sim</span></td><td><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:80%;background:var(--green);"></div></div></td></tr>
             <tr><td><div class="mod-name"><div class="mod-dot" style="background:var(--green);"></div>helpers</div></td><td><span class="badge badge-green">Sim</span></td><td><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:75%;background:var(--green);"></div></div></td></tr>
             <tr><td><div class="mod-name"><div class="mod-dot" style="background:var(--green);"></div>categorizer</div></td><td><span class="badge badge-green">Sim</span></td><td><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:70%;background:var(--green);"></div></div></td></tr>
+            <tr><td><div class="mod-name"><div class="mod-dot" style="background:var(--green);"></div>reconciliadorFatura</div></td><td><span class="badge badge-green">Sim</span></td><td><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:95%;background:var(--green);"></div></div></td></tr>
             <tr><td><div class="mod-name"><div class="mod-dot" style="background:var(--red);"></div>pdfParser</div></td><td><span class="badge badge-red">Nao</span></td><td><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:0%;background:var(--red);"></div></div></td></tr>
             <tr><td><div class="mod-name"><div class="mod-dot" style="background:var(--red);"></div>recurringDetector</div></td><td><span class="badge badge-red">Nao</span></td><td><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:0%;background:var(--red);"></div></div></td></tr>
             <tr><td><div class="mod-name"><div class="mod-dot" style="background:var(--red);"></div>detectorOrigemArquivo</div></td><td><span class="badge badge-red">Nao</span></td><td><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:0%;background:var(--red);"></div></div></td></tr>
@@ -390,12 +391,18 @@
           <div class="pipe-info"><h4>pipelineBanco / pipelineCartao</h4><p>Roteamento final + propagacao mesFatura</p></div>
           <span class="badge badge-green">Testado</span>
         </div>
+        <div class="pipeline-step">
+          <div class="pipe-icon" style="background:var(--cyan, rgba(6,182,212,.12));color:var(--cyan);">6</div>
+          <div class="pipe-info"><h4>reconciliadorFatura (RF-064)</h4><p>detectarPagamentoFatura — score 0-100 (regex+valor+janela)</p></div>
+          <span class="badge badge-green">Testado</span>
+        </div>
         <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border);">
           <div class="kpi-label" style="margin-bottom:8px;">Padroes Criticos</div>
           <div style="display:flex;flex-wrap:wrap;gap:6px;">
             <span class="badge badge-green">chave_dedup OK</span>
             <span class="badge badge-green">mesFatura OK</span>
             <span class="badge badge-green">buscarChavesDedup OK</span>
+            <span class="badge badge-green">isMovimentacaoReal OK</span>
             <span class="badge badge-yellow">4 modulos sem teste</span>
           </div>
         </div>
@@ -421,17 +428,21 @@
       </div>
     </div>
     <div class="card">
-      <div class="card-header"><h2>Issues Prioritarias</h2><span class="badge badge-red" id="p0Count">2 P0 + 1 QA</span></div>
+      <div class="card-header"><h2>Issues Prioritarias</h2><span class="badge badge-purple" id="p0Count">iOS P0: 4 | QA: 5</span></div>
       <div class="card-body" id="issueList">
         <table class="mod-table">
           <thead><tr><th>#</th><th>Titulo</th><th>Prioridade</th><th>Milestone</th></tr></thead>
           <tbody>
             <tr><td>#125</td><td>RF-062: Cartoes como contas individuais</td><td><span class="badge badge-green">Concluido</span></td><td>Reconciliacao</td></tr>
-            <tr><td>#126</td><td>RF-063: Transferencias intra-grupo</td><td><span class="badge badge-red">P0</span></td><td>Reconciliacao</td></tr>
-            <tr><td>#127</td><td>RF-064: Reconciliacao pagamento fatura</td><td><span class="badge badge-red">P0</span></td><td>Reconciliacao</td></tr>
+            <tr><td>#126</td><td>RF-063: Transferencias intra-grupo</td><td><span class="badge badge-green">Concluido</span></td><td>Reconciliacao</td></tr>
+            <tr><td>#127</td><td>RF-064: Reconciliacao pagamento fatura</td><td><span class="badge badge-green">Concluido</span></td><td>Reconciliacao</td></tr>
             <tr><td>#129</td><td>Plano de testes RF-062 (50 TCs)</td><td><span class="badge badge-blue">QA</span></td><td>Reconciliacao</td></tr>
-            <tr><td>#77</td><td>Firebase Auth nativo</td><td><span class="badge badge-purple">Proximo</span></td><td>iOS Fase 2</td></tr>
-            <tr><td>#78</td><td>Firestore nativo</td><td><span class="badge badge-purple">Proximo</span></td><td>iOS Fase 2</td></tr>
+            <tr><td>#136</td><td>RF-064 TC-001-007: Preview import PAG FATURA</td><td><span class="badge badge-blue">QA</span></td><td>RF-064 TestPlan</td></tr>
+            <tr><td>#137</td><td>RF-064 TC-008-014: Save + Firestore + Score</td><td><span class="badge badge-blue">QA</span></td><td>RF-064 TestPlan</td></tr>
+            <tr><td>#138</td><td>RF-064 TC-015-022: Dashboard + Agregados</td><td><span class="badge badge-blue">QA</span></td><td>RF-064 TestPlan</td></tr>
+            <tr><td>#139</td><td>RF-064 TC-023-029: Fatura Liquidacao + Edge</td><td><span class="badge badge-blue">QA</span></td><td>RF-064 TestPlan</td></tr>
+            <tr><td>#77</td><td>Firebase Auth nativo</td><td><span class="badge badge-purple">P0 iOS</span></td><td>iOS Fase 2</td></tr>
+            <tr><td>#78</td><td>Firestore nativo</td><td><span class="badge badge-purple">P0 iOS</span></td><td>iOS Fase 2</td></tr>
           </tbody>
         </table>
       </div>
@@ -450,24 +461,24 @@
 // Dashboard state — PM Agent updates this section, Dev Manager reads it
 const DASHBOARD_DATA = {
   // PM Agent atualiza estes campos:
-  lastUpdate: "2026-04-13 23:25",
-  version: "v3.23.0",
+  lastUpdate: "2026-04-13 23:45",
+  version: "v3.23.1",
   health: "green", // green | yellow | red
-  healthText: "RF-064 concluido e mergeado — 330 testes passando, deploy em andamento, cadeia RF-062/063/064 completa",
+  healthText: "v3.23.1 — XSS hotfixes + plano de testes RF-064 (29 TCs, 4 issues) — 330 testes passando, cadeia RF-062/063/064 completa",
   testsUnit: "330",
   testsUnitStatus: "330 passando",
   testsInt: "26",
-  issuesOpen: 13,
-  issuesSub: "Test plan: 1 (#129) | iOS backlog: 12 (Fases 2-5)",
+  issuesOpen: 17,
+  issuesSub: "QA RF-064: 4 (#136-#139) | iOS backlog: 12 (Fases 2-5) | P2: 1",
   // Dev Manager atualiza via PR + merge
   activity: [
+    { time: "Apr 13", color: "var(--blue)", msg: "<strong>Issues #136-#139</strong> Plano de testes RF-064 — 29 TCs manuais (preview, save, dashboard, fatura)", tag: "docs" },
+    { time: "Apr 13", color: "var(--green)", msg: "<strong>Merge PR #135</strong> fix(fatura): XSS membroNome em 6 locais + l.erro — v3.23.1", tag: "merge" },
     { time: "Apr 13", color: "var(--green)", msg: "<strong>Merge PR #134</strong> RF-064 Reconciliacao Pagamento Fatura — v3.23.0 (+46 testes, 330 total)", tag: "merge" },
     { time: "Apr 12", color: "var(--green)", msg: "<strong>Merge PR #133</strong> fix(importar): XSS membroNome badge transferencia — v3.22.1", tag: "merge" },
     { time: "Apr 12", color: "var(--green)", msg: "<strong>Merge PR #132</strong> RF-063 Transferencias intra-grupo — v3.22.0 (18 arquivos, +32 testes)", tag: "merge" },
-    { time: "Apr 12", color: "var(--green)", msg: "<strong>Merge PR #131</strong> fix(css): navbar com texto sempre visivel — v3.21.1", tag: "merge" },
     { time: "Apr 12", color: "var(--green)", msg: "<strong>Merge PR #128</strong> RF-062 Cartoes como contas individuais — v3.21.0 (+21 testes)", tag: "merge" },
     { time: "Apr 10", color: "var(--accent)", msg: "<strong>Migration</strong> PR #124 — repo migrado de OneDrive para C:\\Dev\\minhas-financas", tag: "infra" },
-    { time: "Apr 9", color: "var(--green)", msg: "<strong>Merge PR #123</strong> TD-006 unificacao importacao — v3.20.0", tag: "merge" },
   ]
 };
 
