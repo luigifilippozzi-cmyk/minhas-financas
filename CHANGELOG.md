@@ -7,6 +7,21 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.23.0] - 2026-04-13
+
+### Adicionado
+
+- **RF-064: Reconciliacao de Pagamento de Fatura (#127):** novo tipo `'pagamento_fatura'` para debitos bancarios que representam pagamento de fatura de cartao — eliminando o double count (PAG FATURA R$ 3.500 + compras R$ 3.500 = R$ 7.000 exibido vs R$ 3.500 real).
+- Novo modulo `reconciliadorFatura.js` com score 0–100: regex(40pts) + valor(40pts) + janela temporal(20pts).
+- `isPagamentoFatura()`: deteccao por 10+ padroes de bancos brasileiros (PAG FATURA, PGTO FAT, DEB AUTO CARTAO, etc.).
+- `detectarPagamentoFatura()`: integrado no pipeline de importacao bancaria apos `detectarTransferenciasInternas` (ordem correta).
+- `recalcularScoreFatura()`: reavalia score apos carregar total real do ciclo de fatura.
+- 5 novos campos opcionais em `modelDespesa`: `mesFaturaQuitado`, `contaCartaoId`, `statusReconciliacaoFatura`, `scoreFatura`, `valorFaturaTotal`.
+- `isMovimentacaoReal()` atualizado para excluir `'pagamento_fatura'` dos agregados de gastos (dashboard, planejamento, fluxo de caixa).
+- Badge visual "💳 Pag. Fatura" no preview de importacao bancaria com score de confianca.
+- Nova aba "🔗 Liquidacao" em fatura.html: mostra status do ciclo (liquidado/em aberto/diferenca), tabela de pagamentos com score e status (auto/pendente/parcial).
+- 46 novos testes unitarios (reconciliadorFatura + isMovimentacaoReal) — total: 330. Cobertura: 100% stmts, 92.3% branch.
+
 ## [3.22.1] - 2026-04-12
 
 ### Corrigido

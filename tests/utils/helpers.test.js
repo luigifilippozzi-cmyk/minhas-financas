@@ -160,4 +160,8 @@ describe('isMovimentacaoReal', () => {
   it('retorna false para transferencia_interna', () => {
     expect(isMovimentacaoReal({ tipo: 'transferencia_interna' })).toBe(false);
   });
+
+  it('retorna false para pagamento_fatura (RF-064)', () => {
+    expect(isMovimentacaoReal({ tipo: 'pagamento_fatura' })).toBe(false);
+  });
 });

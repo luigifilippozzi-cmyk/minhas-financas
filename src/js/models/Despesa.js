@@ -35,6 +35,11 @@ export function modelDespesa(dados) {
     'statusReconciliacao',     // RF-063: 'auto' | 'manual' | 'pendente_contraparte'
     'mesFaturaRelacionado',    // RF-063: hint visual para RF-064
     'contaCartaoIdRelacionado', // RF-063: hint visual para RF-064
+    'mesFaturaQuitado',        // RF-064: "YYYY-MM" — ciclo de fatura que este pagamento quita
+    'contaCartaoId',           // RF-064: conta cartão vinculada ao pagamento de fatura
+    'statusReconciliacaoFatura', // RF-064: 'auto' | 'manual' | 'pendente' | 'ignorado' | 'parcial'
+    'scoreFatura',             // RF-064: score 0–100 do match automático
+    'valorFaturaTotal',        // RF-064: total do ciclo da fatura na época do pagamento
   ];
   opcionais.forEach((k) => { if (dados[k] !== undefined) obj[k] = dados[k]; });
   return obj;
