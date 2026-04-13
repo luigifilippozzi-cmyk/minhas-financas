@@ -738,7 +738,7 @@ function renderizarPreview() {
     } else if (l.duplicado) {
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--dup" title="Já importado anteriormente' + chaveInfo + '">🔄</span>';
     } else if (l.erro) {
-      tdStatus.innerHTML = '<span class="imp-badge imp-badge--erro" title="' + l.erro + chaveInfo + '">⚠️</span>';
+      tdStatus.innerHTML = '<span class="imp-badge imp-badge--erro" title="' + escHTML(l.erro) + chaveInfo + '">⚠️</span>';
     } else if (l.isEstorno && _tipoExtrato === 'cartao') {
       // BUG-013: crédito/estorno em fatura — usuário pode marcar para importar como receita
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--estorno" title="Crédito/estorno de fatura — será importado como Receita (desmarque para ignorar)' + chaveInfo + '">↩ Estorno</span>';
