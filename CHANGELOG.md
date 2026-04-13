@@ -7,6 +7,14 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.22.1] - 2026-04-12
+
+### Corrigido
+
+- **Segurança (XSS) — importar.js (#133):** `membroNome` no badge de transferência interna detectada era inserido via `innerHTML` em atributo `title` sem `escHTML()`. Um nome de membro malicioso poderia injetar HTML/JS arbitrário. Corrigido com `escHTML(l._transferenciaInterna.membroNome)`.
+
+---
+
 ## [3.22.0] - 2026-04-12
 
 ### Adicionado

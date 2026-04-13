@@ -129,7 +129,7 @@ Se `.auto-memory/` não existir, criar o diretório e inicializar `project_mf_st
 
 | Cor | Condição |
 |-----|----------|
-| Verde | Zero issues overdue, 231+ testes passando, CI verde |
+| Verde | Zero issues overdue, 284 testes passando, CI verde |
 | Amarelo | 1-2 issues atrasadas OU testes instáveis OU dívida técnica crescendo |
 | Vermelho | >2 issues atrasadas OU testes falhando OU bugs P0 abertos OU CI quebrado |
 

@@ -114,7 +114,7 @@ Ler `.auto-memory/project_mf_status.md` para baseline:
 ### Saúde Geral do Milestone Ativo
 | Cor | Condição |
 |-----|----------|
-| Verde | Zero issues overdue, 231+ testes passando, CI verde |
+| Verde | Zero issues overdue, 284 testes passando, CI verde |
 | Amarelo | 1-2 issues atrasadas OU testes instáveis OU dívida técnica crescendo |
 | Vermelho | >2 issues atrasadas OU testes falhando OU bugs P0 abertos OU CI quebrado |
 

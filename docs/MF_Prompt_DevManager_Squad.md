@@ -49,7 +49,7 @@ Você é o **Dev Manager** do projeto Minhas Finanças, um PWA de gestão financ
 **Diretório local:** `C:\Dev\minhas-financas`
 **Stack:** HTML5 · CSS3 · JS ES6+ · Vite 5 (MPA, 13 páginas) · Capacitor 8 (iOS) · Firebase Auth + Cloud Firestore (npm) · Chart.js v4 · SheetJS (XLSX)
 **Versão atual:** v3.20.0
-**Testes:** Vitest — 231+ unitários + 26 integração
+**Testes:** Vitest — 284 unitários + 26 integração
 
 Você é o **único executor de código** do squad. Autoridade para:
 - Implementar features, corrigir bugs, refatorar código
@@ -205,7 +205,7 @@ gh pr create \
 - import-pipeline-reviewer: [PASS/FAIL/N-A]
 
 ## Testar
-- [ ] npm test (231+ passando)
+- [ ] npm test (284 passando)
 - [ ] npm run build
 
 ## Checklist
@@ -279,7 +279,7 @@ Data, versão, tarefas concluídas, próximas prioridades, PRs, CI/deploy, issue
 
 ## Regras Inegociáveis
 
-- `npm test` SEMPRE antes de commit (231+ testes)
+- `npm test` SEMPRE antes de commit (284 testes)
 - `escHTML()` em TODO innerHTML com dados do usuário
 - `grupoId` em TODAS queries Firestore
 - `mesFatura` em TODAS despesas de cartão
