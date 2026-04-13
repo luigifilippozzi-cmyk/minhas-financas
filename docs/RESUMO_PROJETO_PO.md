@@ -11,7 +11,7 @@
 
 **Stack tecnológico:** vanilla JavaScript (sem frameworks), Vite 5 (bundler MPA com 13 páginas HTML), Firebase Auth + Cloud Firestore, Capacitor 8 (iOS), Chart.js v4, SheetJS (XLSX).
 
-**Versão atual:** v3.20.0 (abril 2026) com 231 testes unitários e 26 testes de integração.
+**Versão atual:** v3.22.0 (abril 2026) com 284 testes unitários e 26 testes de integração.
 
 ---
 
@@ -46,7 +46,7 @@
 Luigi (Product Owner)
   ├── PM Agent          → Relatórios diários, métricas, alertas (somente leitura)
   └── Dev Manager       → Executor de código, orquestrador de subagentes
-        ├── test-runner              → Vitest (231+ testes) + coverage
+        ├── test-runner              → Vitest (284 testes) + coverage
         ├── security-reviewer        → Firestore rules, escHTML/XSS, auth
         └── import-pipeline-reviewer → Pipeline de importação (parser, dedup, ajuste)
 ```
@@ -99,7 +99,7 @@ O PO é o único com autoridade para:
 
 Estas regras foram aprendidas com bugs reais e devem ser respeitadas em qualquer sessão:
 
-1. **Sempre rodar `npm test` antes de commit** — 231+ testes devem passar
+1. **Sempre rodar `npm test` antes de commit** — 284 testes devem passar
 2. **Sempre usar `escHTML()`** antes de `innerHTML` com dados do usuário (XSS)
 3. **Nunca alterar o formato de `chave_dedup`** — quebra deduplicação histórica
 4. **Nunca deletar documentos `parcelamentos`** — só marcar `status: 'quitado'`

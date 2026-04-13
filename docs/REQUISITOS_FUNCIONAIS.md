@@ -39,8 +39,8 @@
 | RF-024 | Importação de Extrato Bancário via Template XLSX | Alta | ✅ Implementado |
 | RF-060 | Planejamento Mensal — Visão Unificada de Despesas Previstas | Alta | ✅ Implementado |
 | RF-061 | Categorias e Orçamentos — Separação Despesa vs Receita | Alta | ✅ Implementado |
-| RF-062 | Cartões de Crédito como Contas Individuais | Alta | ⚪ Pendente |
-| RF-063 | Transferências Intra-Grupo (Settlement entre Membros) | Alta | ⚪ Pendente |
+| RF-062 | Cartões de Crédito como Contas Individuais | Alta | ✅ Implementado (v3.21.0, PR #128) |
+| RF-063 | Transferências Intra-Grupo (Settlement entre Membros) | Alta | ✅ Implementado (v3.22.0, PR #132) |
 | RF-064 | Reconciliação de Pagamento de Fatura de Cartão | Alta | ⚪ Pendente |
 
 ---
@@ -1177,7 +1177,7 @@ Sem modelar a cadeia, o total de gastos do mês conta o mesmo dinheiro **três v
 - RF-064 — etapa 2 (pagamento da fatura no extrato da Ana)
 
 ## RF-062: Cartões de Crédito como Contas Individuais
-**Prioridade:** Alta | **Versão:** TBD | **Status:** ⚪ Pendente
+**Prioridade:** Alta | **Versão:** v3.21.0 | **Status:** ✅ Implementado (PR #128)
 **Bloqueia:** RF-064
 
 Transforma a conta única genérica `'Cartão de Crédito'` em N contas individuais do tipo `'cartao'`, cada uma representando um cartão real da família (ex.: "Itaú Visa Luigi", "Nubank Ana", "BTG Black"). Modelagem pré-requisito para RF-064 (Reconciliação de Pagamento de Fatura), que precisa saber **qual cartão** está sendo pago pelo débito no extrato bancário.
@@ -1240,7 +1240,7 @@ Campos novos aplicáveis apenas quando `tipo === 'cartao'`:
 - [ ] Modal de Contas tem seção dedicada a Cartões com todos os novos campos
 - [ ] Import de fatura exige seleção de cartão (não mais contaId genérico)
 - [ ] Auto-detecção por emissor funciona para Itaú, Nubank, Bradesco, BTG, Santander, Inter
-- [ ] Testes existentes continuam verdes (231+ unitários, 26 integração)
+- [x] Testes existentes continuam verdes (284 unitários, 26 integração)
 
 ### Riscos
 
@@ -1249,7 +1249,7 @@ Campos novos aplicáveis apenas quando `tipo === 'cartao'`:
 - **NRF-010 (Portador "Conjunto")** — o campo `portador` continua significando titular/pessoa. Garantir que fatura conjunta (50/50) não quebra.
 
 ## RF-063: Transferências Intra-Grupo (Settlement entre Membros)
-**Prioridade:** Alta | **Versão:** TBD | **Status:** ⚪ Pendente
+**Prioridade:** Alta | **Versão:** v3.22.0 | **Status:** ✅ Implementado (PR #132)
 **Bloqueia:** RF-064
 
 Introduz o tipo `'transferencia_interna'` para representar movimentações financeiras **entre membros do mesmo grupo familiar** (Luigi ↔ Ana), como a transferência PIX/TED que Luigi faz para a Ana cobrir sua parte da fatura. Essas movimentações aparecem como despesa no extrato do remetente e como receita no extrato do destinatário, mas do ponto de vista familiar são **líquido zero** e não devem compor totais de gasto nem receita.
@@ -1330,7 +1330,7 @@ Todos os filtros existentes `tipo !== 'projecao'` devem migrar para este helper 
 | `src/js/models/Receita.js` | Mesmo |
 | `src/js/utils/helpers.js` | Novo helper `isMovimentacaoReal(d)` |
 | `src/js/utils/detectorTransferenciaInterna.js` | *(novo)* Heurísticas de detecção e match |
-| `src/js/pages/pipelineBanco.js` | Chamar detector após `classificarBanco` |
+| `src/js/pages/importar.js` | Chamar detector após `classificarBanco` no pipeline bancário |
 | `src/js/services/database.js` | `reconciliarTransferenciasPendentes(grupoId)`; `listarMembrosGrupo(grupoId)` |
 | `src/js/controllers/dashboard.js` | Usar `isMovimentacaoReal` |
 | `src/js/pages/despesas.js` | Mesmo; ação "Marcar como transferência interna"; badge visual |
@@ -1343,17 +1343,17 @@ Todos os filtros existentes `tipo !== 'projecao'` devem migrar para este helper 
 
 ### Critérios de Aceitação
 
-- [ ] Novo tipo `'transferencia_interna'` é aceito por Despesa e Receita
-- [ ] Helper `isMovimentacaoReal` é usado em todos os agregados
-- [ ] Dashboard não soma transferências internas em "gastos" nem "receita" do mês
-- [ ] Detector identifica PIX Luigi → Ana automaticamente pelo descritivo + nome do membro
-- [ ] Match com contraparte cria `contrapartidaId` cruzado quando ambos os extratos estão no banco
-- [ ] Transferência sem par fica como `'pendente_contraparte'`
-- [ ] Batch `reconciliarTransferenciasPendentes` completa pares retroativamente
-- [ ] Ação manual permite marcar despesa/receita existente como transferência interna
-- [ ] Badge visual "🔁 Transferência interna" no extrato da conta
-- [ ] Hint `mesFaturaRelacionado` aparece como etiqueta visual quando preenchido
-- [ ] Testes existentes continuam verdes
+- [x] Novo tipo `'transferencia_interna'` é aceito por Despesa e Receita
+- [x] Helper `isMovimentacaoReal` é usado em todos os agregados
+- [x] Dashboard não soma transferências internas em "gastos" nem "receita" do mês
+- [x] Detector identifica PIX Luigi → Ana automaticamente pelo descritivo + nome do membro
+- [x] Match com contraparte cria `contrapartidaId` cruzado quando ambos os extratos estão no banco
+- [x] Transferência sem par fica como `'pendente_contraparte'`
+- [x] Batch `reconciliarTransferenciasPendentes` completa pares retroativamente
+- [x] Ação manual permite marcar despesa/receita existente como transferência interna
+- [x] Badge visual "🔁 Transferência interna" no extrato da conta
+- [ ] Hint `mesFaturaRelacionado` aparece como etiqueta visual quando preenchido (etiqueta de dados salva; UI de exibição fica para RF-064)
+- [x] Testes existentes continuam verdes (284 unitários passando)
 
 ### Riscos
 

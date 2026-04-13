@@ -42,7 +42,7 @@ Ver seção "Contexto: Cadeia Real de Pagamento de Fatura" em `docs/REQUISITOS_F
 - [ ] Modal de Contas tem seção dedicada a Cartões com todos os novos campos
 - [ ] Import de fatura exige seleção de cartão
 - [ ] Auto-detecção por emissor funciona para Itaú, Nubank, Bradesco, BTG, Santander, Inter
-- [ ] `npm test` verde (231+ unitários, 26 integração)
+- [ ] `npm test` verde (284 unitários, 26 integração)
 
 ## Dependências
 - Nenhuma (pode rodar em paralelo com #126)
