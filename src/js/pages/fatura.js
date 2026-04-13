@@ -217,7 +217,7 @@ function renderizarCards(membros) {
     const t = totais.porMembro[m.key] ?? { individual: 0, conjunta: 0, total: 0 };
     return `
       <div class="fat-card fat-card--membro">
-        <div class="fat-card-label">${m.nome.split(' ')[0]}</div>
+        <div class="fat-card-label">${escHTML(m.nome.split(' ')[0])}</div>
         <div class="fat-card-valor">${formatarMoeda(t.total)}</div>
         <div class="fat-card-sub">
           Indiv: ${formatarMoeda(t.individual)} + Conj: ${formatarMoeda(t.conjunta)}
@@ -260,18 +260,18 @@ function gerarTabsMembros(membros) {
   // Tabs
   const tabsContainer = document.getElementById('fat-tabs-membros');
   tabsContainer.innerHTML = membros.map(m =>
-    `<button class="fat-tab${_tabAtiva === m.key ? ' fat-tab--active' : ''}" data-tab="${m.key}">
-      ${m.nome.split(' ')[0]}
+    `<button class="fat-tab${_tabAtiva === m.key ? ' fat-tab--active' : ''}" data-tab="${escHTML(m.key)}">
+      ${escHTML(m.nome.split(' ')[0])}
     </button>`
   ).join('');
 
   // Conteúdo das tabs por membro
   const container = document.getElementById('fat-tab-membros-container');
   container.innerHTML = membros.map(m => `
-    <div id="fat-tab-${m.key}" class="fat-tab-content${_tabAtiva === m.key ? ' fat-tab-content--active' : ''}">
+    <div id="fat-tab-${escHTML(m.key)}" class="fat-tab-content${_tabAtiva === m.key ? ' fat-tab-content--active' : ''}">
       <div class="card">
         <div class="fat-table-header">
-          <span class="fat-table-title">Despesas — ${m.nome.split(' ')[0]}</span>
+          <span class="fat-table-title">Despesas — ${escHTML(m.nome.split(' ')[0])}</span>
         </div>
         <div class="fat-table-wrap">
           <table class="fat-table">
@@ -280,7 +280,7 @@ function gerarTabsMembros(membros) {
               <th>Parcela</th><th>Categoria</th>
               <th class="fat-th-valor">Valor</th>
             </tr></thead>
-            <tbody id="fat-tbody-${m.key}"></tbody>
+            <tbody id="fat-tbody-${escHTML(m.key)}"></tbody>
           </table>
         </div>
       </div>
@@ -354,7 +354,7 @@ function _rowTodas(d) {
   return `<tr class="${isConj ? 'fat-tr-conjunta' : ''}">
     <td>${formatarData(d.data?.toDate?.() ?? d.data)}</td>
     <td class="fat-td-estab">${escHTML(d.descricao ?? '—')}</td>
-    <td><span class="fat-resp-chip">${resp.split(' ')[0]}</span></td>
+    <td><span class="fat-resp-chip">${escHTML(resp.split(' ')[0])}</span></td>
     <td><span class="fat-badge fat-badge--${tipo === 'P' ? 'parc' : 'vista'}">${tipo}</span></td>
     <td>${d.parcela && d.parcela !== '-' ? d.parcela : '—'}</td>
     <td>${_catMap[d.categoriaId]?.nome ?? '—'}</td>
@@ -373,7 +373,7 @@ function renderizarResumoDetalhado(membros) {
     const parcInd  = (t.despesas ?? []).filter(d => d.parcela && d.parcela !== '-').reduce((s, d) => s + (d.valor ?? 0), 0);
     return `
       <div class="fat-resumo-membro">
-        <div class="fat-resumo-membro-nome">${m.nome.split(' ')[0]}</div>
+        <div class="fat-resumo-membro-nome">${escHTML(m.nome.split(' ')[0])}</div>
         <div class="fat-resumo-linha">
           <span>Individuais à vista</span><span>${formatarMoeda(vistaInd)}</span>
         </div>
@@ -453,7 +453,7 @@ function renderizarProjecoes(projecoesPorMes, membros) {
     return;
   }
 
-  const cols = membros.map(m => `<th class="fat-th-valor">${m.nome.split(' ')[0]}</th>`).join('');
+  const cols = membros.map(m => `<th class="fat-th-valor">${escHTML(m.nome.split(' ')[0])}</th>`).join('');
   const rows = meses.map(m => {
     if (m.total === 0) return '';
     const memCols = membros.map(memb =>
