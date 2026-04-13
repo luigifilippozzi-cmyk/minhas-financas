@@ -8,7 +8,7 @@
 
 - **Usuários:** Luigi + Ana (casal)
 - **Dev:** Luigi (solo developer)
-- **Versão atual:** v3.23.0
+- **Versão atual:** v3.23.1
 - **Repo:** https://github.com/luigifilippozzi-cmyk/minhas-financas
 - **Stack:** HTML5 · CSS3 · JS ES6+ · **Vite 5** (bundler MPA) · **Capacitor 8** (iOS) · Firebase Auth · Cloud Firestore (via npm) · Chart.js v4 · SheetJS (XLSX)
 
@@ -20,7 +20,7 @@
 npm run dev                 # Vite dev server (HMR, hot reload)
 npm run build               # Vite build → dist/ (produção)
 npm run preview             # Preview do build de produção
-npm test                    # Vitest — roda suite de 284 testes unitários
+npm test                    # Vitest — roda suite de 330 testes unitários
 npm run test:watch          # Vitest em modo watch
 npm run test:coverage       # Coverage com V8
 npm run test:integration    # Testes de integração (requer Firebase Emulator)
@@ -30,7 +30,7 @@ npm run emulate             # Firebase emulators (Auth + Firestore locais)
 npm run deploy              # Build + firebase deploy --only hosting
 ```
 
-**Sempre rodar `npm test` antes de commit.** Os testes cobrem parsers, deduplicador, ajusteDetector e normalizador.
+**Sempre rodar `npm test` antes de commit.** Os testes cobrem parsers, deduplicador, ajusteDetector, normalizador e reconciliadorFatura.
 
 ---
 
@@ -100,7 +100,7 @@ Coleções principais: `usuarios`, `grupos`, `categorias`, `despesas`, `receitas
 | `grupoId` | string | **Obrigatório.** Todas as queries usam este campo |
 | `chave_dedup` | string\|null | Chave de deduplicação — nunca alterar o formato |
 | `mesFatura` | string\|null | Ciclo de faturamento `"YYYY-MM"` — crítico para fatura do cartão |
-| `tipo` | string | `"despesa"` \| `"projecao"` \| `"projecao_paga"` |
+| `tipo` | string | `"despesa"` \| `"projecao"` \| `"projecao_paga"` \| `"transferencia_interna"` \| `"pagamento_fatura"` |
 | `isConjunta` | boolean | Despesa 50/50 — usa `valorAlocado` por pessoa |
 | `parcelamento_id` | string\|null | Ref para `parcelamentos/{id}` |
 | `origemBanco` | string\|null | Banco detectado automaticamente |
@@ -195,7 +195,7 @@ Todas as cores, sombras e fontes estão em `variables.css` como CSS custom prope
 
 ---
 
-## Estado Atual do Projeto (2026-04-13)
+## Estado Atual do Projeto (2026-04-13) — v3.23.1
 
 ### Milestones
 | Milestone | Progresso | Status |
@@ -214,7 +214,7 @@ Todas as cores, sombras e fontes estão em `variables.css` como CSS custom prope
 Luigi (Product Owner)
   ├── PM Agent          → Relatório diário, métricas, alertas (read-only)
   └── Dev Manager       → Executor de código, orquestrador de subagentes
-        ├── test-runner              → Vitest (284 testes) + coverage
+        ├── test-runner              → Vitest (330 testes) + coverage
         ├── security-reviewer        → Firestore rules, escHTML/XSS, auth
         └── import-pipeline-reviewer → Pipeline de importação (parser, dedup, ajuste)
 ```
@@ -232,7 +232,7 @@ Detalhes completos em `AGENTS.md`. Memória persistente em `.auto-memory/project
 |---------|----------|
 | `docs/ARQUITETURA_TECNICA.md` | Firestore schema completo, índices, fluxo de dados |
 | `docs/DESIGN_SYSTEM.md` | Paleta, tipografia, espaçamento, componentes, acessibilidade |
-| `docs/REQUISITOS_FUNCIONAIS.md` | 42 RF + NRF implementados + RF-062/063/064 pendentes (cadeia Luigi → Ana → Cartão) |
+| `docs/REQUISITOS_FUNCIONAIS.md` | 42 RF + NRF implementados + RF-062/063/064 concluídos (cadeia Luigi → Ana → Cartão) |
 | `docs/MILESTONE_MELHORIAS_VISUAIS.md` | Checklist de épicos A–D e sprints (concluído) |
 | `docs/MILESTONE_iOS_App.md` | Fases 0–5 do app iOS com Capacitor |
 | `docs/BUGS.md` | Registro de 27 bugs com root cause e fix |
@@ -263,7 +263,7 @@ git checkout -b feat/MF-{issue}-{descricao-kebab}   # ou fix/MF-{issue}-...
 # 3. Implementar (seguir padrões deste CLAUDE.md)
 
 # 4. Testar — OBRIGATÓRIO antes de commit
-npm test                    # 284 testes devem passar
+npm test                    # 330 testes devem passar
 
 # 5. Acionar subagentes (ver AGENTS.md §6)
 #    - test-runner: SEMPRE antes de PR
