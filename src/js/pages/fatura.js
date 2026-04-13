@@ -12,6 +12,7 @@
 import { onAuthChange, logout } from '../services/auth.js';
 import { buscarPerfil, buscarGrupo, ouvirContas, ouvirCategorias, ouvirDespesas, ouvirDespesasPorMesFatura, garantirContasPadrao } from '../services/database.js';
 import { formatarMoeda, formatarData, nomeMes, escHTML } from '../utils/formatters.js';
+import { recalcularScoreFatura } from '../utils/reconciliadorFatura.js';
 import { skeletonTableRows, errorStateHTML } from '../utils/skeletons.js';
 import { CONTAS_PADRAO } from '../models/Conta.js';
 
@@ -483,10 +484,12 @@ function ativarTab(tab) {
   // Esconde todos os conteúdos
   document.querySelectorAll('.fat-tab-content').forEach(el => el.classList.remove('fat-tab-content--active'));
   // Mostra o ativo
-  const alvo = tab === 'conjuntas' ? document.getElementById('fat-tab-conjuntas')
-    : tab === 'projecoes'         ? document.getElementById('fat-tab-projecoes')
-    : tab === 'todas'             ? document.getElementById('fat-tab-todas')
+  const alvo = tab === 'conjuntas'   ? document.getElementById('fat-tab-conjuntas')
+    : tab === 'projecoes'           ? document.getElementById('fat-tab-projecoes')
+    : tab === 'liquidacao'          ? document.getElementById('fat-tab-liquidacao')
+    : tab === 'todas'               ? document.getElementById('fat-tab-todas')
     : document.getElementById(`fat-tab-${tab}`);
+  if (tab === 'liquidacao') renderizarLiquidacao();
   if (alvo) alvo.classList.add('fat-tab-content--active');
 }
 
@@ -577,4 +580,93 @@ function _toTs(data) {
   if (typeof data.toDate === 'function') return data.toDate().getTime();
   if (data instanceof Date) return data.getTime();
   return new Date(data).getTime();
+}
+
+// ── RF-064: Aba de Liquidação da Fatura ──────────────────────
+/**
+ * Renderiza o painel de liquidação: mostra se o ciclo atual tem pagamentos
+ * de fatura associados e o status de reconciliação.
+ */
+function renderizarLiquidacao() {
+  const container = document.getElementById('fat-liquidacao-content');
+  if (!container) return;
+
+  if (!_cartaoId) {
+    container.innerHTML = '<p class="fat-empty-text">Selecione um cartão para ver os dados de liquidação.</p>';
+    return;
+  }
+
+  const mesFaturaStr = String(_ano) + '-' + String(_mes).padStart(2, '0');
+
+  // Despesas reais (excluindo projeções) do ciclo desta fatura
+  const despesasReais = _despesas.filter(d =>
+    d.tipo === 'despesa' || d.tipo === 'projecao_paga'
+  );
+  const totalFatura = despesasReais.reduce((s, d) => s + (d.valor ?? 0), 0);
+
+  // Pagamentos de fatura registrados (tipo = 'pagamento_fatura' que referenciam este cartão)
+  // Nota: pagamentos bancários ficam na conta bancária, não no cartão —
+  // buscamos por statusReconciliacaoFatura e contaCartaoId ou pelo mes faturado
+  const pagamentos = _despesas.filter(d => d.tipo === 'pagamento_fatura'
+    && (d.mesFaturaQuitado === mesFaturaStr || d.contaCartaoId === _cartaoId));
+
+  if (pagamentos.length === 0) {
+    const aviso = totalFatura > 0
+      ? `<div class="fat-liquidacao-alert fat-liquidacao-alert--warn">
+          <span>⚠️</span>
+          <div>
+            <strong>Fatura em aberto</strong>
+            <p>Total do ciclo: <strong>${escHTML(formatarMoeda(totalFatura))}</strong>. Nenhum pagamento de fatura detectado para este ciclo. Ao importar o extrato bancário com o débito do PAG FATURA, ele será vinculado automaticamente.</p>
+          </div>
+        </div>`
+      : '<p class="fat-empty-text">Nenhuma despesa ou pagamento de fatura registrado para este ciclo.</p>';
+    container.innerHTML = aviso;
+    return;
+  }
+
+  const rows = pagamentos.map((p) => {
+    const { score, status, isParcial } = recalcularScoreFatura(p, totalFatura);
+    const statusLabel = {
+      auto:     '<span class="fat-badge fat-badge--ok">✅ Auto</span>',
+      pendente: '<span class="fat-badge fat-badge--warn">⏳ Pendente</span>',
+      ignorado: '<span class="fat-badge fat-badge--neutral">— Ignorado</span>',
+    }[status] ?? '';
+    const dataPag = p.data?.toDate?.() ?? (p.data instanceof Date ? p.data : new Date(p.data));
+    const dataStr = isNaN(dataPag?.getTime()) ? '—' : formatarData(dataPag);
+    const parcialBadge = isParcial ? ' <span class="fat-badge fat-badge--warn">Parcial</span>' : '';
+    return `<tr>
+      <td>${escHTML(dataStr)}</td>
+      <td>${escHTML(p.descricao ?? '')}</td>
+      <td class="fat-valor">${escHTML(formatarMoeda(p.valor ?? 0))}</td>
+      <td>${statusLabel}${parcialBadge}</td>
+      <td class="fat-score">${score}/100</td>
+    </tr>`;
+  }).join('');
+
+  const totalPago = pagamentos.reduce((s, p) => s + (p.valor ?? 0), 0);
+  const diff = totalFatura - totalPago;
+  const diffClass = Math.abs(diff) < 0.01 ? 'fat-liquidacao-alert--ok'
+    : diff > 0 ? 'fat-liquidacao-alert--warn'
+    : 'fat-liquidacao-alert--info';
+  const diffMsg = Math.abs(diff) < 0.01
+    ? '✅ Fatura totalmente liquidada'
+    : diff > 0
+      ? `⚠️ Diferença: ${escHTML(formatarMoeda(diff))} ainda não pago`
+      : `ℹ️ Pago a mais: ${escHTML(formatarMoeda(Math.abs(diff)))} (pode incluir outros ciclos)`;
+
+  container.innerHTML = `
+    <div class="fat-liquidacao-alert ${escHTML(diffClass)}">
+      <span>${diffMsg}</span>
+      <small>Total fatura: ${escHTML(formatarMoeda(totalFatura))} · Total pago: ${escHTML(formatarMoeda(totalPago))}</small>
+    </div>
+    <table class="fat-table" style="margin-top:1rem">
+      <thead><tr>
+        <th>Data Pagamento</th>
+        <th>Descrição</th>
+        <th>Valor</th>
+        <th>Status</th>
+        <th>Score</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
 }

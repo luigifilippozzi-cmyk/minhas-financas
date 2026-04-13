@@ -79,6 +79,7 @@ import { detectarFormato, lerArquivoCSV, lerArquivoXLSX, mostrarArquivoUI, mostr
 import { parsearLinhasPDF, classificarBanco } from './pipelineBanco.js';
 import { filtrarCreditos, aplicarMesFatura, gerarProjecoes } from './pipelineCartao.js';
 import { detectarTransferenciasInternas } from '../utils/detectorTransferenciaInterna.js';
+import { detectarPagamentoFatura } from '../utils/reconciliadorFatura.js';
 
 // ── Constantes ─────────────────────────────────────────────────
 const RESP_CONJUNTO = 'conjunto'; // NRF-010: valor controlado para portador/responsável conjunto
@@ -404,6 +405,8 @@ function _aplicarTipo(tipo) {
     if (Object.keys(_nomesMembros).length >= 2) {
       detectarTransferenciasInternas(_linhas, _nomesMembros, _usuario?.uid);
     }
+    // RF-064: detectar pagamentos de fatura de cartão (após RF-063, ordem importa)
+    detectarPagamentoFatura(_linhas, _contas);
   } else if (tipo === 'receita') {
     _linhas.forEach((l) => { if (!l.erro) l.tipoLinha = 'receita'; });
   }
@@ -744,6 +747,11 @@ function renderizarPreview() {
       const dir = l._transferenciaInterna.direcao === 'recebida' ? '📥' : '📤';
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok" style="background:#dbeafe;color:#1e40af;" title="Transferência interna detectada (' + escHTML(l._transferenciaInterna.membroNome) + ')' + chaveInfo + '">' + dir + ' 🔁 Transf.</span>';
       tr.classList.add('imp-row-transf');
+    } else if (l._pagamentoFatura) {
+      // RF-064: badge de pagamento de fatura detectado
+      const scoreInfo = ' (score: ' + l._pagamentoFatura.scoreFatura + ')';
+      tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok" style="background:#fef3c7;color:#92400e;" title="Pagamento de fatura detectado — não será somado aos gastos do mês' + scoreInfo + chaveInfo + '">💳 Pag. Fatura</span>';
+      tr.classList.add('imp-row-pag-fatura');
     } else if (l.tipoLinha === 'receita') {
       // NRF-006: modo banco — badge de receita
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok" style="background:#dcfce7;color:#166534;" title="Será salva como Receita' + chaveInfo + '">📥 Receita</span>';
@@ -924,6 +932,15 @@ async function executarImportacao() {
         despDados.statusReconciliacao = 'pendente_contraparte';
         despDados.membroDestinoId = l._transferenciaInterna.membroUid;
         despDados.isConjunta = false; // transferências internas nunca são conjuntas
+        despDados.valorAlocado = null;
+      }
+      // RF-064: marca despesa como pagamento de fatura se detectado
+      if (l._pagamentoFatura && !l._transferenciaInterna) {
+        despDados.tipo = 'pagamento_fatura';
+        despDados.statusReconciliacaoFatura = l._pagamentoFatura.statusReconciliacaoFatura;
+        despDados.scoreFatura = l._pagamentoFatura.scoreFatura;
+        if (l._pagamentoFatura.contaCartaoId) despDados.contaCartaoId = l._pagamentoFatura.contaCartaoId;
+        despDados.isConjunta = false; // pagamento de fatura nunca é conjunta
         despDados.valorAlocado = null;
       }
       const despesaRef = await criarDespesaDB(modelDespesa(despDados));
