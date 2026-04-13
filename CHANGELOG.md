@@ -7,6 +7,22 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.23.2] - 2026-04-13
+
+### Testes
+
+- **Tech debt — cobertura de módulos (#140):** 93 novos testes unitários para módulos sem cobertura prévia.
+  - `bankFingerprintMap.test.js` (24 TCs): integridade estrutural do mapa de 15 bancos — IDs únicos, filePatterns como RegExp, keywords em lowercase.
+  - `detectorOrigemArquivo.test.js` (39 TCs): detecção de tipo por colunas CSV/PDF, identificação de banco por fileName e keywords, scoring, pipeline routing.
+  - `recurringDetector.test.js` (30 TCs): confiança alta/media/baixa, descrições genéricas, projeções ignoradas, ordenação, campos opcionais null/undefined.
+  - Suite total: **423 testes** (antes: 330). Cobertura: bankFingerprintMap 100%, detectorOrigemArquivo ~97%, recurringDetector ~94%.
+
+### Manutenção
+
+- Limpeza de refs remotas órfãs: `git remote prune origin` — 3 branches mergeadas removidas do registro local.
+
+---
+
 ## [3.23.1] - 2026-04-13
 
 ### Corrigido
