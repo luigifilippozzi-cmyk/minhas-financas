@@ -7,6 +7,19 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.23.4] - 2026-04-14
+
+### Testes
+
+- **Tech debt — skeletons.js:** 31 novos testes unitários para os 4 geradores de HTML do módulo `src/js/utils/skeletons.js`.
+  - `skeletonCards` (10 TCs): count=0, count=1, count=5, count=10, ciclo de 5 larguras, skeleton-circle/amount por card.
+  - `skeletonTableRows` (8 TCs): count=0, defaults, linhas e colunas corretas, skeleton-line por célula, margin:0.
+  - `emptyStateHTML` (7 TCs): inclusão de ícone/título/hint, omissão de hint quando vazio/ausente, classes CSS.
+  - `errorStateHTML` (6 TCs): título/hint, classe error-state, botão retry, classes CSS.
+  - Suite total: **501 testes** (19 arquivos). Antes: 470 (18 arquivos).
+
+---
+
 ## [3.23.3] - 2026-04-13
 
 ### Testes
