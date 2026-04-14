@@ -83,6 +83,35 @@ describe('detectarOrigemArquivo — tipo por colunas CSV', () => {
     expect(r.confiancaTipo).toBe(30);
     expect(r.colunas).toEqual([]);
   });
+
+  it('BUG-028b: BTG XLS com "Data e hora" e coluna "Categoria" é detectado como banco, não receita', () => {
+    // BTG extrato bancário tem coluna "Categoria" (BUG-028b: detector classificava como 'receita')
+    // Distinção: extrato bancário usa "Data e hora"; template de receitas usa "Data"
+    const rows = [
+      [null, 'Data e hora', 'Categoria', 'Transação', null, null, 'Descrição', null, null, null, 'Valor'],
+    ];
+    const r = detectarOrigemArquivo({ fileName: 'Extrato_BTG.xls', rows });
+    expect(r.tipo).toBe('banco');
+    expect(r.pipeline).toBe('PIPELINE_BANCARIO');
+  });
+
+  it('BUG-028b: arquivo de receitas com "Data" e "Categoria" continua sendo detectado como receita', () => {
+    // Garante que a correção do BTG não quebra detecção de arquivos de receitas legítimos
+    const rows = [['Data', 'Descrição', 'Valor', 'Categoria']];
+    const r = detectarOrigemArquivo({ fileName: 'receitas.csv', rows });
+    expect(r.tipo).toBe('receita');
+  });
+
+  it('BUG-028b: arrays sparse do SheetJS não causam crash no detector', () => {
+    // SheetJS retorna holes undefined em arrays sparse → Array.from() necessário
+    const mkSparse = (obj, len) => Object.assign(new Array(len), obj);
+    const rows = [
+      mkSparse({ 1: 'Data e hora', 2: 'Categoria', 3: 'Transação', 6: 'Descrição', 10: 'Valor' }, 11),
+    ];
+    expect(() => detectarOrigemArquivo({ fileName: 'Extrato_BTG.xls', rows })).not.toThrow();
+    const r = detectarOrigemArquivo({ fileName: 'Extrato_BTG.xls', rows });
+    expect(r.tipo).toBe('banco');
+  });
 });
 
 // ── Detecção de tipo (PDF textLines) ─────────────────────────────────────────

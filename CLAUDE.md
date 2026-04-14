@@ -8,7 +8,7 @@
 
 - **Usuários:** Luigi + Ana (casal)
 - **Dev:** Luigi (solo developer)
-- **Versão atual:** v3.23.7
+- **Versão atual:** v3.23.8
 - **Repo:** https://github.com/luigifilippozzi-cmyk/minhas-financas
 - **Stack:** HTML5 · CSS3 · JS ES6+ · **Vite 5** (bundler MPA) · **Capacitor 8** (iOS) · Firebase Auth · Cloud Firestore (via npm) · Chart.js v4 · SheetJS (XLSX)
 
