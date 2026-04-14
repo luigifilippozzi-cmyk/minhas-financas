@@ -403,7 +403,7 @@
             <span class="badge badge-green">mesFatura OK</span>
             <span class="badge badge-green">buscarChavesDedup OK</span>
             <span class="badge badge-green">isMovimentacaoReal OK</span>
-            <span class="badge badge-yellow">4 modulos sem teste</span>
+            <span class="badge badge-yellow">1 modulo sem teste</span>
           </div>
         </div>
       </div>
@@ -413,16 +413,16 @@
   <!-- Dividas Tecnicas + Issues P0/P1 -->
   <div class="grid-2">
     <div class="card">
-      <div class="card-header"><h2>Dividas Tecnicas</h2><span class="badge badge-yellow" id="debtCount">4 gaps</span></div>
+      <div class="card-header"><h2>Dividas Tecnicas</h2><span class="badge badge-yellow" id="debtCount">1 gap</span></div>
       <div class="card-body" id="debtList">
         <table class="mod-table">
           <thead><tr><th>Modulo</th><th>Gap</th><th>Prioridade</th></tr></thead>
           <tbody>
-            <tr><td>pdfParser.js</td><td>Sem teste unitario</td><td><span class="badge badge-yellow">Divida</span></td></tr>
-            <tr><td>recurringDetector.js</td><td>Sem teste unitario</td><td><span class="badge badge-yellow">Divida</span></td></tr>
-            <tr><td>detectorOrigemArquivo.js</td><td>Sem teste unitario</td><td><span class="badge badge-yellow">Divida</span></td></tr>
-            <tr><td>bankFingerprintMap.js</td><td>Sem teste unitario</td><td><span class="badge badge-yellow">Divida</span></td></tr>
-            <tr><td>importar.js + receitas.js</td><td>Logica duplicada (#96)</td><td><span class="badge badge-blue">P1</span></td></tr>
+            <tr><td>pdfParser.js</td><td>Sem teste unitario (mock PDF.js complexo)</td><td><span class="badge badge-yellow">Divida</span></td></tr>
+            <tr><td>recurringDetector.js</td><td>Coberto — PR #140</td><td><span class="badge badge-green">OK</span></td></tr>
+            <tr><td>detectorOrigemArquivo.js</td><td>Coberto — PR #140</td><td><span class="badge badge-green">OK</span></td></tr>
+            <tr><td>bankFingerprintMap.js</td><td>Coberto — PR #140</td><td><span class="badge badge-green">OK</span></td></tr>
+            <tr><td>importar.js + receitas.js</td><td>Logica duplicada (#96) — fechado v3.21</td><td><span class="badge badge-green">OK</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -461,19 +461,20 @@
 // Dashboard state — PM Agent updates this section, Dev Manager reads it
 const DASHBOARD_DATA = {
   // PM Agent atualiza estes campos:
-  lastUpdate: "2026-04-13 00:08",
-  version: "v3.23.2",
+  lastUpdate: "2026-04-13 21:40",
+  version: "v3.23.3",
   health: "green", // green | yellow | red
-  healthText: "v3.23.2 — 423/423 testes passando, CI verde, 0 PRs, 0 bugs — iOS Fase 2 é próxima prioridade",
-  testsUnit: "423",
-  testsUnitStatus: "423 passando",
+  healthText: "v3.23.3 — 470/470 testes passando, CI verde, 0 PRs, tech debt 100% concluído — iOS Fase 2 é próxima prioridade",
+  testsUnit: "470",
+  testsUnitStatus: "470 passando",
   testsInt: "26",
   issuesOpen: 18,
   issuesSub: "QA RF-064: 4 (#136-#139) | iOS backlog: 13 (Fases 2-5) | QA RF-062: 1 (#129)",
   // Dev Manager atualiza via PR + merge
   activity: [
+    { time: "Apr 13", color: "var(--green)", msg: "<strong>Merge PR #141</strong> test(utils): pdfParser — 47 TCs, tech debt 100% concluído — v3.23.3, 470 testes total", tag: "merge" },
+    { time: "Apr 13", color: "var(--blue)", msg: "<strong>PM Agent</strong> — Revisão diária: 423 testes OK, 18 issues abertas, 1 dívida técnica restante (pdfParser), saúde Verde", tag: "pm" },
     { time: "Apr 13", color: "var(--green)", msg: "<strong>Merge PR #140</strong> test(utils): +93 testes — bankFingerprintMap, detectorOrigemArquivo, recurringDetector — 423 total", tag: "merge" },
-    { time: "Apr 14", color: "var(--blue)", msg: "<strong>PM Agent</strong> — Revisão diária: 330 testes OK, 18 issues abertas, saúde Verde", tag: "pm" },
     { time: "Apr 13", color: "var(--blue)", msg: "<strong>Issues #136-#139</strong> Plano de testes RF-064 — 29 TCs manuais (preview, save, dashboard, fatura)", tag: "docs" },
     { time: "Apr 13", color: "var(--green)", msg: "<strong>Merge PR #135</strong> fix(fatura): XSS membroNome em 6 locais + l.erro — v3.23.1", tag: "merge" },
     { time: "Apr 13", color: "var(--green)", msg: "<strong>Merge PR #134</strong> RF-064 Reconciliacao Pagamento Fatura — v3.23.0 (+46 testes, 330 total)", tag: "merge" },
@@ -506,7 +507,7 @@ function render() {
 
   // Agent status
   const now = new Date();
-  const lastPM = new Date("2026-04-14T02:50:00");
+  const lastPM = new Date("2026-04-13T14:06:00");
   const diffHrs = (now - lastPM) / 36e5;
   const pmDot = document.getElementById("pmStatus");
   const pmText = document.getElementById("pmStatusText");
