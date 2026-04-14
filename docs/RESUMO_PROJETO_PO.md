@@ -1,7 +1,7 @@
 # Resumo do Projeto & Instruções do PO — Minhas Finanças
 
 > Documento de referência para sessões futuras nesta área de trabalho.
-> Atualizado em: 2026-04-13
+> Atualizado em: 2026-04-14
 
 ---
 
@@ -11,7 +11,7 @@
 
 **Stack tecnológico:** vanilla JavaScript (sem frameworks), Vite 5 (bundler MPA com 13 páginas HTML), Firebase Auth + Cloud Firestore, Capacitor 8 (iOS), Chart.js v4, SheetJS (XLSX).
 
-**Versão atual:** v3.23.3 (abril 2026) com 470 testes unitários e 26 testes de integração.
+**Versão atual:** v3.23.4 (abril 2026) com 501 testes unitários e 26 testes de integração.
 
 ---
 
@@ -22,7 +22,7 @@
 | Requisitos Funcionais (42 RFs) | 42/42 | Concluído |
 | Melhorias Visuais (tokens, responsividade, acessibilidade) | 26/26 | Concluído |
 | Reconciliação Fatura ↔ Extrato (RF-062/063/064) | 3/3 | Concluído (v3.23.0) |
-| Tech Debt — testes (cobertura total utils/) | 4/4 | Concluído (v3.23.3) |
+| Tech Debt — testes (cobertura total utils/) | 5/5 | Concluído (v3.23.4) |
 | Manutenibilidade e Arquitetura (unificação import #96) | Completo | Concluído (v3.20.0) |
 | iOS App — Fase 0 (Vite + Firebase npm) | 2/2 | Concluído (v3.18.0) |
 | iOS App — Fase 1 (Capacitor + safe areas) | 2/2 | Concluído (v3.19.0) |
@@ -38,7 +38,7 @@
 1. **iOS Fase 2** — Integração Firebase nativa via plugins Capacitor (issues #77–#80): GoogleService-Info.plist, auth nativo, FCM push, biometria
 2. **iOS Fase 3** — Ajustes UX mobile (issues #81–#83): ícones do app, splash screen, dark mode, haptic feedback
 3. **iOS Fase 4** — Distribuição TestFlight (issues #84–#86): Apple Developer Program, Xcode signing, Fastlane
-4. **Tech Debt** — ✅ Concluído: todos os módulos em `src/js/utils/` têm cobertura de testes (470 TCs)
+4. **Tech Debt** — ✅ Concluído: todos os módulos em `src/js/utils/` têm cobertura de testes (501 TCs)
 
 ---
 
@@ -48,7 +48,7 @@
 Luigi (Product Owner)
   ├── PM Agent          → Relatórios diários, métricas, alertas (somente leitura)
   └── Dev Manager       → Executor de código, orquestrador de subagentes
-        ├── test-runner              → Vitest (470 testes) + coverage
+        ├── test-runner              → Vitest (501 testes) + coverage
         ├── security-reviewer        → Firestore rules, escHTML/XSS, auth
         └── import-pipeline-reviewer → Pipeline de importação (parser, dedup, ajuste)
 ```
@@ -101,7 +101,7 @@ O PO é o único com autoridade para:
 
 Estas regras foram aprendidas com bugs reais e devem ser respeitadas em qualquer sessão:
 
-1. **Sempre rodar `npm test` antes de commit** — 470 testes devem passar
+1. **Sempre rodar `npm test` antes de commit** — 501 testes devem passar
 2. **Sempre usar `escHTML()`** antes de `innerHTML` com dados do usuário (XSS)
 3. **Nunca alterar o formato de `chave_dedup`** — quebra deduplicação histórica
 4. **Nunca deletar documentos `parcelamentos`** — só marcar `status: 'quitado'`
@@ -120,7 +120,7 @@ Estas regras foram aprendidas com bugs reais e devem ser respeitadas em qualquer
 |---------|-------------|
 | `CLAUDE.md` | Guia mestre: arquitetura, convenções, regras, estado atual |
 | `AGENTS.md` | Governança do squad IA, subagentes, protocolos |
-| `CHANGELOG.md` | Histórico completo de versões (v1.0.0 → v3.23.3) |
+| `CHANGELOG.md` | Histórico completo de versões (v1.0.0 → v3.23.4) |
 | `docs/REQUISITOS_FUNCIONAIS.md` | 42 requisitos funcionais com status |
 | `docs/ARQUITETURA_TECNICA.md` | Schema Firestore, índices, fluxo de dados |
 | `docs/DESIGN_SYSTEM.md` | Paleta, tipografia, espaçamento, tokens CSS |
