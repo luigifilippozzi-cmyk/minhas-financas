@@ -376,6 +376,32 @@ describe('parsearLinhasCSVXLSX', () => {
 
   // BUG-028: Suporte a extratos BTG XLS com header "Data e hora"
   describe('BTG XLS extrato — BUG-028', () => {
+    it('BUG-028: header na linha 10 (estrutura real BTG com 10 linhas de metadata)', () => {
+      // Simula exatamente o BTG XLS: 10 linhas de metadata, header no índice 10
+      // O loop antigo (i < 10) nunca alcançava o índice 10 → headerIdx = -1 → todos os erros
+      const rows = [
+        ['', 'Extrato de conta corrente', '', '', '', '', '', '', '', '46125', ''], // row 0
+        ['', '', '', '', '', '', '', '', '', '', ''],                               // row 1
+        ['', 'Cliente:', 'Luigi Cassab Filippozzi', '', '', '', '', '', '', '', ''], // row 2
+        ['', 'CPF:', '344.482.858-63', '', '', '', '', '', '', '', ''],             // row 3
+        ['', 'Agência:', '20', '', '', '', '', '', '', '', ''],                     // row 4
+        ['', 'Conta:', '903955-0', '', '', '', '', '', '', '', ''],                 // row 5
+        ['', 'Período do extrato:', '30/03/2026 a 13/04/2026', '', '', '', '', '', '', '', ''], // row 6
+        ['', '', '', '', '', '', '', '', '', '', ''],                               // row 7
+        ['', 'Lançamentos:', '', '', '', '', '', 'Saldo atual:', '', '8821.19', ''], // row 8
+        ['', '', '', '', '', '', '', '', '', '', ''],                               // row 9
+        ['', 'Data e hora', 'Categoria', 'Transação', '', '', 'Descrição', '', '', '', 'Valor'], // row 10: HEADER
+        ['', '30/03/2026 18:43', 'Alimentação', 'Compra no débito', '', '', 'Art Lanches', '', '', '', '-19.0'], // row 11
+      ];
+      const resultado = parsearLinhasCSVXLSX(rows);
+      expect(resultado).toHaveLength(1);
+      const linha = resultado[0];
+      expect(linha.erro).toBeNull();
+      expect(linha.descricao).toBe('Art Lanches');
+      expect(linha.valor).toBe(19);
+      expect(linha.data).toBeInstanceOf(Date);
+    });
+
     it('detecta header "Data e hora" como coluna de data (startsWith)', () => {
       const rows = [
         ['', 'Data e hora', 'Categoria', 'Transação', '', '', 'Descrição', '', '', '', 'Valor'],

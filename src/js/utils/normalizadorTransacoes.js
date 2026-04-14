@@ -45,7 +45,8 @@ export function parsearLinhasCSVXLSX(rows, {
 } = {}) {
   if (!rows.length) return [];
   let headerIdx = -1;
-  for (let i = 0; i < Math.min(rows.length, 10); i++) {
+  // BUG-028: BTG XLS tem 10 linhas de metadata antes do header → buscar até linha 15
+  for (let i = 0; i < Math.min(rows.length, 15); i++) {
     const r = rows[i].map(c => String(c ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim());
     if (r.some(c => c === 'data' || c === 'data e hora') &&
         r.some(c => c.includes('estabelecimento') || c.includes('descri') || c === 'historico') &&
