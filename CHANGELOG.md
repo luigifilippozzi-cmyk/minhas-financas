@@ -7,11 +7,17 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.23.6] - 2026-04-14
+
+### Corrigido
+
+- **BUG-028 (complemento): Filtro "Saldo Diário" BTG XLS:** após correção do header detection, linhas de snapshot de saldo ("Saldo Diário" com data e valor válidos) eram importadas como transações reais. Adicionado filtro explícito `_normCell(estab) === 'saldo diario'` no loop de parsing. 1 novo TC com estrutura real do BTG (data em col 1, "Saldo Diário" em col 6, valor em col 10). 508 testes passando.
+
 ## [3.23.5] - 2026-04-14
 
 ### Corrigido
 
-- **BUG-028: Extrato BTG XLS não parseável:** headers com "Data e hora" não eram detectados (exigiam match exato "data"). Causava 100% de linhas com erro "Data inválida, Valor inválido". Fixes: (1) detecção de header aceita `startsWith('data')` — (2) mapeamento de coluna idem — (3) strip de horário BTG ("30/03/2026 18:43" → "30/03/2026") antes de parse. 6 novos TCs cobrindo layout BTG real com metadata, valores negativos (débitos) e linhas de saldo. Impacto: usuários do BTG conseguem importar extratos bancários normalmente.
+- **BUG-028: Extrato BTG XLS não parseável:** headers com "Data e hora" não eram detectados (exigiam match exato "data"). Causava 100% de linhas com erro "Data inválida, Valor inválido". Fixes: (1) detecção de header aceita `c === 'data' || c === 'data e hora'` — (2) mapeamento de coluna idem — (3) strip de horário BTG ("30/03/2026 18:43" → "30/03/2026") antes de parse. 6 novos TCs cobrindo layout BTG real com metadata, valores negativos (débitos) e linhas de saldo. Impacto: usuários do BTG conseguem importar extratos bancários normalmente.
 
 ---
 
