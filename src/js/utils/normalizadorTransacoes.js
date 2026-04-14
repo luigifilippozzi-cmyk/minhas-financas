@@ -103,6 +103,8 @@ export function parsearLinhasCSVXLSX(rows, {
       || inferirContaDaDescricao(contaNome, contas)
       || inferirContaDaDescricao(estab, contas);
     if (!dataRaw && !estab && !valorRaw) continue;
+    // BUG-028: BTG XLS — "Saldo Diário" são snapshots de saldo, não transações reais
+    if (_normCell(estab) === 'saldo diario') continue;
     const estabLow = estab.toLowerCase();
     if (/pagamento de fatura|inclusao de pagamento|inclusão de pagamento|parcela de fatura rotativo/i.test(estabLow)) continue; // BUG-016: removido 'credito de refinanciamento' — é transação legítima
     // Bradesco (e similares): colunas separadas Crédito / Débito
