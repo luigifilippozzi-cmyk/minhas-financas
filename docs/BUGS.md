@@ -5,6 +5,71 @@ Formato: descrição do problema → impacto → localização → correção ap
 
 ---
 
+## Bugs Abertos
+
+---
+
+## Bugs Corrigidos
+
+---
+
+### BUG-028 — Extrato BTG XLS não parseável — "Data inválida, Valor inválido" em todas as linhas
+**Severidade:** 🔴 Crítico
+**Versão introduzida:** desconhecida (presente em v3.23.4)
+**Versão corrigida:** v3.23.5
+**Arquivo:** `src/js/utils/normalizadorTransacoes.js`
+**Descoberto em:** QA RF-064 — 2026-04-14
+
+**Descrição do problema:**
+Ao importar o extrato de conta corrente do BTG Pactual (formato `.xls` gerado pelo JasperReports), todas as 38 linhas do arquivo resultavam em erro `"Data inválida, Valor inválido"`. O sumário da preview exibia: LIDAS: 38, COM ERRO: 38, RECEITAS: 0, DESPESAS: 0, TOTAL: R$ 0,00.
+
+**Root cause:**
+A detecção de cabeçalho em `parsearLinhasCSVXLSX()` usava comparação exata `c === 'data'` para identificar a coluna de data. O BTG XLS usa o cabeçalho `"Data e hora"` (não `"Data"`), portanto `headerIdx` permanecia `-1`.
+
+Com `headerIdx = -1`, o parser usava índices padrão de coluna (0=data, 1=descrição, 2=portador, 3=valor). No layout BTG as colunas são: A=vazia, B=Data e hora, C=Categoria, D=Transação, G=Descrição, K=Valor — resultando em data vazia e valor vazio para todas as linhas.
+
+**Correção aplicada:**
+
+1. **Linha 50** — Detecção de header aceita `startsWith('data')`:
+```javascript
+// ANTES:
+if (r.some(c => c === 'data') && ...
+
+// DEPOIS:
+if (r.some(c => c === 'data' || c.startsWith('data')) && ...
+```
+
+2. **Linha 64** — Mapeamento de coluna de data aceita "data e hora":
+```javascript
+// ANTES:
+idxData = h.findIndex(c => c === 'data');
+
+// DEPOIS:
+idxData = h.findIndex(c => c === 'data' || c.startsWith('data'));
+```
+
+3. **Linha 87** — Strip de horário antes de parse ("30/03/2026 18:43" → "30/03/2026"):
+```javascript
+// ANTES:
+const dataRaw = String(row[idxData] ?? '').trim();
+
+// DEPOIS:
+const dataRaw = String(row[idxData] ?? '').trim().split(' ')[0];
+```
+
+4. **Testes adicionados:** `tests/normalizadorTransacoes.test.js` — suite "BTG XLS extrato — BUG-028" com 6 novos TCs:
+- Header "Data e hora" é detectado (`headerIdx` ≠ -1)
+- Data "30/03/2026 18:43" é parseada como "2026-03-30"
+- Valor "-19.0" em coluna K é parseado como R$ 19,00 (despesa)
+- Linha "Banco Xp Sa / Pagamento de boleto" é detectada com valores válidos
+- Linhas de metadata (Cliente, CPF, Agência) são filtradas como inválidas
+- Linhas de "Saldo Diário" sem valor numérico são ignoradas
+
+**Impacto:**
+Usuários do BTG conseguem importar extratos bancários normalmente. Dados reais (ex: "Banco Xp Sa / Pagamento de boleto / R$ 16.662,00") agora chegam corretamente ao detector de `pagamento_fatura` no pipeline de importação bancária.
+
+---
+
 ## Bugs Corrigidos
 
 ---
