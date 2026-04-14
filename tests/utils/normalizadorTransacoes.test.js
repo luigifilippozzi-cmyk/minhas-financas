@@ -498,5 +498,56 @@ describe('parsearLinhasCSVXLSX', () => {
       expect(resultado.map(r => r.descricao)).toEqual(['Art Lanches', 'Pagamento recebido']);
       expect(resultado.every(r => r.erro === null)).toBe(true);
     });
+
+    it('BUG-028b: arrays sparse do SheetJS (holes undefined) não causam crash no findIndex', () => {
+      // SheetJS 0.18.5 retorna arrays sparse quando células estão vazias:
+      // holes são undefined reais, não null. Array.prototype.map pula holes, mas
+      // findIndex visita holes como undefined → undefined.includes() lançava TypeError.
+      // Fix: usar Array.from() antes de map/findIndex para converter holes em ''.
+      const sparseHeader = Object.assign(new Array(11), {
+        1: 'Data e hora', 2: 'Categoria', 3: 'Transação', 6: 'Descrição', 10: 'Valor',
+      }); // indices 0,4,5,7,8,9 são holes (undefined)
+      const sparseRow = Object.assign(new Array(11), {
+        1: '30/03/2026 18:43', 2: 'Alimentação', 3: 'Compra', 6: 'Art Lanches', 10: '-19.0',
+      });
+      const rows = [
+        sparseHeader, // row 0: header (sparse)
+        sparseRow,    // row 1: transação (sparse)
+      ];
+      // Não deve lançar TypeError: Cannot read properties of undefined (reading 'includes')
+      expect(() => parsearLinhasCSVXLSX(rows)).not.toThrow();
+      const resultado = parsearLinhasCSVXLSX(rows);
+      expect(resultado).toHaveLength(1);
+      expect(resultado[0].erro).toBeNull();
+      expect(resultado[0].descricao).toBe('Art Lanches');
+    });
+
+    it('BUG-028b: arrays sparse com header na linha 10 (estrutura completa BTG real)', () => {
+      // Reproduz exatamente a estrutura do arquivo real: rows[i] são sparse (SheetJS)
+      const mkSparse = (obj, len) => Object.assign(new Array(len), obj);
+      const rows = [
+        mkSparse({ 1: 'Extrato de conta corrente', 9: '13/04/2026' }, 11), // row 0
+        new Array(11),                                                       // row 1 (vazia)
+        mkSparse({ 1: 'Cliente:', 2: 'REDACTED_NAME' }, 11),             // row 2
+        mkSparse({ 1: 'CPF:', 2: '000.000.000-00' }, 11),                   // row 3
+        mkSparse({ 1: 'Agência:', 2: '20' }, 11),                           // row 4
+        mkSparse({ 1: 'Conta:', 2: '00000-0' }, 11),                       // row 5
+        mkSparse({ 1: 'Período do extrato:', 2: '30/03/2026 a 13/04/2026' }, 11), // row 6
+        new Array(11),                                                       // row 7 (vazia)
+        mkSparse({ 1: 'Lançamentos:', 7: 'Saldo atual:', 9: '8,821.19' }, 11), // row 8
+        new Array(11),                                                       // row 9 (vazia)
+        mkSparse({ 1: 'Data e hora', 2: 'Categoria', 3: 'Transação', 6: 'Descrição', 10: 'Valor' }, 11), // row 10: HEADER
+        mkSparse({ 1: '30/03/2026 18:43', 2: 'Alimentação', 3: 'Compra no débito', 6: 'Art Lanches', 10: '-19.00' }, 11), // row 11
+        mkSparse({ 1: '30/03/2026 23:59', 6: 'Saldo Diário', 10: '163.55' }, 11), // row 12: Saldo Diário
+        mkSparse({ 1: '31/03/2026 07:57', 2: 'Salário', 3: 'Portabilidade', 6: 'Pagamento recebido', 10: '2,733.74' }, 11), // row 13
+      ];
+      expect(() => parsearLinhasCSVXLSX(rows)).not.toThrow();
+      const resultado = parsearLinhasCSVXLSX(rows);
+      const validas = resultado.filter(r => !r.erro);
+      expect(validas).toHaveLength(2);
+      expect(validas[0].descricao).toBe('Art Lanches');
+      expect(validas[1].descricao).toBe('Pagamento recebido');
+      expect(validas[1].valor).toBeCloseTo(2733.74, 2);
+    });
   });
 });

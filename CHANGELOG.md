@@ -7,6 +7,13 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.23.8] - 2026-04-14
+
+### Corrigido
+
+- **BUG-028b: Arrays sparse do SheetJS causavam crash "Cannot read properties of undefined (reading 'includes')":** SheetJS 0.18.5 retorna arrays sparse (holes `undefined` reais) ao ler XLS. `Array.prototype.map` pula holes, gerando arrays com `undefined` nas posições vazias. `findIndex` visitava esses `undefined` e chamava `undefined.includes()` → TypeError. Fix: substituído `rows[i].map(...)` por `Array.from(rows[i], c => ...)` em `normalizadorTransacoes.js` e `detectorOrigemArquivo.js` — `Array.from` converte holes em `undefined` explícito e o mapper transforma via `String(c ?? '')`.
+- **BUG-028b: BTG XLS classificado incorretamente como "receita":** BTG extrato bancário tem coluna "Categoria" (para classificar lançamentos). `_detectarTipo` detectava `temCategoria && !temPortador && !temParcela` e retornava `'receita'`. Fix: adicionada condição `!temDataEHora` — extrato bancário usa "Data e hora", template de receitas usa "Data". 5 novos TCs (3 em normalizadorTransacoes, 3 em detectorOrigemArquivo).
+
 ## [3.23.7] - 2026-04-14
 
 ### Corrigido
