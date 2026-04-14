@@ -7,6 +7,12 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.23.7] - 2026-04-14
+
+### Corrigido
+
+- **BUG-028 (fix real): Loop de header detection limitado a 10 linhas:** o loop `for (i < Math.min(rows.length, 10))` verificava índices 0–9, mas o BTG XLS tem o header exatamente no índice 10 (após 10 linhas de metadata). Resultado: `headerIdx = -1` → todos os erros "Data inválida, Valor inválido" persistiam mesmo após o fix do PR #143. Fix: limite ampliado para 15 linhas em `normalizadorTransacoes.js` e `detectorOrigemArquivo.js`. 1 novo TC com estrutura real BTG (10 linhas de metadata + header no índice 10 + transação). 509 testes passando.
+
 ## [3.23.6] - 2026-04-14
 
 ### Corrigido
