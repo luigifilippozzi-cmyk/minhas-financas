@@ -455,5 +455,22 @@ describe('parsearLinhasCSVXLSX', () => {
       expect(resultado).toHaveLength(1);
       expect(resultado[0].descricao).toBe('Art Lanches');
     });
+
+    it('BUG-028: "Saldo Diário" com estrutura real BTG (data+valor válidos) é filtrado', () => {
+      // Estrutura real do BTG XLS: 'Saldo Diário' em col 6, data válida em col 1, valor em col 10
+      // Sem o filtro explícito, esta linha seria importada como transação real
+      const rows = [
+        ['', 'Data e hora', 'Categoria', 'Transação', '', '', 'Descrição', '', '', '', 'Valor'],
+        ['', '30/03/2026 18:43', 'Alimentação', 'Compra no débito', '', '', 'Art Lanches', '', '', '', '-19.0'],
+        ['', '30/03/2026 23:59', '', '', '', '', 'Saldo Diário', '', '', '', '163.55'], // snapshot de saldo
+        ['', '31/03/2026 07:57', 'Salário', 'Portabilidade', '', '', 'Pagamento recebido', '', '', '', '2733.74'],
+        ['', '31/03/2026 23:59', '', '', '', '', 'Saldo Diário', '', '', '', '2897.29'], // snapshot de saldo
+      ];
+      const resultado = parsearLinhasCSVXLSX(rows);
+      // "Saldo Diário" deve ser filtrado — apenas 2 transações reais
+      expect(resultado).toHaveLength(2);
+      expect(resultado.map(r => r.descricao)).toEqual(['Art Lanches', 'Pagamento recebido']);
+      expect(resultado.every(r => r.erro === null)).toBe(true);
+    });
   });
 });
