@@ -47,7 +47,7 @@ export function parsearLinhasCSVXLSX(rows, {
   let headerIdx = -1;
   for (let i = 0; i < Math.min(rows.length, 10); i++) {
     const r = rows[i].map(c => String(c ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim());
-    if (r.some(c => c === 'data') &&
+    if (r.some(c => c === 'data' || c === 'data e hora') &&
         r.some(c => c.includes('estabelecimento') || c.includes('descri') || c === 'historico') &&
         r.some(c => c.includes('valor') || c.includes('credito') || c.includes('debito'))) {
       headerIdx = i; break;
@@ -61,7 +61,7 @@ export function parsearLinhasCSVXLSX(rows, {
   let idxCredito = -1, idxDebito = -1;
   if (headerIdx >= 0) {
     const h = rows[headerIdx].map(c => String(c ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim());
-    idxData     = h.findIndex(c => c === 'data');
+    idxData     = h.findIndex(c => c === 'data' || c === 'data e hora');
     idxEstab    = h.findIndex(c => c.includes('estabelecimento') || c.includes('descri') || c === 'historico');
     idxPortador = h.findIndex(c => c.includes('portador') || c.includes('titular'));
     idxValor    = h.findIndex(c => c.includes('valor') && !c.includes('credito') && !c.includes('debito'));
@@ -84,7 +84,8 @@ export function parsearLinhasCSVXLSX(rows, {
     if (/^(filtro\s+de\s+res|os\s+dados\s+acima|ultimos\s+lanc)/.test(c0)) break;
     // Para ao encontrar header repetido (segunda seção do extrato Bradesco)
     if (c0 === 'data' && _normCell(row[1]) === 'historico') break;
-    const dataRaw  = String(row[idxData]     ?? '').trim();
+    // BUG-028: BTG XLS inclui horário em "Data e hora", e.g. "30/03/2026 18:43" → extrair só a data
+    const dataRaw  = String(row[idxData]     ?? '').trim().split(' ')[0];
     const estab    = String(row[idxEstab]    ?? '').trim();
     const portador = String(row[idxPortador] ?? '').trim();
     const valorRaw = String(row[idxValor]    ?? '').trim();

@@ -373,4 +373,87 @@ describe('parsearLinhasCSVXLSX', () => {
     const resultado = parsearLinhasCSVXLSX(rows);
     expect(resultado[0].erro).toMatch(/Valor inválido/);
   });
+
+  // BUG-028: Suporte a extratos BTG XLS com header "Data e hora"
+  describe('BTG XLS extrato — BUG-028', () => {
+    it('detecta header "Data e hora" como coluna de data (startsWith)', () => {
+      const rows = [
+        ['', 'Data e hora', 'Categoria', 'Transação', '', '', 'Descrição', '', '', '', 'Valor'],
+        ['', '30/03/2026 18:43', 'Alimentação', 'Compra no débito', '', '', 'Art Lanches', '', '', '', '-19.0'],
+      ];
+      const resultado = parsearLinhasCSVXLSX(rows);
+      expect(resultado).toHaveLength(1);
+      const linha = resultado[0];
+      // Sem erro indica que a data foi parseada corretamente
+      expect(linha.erro).toBeNull();
+      expect(linha.data).toBeInstanceOf(Date);
+    });
+
+    it('strip do horário: "30/03/2026 18:43" → parseada como "30/03/2026"', () => {
+      const rows = [
+        ['', 'Data e hora', 'Categoria', 'Transação', '', '', 'Descrição', '', '', '', 'Valor'],
+        ['', '30/03/2026 18:43', 'Alimentação', 'Compra no débito', '', '', 'Art Lanches', '', '', '', '-19.0'],
+      ];
+      const resultado = parsearLinhasCSVXLSX(rows);
+      const linha = resultado[0];
+      expect(linha.data.getFullYear()).toBe(2026);
+      expect(linha.data.getMonth()).toBe(2); // março = 2
+      expect(linha.data.getDate()).toBe(30);
+    });
+
+    it('coluna "Valor" em índice K é parseada corretamente: "-19.0" → R$ 19,00 despesa', () => {
+      const rows = [
+        ['', 'Data e hora', 'Categoria', 'Transação', '', '', 'Descrição', '', '', '', 'Valor'],
+        ['', '30/03/2026 18:43', 'Alimentação', 'Compra no débito', '', '', 'Art Lanches', '', '', '', '-19.0'],
+      ];
+      const resultado = parsearLinhasCSVXLSX(rows);
+      const linha = resultado[0];
+      expect(linha.valor).toBe(19);
+      expect(linha.isNegativo).toBe(true);
+      expect(linha.erro).toBeNull();
+    });
+
+    it('linha "Banco Xp Sa / Pagamento de boleto" é detectada com valor e data válidos', () => {
+      const rows = [
+        ['', 'Data e hora', 'Categoria', 'Transação', '', '', 'Descrição', '', '', '', 'Valor'],
+        ['', '15/03/2026 10:00', 'Transferência', 'Pagamento de boleto', '', '', 'Banco Xp Sa', '', '', '', '-16662.0'],
+      ];
+      const resultado = parsearLinhasCSVXLSX(rows);
+      // Nota: "Pagamento de boleto" não contém "Pagamento de Fatura" exato, então não é filtrado
+      // e passa para detecção posterior (ajusteDetector/pipelineBanco)
+      expect(resultado).toHaveLength(1);
+      const linha = resultado[0];
+      expect(linha.descricao).toBe('Banco Xp Sa');
+      expect(linha.valor).toBe(16662);
+      expect(linha.isNegativo).toBe(true);
+      expect(linha.erro).toBeNull();
+    });
+
+    it('linhas de metadata (sem data/valor válidos) são marcadas como erro', () => {
+      const rows = [
+        ['', 'Data e hora', 'Categoria', 'Transação', '', '', 'Descrição', '', '', '', 'Valor'],
+        ['Cliente:', 'REDACTED_NAME', '', '', '', '', '', '', '', '', ''], // metadata
+        ['CPF:', '123.456.789-00', '', '', '', '', '', '', '', '', ''], // metadata
+        ['', '30/03/2026 18:43', 'Alimentação', 'Compra no débito', '', '', 'Art Lanches', '', '', '', '-19.0'], // dado válido
+      ];
+      const resultado = parsearLinhasCSVXLSX(rows);
+      // Parser retorna todas as linhas (incluindo erros) — UI exibe ⚠️ nas inválidas
+      const validas = resultado.filter(r => !r.erro);
+      expect(validas).toHaveLength(1);
+      expect(validas[0].descricao).toBe('Art Lanches');
+    });
+
+    it('linhas de "Saldo Diário" sem valor numérico válido são ignoradas', () => {
+      const rows = [
+        ['', 'Data e hora', 'Categoria', 'Transação', '', '', 'Descrição', '', '', '', 'Valor'],
+        ['', '30/03/2026 18:43', 'Alimentação', 'Compra no débito', '', '', 'Art Lanches', '', '', '', '-19.0'],
+        ['Saldo Diário', '', '', '', '', '', '', '', '', '', ''], // sem valor
+      ];
+      const resultado = parsearLinhasCSVXLSX(rows);
+      // "Saldo Diário" tem headerIdx=0 (data), portanto não tem valor em idxValor
+      // Esperado: apenas 1 linha válida
+      expect(resultado).toHaveLength(1);
+      expect(resultado[0].descricao).toBe('Art Lanches');
+    });
+  });
 });
