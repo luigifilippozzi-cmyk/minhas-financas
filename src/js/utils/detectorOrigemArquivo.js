@@ -52,10 +52,12 @@ function _detectarTipo(rows, textLines) {
   const norm = s => String(s ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
 
   // 1. Analisa estrutura das colunas (CSV/XLSX)
-  for (let i = 0; i < Math.min(rows.length, 5); i++) {
+  // BUG-028: BTG XLS tem 10 linhas de metadata antes do header → buscar até linha 15
+  for (let i = 0; i < Math.min(rows.length, 15); i++) {
     const h     = rows[i].map(norm);
     const hOrig = rows[i].map(c => String(c ?? '').trim()).filter(Boolean);
-    const temData      = h.some(c => c === 'data');
+    // BUG-028: BTG usa "Data e hora" em vez de "data"
+    const temData      = h.some(c => c === 'data' || c === 'data e hora');
     const temValor     = h.some(c => c === 'valor' || c.startsWith('valor'));
     if (!temData || !temValor) continue;
     const temPortador  = h.some(c => c.includes('portador') || c.includes('titular'));
