@@ -11,7 +11,7 @@
 Luigi (Product Owner)
   ├── PM Agent          → Relatório diário, métricas, alertas (read-only)
   └── Dev Manager       → Executor de código, orquestrador de subagentes
-        ├── test-runner              → Vitest (194+ testes) + coverage
+        ├── test-runner              → Vitest (501 testes) + coverage
         ├── security-reviewer        → Firestore rules, escHTML/XSS, auth
         └── import-pipeline-reviewer → Pipeline de importação (parser, dedup, ajuste)
 ```
@@ -65,7 +65,7 @@ git log --oneline -10               # últimos commits
 
 ## 4. Regras Inegociáveis (resumo do CLAUDE.md)
 
-1. **Sempre** rodar `npm test` antes de commit — 194+ testes devem passar
+1. **Sempre** rodar `npm test` antes de commit — 501+ testes devem passar
 2. **Sempre** usar `escHTML()` antes de `innerHTML` com dados do usuário — XSS
 3. **Nunca** alterar formato da `chave_dedup` — quebra deduplicação histórica
 4. **Nunca** deletar documentos `parcelamentos` — só `status: 'quitado'`
@@ -135,7 +135,7 @@ git log --oneline -10               # últimos commits
 
 - [ ] Branch criada a partir de `main` atualizada
 - [ ] Commits em formato Conventional Commits
-- [ ] `npm test` passando (194+ testes)
+- [ ] `npm test` passando (501+ testes)
 - [ ] Sem credenciais Firebase no diff
 - [ ] Se novo módulo: testes criados
 - [ ] Se alterou pipeline de importação: testar com dados reais de cada banco
