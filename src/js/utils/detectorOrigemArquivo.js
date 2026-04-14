@@ -53,9 +53,10 @@ function _detectarTipo(rows, textLines) {
 
   // 1. Analisa estrutura das colunas (CSV/XLSX)
   // BUG-028: BTG XLS tem 10 linhas de metadata antes do header → buscar até linha 15
+  // BUG-028b: SheetJS retorna arrays sparse → usar Array.from() para converter holes em ''
   for (let i = 0; i < Math.min(rows.length, 15); i++) {
-    const h     = rows[i].map(norm);
-    const hOrig = rows[i].map(c => String(c ?? '').trim()).filter(Boolean);
+    const h     = Array.from(rows[i], norm);
+    const hOrig = Array.from(rows[i], c => String(c ?? '').trim()).filter(Boolean);
     // BUG-028: BTG usa "Data e hora" em vez de "data"
     const temData      = h.some(c => c === 'data' || c === 'data e hora');
     const temValor     = h.some(c => c === 'valor' || c.startsWith('valor'));
@@ -63,15 +64,18 @@ function _detectarTipo(rows, textLines) {
     const temPortador  = h.some(c => c.includes('portador') || c.includes('titular'));
     const temParcela   = h.some(c => c === 'parcela');
     const temCategoria = h.some(c => c.startsWith('categor'));
-    if (temPortador && temParcela)                   return { tipo: 'cartao',  confianca: 'alta',  confiancaNum: 90, colunas: hOrig };
-    if (temCategoria && !temPortador && !temParcela) return { tipo: 'receita', confianca: 'alta',  confiancaNum: 90, colunas: hOrig };
+    // BUG-028b: BTG extrato bancário tem coluna "Categoria" mas usa "Data e hora" (não "Data").
+    // Extrato bancário com "Data e hora" nunca é um arquivo de receitas.
+    const temDataEHora = h.some(c => c === 'data e hora');
+    if (temPortador && temParcela)                               return { tipo: 'cartao',  confianca: 'alta',  confiancaNum: 90, colunas: hOrig };
+    if (temCategoria && !temPortador && !temParcela && !temDataEHora) return { tipo: 'receita', confianca: 'alta',  confiancaNum: 90, colunas: hOrig };
     // RF-024: template padrão de extrato — exatamente 3 colunas (Data, Descrição, Valor)
     // Sem portador/parcela/categoria → extrato bancário com sinal do valor determinando tipo
     if (!temPortador && !temParcela && !temCategoria && hOrig.length === 3 &&
         temData && h.some(c => c.includes('descri')) && temValor) {
       return { tipo: 'banco', confianca: 'alta', confiancaNum: 90, colunas: hOrig };
     }
-    if (!temPortador && !temParcela)                 return { tipo: 'banco',   confianca: 'baixa', confiancaNum: 60, colunas: hOrig };
+    if (!temPortador && !temParcela)                             return { tipo: 'banco',   confianca: 'baixa', confiancaNum: 60, colunas: hOrig };
     return { tipo: 'despesa', confianca: 'baixa', confiancaNum: 50, colunas: hOrig };
   }
 

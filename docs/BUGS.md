@@ -70,6 +70,62 @@ Usuários do BTG conseguem importar extratos bancários normalmente. Dados reais
 
 ---
 
+### BUG-028b — Arrays sparse do SheetJS causam crash + BTG classificado como "receita"
+**Severidade:** 🔴 Crítico
+**Versão introduzida:** v3.23.7 (fix parcial do BUG-028 expôs o bug)
+**Versão corrigida:** v3.23.8
+**Arquivos:** `src/js/utils/normalizadorTransacoes.js`, `src/js/utils/detectorOrigemArquivo.js`
+**Descoberto em:** QA BTG import — 2026-04-14
+
+**Descrição do problema (dois bugs simultâneos):**
+
+**Bug 1 — Crash TypeError:** Com o loop do BUG-028 corrigido para alcançar o índice 10, o código chegava ao header BTG. Porém `rows[10].map(c => String(c ?? '').trim())` gerava um array ainda sparse (porque `Array.prototype.map` pula holes — `undefined` real de array sparse do SheetJS permanecia como hole no array resultante). Em seguida, `h.findIndex(c => c.includes('valor'))` visitava os holes como `undefined` → `undefined.includes('valor')` → `TypeError: Cannot read properties of undefined (reading 'includes')`.
+
+**Bug 2 — Classificação errada:** `_detectarTipo` no `detectorOrigemArquivo.js` usava a regra `temCategoria && !temPortador && !temParcela → tipo: 'receita'`. O BTG extrato bancário tem coluna "Categoria" (para categorizar lançamentos). Resultado: arquivo de extrato bancário era classificado como `'receita'` → pipeline errado, nenhuma transação processada como despesa/banco.
+
+**Root causes:**
+
+1. **SheetJS 0.18.5 retorna arrays sparse** ao ler XLS com células vazias. O XLSX `.sheet_to_json({header:1})` usa `null` para células `null` em alguns casos, mas **holes** (`undefined` real) para células totalmente ausentes no arquivo. `Array.prototype.map` pula holes → o resultado também é sparse → `findIndex` chama callback em posições `undefined`.
+
+2. **Regra de detecção de receita muito ampla:** `temCategoria && !temPortador && !temParcela` não distinguia extrato bancário BTG de template de receitas. A coluna "Data e hora" (presente apenas em extratos BTG) é o discriminador correto.
+
+**Correção aplicada:**
+
+1. **`normalizadorTransacoes.js`** — substituído `.map(...)` por `Array.from(row, c => ...)` em todos os pontos de processamento do header BTG. `Array.from` converte holes em `undefined` explícito e o mapper transforma via `String(c ?? '')`.
+
+```javascript
+// ANTES (quebrado com arrays sparse):
+const r = rows[i].map(c => String(c ?? '').toLowerCase()...);
+const h = rows[headerIdx].map(c => String(c ?? '')...);
+
+// DEPOIS (Array.from trata holes):
+const r = Array.from(rows[i], c => String(c ?? '').toLowerCase()...);
+const h = Array.from(rows[headerIdx], c => String(c ?? '')...);
+```
+
+2. **`detectorOrigemArquivo.js`** — idem `Array.from` + regra de receita refinada com `!temDataEHora`:
+
+```javascript
+// ANTES:
+if (temCategoria && !temPortador && !temParcela) return { tipo: 'receita', ... };
+
+// DEPOIS:
+const temDataEHora = h.some(c => c === 'data e hora');
+if (temCategoria && !temPortador && !temParcela && !temDataEHora) return { tipo: 'receita', ... };
+```
+
+**Testes adicionados:** 5 novos TCs (3 em `normalizadorTransacoes.test.js` + 3 em `detectorOrigemArquivo.test.js`):
+- Array sparse com header na linha 0 não causa crash
+- Array sparse com header na linha 10 (estrutura completa real BTG) retorna 2 transações válidas
+- BTG com "Data e hora" + "Categoria" → `tipo: 'banco'` (não `'receita'`)
+- Arquivo de receitas com "Data" + "Categoria" continua → `tipo: 'receita'`
+- Array sparse no detector não causa crash
+
+**Impacto:**
+Importação BTG XLS agora funciona end-to-end: sem crash, sem classificação errada, transações corretamente parseadas como extrato bancário.
+
+---
+
 ## Bugs Corrigidos
 
 ---

@@ -46,8 +46,10 @@ export function parsearLinhasCSVXLSX(rows, {
   if (!rows.length) return [];
   let headerIdx = -1;
   // BUG-028: BTG XLS tem 10 linhas de metadata antes do header → buscar até linha 15
+  // BUG-028b: SheetJS retorna arrays sparse (holes são undefined, não null).
+  //   Array.from() converte holes em undefined explícito → map/findIndex funcionam corretamente.
   for (let i = 0; i < Math.min(rows.length, 15); i++) {
-    const r = rows[i].map(c => String(c ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim());
+    const r = Array.from(rows[i], c => String(c ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim());
     if (r.some(c => c === 'data' || c === 'data e hora') &&
         r.some(c => c.includes('estabelecimento') || c.includes('descri') || c === 'historico') &&
         r.some(c => c.includes('valor') || c.includes('credito') || c.includes('debito'))) {
@@ -61,7 +63,8 @@ export function parsearLinhasCSVXLSX(rows, {
   let idxData = 0, idxEstab = 1, idxPortador = 2, idxValor = 3, idxParcela = 4, idxConta = -1;
   let idxCredito = -1, idxDebito = -1;
   if (headerIdx >= 0) {
-    const h = rows[headerIdx].map(c => String(c ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim());
+    // BUG-028b: Array.from() para converter array sparse do SheetJS em dense
+    const h = Array.from(rows[headerIdx], c => String(c ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim());
     idxData     = h.findIndex(c => c === 'data' || c === 'data e hora');
     idxEstab    = h.findIndex(c => c.includes('estabelecimento') || c.includes('descri') || c === 'historico');
     idxPortador = h.findIndex(c => c.includes('portador') || c.includes('titular'));
