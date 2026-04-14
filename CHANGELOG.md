@@ -7,6 +7,17 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.23.3] - 2026-04-13
+
+### Testes
+
+- **Tech debt — pdfParser.js (#141):** 47 novos testes unitários para `extrairTransacoesPDF` (RF-020) via mock de `window.pdfjsLib` com `vi.stubGlobal`.
+  - Cobre: guarda de erro (lib ausente, workerSrc), PDF vazio/items vazios, 5 formatos de data, 6 formatos de valor, flag D/C (débito/crédito), 11 padrões de linhas ignoradas (saldo/total/extrato/agência/banco/CPF/CNPJ/cabeçalho), extração de descrição e limite de 100 chars, 3 níveis de confiança, agrupamento de items por Y e ordenação por X, PDF multi-página.
+  - **Tech debt de testes 100% concluído**: `pdfParser.js` era o único módulo em `src/js/utils/` sem cobertura.
+  - Suite total: **470 testes** (18 arquivos). Antes: 423 (17 arquivos).
+
+---
+
 ## [3.23.2] - 2026-04-13
 
 ### Testes
