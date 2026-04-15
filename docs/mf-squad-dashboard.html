@@ -461,17 +461,22 @@
 // Dashboard state — PM Agent updates this section, Dev Manager reads it
 const DASHBOARD_DATA = {
   // PM Agent atualiza estes campos:
-  lastUpdate: "2026-04-15 06:35",
+  lastUpdate: "2026-04-15 20:31",
   version: "v3.23.8",
-  health: "yellow", // green | yellow | red
-  healthText: "⚠️ [VIOLAÇÃO-REGRA-11] feat(importar) commit direto em main sem PR (12c3d70) — aguardando decisão do PO | 514 testes OK, CI verde, 0 PRs abertos",
+  health: "red", // green | yellow | red
+  healthText: "🔴 BUG-030 P0 aberto — responsavel salvo como string negativa bloqueia edição manual de extrato bancário | BUG-029 receitas no gráfico de despesas | 514 testes OK, CI verde",
   testsUnit: "514",
   testsUnitStatus: "514 passando",
   testsInt: "26",
-  issuesOpen: 18,
-  issuesSub: "QA RF-064: 4 (#136-#139) | iOS backlog: 13 (Fases 2-5) | QA RF-062: 1 (#129)",
+  issuesOpen: 25,
+  issuesSub: "Bugs P0: 2 (#156,#148) | UX milestone: 9 | iOS: 13 (Fases 2-5) | QA RF-062: 1 (#129)",
   // Dev Manager atualiza via PR + merge
   activity: [
+    { time: "Apr 15", color: "var(--red)", msg: "<strong>PM Agent</strong> — Revisão diária: 25 issues (+11 novas), 3 bugs abertos (P0!), QA RF-064 ✅, [VIOLAÇÃO-REGRA-11] ✅ encerrado, novo milestone UX & Gestao Patrimonial, saúde Vermelho", tag: "pm" },
+    { time: "Apr 15", color: "var(--red)", msg: "<strong>BUG-030</strong> (#156 P0) + <strong>BUG-031</strong> (#157 P1) registrados — responsavel negativo bloqueia edição; categoriaId errado no Firestore (QA RF-064)", tag: "commit" },
+    { time: "Apr 15", color: "var(--accent)", msg: "<strong>Milestone UX & Gestao Patrimonial</strong> criado — 9 issues: BUG-029, ENH-001–005, RF-065, RF-066, NRF-NAV", tag: "feat" },
+    { time: "Apr 15", color: "var(--green)", msg: "<strong>QA RF-064 ✅</strong> — issues #136, #137, #138, #139 fechadas (4 planos de teste concluídos)", tag: "merge" },
+    { time: "Apr 15", color: "var(--green)", msg: "<strong>[VIOLAÇÃO-REGRA-11] ✅ encerrado</strong> — issue retroativa #147 criada e fechada, aceite consciente do PO", tag: "ci" },
     { time: "Apr 15", color: "var(--yellow)", msg: "<strong>PM Agent</strong> — Revisão diária: 514 testes OK, 18 issues, saúde Amarelo — [VIOLAÇÃO-REGRA-11] pendente, nenhum commit novo desde 14/04 22:56", tag: "pm" },
     { time: "Apr 14", color: "var(--blue)", msg: "<strong>PM Agent</strong> — Revisão diária: 514 testes OK, 18 issues abertas, saúde Verde — v3.23.8, BUG-028 série completa, feat importar tipo-transação", tag: "pm" },
     { time: "Apr 14", color: "var(--accent)", msg: "<strong>feat(importar)</strong> — tipo de transação no seletor de categoria do preview bancário (RF-063/064) — v3.23.8", tag: "feat" },
@@ -510,7 +515,7 @@ function render() {
 
   // Agent status
   const now = new Date();
-  const lastPM = new Date("2026-04-15T06:35:00");
+  const lastPM = new Date("2026-04-15T20:31:00");
   const diffHrs = (now - lastPM) / 36e5;
   const pmDot = document.getElementById("pmStatus");
   const pmText = document.getElementById("pmStatusText");
