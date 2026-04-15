@@ -461,27 +461,28 @@
 // Dashboard state — PM Agent updates this section, Dev Manager reads it
 const DASHBOARD_DATA = {
   // PM Agent atualiza estes campos:
-  lastUpdate: "2026-04-14 22:19",
-  version: "v3.23.4",
-  health: "green", // green | yellow | red
-  healthText: "v3.23.4 — 501/501 testes passando, CI verde, 0 PRs, skeletons.js coberto — iOS Fase 2 é próxima prioridade (requer Mac/Xcode)",
-  testsUnit: "501",
-  testsUnitStatus: "501 passando",
+  lastUpdate: "2026-04-15 06:35",
+  version: "v3.23.8",
+  health: "yellow", // green | yellow | red
+  healthText: "⚠️ [VIOLAÇÃO-REGRA-11] feat(importar) commit direto em main sem PR (12c3d70) — aguardando decisão do PO | 514 testes OK, CI verde, 0 PRs abertos",
+  testsUnit: "514",
+  testsUnitStatus: "514 passando",
   testsInt: "26",
   issuesOpen: 18,
   issuesSub: "QA RF-064: 4 (#136-#139) | iOS backlog: 13 (Fases 2-5) | QA RF-062: 1 (#129)",
   // Dev Manager atualiza via PR + merge
   activity: [
+    { time: "Apr 15", color: "var(--yellow)", msg: "<strong>PM Agent</strong> — Revisão diária: 514 testes OK, 18 issues, saúde Amarelo — [VIOLAÇÃO-REGRA-11] pendente, nenhum commit novo desde 14/04 22:56", tag: "pm" },
+    { time: "Apr 14", color: "var(--blue)", msg: "<strong>PM Agent</strong> — Revisão diária: 514 testes OK, 18 issues abertas, saúde Verde — v3.23.8, BUG-028 série completa, feat importar tipo-transação", tag: "pm" },
+    { time: "Apr 14", color: "var(--accent)", msg: "<strong>feat(importar)</strong> — tipo de transação no seletor de categoria do preview bancário (RF-063/064) — v3.23.8", tag: "feat" },
+    { time: "Apr 14", color: "var(--green)", msg: "<strong>Merge PR #146</strong> fix(importar): arrays sparse SheetJS + BTG classificado como receita — BUG-028b — v3.23.8", tag: "merge" },
+    { time: "Apr 14", color: "var(--green)", msg: "<strong>CI Deploy</strong> — Firebase Hosting success (19:12 UTC) — v3.23.8 em produção", tag: "ci" },
+    { time: "Apr 14", color: "var(--green)", msg: "<strong>Merge PR #145</strong> fix(importar): ampliar limite busca header BTG 10→15 linhas — BUG-028 — v3.23.7", tag: "merge" },
+    { time: "Apr 14", color: "var(--green)", msg: "<strong>Merge PR #144</strong> fix(importar): filtrar linhas 'Saldo Diario' BTG XLS — BUG-028 — v3.23.6", tag: "merge" },
+    { time: "Apr 14", color: "var(--green)", msg: "<strong>Merge PR #143</strong> fix(importar): suporte extrato BTG XLS header 'Data e hora' — BUG-028 — v3.23.5", tag: "merge" },
+    { time: "Apr 14", color: "var(--blue)", msg: "<strong>PM Agent</strong> — Revisão diária: 501 testes OK, 18 issues, tech debt 100% concluído, saúde Verde — v3.23.4", tag: "pm" },
     { time: "Apr 14", color: "var(--green)", msg: "<strong>Merge PR #142</strong> test(utils): skeletons.js — 31 TCs, 501 testes total — v3.23.4", tag: "merge" },
-    { time: "Apr 14", color: "var(--accent)", msg: "<strong>Dev Manager</strong> — chore: bump package.json 3.23.2→3.23.3 (sincronia), depois 3.23.3→3.23.4 via PR #142", tag: "chore" },
-    { time: "Apr 13", color: "var(--blue)", msg: "<strong>PM Agent</strong> — Revisão diária: 470 testes OK, 18 issues abertas, 0 dívidas técnicas, saúde Verde. Nota: package.json em 3.23.2 vs docs/mem 3.23.3", tag: "pm" },
-    { time: "Apr 13", color: "var(--green)", msg: "<strong>CI Deploy</strong> — Firebase Hosting success (00:42 UTC) — v3.23.3 em produção", tag: "ci" },
     { time: "Apr 13", color: "var(--green)", msg: "<strong>Merge PR #141</strong> test(utils): pdfParser — 47 TCs, tech debt 100% concluído — v3.23.3, 470 testes total", tag: "merge" },
-    { time: "Apr 13", color: "var(--blue)", msg: "<strong>PM Agent</strong> — Revisão diária: 423 testes OK, 18 issues abertas, 1 dívida técnica restante (pdfParser), saúde Verde", tag: "pm" },
-    { time: "Apr 13", color: "var(--green)", msg: "<strong>Merge PR #140</strong> test(utils): +93 testes — bankFingerprintMap, detectorOrigemArquivo, recurringDetector — 423 total", tag: "merge" },
-    { time: "Apr 13", color: "var(--green)", msg: "<strong>Merge PR #135</strong> fix(fatura): XSS membroNome em 6 locais + l.erro — v3.23.1", tag: "merge" },
-    { time: "Apr 13", color: "var(--green)", msg: "<strong>Merge PR #134</strong> RF-064 Reconciliacao Pagamento Fatura — v3.23.0 (+46 testes, 330 total)", tag: "merge" },
-    { time: "Apr 12", color: "var(--green)", msg: "<strong>Merge PR #132</strong> RF-063 Transferencias intra-grupo — v3.22.0 (18 arquivos, +32 testes)", tag: "merge" },
   ]
 };
 
@@ -509,7 +510,7 @@ function render() {
 
   // Agent status
   const now = new Date();
-  const lastPM = new Date("2026-04-13T22:05:00");
+  const lastPM = new Date("2026-04-15T06:35:00");
   const diffHrs = (now - lastPM) / 36e5;
   const pmDot = document.getElementById("pmStatus");
   const pmText = document.getElementById("pmStatusText");
