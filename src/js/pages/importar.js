@@ -694,15 +694,61 @@ function renderizarPreview() {
       // NRF-006: receitas do extrato bancário em verde, despesas em vermelho
       if (!isNaN(l.valor)) tdVal.style.color = (l.tipoLinha === 'receita') ? 'var(--success, #166534)' : 'var(--danger)';
     }
+    // RF-063/064: chaveInfo aqui (antes do handler) para evitar TDZ na closure
+    const chaveInfo = l.chave_dedup ? '\nchave: ' + escHTML(l.chave_dedup) : '';
     const tdCat  = document.createElement('td');
     const selCat = document.createElement('select');
     selCat.className = 'sel-cat-linha select-input';
     selCat.style.cssText = 'font-size:.85rem;padding:.2rem .4rem;';
     selCat.dataset.idx = l._idx;
+    // RF-063/064: opções de tipo especial apenas em modo banco (extrato bancário)
+    const tipoOpts = _tipoExtrato === 'banco'
+      ? `<optgroup label="── Tipo de transação ──">` +
+        `<option value="__tipo__pagamento_fatura">💳 Pagamento de Fatura</option>` +
+        `<option value="__tipo__transferencia_interna">🔁 Transferência Interna</option>` +
+        `</optgroup>` +
+        `<optgroup label="── Categorias ──">`
+      : '';
+    const tipoOptsClose = _tipoExtrato === 'banco' ? '</optgroup>' : '';
     selCat.innerHTML = '<option value="">— sem categoria —</option>' +
-      _categorias.map(c => '<option value="' + c.id + '">' + c.emoji + ' ' + c.nome + '</option>').join('');
-    selCat.value = l.categoriaId ?? '';
-    selCat.addEventListener('change', (e) => { _linhas[l._idx].categoriaId = e.target.value; });
+      tipoOpts +
+      _categorias.map(c => '<option value="' + c.id + '">' + c.emoji + ' ' + c.nome + '</option>').join('') +
+      tipoOptsClose;
+    // RF-064: pré-selecionar tipo especial se já detectado automaticamente
+    if (l._pagamentoFatura) {
+      selCat.value = '__tipo__pagamento_fatura';
+    } else if (l._transferenciaInterna) {
+      selCat.value = '__tipo__transferencia_interna';
+    } else {
+      selCat.value = l.categoriaId ?? '';
+    }
+    selCat.addEventListener('change', (e) => {
+      const val = e.target.value;
+      const idx = l._idx;
+      if (val === '__tipo__pagamento_fatura') {
+        // RF-064: marcar manualmente como pagamento de fatura
+        _linhas[idx].categoriaId = null;
+        _linhas[idx]._pagamentoFatura = { scoreFatura: 100, statusReconciliacaoFatura: 'manual' };
+        _linhas[idx]._transferenciaInterna = null;
+        _linhas[idx]._tipoManualOverride = 'pagamento_fatura';
+      } else if (val === '__tipo__transferencia_interna') {
+        // RF-063: marcar manualmente como transferência interna
+        _linhas[idx].categoriaId = null;
+        _linhas[idx]._transferenciaInterna = { direcao: 'saida', membroNome: 'Manual' };
+        _linhas[idx]._pagamentoFatura = null;
+        _linhas[idx]._tipoManualOverride = 'transferencia_interna';
+      } else {
+        // Categoria comum: limpar overrides manuais de tipo
+        _linhas[idx].categoriaId = val;
+        if (_linhas[idx]._tipoManualOverride) {
+          _linhas[idx]._pagamentoFatura = null;
+          _linhas[idx]._transferenciaInterna = null;
+          _linhas[idx]._tipoManualOverride = null;
+        }
+      }
+      // Atualizar badge de status dinamicamente
+      _atualizarBadgeLinha(idx, tr, chaveInfo);
+    });
     tdCat.appendChild(selCat);
 
     // NRF-004: coluna Conta/Banco por linha
@@ -726,7 +772,7 @@ function renderizarPreview() {
 
     const tdStatus = document.createElement('td');
     tdStatus.style.textAlign = 'center';
-    const chaveInfo = l.chave_dedup ? '\nchave: ' + escHTML(l.chave_dedup) : '';
+    // chaveInfo já definido acima (antes do handler de selCat)
     if (l.substitui_projecao_fuzzy) {
       // NRF-002: badge de reconciliação fuzzy com % de similaridade
       tdStatus.innerHTML = '<span class="imp-badge imp-badge--fuzzy" title="Reconciliação fuzzy — similaridade ' + l.projecao_sim + '% com parcela projetada' + chaveInfo + '">🔍 ' + l.projecao_sim + '%</span>';
@@ -801,6 +847,42 @@ function criarTd(texto, fontSize, color) {
   if (fontSize) td.style.fontSize = fontSize;
   if (color)    td.style.color    = color;
   return td;
+}
+
+// ── RF-063/064: Atualiza badge de status ao trocar tipo manualmente ──
+// Chamada quando o usuário seleciona um tipo especial (pagamento_fatura /
+// transferencia_interna) ou volta para categoria normal no seletor de categoria.
+// idx: índice da linha em _linhas; tr: elemento <tr> da tabela; chaveInfo: tooltip da chave_dedup.
+function _atualizarBadgeLinha(idx, tr, chaveInfo) {
+  const l = _linhas[idx];
+  const tdStatus = tr.cells[8]; // última coluna (Status)
+  if (!tdStatus) return;
+  if (l._pagamentoFatura) {
+    const isManual = l._pagamentoFatura.statusReconciliacaoFatura === 'manual';
+    const scoreInfo = isManual ? '' : ' (score: ' + l._pagamentoFatura.scoreFatura + ')';
+    const label = '💳 Pag. Fatura' + (isManual ? ' ✎' : '');
+    tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok" style="background:#fef3c7;color:#92400e;" title="Pagamento de fatura — não será somado aos gastos do mês' + scoreInfo + chaveInfo + '">' + label + '</span>';
+    tr.classList.add('imp-row-pag-fatura');
+    tr.classList.remove('imp-row-transf');
+  } else if (l._transferenciaInterna) {
+    const dir = l._transferenciaInterna.direcao === 'recebida' ? '📥' : '📤';
+    const isManual = l._transferenciaInterna.membroNome === 'Manual';
+    const membro = isManual ? 'marcada manualmente' : escHTML(l._transferenciaInterna.membroNome ?? '');
+    const label = dir + ' 🔁 Transf.' + (isManual ? ' ✎' : '');
+    tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok" style="background:#dbeafe;color:#1e40af;" title="Transferência interna (' + membro + ')' + chaveInfo + '">' + label + '</span>';
+    tr.classList.add('imp-row-transf');
+    tr.classList.remove('imp-row-pag-fatura');
+  } else {
+    // Voltou para categoria normal — exibe badge padrão de despesa/receita
+    if (l.tipoLinha === 'receita') {
+      tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok" style="background:#dcfce7;color:#166534;" title="Será salva como Receita' + chaveInfo + '">📥 Receita</span>';
+    } else if (l.tipoLinha === 'despesa' && _tipoExtrato === 'banco') {
+      tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok" style="background:#fee2e2;color:#991b1b;" title="Será salva como Despesa' + chaveInfo + '">💸 Despesa</span>';
+    } else {
+      tdStatus.innerHTML = '<span class="imp-badge imp-badge--ok" title="Pronto para importar' + chaveInfo + '">✓</span>';
+    }
+    tr.classList.remove('imp-row-pag-fatura', 'imp-row-transf');
+  }
 }
 
 // ── Chips de preview ─────────────────────────────────────────────
