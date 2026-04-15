@@ -6,8 +6,13 @@ O formato Ã© baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 e este projeto adere ao [Versionamento SemÃ¢ntico](https://semver.org/lang/pt-BR/).
 
 ## [Unreleased]
-
+### Adicionado
+- **feat(importar): Tipo de transação no seletor de categoria do preview bancário (RF-063/RF-064):** o seletor de categoria no preview de importação bancária agora exibe o tipo de transação detectado (receita/despesa/transferência), permitindo ao usuário validar a classificação antes de confirmar a importação bancária. Implementado em `importar.js` (86 inserções, 4 alterações). Testes: 514 passando.
 ## [3.23.8] - 2026-04-14
+
+### Adicionado
+
+- **feat(importar): seletor de categoria no preview bancÃ¡rio exibe o tipo de transaÃ§Ã£o (RF-063/RF-064):** ao selecionar uma categoria no preview de importaÃ§Ã£o bancÃ¡ria, o tipo de transaÃ§Ã£o (despesa/receita/transferÃªncia) Ã© agora exibido contextualmente no seletor â€” commit `12c3d70`.
 
 ### Corrigido
 
