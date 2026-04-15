@@ -13,6 +13,8 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 - **feat(importar): seletor de categoria no preview bancário exibe o tipo de transação (RF-063/RF-064):** ao selecionar uma categoria no preview de importação bancária, o tipo de transação (despesa/receita/transferência) é agora exibido contextualmente no seletor — commit `12c3d70`.
 
+- **[Processo]** Issue retroativa #147 criada e fechada em 2026-04-15 — aceite consciente do PO: commit direto em main (Regra 11), risco baixo (UI de preview, 514 testes passando, sem impacto em pipeline/dedup/mesFatura).
+
 ### Corrigido
 
 - **BUG-028b: Arrays sparse do SheetJS causavam crash "Cannot read properties of undefined (reading 'includes')":** SheetJS 0.18.5 retorna arrays sparse (holes `undefined` reais) ao ler XLS. `Array.prototype.map` pula holes, gerando arrays com `undefined` nas posições vazias. `findIndex` visitava esses `undefined` e chamava `undefined.includes()` → TypeError. Fix: substituído `rows[i].map(...)` por `Array.from(rows[i], c => ...)` em `normalizadorTransacoes.js` e `detectorOrigemArquivo.js` — `Array.from` converte holes em `undefined` explícito e o mapper transforma via `String(c ?? '')`.
