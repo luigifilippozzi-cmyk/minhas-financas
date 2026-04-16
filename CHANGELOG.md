@@ -7,6 +7,12 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.28.1] - 2026-04-16
+
+### Corrigido
+
+- **BUILD-BROKEN-P0: `buscarDespesasMes` duplicado em `database.js` — restaurar build e deploy (#171):** RF-060 (planejamento) declarara `buscarDespesasMes(grupoId, mes, ano)` na linha 1092; RF-067 (forecastEngine) adicionou `buscarDespesasMes(grupoId, ano, mes)` na linha 665. Rollup falhava com `Identifier has already been declared` — build e deploy quebrados (5 runs CI consecutivos falhando desde 2026-04-16T02:52Z). Fix: removida declaração duplicada (linha 1092); 3 callers em `planejamento.js` atualizados para assinatura canônica `(grupoId, ano, mes)`. 594 testes passando — PR #171.
+
 ## [3.28.0] - 2026-04-17
 
 ### Adicionado
