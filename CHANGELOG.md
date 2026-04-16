@@ -7,6 +7,14 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.24.0] - 2026-04-15
+
+### Corrigido
+
+- **BUG-029: categorias de receita exibidas no grid de orçamentos/despesas do dashboard:** `ouvirCategorias()` retorna todas as categorias ativas (despesa + receita), e `renderizarDashboard` renderizava todas em `categorias-grid` sem filtrar por tipo. Resultado: categorias como "Reembolso Médico" apareciam no breakdown de gastos, distorcendo os totais. Fix em `controllers/dashboard.js`: filtro `categorias.filter(c => !c.tipo || c.tipo === 'despesa')` antes do render; categorias legacy (sem campo tipo) tratadas como despesa. +6 TCs em `tests/controllers/dashboard.test.js` (novo arquivo). 525 testes passando — PR #160.
+
+- **BUG-031: `categoriaId` salvo como string sentinela `'__tipo__pagamento_fatura'` / `'__tipo__transferencia_interna'` em vez de `null`:** blocos RF-063 e RF-064 em `executarImportacao()` sobrescreviam `tipo` mas não resetavam `categoriaId`. O valor lido do select DOM (`'__tipo__*'`) ficava no campo e era salvo no Firestore, exibindo texto inválido na coluna Categoria de `base-dados.html`. Fix em `importar.js`: `despDados.categoriaId = null` adicionado em ambos os blocos (`modelDespesa` converte `null → ''` via `??`). +12 TCs em `tests/models/Despesa.test.js` (novo arquivo). 531 testes passando — PR #161.
+
 ## [3.23.9] - 2026-04-15
 
 ### Corrigido
