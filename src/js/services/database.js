@@ -654,6 +654,70 @@ export async function buscarOrcamentosAno(grupoId, ano) {
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
 
+// ── RF-067: Forecast de Caixa — consultas mensais ──────────
+
+/**
+ * Busca despesas de um mês específico (para forecastEngine).
+ * @param {string} grupoId
+ * @param {number} ano
+ * @param {number} mes — 1-based (1=Jan … 12=Dez)
+ */
+export async function buscarDespesasMes(grupoId, ano, mes) {
+  const inicio = new Date(ano, mes - 1, 1);
+  const fim    = new Date(ano, mes, 0, 23, 59, 59);
+  const q = query(
+    collection(db, 'despesas'),
+    where('grupoId', '==', grupoId),
+    where('data', '>=', inicio),
+    where('data', '<=', fim),
+    orderBy('data', 'desc'),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+/**
+ * Busca receitas de um mês específico (para forecastEngine).
+ * @param {string} grupoId
+ * @param {number} ano
+ * @param {number} mes — 1-based (1=Jan … 12=Dez)
+ */
+export async function buscarReceitasMes(grupoId, ano, mes) {
+  const inicio = new Date(ano, mes - 1, 1);
+  const fim    = new Date(ano, mes, 0, 23, 59, 59);
+  const q = query(
+    collection(db, 'receitas'),
+    where('grupoId', '==', grupoId),
+    where('data', '>=', inicio),
+    where('data', '<=', fim),
+    orderBy('data', 'desc'),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+/**
+ * Busca projeções (tipo:'projecao') em range de mesFatura.
+ * Filtragem por range feita no cliente para evitar índice composto adicional.
+ * @param {string} grupoId
+ * @param {string} mesInicio — 'YYYY-MM' inclusive
+ * @param {string} mesFim    — 'YYYY-MM' inclusive
+ */
+export async function buscarProjecoesRange(grupoId, mesInicio, mesFim) {
+  const q = query(
+    collection(db, 'despesas'),
+    where('grupoId', '==', grupoId),
+    where('tipo', '==', 'projecao'),
+  );
+  const snap = await getDocs(q);
+  return snap.docs
+    .map((d) => ({ id: d.id, ...d.data() }))
+    .filter((d) => {
+      const mf = d.mesFatura ?? '';
+      return mf >= mesInicio && mf <= mesFim;
+    });
+}
+
 // ── NRF-002: Parcelamentos (coleção mestre) ─────────────────
 
 /**

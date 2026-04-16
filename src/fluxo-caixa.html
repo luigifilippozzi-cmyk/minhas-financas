@@ -121,6 +121,45 @@
         <span>Carregando fluxo de caixa...</span>
       </div>
 
+      <!-- ═══ SEÇÃO: FORECAST 6 MESES ═══ -->
+      <div class="card fc-forecast-card">
+        <div class="fc-forecast-header">
+          <div class="fc-forecast-titulo-row">
+            <h3 class="fc-tabela-titulo">🔮 Forecast — Próximos 6 Meses</h3>
+            <span class="fc-forecast-subtitulo">Projeção baseada em recorrentes + parcelas comprometidas + orçamentos</span>
+          </div>
+          <div id="fc-forecast-nota" class="fc-badge fc-badge--estimativa fc-forecast-alerta" style="display:none">
+            ⚠️ Estimativa limitada — histórico insuficiente (&lt; 3 transações em N-1 ou N-2)
+          </div>
+        </div>
+        <div class="fc-tabela-scroll">
+          <table class="fc-tabela">
+            <thead>
+              <tr>
+                <th>Mês</th>
+                <th class="fc-th-num">Rec. Esperadas</th>
+                <th class="fc-th-num">Recorrentes</th>
+                <th class="fc-th-num">Parcelas</th>
+                <th class="fc-th-num">Variáveis (teto)</th>
+                <th class="fc-th-num">Saldo Projetado</th>
+              </tr>
+            </thead>
+            <tbody id="fc-forecast-tbody">
+              <tr><td colspan="6" class="fc-empty">Carregando forecast...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="fc-forecast-legenda">
+          <span><strong>Rec. Esperadas</strong> = receitas recorrentes (alta+média)</span>
+          <span>·</span>
+          <span><strong>Recorrentes</strong> = despesas fixas detectadas</span>
+          <span>·</span>
+          <span><strong>Parcelas</strong> = comprometido (certo)</span>
+          <span>·</span>
+          <span><strong>Variáveis</strong> = teto de orçamento</span>
+        </div>
+      </div>
+
     </section>
   </main>
 
