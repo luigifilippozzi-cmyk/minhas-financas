@@ -582,13 +582,13 @@ function renderizarPainelParcelamentos(projecoes) {
   lista.innerHTML = Object.entries(porResp).map(([resp, d]) => `
     <div class="parc-resp-row">
       <div class="parc-resp-header">
-        <span class="parc-resp-nome">👤 ${resp}</span>
+        <span class="parc-resp-nome">👤 ${escHTML(resp)}</span>
         <span class="parc-resp-total">${formatarMoedaDash(d.total)}</span>
       </div>
       <div class="parc-resp-items">
         ${Object.values(d.compras).map(c => `
           <div class="parc-compra-item">
-            <span class="parc-compra-desc">${c.descricao}</span>
+            <span class="parc-compra-desc">${escHTML(c.descricao)}</span>
             <span class="parc-compra-info">${c.qtd} parcela${c.qtd > 1 ? 's' : ''} restante${c.qtd > 1 ? 's' : ''}</span>
             <span class="parc-compra-valor">${formatarMoedaDash(c.valor * c.qtd)}</span>
           </div>`).join('')}
