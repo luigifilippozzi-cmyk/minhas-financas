@@ -1,8 +1,46 @@
 # Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-16 18:51 (PM Agent — revisão diária)
+> Atualizado em: 2026-04-16 19:12 (PM Agent — revisão diária)
 > Versão: v3.29.0 (CHANGELOG + package.json — sincronizados ✅)
 > Saúde: 🟢 VERDE — CI verde | 594 testes OK | deploy Firebase OK | sem violações ativas | velocidade alta
+
+---
+
+## PM Agent — 2026-04-16 19:12
+
+### Estado
+- Versão: v3.29.0
+- Milestones ativos:
+  - 📱 App Mobile iOS — Capacitor (23.5%, 4/17 — Fase 2 ON HOLD por decisão PO)
+  - 🎨 UX & Gestao Patrimonial (1 closed / 8 total = 12.5% — 7 issues abertas)
+- Saúde: 🟢 VERDE — CI verde (3 deploys hoje), 594 testes OK, 0 PRs abertos
+- Testes: 594 unit (24 arquivos) + 26 int — todos passando ✅
+- CI: ✅ SUCCESS (3 deploys Firebase hoje + 1 run testes)
+
+### Issues abertas (21 total)
+- Fase 2 iOS (ON HOLD): #77, #78, #79, #80
+- Fases 3–5 iOS (bloqueadas): #81, #82, #83, #84, #85, #86, #87, #88, #89
+- UX & Gestao Patrimonial: #151, #152, #154, #155, #158, #170, #172
+- QA pendente: #129 (RF-062, execução manual Luigi — Blocos 2–4 pendentes)
+- Novas desde última sessão (PM 18:51): nenhuma
+
+### Alertas ativos
+- [QA-RF-062-PENDENTE] issue #129 — Blocos 2–4 manuais pendentes (execução Luigi)
+- [DÍVIDA-TÉCNICA] chartColors.js — módulo sem teste (pré-existente, não blocante)
+- [STALE-BRANCHES] 3 branches remotas não deletadas: feat/MF-169-saldo-real-por-conta, fix/MF-xss-parc-parcelamentos, fix/MF-xss-parcelamentos
+- Nenhum [VIOLAÇÃO-REGRA-11] ativo
+
+### Prioridades para Dev Manager
+- P0: RF-069 (#170) — Burn Rate por Categoria → v3.30.0
+- P1: RF-066 (#155) — Patrimônio Ativos/Passivos
+- P2: ENH-004 (#151), ENH-002 (#152), ENH-005 (#158), NRF-NAV (#154), NRF-UI-WARM (#172)
+- BLOQUEADO: iOS Fase 2 (#77–#80) — ON HOLD decisão PO
+
+### Atividade recente
+- Último PR mergeado: #176 fix(app) XSS escHTML (2026-04-16 21:30)
+- Commits diretos main (últimas 24h): aae56a4 chore(changelog) — OK (docs-only, sem src/)
+- Issues fechadas últimos 7 dias: 10 — #147, #148, #149, #150, #153, #156, #157, #162, #166, #169
+- Subagentes acionados (última sessão DM): test-runner PASS (594/594), security-reviewer PASS
 
 ---
 
