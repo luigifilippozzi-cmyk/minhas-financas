@@ -965,6 +965,26 @@ async function executarImportacao() {
     const valorAlocado    = isConj ? Math.round(valorBase  * 100 / 2) / 100 : null; // para a despesa atual
     const valorAlocadoProj = isConj ? Math.round(l.valor   * 100 / 2) / 100 : null; // para projeções (valor bruto)
     try {
+      // ENH-001 (#149): linha marcada como duplicata com docId existente — atualizar o
+      // documento já salvo em vez de criar um novo (evita duplicação de registros no Firestore).
+      // O usuário pode marcar manualmente uma duplicata para corrigir categoria/conta/portador.
+      if (l.duplicado && l.duplicado_docId) {
+        const camposAtualizar = {
+          categoriaId: cat,
+          responsavel: l.portador ?? '',
+          portador:    l.portador ?? '',
+          isConjunta:  isConj,
+          valorAlocado,
+          ...(contaId ? { contaId } : {}),
+        };
+        if (l.tipoLinha === 'receita') {
+          await atualizarReceita(l.duplicado_docId, camposAtualizar);
+        } else {
+          await atualizarDespesa(l.duplicado_docId, camposAtualizar);
+        }
+        sucesso++;
+        continue;
+      }
       // NRF-006: modo banco — linhas de receita vão para coleção 'receitas'
       if (l.tipoLinha === 'receita') {
         const recDados = {
