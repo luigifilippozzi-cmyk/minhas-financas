@@ -462,16 +462,18 @@
 const DASHBOARD_DATA = {
   // PM Agent atualiza estes campos:
   lastUpdate: "2026-04-16 00:10",
-  version: "v3.24.0",
+  version: "v3.25.0",
   health: "green", // green | yellow | red
-  healthText: "🟢 BUG-029 ✅ BUG-031 ✅ corrigidos (PR #160, #161) | Sem bugs P0/P1 abertos | 531 testes OK, CI verde",
-  testsUnit: "531",
-  testsUnitStatus: "531 passando",
+  healthText: "🟢 BUG-032 ✅ ENH-001 ✅ (PR #163, #164) | Sem bugs P0/P1 abertos | 548 testes OK, CI verde",
+  testsUnit: "548",
+  testsUnitStatus: "548 passando",
   testsInt: "26",
-  issuesOpen: 22,
+  issuesOpen: 20,
   issuesSub: "UX milestone: 9 | iOS: 13 (Fases 2-5) | QA RF-062: 1 (#129)",
   // Dev Manager atualiza via PR + merge
   activity: [
+    { time: "Apr 16", color: "var(--green)", msg: "<strong>PR #164 mergeado</strong> — feat(importar): ENH-001 duplicata no preview faz update, não insert — v3.25.0 | 548 testes | test-runner PASS | import-pipeline-reviewer APPROVED", tag: "merge" },
+    { time: "Apr 16", color: "var(--green)", msg: "<strong>PR #163 mergeado</strong> — fix(models): BUG-032 mesFatura ausente dos opcionais (aba Fatura sempre vazia) — v3.25.0 | 544 testes | test-runner PASS", tag: "merge" },
     { time: "Apr 16", color: "var(--green)", msg: "<strong>PR #161 mergeado</strong> — fix(importar): BUG-031 categoriaId como string sentinela pagamento_fatura — v3.24.0 | 531 testes | test-runner PASS | import-pipeline-reviewer PASS", tag: "merge" },
     { time: "Apr 16", color: "var(--green)", msg: "<strong>PR #160 mergeado</strong> — fix(dashboard): BUG-029 categorias de receita no grid de despesas — v3.24.0 | 525 testes | test-runner PASS", tag: "merge" },
     { time: "Apr 15", color: "var(--green)", msg: "<strong>PR #159 mergeado</strong> — fix(importar): BUG-030 responsavel como valor negativo em extrato bancario — v3.23.9 | 519 testes | test-runner PASS | import-pipeline-reviewer PASS", tag: "merge" },

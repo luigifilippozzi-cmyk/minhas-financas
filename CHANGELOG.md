@@ -7,6 +7,16 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.25.0] - 2026-04-15
+
+### Adicionado
+
+- **ENH-001: edição de duplicata no preview faz update, não insert (#149):** ao marcar manualmente uma linha de duplicata na tabela de preview e clicar em Importar, o sistema agora chama `atualizarDespesa`/`atualizarReceita` no documento Firestore já existente (`duplicado_docId`) em vez de criar um novo documento — evitando duplicação de registros. Campos atualizados: `categoriaId`, `contaId`, `responsavel`, `portador`, `isConjunta`, `valorAlocado`. Campos imutáveis preservados: `tipo`, `mesFatura`, `data`, `valor`, `chave_dedup`. +4 TCs em `deduplicador.test.js` (contrato `duplicado_docId` via Map). 548 testes passando — PR #164.
+
+### Corrigido
+
+- **BUG-032: `mesFatura` ausente dos `opcionais` em `modelDespesa` e `modelReceita` (#162) — aba Fatura vazia para novos imports:** `mesFatura` não estava listado em `opcionais` de `Despesa.js` e `Receita.js`. O campo era descartado silenciosamente ao passar pelos models antes de salvar no Firestore — apenas o path de duplicatas (`atualizarDespesa`/`atualizarReceita` direto) propagava o campo corretamente. Resultado: `ouvirDespesasPorMesFatura()` retornava zero resultados para toda transação nova → aba Fatura sempre vazia. Fix: adicionado `'mesFatura'` às listas `opcionais` em ambos os models. +2 TCs em `Despesa.test.js`, novo arquivo `Receita.test.js` (+5 TCs). 544 testes passando — PR #163.
+
 ## [3.24.0] - 2026-04-15
 
 ### Corrigido

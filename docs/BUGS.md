@@ -13,6 +13,36 @@ Formato: descrição do problema → impacto → localização → correção ap
 
 ---
 
+### BUG-032 — `mesFatura` ausente dos `opcionais` de `modelDespesa` / `modelReceita` — aba Fatura sempre vazia
+**Severidade:** 🔴 Crítico (P0 — aba Fatura vazia para todos os novos imports)
+**Versão introduzida:** desconhecida (omissão na lista opcionais desde o início do projeto)
+**Versão corrigida:** v3.25.0
+**Arquivos:** `src/js/models/Despesa.js`, `src/js/models/Receita.js`
+**Descoberto em:** 2026-04-15 (investigação do background agent após BUG-031 expôr o campo)
+
+**Descrição do problema:**
+Toda transação importada por CSV/XLSX (modo cartão ou banco) com `mesFatura` definido no `despDados`/`recDados` tinha esse campo descartado silenciosamente ao passar por `modelDespesa`/`modelReceita`. O campo nunca chegava ao Firestore. Como resultado, `ouvirDespesasPorMesFatura()` em `database.js` fazia `where('mesFatura', '==', ...)` e retornava zero resultados → **a aba Fatura ficava sempre vazia para novos imports**.
+
+O único path que funcionava era o de duplicatas (linhas 1082–1096 de `importar.js`), que chama `atualizarDespesa`/`atualizarReceita` diretamente — bypassando os models.
+
+**Root cause:**
+`mesFatura` simplesmente nunca foi adicionado à lista `opcionais` de `modelDespesa` e `modelReceita`. A lista cresceu com campos de RF-063 e RF-064, mas `mesFatura` foi omitido.
+
+**Correção aplicada:**
+
+```javascript
+// src/js/models/Despesa.js — lista opcionais:
+'mesFatura',    // BUG-032: ciclo de faturamento "YYYY-MM" — obrigatório para a aba Fatura
+
+// src/js/models/Receita.js — lista opcionais:
+'mesFatura',    // BUG-032: ciclo de faturamento "YYYY-MM" — necessário para estornos de cartão
+```
+
+**Testes:** +2 TCs em `tests/models/Despesa.test.js`, novo arquivo `tests/models/Receita.test.js` (+5 TCs). 544 testes passando.
+**PR:** #163
+
+---
+
 ### BUG-031 — `categoriaId` salvo como `'__tipo__pagamento_fatura'` / `'__tipo__transferencia_interna'`
 **Severidade:** 🟡 Alto (P1 — dado inválido visível em base-dados.html)
 **Versão introduzida:** v3.23.0 (RF-063/064)
