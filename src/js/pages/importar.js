@@ -1015,6 +1015,7 @@ async function executarImportacao() {
         despDados.membroDestinoId = l._transferenciaInterna.membroUid;
         despDados.isConjunta = false; // transferências internas nunca são conjuntas
         despDados.valorAlocado = null;
+        despDados.categoriaId = null; // BUG-031: __tipo__transferencia_interna não é uma categoriaId válida
       }
       // RF-064: marca despesa como pagamento de fatura se detectado
       if (l._pagamentoFatura && !l._transferenciaInterna) {
@@ -1024,6 +1025,7 @@ async function executarImportacao() {
         if (l._pagamentoFatura.contaCartaoId) despDados.contaCartaoId = l._pagamentoFatura.contaCartaoId;
         despDados.isConjunta = false; // pagamento de fatura nunca é conjunta
         despDados.valorAlocado = null;
+        despDados.categoriaId = null; // BUG-031: __tipo__pagamento_fatura não é uma categoriaId válida
       }
       const despesaRef = await criarDespesaDB(modelDespesa(despDados));
       // NRF-002: reconciliação por matching exato
