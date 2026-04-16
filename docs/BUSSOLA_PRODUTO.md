@@ -327,7 +327,7 @@ Sequência de implementação aprovada pelo PO em 2026-04-16, incorporando todos
 | 7 | **ENH-004** — UX tela fatura | v3.34.0+ | P3 | Polish operacional, após estrutura gerencial estabelecida |
 | 8 | **ENH-002** — Bulk categorização | v3.34.0+ | P3 | Polish operacional, após estrutura gerencial estabelecida |
 
-**Nota sobre o iOS:** iOS Fase 2 (#77–#80) permanece bloqueado (requer Mac/Xcode). Quando desbloqueado, é P0 e entra em paralelo sem afetar a sequência acima.
+**Nota sobre o iOS:** iOS Fase 2 (#77–#80) está em **ON HOLD** por decisão do PO (2026-04-16). Não cancelado — quando retomado, é P0 e entra em paralelo sem afetar a sequência acima.
 
 ---
 
@@ -377,4 +377,4 @@ A definição de `mobile.html` é parte da NRF-NAV Fase 2 (v3.33.0). As issues d
 
 ---
 
-*Este documento deve ser atualizado a cada sessão PO em que decisões de produto de alto impacto forem tomadas. Não é um backlog — é uma bússola.*
+*Este documento deve ser atualizado a cada sessão PO em que decisões de produto de alto impacto forem tomadas. Não é um b
