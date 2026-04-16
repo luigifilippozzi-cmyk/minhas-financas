@@ -82,6 +82,55 @@ describe('marcarLinhasDuplicatas — matching exato', () => {
   });
 });
 
+// ── duplicado_docId — pré-requisito de ENH-001 ───────────────────────────────
+//
+// ENH-001: quando o usuário marca manualmente uma linha duplicada no preview,
+// executarImportacao() usa l.duplicado_docId para chamar atualizarDespesa() em
+// vez de criarDespesaDB(). Estes testes garantem que o deduplicador popula
+// duplicado_docId corretamente a partir de um Map<chave_dedup, docId>.
+
+describe('marcarLinhasDuplicatas — duplicado_docId (ENH-001)', () => {
+  it('popula duplicado_docId quando chavesDesp é um Map', () => {
+    const linha = criarLinha({ chave_dedup: 'chave-001' });
+    const chavesDesp = new Map([['chave-001', 'doc-id-firestore-123']]);
+
+    marcarLinhasDuplicatas([linha], { chavesDesp });
+
+    expect(linha.duplicado).toBe(true);
+    expect(linha.duplicado_docId).toBe('doc-id-firestore-123');
+  });
+
+  it('duplicado_docId é null quando chavesDesp é um Set (legado, sem docId)', () => {
+    const linha = criarLinha({ chave_dedup: 'chave-001' });
+    const chavesDesp = new Set(['chave-001']);
+
+    marcarLinhasDuplicatas([linha], { chavesDesp });
+
+    expect(linha.duplicado).toBe(true);
+    expect(linha.duplicado_docId).toBeNull();
+  });
+
+  it('receita: duplicado_docId é populado a partir de chavesRec Map', () => {
+    const linha = criarLinha({ tipoLinha: 'receita', chave_dedup: 'chave-rec-001' });
+    const chavesRec = new Map([['chave-rec-001', 'rec-doc-id-456']]);
+
+    marcarLinhasDuplicatas([linha], { chavesRec });
+
+    expect(linha.duplicado).toBe(true);
+    expect(linha.duplicado_docId).toBe('rec-doc-id-456');
+  });
+
+  it('linha sem match não recebe duplicado_docId', () => {
+    const linha = criarLinha({ chave_dedup: 'chave-nova' });
+    const chavesDesp = new Map([['chave-existente', 'doc-id-123']]);
+
+    marcarLinhasDuplicatas([linha], { chavesDesp });
+
+    expect(linha.duplicado).toBe(false);
+    expect(linha).not.toHaveProperty('duplicado_docId');
+  });
+});
+
 // ── tipoExtrato 'banco' → delega para detectarAjustesParciais e retorna ───────
 
 describe('marcarLinhasDuplicatas — tipoExtrato banco', () => {
