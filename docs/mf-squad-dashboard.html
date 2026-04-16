@@ -461,17 +461,18 @@
 // Dashboard state — PM Agent updates this section, Dev Manager reads it
 const DASHBOARD_DATA = {
   // PM Agent atualiza estes campos:
-  lastUpdate: "2026-04-16 03:40",
+  lastUpdate: "2026-04-16 07:28",
   version: "v3.28.1",
   health: "green", // green | yellow | red
-  healthText: "🟢 Verde — BUILD-BROKEN-P0 resolvido (PR #171) | deploy Firebase restaurado | 594 testes OK",
+  healthText: "🟢 Verde — CI verde | 594 testes OK | deploy Firebase OK | BUILD-BROKEN-P0 resolvido (PR #171) | QA #129 pendente (Luigi)",
   testsUnit: "594",
   testsUnitStatus: "594 passando",
   testsInt: "26",
-  issuesOpen: 21,
-  issuesSub: "UX milestone: 7 (#151,#152,#154,#155,#158,#169,#170) | iOS: 13 (Fases 2-5) | QA RF-062: 1 (#129)",
+  issuesOpen: 22,
+  issuesSub: "UX milestone: 8 (+#172 NRF-UI-WARM) | iOS: 13 (Fases 2-5) | QA RF-062: 1 (#129)",
   // Dev Manager atualiza via PR + merge
   activity: [
+    { time: "Apr 16", color: "var(--blue)", msg: "<strong>PM Agent</strong> — 🟢 Verde | v3.28.1 | 594 testes OK | CI verde | 22 issues (+1 nova #172 NRF-UI-WARM) | BUILD-BROKEN-P0 resolvido | QA #129 pendente (Luigi) | Próx P0: RF-068 #169 Saldo Real por Conta", tag: "pm" },
     { time: "Apr 16", color: "var(--green)", msg: "<strong>PR #171 mergeado</strong> — fix(database): remover buscarDespesasMes duplicado — build e deploy restaurados — v3.28.1 | 594 testes | test-runner PASS", tag: "merge" },
     { time: "Apr 16", color: "var(--red)", msg: "<strong>PM Agent</strong> — 🔴 BUILD QUEBRADO: buscarDespesasMes duplicado em database.js linhas 665/1092 (param order diferente) | 5 CI runs vermelhos | 21 issues (2 novas: #169 RF-068, #170 RF-069) | P0: Dev Manager deve criar fix/MF-buscarDespesasMes-dedup", tag: "pm" },
     { time: "Apr 16", color: "var(--red)", msg: "<strong>CI FALHA (×5)</strong> — 🚀 Deploy Firebase Hosting — Build Vite: Identifier 'buscarDespesasMes' has already been declared — database.js:1092 | Desde 2026-04-16T02:52Z | Root cause: RF-067 adicionou linha 665 sem remover linha 1092", tag: "ci" },
@@ -532,7 +533,7 @@ function render() {
 
   // Agent status
   const now = new Date();
-  const lastPM = new Date("2026-04-16T00:26:00");
+  const lastPM = new Date("2026-04-16T07:28:00");
   const diffHrs = (now - lastPM) / 36e5;
   const pmDot = document.getElementById("pmStatus");
   const pmText = document.getElementById("pmStatusText");

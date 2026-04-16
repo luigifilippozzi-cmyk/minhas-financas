@@ -1,8 +1,51 @@
 # Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-16 03:40 (Dev Manager — sessão v3.28.1)
+> Atualizado em: 2026-04-16 07:28 (PM Agent — revisão diária)
 > Versão: v3.28.1 (CHANGELOG + package.json — sincronizados ✅)
-> Saúde: 🟢 VERDE — BUILD-BROKEN-P0 resolvido (PR #171) | deploy Firebase restaurado | 594 testes OK
+> Saúde: 🟢 VERDE — CI verde | 594 testes OK | deploy Firebase OK | BUILD-BROKEN-P0 resolvido (PR #171)
+
+---
+
+## PM Agent — 2026-04-16 07:28
+
+### Estado
+- Versão: v3.28.1
+- Milestones ativos:
+  - 📱 App Mobile iOS — Capacitor (23.5%, 4/17 issues)
+  - 🎨 UX & Gestao Patrimonial (38.5%, 5/13 issues — nova #172 NRF-UI-WARM)
+- Saúde: 🟢 VERDE — CI verde, 594 testes OK, deploy Firebase OK, sem P0 abertos
+- Testes: 594 unit (24 arquivos) + 26 int — todos passando ✅
+- CI: 🟢 VERDE — 3 runs Deploy Firebase OK (último: 2026-04-16T10:05Z) | PRs abertos: 0
+
+### Issues abertas (22 total)
+- iOS Fase 2 (P0 — requer Mac/Xcode): #77, #78, #79, #80
+- iOS Fases 3–5: #81–#89 (9 issues)
+- QA pendente: #129 (RF-062 — Cartões como Contas Individuais, 50 TCs manuais)
+- UX & Gestao Patrimonial: #151, #152, #154, #155, #158, #169 (RF-068), #170 (RF-069), #172 (NRF-UI-WARM)
+- Nova desde última sessão PM: #172 (NRF-UI-WARM — Identidade Visual Warm Finance: paleta terracota + ivory)
+
+### Alertas ativos
+- [QA-RF-062-PENDENTE] issue #129 — 50 TCs manuais RF-062 Cartões como Contas Individuais (execução pelo Luigi)
+- [DÍVIDA-TÉCNICA] chartColors.js — módulo pré-existente sem teste (não blocante)
+
+### Alertas resolvidos
+- ✅ [BUILD-BROKEN-P0] — PR #171 mergeado em 2026-04-16, deploy restaurado
+- ✅ [VIOLAÇÃO-REGRA-11] — issue retroativa #147 criada e fechada (aceite PO)
+- ✅ QA RF-064 — issues #136–#139 fechadas
+
+### Velocidade recente (Apr 9-16)
+- Issues fechadas últimos 7 dias: #166, #162, #157, #156, #153, #150, #149, #148, #147, #139 (10 issues)
+- 1 nova issue desde última sessão PM: #172 (NRF-UI-WARM)
+- PRs mergeados recentes: #171 (fix/database buscarDespesasMes), #168 (RF-067), #167 (RF-065), #165 (ENH-003), #164 (ENH-001), #163 (BUG-032)
+
+### Prioridades para Dev Manager
+- P0: RF-068 (#169) — Saldo Real por Conta (prioridade: alta) → v3.29.0
+- P1: RF-069 (#170) — Burn Rate por Categoria → v3.30.0
+- P1: RF-066 (#155) — Patrimônio Ativos/Passivos
+- P2: ENH-004 (#151), ENH-002 (#152), ENH-005 (#158)
+- P2: NRF-UI-WARM (#172) — Identidade Visual Warm Finance (nova)
+- BLOQUEADO: iOS Fase 2 (#77–#80) requer Mac/Xcode
+- QA: Luigi executar #129 (50 TCs RF-062)
 
 ---
 
