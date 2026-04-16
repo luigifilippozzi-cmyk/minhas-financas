@@ -59,13 +59,19 @@ export function renderizarDashboard(categorias, despesas, orcamentos, nomeAtual 
   definirTexto('total-meu-bolso', formatarMoeda(totalMeuBolso));
   definirTexto('total-familia',   formatarMoeda(totalFamilia));
 
+  // BUG-029: excluir categorias de receita do grid de orçamentos/despesas.
+  // ouvirCategorias() retorna todas as categorias ativas (despesa + receita);
+  // o filtro por tipo garante que apenas despesas apareçam aqui.
+  // Categorias legacy sem campo tipo são tratadas como 'despesa'.
+  const categoriasDesp = categorias.filter(c => !c.tipo || c.tipo === 'despesa');
+
   // Renderiza cards de categoria
-  if (!categorias.length) {
+  if (!categoriasDesp.length) {
     grid.innerHTML = '<p class="empty-state">Nenhuma categoria cadastrada.</p>';
     return;
   }
 
-  grid.innerHTML = categorias.map((cat) => {
+  grid.innerHTML = categoriasDesp.map((cat) => {
     const limite  = orcMap[cat.id] ?? 0;
     const gasto   = gastoMap[cat.id] ?? 0;
     const { percentual, classe } = calcularStatusOrcamento(gasto, limite);
