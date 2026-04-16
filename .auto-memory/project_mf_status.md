@@ -1,8 +1,102 @@
 # Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-17 00:00 (Dev Manager — sessão v3.28.0)
+> Atualizado em: 2026-04-16 00:26 (PM Agent — revisão diária)
 > Versão: v3.28.0 (CHANGELOG + package.json — sincronizados ✅)
-> Saúde: 🟢 Verde — RF-067 entregue | 594 testes OK | CI verde | QA #129 pendente (manual Luigi)
+> Saúde: 🔴 VERMELHO — BUILD QUEBRADO (buscarDespesasMes duplicado database.js) | CI vermelha 5 runs | deploy Firebase inacessível
+
+---
+
+## PM Agent — 2026-04-16 00:26
+
+### Estado
+- Versão: v3.28.0
+- Milestones ativos:
+  - 📱 App Mobile iOS — Capacitor (23.5%, 4/17 issues)
+  - 🎨 UX & Gestao Patrimonial (41.7%, 5/12 issues — 2 novas: #169 RF-068, #170 RF-069)
+- Saúde: 🔴 VERMELHO — BUILD QUEBRADO: `buscarDespesasMes` declarado duas vezes em `database.js` (linhas 665 e 1092, com ordem de parâmetros diferente)
+- Testes: 594 unit (24 arquivos) + 26 int — todos passando ✅ (localmente; Rollup/Vite build falha)
+- CI: 🔴 VERMELHA — 5 runs consecutivos falhando desde 2026-04-16T02:52Z | Deploy Firebase: inacessível
+- PRs abertos: 0
+
+### Issues abertas (21 total)
+- iOS Fase 2 (P0 — requer Mac/Xcode): #77, #78, #79, #80
+- iOS Fases 3–5: #81–#89 (9 issues)
+- QA pendente: #129 (RF-062 — Cartões como Contas Individuais, 50 TCs manuais)
+- UX & Gestao Patrimonial: #151, #152, #154, #155, #158, #169 (RF-068), #170 (RF-069)
+- Novas desde última sessão PM: #169 (RF-068 Saldo Real por Conta, P1), #170 (RF-069 Burn Rate por Categoria, P2)
+
+### Alertas ativos
+- **[BUILD-BROKEN-P0]** `database.js` tem `buscarDespesasMes` declarado duas vezes: linha 665 `(grupoId, ano, mes)` adicionada pelo RF-067 (commit 4c4d9a5) e linha 1092 `(grupoId, mes, ano)` pré-existente de RF-060/planejamento. Rollup falha com "Identifier has already been declared". Dev Manager deve criar `fix/MF-database-buscarDespesasMes-dedup`, resolver conflito de assinaturas e abrir PR.
+- **[QA-RF-062-PENDENTE]** issue #129 — 50 TCs manuais RF-062 Cartões como Contas Individuais (execução pelo Luigi)
+- **[DÍVIDA-TÉCNICA]** chartColors.js — módulo pré-existente sem teste (não blocante)
+
+### Alertas resolvidos
+- ✅ [VIOLAÇÃO-REGRA-11] — issue retroativa #147 criada e fechada (aceite PO)
+- ✅ QA RF-064 — issues #136–#139 fechadas (inclusive #139 fechada em Apr 15)
+- ✅ [INCONSISTÊNCIA] package.json ≠ CHANGELOG — v3.28.0 sincronizados
+
+### Velocidade recente (Apr 15-16)
+- Issues fechadas últimos 7 dias: #166, #162, #157, #156, #153, #150, #149, #148, #147, #139 (10 issues)
+- 2 novas issues abertas: #169 (RF-068), #170 (RF-069)
+
+### Prioridades para Dev Manager
+- **P0 IMEDIATO**: Fix `buscarDespesasMes` duplicado em `database.js` → `fix/MF-database-buscarDespesasMes-dedup` → PR → deploy restaurado
+- P2: RF-068 (#169) — Saldo Real por Conta → v3.29.0
+- P2: RF-066 (#155) — Patrimônio Ativos/Passivos
+- P2: ENH-004 (#151) — progressive disclosure base-dados.html
+- P2: ENH-002 (#152) — exibir origem/destino em transferências internas
+- P2: ENH-005 (#158) — simplificar despesas.html
+- P2: RF-069 (#170) — Burn Rate por Categoria
+- BLOQUEADO: iOS Fase 2 (#77–#80) requer Mac/Xcode
+- QA: Luigi executar #129 (50 TCs RF-062)
+
+### Subagentes acionados (Dev Manager sessão v3.28.0)
+- test-runner: PASS (594/594) — sessão anterior (Apr 15)
+
+---
+
+## PM Agent — 2026-04-15 23:55
+
+### Estado
+- Versão: v3.28.0
+- Milestones ativos:
+  - 📱 App Mobile iOS — Capacitor (23.5%, 4/17 issues)
+  - 🎨 UX & Gestao Patrimonial (50%, 5/10 issues — #166 fechada com PR #168)
+- Saúde: 🟢 Verde — RF-067 entregue (PR #168) | 594 testes OK | CI verde
+- Testes: 594 unit (24 arquivos) + 26 int — todos passando ✅
+- CI: Verde (último deploy: automático pós-merge PR #168) | PRs abertos: 0
+
+### Issues abertas (19 total)
+- iOS Fase 2 (P0 — requer Mac/Xcode): #77, #78, #79, #80
+- iOS Fases 3–5: #81–#89 (9 issues)
+- QA pendente: #129 (RF-062 — Cartões como Contas Individuais, 50 TCs manuais)
+- UX & Gestao Patrimonial (P2): #151, #152, #154, #155, #158
+- Novas desde última sessão PM: nenhuma (19 total, fechadas 13 em 2 dias)
+
+### Alertas ativos
+- [QA-RF-062-PENDENTE] issue #129 — 50 TCs manuais, execução pelo Luigi (RF-062 Cartões como Contas Individuais)
+- [DÍVIDA-TÉCNICA] chartColors.js — 30 linhas, módulo pré-existente sem teste
+
+### Alertas resolvidos
+- ✅ [VIOLAÇÃO-REGRA-11] — issue retroativa #147 criada e fechada
+- ✅ QA RF-064 — issues #136–#139 fechadas
+- ✅ [INCONSISTÊNCIA] package.json ≠ CHANGELOG — v3.28.0 sincronizados
+- ✅ RF-067 (#166) — forecastEngine.js + 31 TCs + fluxo-caixa página completa — PR #168 mergeado
+
+### Velocidade do Sprint (Apr 15-16)
+- 13 issues fechadas em 2 dias: #162, #157, #156, #153, #150, #149, #148, #147, #139-#136, #166
+- Sprints por dia: ~6.5 issues/dia — velocidade excepcional
+
+### Prioridades para Dev Manager
+- P2: RF-066 (#155) — Patrimônio Ativos/Passivos → v3.29.0
+- P2: ENH-004 (#151) — progressive disclosure base-dados.html
+- P2: ENH-002 (#152) — exibir origem/destino em transferências internas
+- P2: ENH-005 (#158) — simplificar despesas.html
+- BLOQUEADO: iOS Fase 2 (#77–#80) requer Mac/Xcode
+- QA: Luigi executar #129 (50 TCs RF-062)
+
+### Subagentes acionados (Dev Manager sessão v3.28.0)
+- test-runner: PASS (594/594)
 
 ---
 
@@ -536,3 +630,64 @@
     RF-067 (#166) v3.28.0 -> RF-066 (#155) v3.29.0
     -> NRF-NAV F1 (#154) v3.30.0 -> NRF-NAV F2 v3.31.0
 - Proxima sessao: aguardar RF-067 do Dev Manager
+
+## Sessao 2026-04-16 - PO Assistant (Cowork)
+
+- Versao na sessao: v3.27.0 (RF-067 em andamento na branch
+  feat/MF-166-forecast-caixa-6meses, alvo v3.28.0)
+- Milestone ativo: UX & Gestao Patrimonial (#18) - 7 open / 5 closed (41.6%)
+  + iOS Fase 2 (#10) - bloqueado (Apple Developer Program)
+
+### Decisoes
+- Bussola do produto (docs/BUSSOLA_PRODUTO.md) revisada sob otica de
+  "Controller Familiar" + boas praticas de family office, commit 2ec95a6.
+  Gaps identificados: saldo real por conta (virou RF-068) e burn rate
+  por categoria (virou RF-069).
+- Sequencia aprovada v3.28.0 -> v3.33.0:
+  1. RF-067 (#166) v3.28.0 - forecast caixa 6 meses - EM ANDAMENTO
+  2. RF-068 (#169) v3.29.0 - saldo real por conta - NOVO P1
+  3. RF-066 (#155) v3.30.0 - patrimonio (escopo revisado)
+  4. RF-069 (#170) v3.31.0 - burn rate por categoria - NOVO P2
+  5. NRF-NAV F1 (#154) v3.32.0 - navbar 5 secoes
+  6. NRF-NAV F2 (#154) v3.33.0 - consolidacao paginas + mobile.html
+
+### RFs criados
+- RF-068 (#169) P1 v3.29.0 - Saldo Real por Conta (saldoInicial +
+  movimentacoes reais, card Cockpit com lista por conta)
+- RF-069 (#170) P2 v3.31.0 - Burn Rate por Categoria (media movel 7 dias,
+  projecao mensal, classificacao verde/amarelo/vermelho)
+
+### Bugs registrados
+- Nenhum
+
+### Melhorias registradas
+- Nenhuma
+
+### Bloqueios identificados
+- forecastEngine.js (121 linhas na branch feat/MF-166) ainda SEM TESTES
+  unitarios. Blocker para abrir PR do RF-067 - subagente test-runner
+  vai reprovar. DM precisa adicionar testes antes do merge.
+- iOS Fase 2 continua bloqueado ate Apple Developer Program ser ativado.
+
+### Artefatos gerados
+- Sim:
+  - .auto-memory/pm_tasks_pending.md - bloco RF-068/RF-069 para PM Agent
+  - .auto-memory/dm_tasks_pending.md - bloco RF-068/RF-069 para Dev Manager
+    com branch names, subagentes e regras criticas
+
+### Scripts PowerShell executados
+- Diagnostico de milestones/labels (Passo 1)
+- gh label create rf-068 e rf-069 (Passo 2)
+- gh api para criar issues #169 e #170 (Passos 3 e 4)
+- Verificacao visual das duas issues (Passo 5)
+- Add-Content em pm_tasks_pending.md (Passo 6)
+- Add-Content em dm_tasks_pending.md (Passo 7)
+
+### Proxima sessao PO - foco recomendado
+1. Validar PR do RF-067 quando Dev Manager abrir (esperar testes do
+   forecastEngine serem adicionados).
+2. Apos merge RF-067 -> autorizar RF-068 no DM (artefato ja pronto em
+   dm_tasks_pending.md).
+3. Revisar escopo de RF-066 uma ultima vez antes de autorizar.
+
+---
