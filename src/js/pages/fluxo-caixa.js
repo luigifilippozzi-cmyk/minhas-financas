@@ -9,7 +9,11 @@ import {
   buscarDespesasAno,
   buscarReceitasAno,
   buscarOrcamentosAno,
+  buscarDespesasMes,
+  buscarReceitasMes,
+  buscarProjecoesRange,
 } from '../services/database.js';
+import { gerarForecast } from '../utils/forecastEngine.js';
 import { coresGrafico } from '../utils/chartColors.js';
 import { isMovimentacaoReal } from '../utils/helpers.js';
 
@@ -104,6 +108,8 @@ async function carregarFluxo() {
   } finally {
     mostrarLoading(false);
   }
+  // Forecast: sempre baseado na data atual (independente do ano selecionado)
+  await carregarForecast();
 }
 
 function agregarMensalmente(despesas, receitas, orcamentos) {
@@ -330,4 +336,112 @@ function setTexto(id, texto) {
 function mostrarLoading(show) {
   const el = document.getElementById('fc-loading');
   if (el) el.style.display = show ? 'flex' : 'none';
+}
+
+// ── Forecast de Caixa (RF-067) ────────────────────────────────
+
+/**
+ * Formata ano + mês (0-based) como 'YYYY-MM'.
+ * @param {number} ano
+ * @param {number} mes0 — mês 0-based
+ * @returns {string}
+ */
+function toMesStr(ano, mes0) {
+  return `${ano}-${String(mes0 + 1).padStart(2, '0')}`;
+}
+
+async function carregarForecast() {
+  const tbody = document.getElementById('fc-forecast-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="6" class="fc-empty">Calculando forecast...</td></tr>';
+
+  try {
+    const hoje    = new Date();
+    const anoHoje = hoje.getFullYear();
+    const mesHoje = hoje.getMonth(); // 0-based
+
+    // N-1 e N-2 relativos ao mês atual
+    const dtN1 = new Date(anoHoje, mesHoje - 1, 1);
+    const dtN2 = new Date(anoHoje, mesHoje - 2, 1);
+
+    // Range dos próximos 6 meses (para parcelas)
+    const dtM1  = new Date(anoHoje, mesHoje + 1, 1);
+    const dtM6  = new Date(anoHoje, mesHoje + 6, 1);
+    const mesInicio = toMesStr(dtM1.getFullYear(), dtM1.getMonth());
+    const mesFim    = toMesStr(dtM6.getFullYear(), dtM6.getMonth());
+
+    // Anos cobertos pelos próximos 6 meses (pode cruzar ano)
+    const yearsNeeded = new Set();
+    for (let i = 1; i <= 6; i++) {
+      yearsNeeded.add(new Date(anoHoje, mesHoje + i, 1).getFullYear());
+    }
+
+    const [despN1, despN2, recN1, recN2, projecoes, ...orcArrays] = await Promise.all([
+      buscarDespesasMes(_grupoId, dtN1.getFullYear(), dtN1.getMonth() + 1),
+      buscarDespesasMes(_grupoId, dtN2.getFullYear(), dtN2.getMonth() + 1),
+      buscarReceitasMes(_grupoId, dtN1.getFullYear(), dtN1.getMonth() + 1),
+      buscarReceitasMes(_grupoId, dtN2.getFullYear(), dtN2.getMonth() + 1),
+      buscarProjecoesRange(_grupoId, mesInicio, mesFim),
+      ...[...yearsNeeded].map((y) => buscarOrcamentosAno(_grupoId, y)),
+    ]);
+
+    const orcamentos = orcArrays.flat();
+
+    const forecast = gerarForecast({
+      despesasMesN1: despN1,
+      despesasMesN2: despN2,
+      receitasMesN1: recN1,
+      receitasMesN2: recN2,
+      projecoes,
+      orcamentos,
+      hoje,
+    });
+
+    renderizarForecast(forecast);
+  } catch (err) {
+    console.error('[fluxo-caixa] Erro ao carregar forecast:', err);
+    if (tbody) {
+      tbody.innerHTML = '<tr><td colspan="6" class="fc-empty">Erro ao calcular forecast.</td></tr>';
+    }
+  }
+}
+
+function renderizarForecast(forecast) {
+  const tbody = document.getElementById('fc-forecast-tbody');
+  if (!tbody) return;
+
+  // Flag estimativa limitada
+  const notaEl = document.getElementById('fc-forecast-nota');
+  if (notaEl) {
+    notaEl.style.display = forecast.some((m) => m.estimativaLimitada) ? '' : 'none';
+  }
+
+  if (!forecast.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="fc-empty">Sem dados para forecast.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = forecast.map(({ mesLabel, ano, receitasEsperadas, recorrentes, parcelas, variaveis, saldoProjetado, estimativaLimitada }) => {
+    const saldoCls = saldoProjetado >= 0 ? 'fc-verde' : 'fc-vermelho';
+    const estimFlag = estimativaLimitada
+      ? '<span class="fc-badge fc-badge--estimativa" title="Dados históricos insuficientes (< 3 transações)">estimativa</span>'
+      : '';
+    return `
+      <tr class="fc-tr--futuro">
+        <td class="fc-td-mes">${escMesLabel(mesLabel, ano)}</td>
+        <td class="fc-td-num fc-verde">${fmt(receitasEsperadas)}</td>
+        <td class="fc-td-num fc-vermelho">${fmt(recorrentes)}</td>
+        <td class="fc-td-num fc-vermelho">${fmt(parcelas)}</td>
+        <td class="fc-td-num fc-cinza">${variaveis > 0 ? fmt(variaveis) : '—'}</td>
+        <td class="fc-td-num ${saldoCls}">${fmt(saldoProjetado)} ${estimFlag}</td>
+      </tr>`;
+  }).join('');
+}
+
+/**
+ * Formata label do mês sem dados externos (apenas constante interna).
+ * Seguro para innerHTML — não usa dados do Firestore.
+ */
+function escMesLabel(label, ano) {
+  return `${label}/${String(ano).slice(2)}`;
 }
