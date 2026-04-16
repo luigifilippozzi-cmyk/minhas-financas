@@ -13,6 +13,46 @@ Formato: descrição do problema → impacto → localização → correção ap
 
 ---
 
+### BUG-030 — `responsavel` salvo como valor negativo em extrato bancário (bloqueia edição)
+**Severidade:** 🔴 Crítico (P0 — bloqueia edição de todos os registros importados)
+**Versão introduzida:** desconhecida (anterior a v3.23.9)
+**Versão corrigida:** v3.23.9
+**Arquivo:** `src/js/utils/normalizadorTransacoes.js`
+**Descoberto em:** QA 2026-04-15
+
+**Descrição do problema:**
+Registros importados via Template Extrato Bancário (CSV com valores negativos) tinham o campo `responsavel` salvo como o valor bruto da transação (ex: `"-42.5"`, `"-250"`, `"-3500"`). Isso causava:
+1. Cards KPI em `despesas.html` exibindo rótulos numéricos negativos no lugar de nomes
+2. Filtro "Todos os responsáveis" em `base-dados.html` listando valores negativos
+3. Modal de edição bloqueado: campo `responsavel` obrigatório aparecia com valor inválido, impedindo salvar qualquer edição
+
+**Root cause:**
+Em `parsearLinhasCSVXLSX()`, ao detectar o header da planilha, o `findIndex` busca coluna `portador`/`titular`. Extratos bancários não têm essa coluna → retorna `-1`. O fallback `if (idxPortador < 0) idxPortador = 2` (dentro do bloco `headerIdx >= 0`) forçava `idxPortador = 2`, que é a mesma posição da coluna `Valor` em extratos de 3 colunas (`[Data, Historico, Valor]`). Resultado: `portador = "-42.5"` era salvo como `responsavel` no Firestore.
+
+**Efeito colateral descoberto:** a condição `!l.portador` em `importar.js:_aplicarTipo('banco')` (auto-atribuição do responsável ao usuário logado) também estava quebrada, pois a string numérica é truthy e impedia a atribuição.
+
+**Correção aplicada:**
+
+```javascript
+// ANTES (dentro do bloco if (headerIdx >= 0)):
+if (idxPortador < 0) idxPortador = 2;  // ← BUG: aponta para coluna Valor em extrato 3 colunas
+
+// DEPOIS: fallback removido — manter idxPortador=-1 quando header não tem portador/titular
+
+// Leitura do campo (antes):
+const portador = String(row[idxPortador] ?? '').trim();
+
+// Leitura do campo (depois):
+const portador = idxPortador >= 0 ? String(row[idxPortador] ?? '').trim() : '';
+```
+
+O fallback `idxPortador = 2` é preservado para `headerIdx < 0` (CSV sem header, layout fixo: col 0=data, 1=desc, 2=portador, 3=valor).
+
+**Testes:** 5 novos TCs de regressão em `normalizadorTransacoes.test.js`. 519 testes passando.
+**PR:** #159 | **Commit:** `6162c15`
+
+---
+
 ### BUG-028 — Extrato BTG XLS não parseável — "Data inválida, Valor inválido" em todas as linhas
 **Severidade:** 🔴 Crítico
 **Versão introduzida:** desconhecida (presente em v3.23.4)

@@ -7,6 +7,12 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.23.9] - 2026-04-15
+
+### Corrigido
+
+- **BUG-030: `responsavel` salvo como valor negativo em extrato bancário (bloqueia edição):** ao importar CSV de extrato bancário sem coluna `portador`/`titular` no header, o fallback `idxPortador = 2` apontava para a coluna Valor. Resultado: `portador = "-42.5"` era salvo como `responsavel` no Firestore, bloqueando edição (campo obrigatório aparecia com valor inválido). Fix em `normalizadorTransacoes.js`: removido o fallback `idxPortador = 2` dentro do bloco `headerIdx >= 0` — quando o header existe mas não tem coluna portador, `idxPortador = -1 → portador = ''`. Bonus: a condição `!l.portador` em `importar.js:_aplicarTipo('banco')` agora funciona corretamente (antes, string numérica truthy impedia a auto-atribuição do responsável ao usuário logado). 5 novos TCs de regressão. 519 testes passando — PR #159.
+
 ## [3.23.8] - 2026-04-14
 
 ### Adicionado
