@@ -461,17 +461,20 @@
 // Dashboard state — PM Agent updates this section, Dev Manager reads it
 const DASHBOARD_DATA = {
   // PM Agent atualiza estes campos:
-  lastUpdate: "2026-04-16 00:10",
+  lastUpdate: "2026-04-15 23:05",
   version: "v3.26.0",
-  health: "green", // green | yellow | red
-  healthText: "🟢 ENH-003 ✅ (PR #165) | Sem bugs P0/P1 abertos | 563 testes OK, CI verde",
+  health: "yellow", // green | yellow | red
+  healthText: "⚠️ [INCONSISTÊNCIA] package.json v3.23.8 desatualizado (CHANGELOG v3.26.0) | Sem bugs P0/P1 | 563 testes OK | CI verde",
   testsUnit: "563",
   testsUnitStatus: "563 passando",
   testsInt: "26",
-  issuesOpen: 19,
-  issuesSub: "UX milestone: 9 | iOS: 13 (Fases 2-5) | QA RF-062: 1 (#129)",
+  issuesOpen: 21,
+  issuesSub: "UX milestone: 7 (#151–158, #166) | iOS: 13 (Fases 2-5) | QA RF-062: 1 (#129)",
   // Dev Manager atualiza via PR + merge
   activity: [
+    { time: "Apr 15", color: "var(--yellow)", msg: "<strong>PM Agent</strong> — Revisão diária: 563 testes OK, 21 issues (+2 desde ontem), saúde Amarelo — [INCONSISTÊNCIA] package.json v3.23.8 vs CHANGELOG v3.26.0 | RF-067 #166 criado | BUSSOLA_PRODUTO.md adicionada", tag: "pm" },
+    { time: "Apr 15", color: "var(--blue)", msg: "<strong>docs: BUSSOLA_PRODUTO.md</strong> — bússola estratégica do produto: persona Controller Familiar, 3 horizontes H1/H2/H3, diagnóstico + diretrizes — commit direto main (OK, docs/)", tag: "commit" },
+    { time: "Apr 15", color: "var(--accent)", msg: "<strong>Issue #166 criada</strong> — feat(fluxo-caixa): RF-067 Forecast de Caixa Prospectivo (6 Meses) — milestone UX & Gestao Patrimonial | P2", tag: "feat" },
     { time: "Apr 16", color: "var(--green)", msg: "<strong>PR #165 mergeado</strong> — feat(categorias): ENH-003 filtro não categorizada + seletores segregados por tipo — v3.26.0 | 563 testes | test-runner PASS", tag: "merge" },
     { time: "Apr 16", color: "var(--green)", msg: "<strong>PR #164 mergeado</strong> — feat(importar): ENH-001 duplicata no preview faz update, não insert — v3.25.0 | 548 testes | test-runner PASS | import-pipeline-reviewer APPROVED", tag: "merge" },
     { time: "Apr 16", color: "var(--green)", msg: "<strong>PR #163 mergeado</strong> — fix(models): BUG-032 mesFatura ausente dos opcionais (aba Fatura sempre vazia) — v3.25.0 | 544 testes | test-runner PASS", tag: "merge" },
@@ -521,7 +524,7 @@ function render() {
 
   // Agent status
   const now = new Date();
-  const lastPM = new Date("2026-04-15T20:31:00");
+  const lastPM = new Date("2026-04-15T23:05:00");
   const diffHrs = (now - lastPM) / 36e5;
   const pmDot = document.getElementById("pmStatus");
   const pmText = document.getElementById("pmStatusText");
