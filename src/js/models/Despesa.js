@@ -28,6 +28,7 @@ export function modelDespesa(dados) {
     'tipo', 'chave_dedup', 'parcelamento_id', 'importadoEm', 'status',
     'contaId',      // NRF-004: conta/banco de origem
     'dataOriginal', // NRF-002.1: data original da compra (parceladas com data ajustada)
+    'mesFatura',    // BUG-032: ciclo de faturamento "YYYY-MM" — obrigatório para a aba Fatura
     'origemBanco',  // RF-021: banco/emissor detectado ('itau', 'nubank', ...)
     'contrapartidaId',         // RF-063: id da despesa/receita contraparte
     'membroDestinoId',         // RF-063: uid do membro destinatário
