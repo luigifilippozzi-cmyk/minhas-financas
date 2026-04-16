@@ -52,7 +52,6 @@ describe('modelDespesa — campos obrigatórios e defaults', () => {
     const d = modelDespesa(base());
     expect(d).not.toHaveProperty('portador');
     expect(d).not.toHaveProperty('parcela');
-    expect(d).not.toHaveProperty('mesFatura');
   });
 
   it('campos opcionais presentes são incluídos', () => {
@@ -60,6 +59,18 @@ describe('modelDespesa — campos obrigatórios e defaults', () => {
     expect(d.portador).toBe('Luigi');
     expect(d.origemBanco).toBe('nubank');
     expect(d.status).toBe('pago');
+  });
+
+  it('REGRESSÃO BUG-032: mesFatura é propagado ao Firestore quando fornecido', () => {
+    // Antes do fix, mesFatura estava ausente da lista opcionais — o campo era
+    // descartado silenciosamente, tornando a aba Fatura sempre vazia para novas importações.
+    const d = modelDespesa(base({ mesFatura: '2026-04' }));
+    expect(d.mesFatura).toBe('2026-04');
+  });
+
+  it('REGRESSÃO BUG-032: mesFatura ausente no input não aparece no objeto (comportamento correto)', () => {
+    const d = modelDespesa(base());
+    expect(d).not.toHaveProperty('mesFatura');
   });
 
   it('data como string é convertida para Date', () => {
