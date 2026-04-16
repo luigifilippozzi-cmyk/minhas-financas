@@ -461,17 +461,19 @@
 // Dashboard state — PM Agent updates this section, Dev Manager reads it
 const DASHBOARD_DATA = {
   // PM Agent atualiza estes campos:
-  lastUpdate: "2026-04-15 23:55",
-  version: "v3.23.9",
-  health: "yellow", // green | yellow | red
-  healthText: "🟡 BUG-030 ✅ corrigido (PR #159) | BUG-029 receitas no gráfico (#148 P0) aberto | 519 testes OK, CI verde",
-  testsUnit: "519",
-  testsUnitStatus: "519 passando",
+  lastUpdate: "2026-04-16 00:10",
+  version: "v3.24.0",
+  health: "green", // green | yellow | red
+  healthText: "🟢 BUG-029 ✅ BUG-031 ✅ corrigidos (PR #160, #161) | Sem bugs P0/P1 abertos | 531 testes OK, CI verde",
+  testsUnit: "531",
+  testsUnitStatus: "531 passando",
   testsInt: "26",
-  issuesOpen: 24,
-  issuesSub: "Bugs P0: 1 (#148 BUG-029) | UX milestone: 9 | iOS: 13 (Fases 2-5) | QA RF-062: 1 (#129)",
+  issuesOpen: 22,
+  issuesSub: "UX milestone: 9 | iOS: 13 (Fases 2-5) | QA RF-062: 1 (#129)",
   // Dev Manager atualiza via PR + merge
   activity: [
+    { time: "Apr 16", color: "var(--green)", msg: "<strong>PR #161 mergeado</strong> — fix(importar): BUG-031 categoriaId como string sentinela pagamento_fatura — v3.24.0 | 531 testes | test-runner PASS | import-pipeline-reviewer PASS", tag: "merge" },
+    { time: "Apr 16", color: "var(--green)", msg: "<strong>PR #160 mergeado</strong> — fix(dashboard): BUG-029 categorias de receita no grid de despesas — v3.24.0 | 525 testes | test-runner PASS", tag: "merge" },
     { time: "Apr 15", color: "var(--green)", msg: "<strong>PR #159 mergeado</strong> — fix(importar): BUG-030 responsavel como valor negativo em extrato bancario — v3.23.9 | 519 testes | test-runner PASS | import-pipeline-reviewer PASS", tag: "merge" },
     { time: "Apr 15", color: "var(--red)", msg: "<strong>PM Agent</strong> — Revisão diária: 25 issues (+11 novas), 3 bugs abertos (P0!), QA RF-064 ✅, [VIOLAÇÃO-REGRA-11] ✅ encerrado, novo milestone UX & Gestao Patrimonial, saúde Vermelho", tag: "pm" },
     { time: "Apr 15", color: "var(--red)", msg: "<strong>BUG-030</strong> (#156 P0) + <strong>BUG-031</strong> (#157 P1) registrados — responsavel negativo bloqueia edição; categoriaId errado no Firestore (QA RF-064)", tag: "commit" },

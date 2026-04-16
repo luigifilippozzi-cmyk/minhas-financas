@@ -13,6 +13,59 @@ Formato: descrição do problema → impacto → localização → correção ap
 
 ---
 
+### BUG-031 — `categoriaId` salvo como `'__tipo__pagamento_fatura'` / `'__tipo__transferencia_interna'`
+**Severidade:** 🟡 Alto (P1 — dado inválido visível em base-dados.html)
+**Versão introduzida:** v3.23.0 (RF-063/064)
+**Versão corrigida:** v3.24.0
+**Arquivo:** `src/js/pages/importar.js`
+**Descoberto em:** QA 2026-04-15
+
+**Descrição do problema:**
+Ao importar um extrato bancário com linha detectada como `pagamento_fatura` ou `transferencia_interna`, o campo `categoriaId` ficava com o valor lido do select DOM: `'__tipo__pagamento_fatura'` ou `'__tipo__transferencia_interna'`. Esses são valores sentinela do selector de tipo, não IDs válidos de categoria. O campo era salvo assim no Firestore, exibindo texto inválido na coluna Categoria de `base-dados.html`.
+
+**Root cause:**
+O bloco RF-063 (`if (l._transferenciaInterna)`) e o bloco RF-064 (`if (l._pagamentoFatura && !l._transferenciaInterna)`) sobrescreviam `tipo`, `isConjunta`, `valorAlocado`, etc. mas **não resetavam `categoriaId`**. O valor `cat` da linha 954 (`document.querySelector('.sel-cat-linha[...]')?.value`) já continha a string sentinela e permanecia.
+
+**Correção aplicada:**
+
+```javascript
+// ADICIONADO ao final dos blocos RF-063 e RF-064:
+despDados.categoriaId = null; // BUG-031: string sentinela não é categoriaId válida
+```
+
+`modelDespesa` converte `null → ''` via `??`, resultando em `categoriaId: ''` (campo vazio) no Firestore.
+
+**Testes:** 12 TCs em `tests/models/Despesa.test.js`. 531 testes passando.
+**PR:** #161
+
+---
+
+### BUG-029 — Categorias de receita exibidas no grid de despesas/orçamentos do dashboard
+**Severidade:** 🟡 Alto (P0 — dados errados no dashboard)
+**Versão introduzida:** desconhecida (anterior a v3.24.0)
+**Versão corrigida:** v3.24.0
+**Arquivo:** `src/js/controllers/dashboard.js`
+**Descoberto em:** QA 2026-04-15
+
+**Descrição do problema:**
+Categorias de receita (ex: "Reembolso Médico", "Salário") apareciam no breakdown de gastos do dashboard (`categorias-grid`), distorcendo os totais de orçamento e gastos.
+
+**Root cause:**
+`ouvirCategorias()` em `database.js` não filtra por `tipo` — retorna todas as categorias ativas (despesa + receita). `iniciarListenerCategorias` chama `ouvirCategorias` e armazena o resultado em `estadoApp.categorias`. `renderizarDashboard` recebia esse array completo e renderizava todos os cards sem discriminar tipo.
+
+**Correção aplicada:**
+
+```javascript
+// controllers/dashboard.js — antes do render do grid:
+const categoriasDesp = categorias.filter(c => !c.tipo || c.tipo === 'despesa');
+// Categorias legacy (sem campo tipo) são tratadas como despesa.
+```
+
+**Testes:** 6 TCs em `tests/controllers/dashboard.test.js` (novo arquivo, vi.stubGlobal para mock DOM). 525 testes passando.
+**PR:** #160
+
+---
+
 ### BUG-030 — `responsavel` salvo como valor negativo em extrato bancário (bloqueia edição)
 **Severidade:** 🔴 Crítico (P0 — bloqueia edição de todos os registros importados)
 **Versão introduzida:** desconhecida (anterior a v3.23.9)
