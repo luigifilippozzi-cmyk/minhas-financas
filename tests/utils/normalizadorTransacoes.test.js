@@ -522,6 +522,75 @@ describe('parsearLinhasCSVXLSX', () => {
       expect(resultado[0].descricao).toBe('Art Lanches');
     });
 
+    // BUG-030: portador salvo como valor negativo em extrato bancário
+    describe('BUG-030 — responsavel vazio em extrato bancário sem coluna portador', () => {
+      it('header sem coluna portador/titular → portador=""', () => {
+        const rows = [
+          ['Data', 'Historico', 'Valor'],
+          ['25/03/2026', 'Supermercado Pao de Acucar', '-150,00'],
+        ];
+        const resultado = parsearLinhasCSVXLSX(rows);
+        expect(resultado).toHaveLength(1);
+        expect(resultado[0].portador).toBe('');
+        expect(resultado[0].valor).toBe(150);
+        expect(resultado[0].erro).toBeNull();
+      });
+
+      it('portador NÃO deve ser string de valor numérico negativo ("-150.00")', () => {
+        const rows = [
+          ['Data', 'Historico', 'Valor'],
+          ['25/03/2026', 'Farmacia Drogasil', '-42.50'],
+          ['26/03/2026', 'Mercado Municipal', '-250.00'],
+          ['27/03/2026', 'Netflix', '-55.90'],
+        ];
+        const resultado = parsearLinhasCSVXLSX(rows);
+        expect(resultado).toHaveLength(3);
+        resultado.forEach(l => {
+          expect(l.portador).toBe('');
+          expect(l.portador).not.toMatch(/^-?\d/); // nunca valor numérico
+        });
+      });
+
+      it('header com coluna portador → portador preservado corretamente (regressão)', () => {
+        const rows = [
+          ['Data', 'Estabelecimento', 'Portador', 'Valor', 'Parcela'],
+          ['25/03/2026', 'Shopee', 'Luigi', '150,00', '-'],
+        ];
+        const resultado = parsearLinhasCSVXLSX(rows);
+        expect(resultado[0].portador).toBe('Luigi');
+      });
+
+      it('extrato bancário com colunas Credito/Debito (sem portador) → portador=""', () => {
+        const rows = [
+          ['Data', 'Historico', 'Credito', 'Debito'],
+          ['25/03/2026', 'Salario Empresa X', '5000,00', ''],
+          ['26/03/2026', 'Conta de Luz', '', '180,00'],
+        ];
+        const resultado = parsearLinhasCSVXLSX(rows);
+        expect(resultado).toHaveLength(2);
+        resultado.forEach(l => {
+          expect(l.portador).toBe('');
+        });
+        expect(resultado[0].isNegativo).toBe(false); // crédito positivo → não negativo
+        expect(resultado[1].isNegativo).toBe(true);  // débito → valorBruto negativo
+      });
+
+      it('chave_dedup com portador="" é gerada sem valor numérico embutido', () => {
+        const rows = [
+          ['Data', 'Historico', 'Valor'],
+          ['25/03/2026', 'Supermercado Extra', '-99,90'],
+        ];
+        const resultado = parsearLinhasCSVXLSX(rows);
+        const chave = resultado[0].chave_dedup;
+        // Chave não deve conter segmentos numéricos do portador (ex: "99.90||")
+        // A chave sem portador contém data||desc||valor||''
+        expect(chave).not.toBeNull();
+        const partes = chave.split('||');
+        // Portador normalizado = '' → último segmento é string vazia
+        expect(partes[partes.length - 1]).toBe('');
+      });
+    });
+
     it('BUG-028b: arrays sparse com header na linha 10 (estrutura completa BTG real)', () => {
       // Reproduz exatamente a estrutura do arquivo real: rows[i] são sparse (SheetJS)
       const mkSparse = (obj, len) => Object.assign(new Array(len), obj);
