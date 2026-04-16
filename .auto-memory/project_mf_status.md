@@ -1,8 +1,21 @@
 # Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-16 07:28 (PM Agent — revisão diária)
+> Atualizado em: 2026-04-16 (PO — decisão iOS Fase 2 on hold)
 > Versão: v3.28.1 (CHANGELOG + package.json — sincronizados ✅)
 > Saúde: 🟢 VERDE — CI verde | 594 testes OK | deploy Firebase OK | BUILD-BROKEN-P0 resolvido (PR #171)
+
+---
+
+## PO — 2026-04-16 — Decisão: iOS Fase 2 ON HOLD
+
+**iOS Fase 2 (issues #77–#80) colocado em ON HOLD por decisão do PO Luigi.**
+
+- Status: **ON HOLD** — pausado indefinidamente. Não cancelado.
+- Issues afetadas: #77 (Firebase Auth nativo), #78 (Firestore nativo), #79 (Biometria), #80 (FCM Push)
+- Motivo: decisão estratégica do PO; milestone iOS App Fase 2 permanece aberto no GitHub
+- Impacto: nenhum na fila ativa de RFs (RF-068, RF-066, RF-069, NRF-NAV, NRF-UI-WARM)
+- iOS Fases 3–5 (#81–#89): permanecem na fila, aguardam retomada da Fase 2
+- Retomada: quando PO decidir, é P0 e entra em paralelo sem afetar a sequência de RFs ativos
 
 ---
 
@@ -18,8 +31,8 @@
 - CI: 🟢 VERDE — 3 runs Deploy Firebase OK (último: 2026-04-16T10:05Z) | PRs abertos: 0
 
 ### Issues abertas (22 total)
-- iOS Fase 2 (P0 — requer Mac/Xcode): #77, #78, #79, #80
-- iOS Fases 3–5: #81–#89 (9 issues)
+- iOS Fase 2 (**ON HOLD** — decisão PO 2026-04-16): #77, #78, #79, #80
+- iOS Fases 3–5: #81–#89 (9 issues — aguardam retomada da Fase 2)
 - QA pendente: #129 (RF-062 — Cartões como Contas Individuais, 50 TCs manuais)
 - UX & Gestao Patrimonial: #151, #152, #154, #155, #158, #169 (RF-068), #170 (RF-069), #172 (NRF-UI-WARM)
 - Nova desde última sessão PM: #172 (NRF-UI-WARM — Identidade Visual Warm Finance: paleta terracota + ivory)
@@ -44,7 +57,7 @@
 - P1: RF-066 (#155) — Patrimônio Ativos/Passivos
 - P2: ENH-004 (#151), ENH-002 (#152), ENH-005 (#158)
 - P2: NRF-UI-WARM (#172) — Identidade Visual Warm Finance (nova)
-- BLOQUEADO: iOS Fase 2 (#77–#80) requer Mac/Xcode
+- ON HOLD: iOS Fase 2 (#77–#80) — pausado por decisão do PO (2026-04-16), não cancelado
 - QA: Luigi executar #129 (50 TCs RF-062)
 
 ---
@@ -60,7 +73,7 @@
 - CI: verde | Deploy Firebase: SUCCESS (restaurado após 5 runs consecutivos falhos)
 
 ### Estado do milestone
-- iOS Fase 2 (BLOQUEADO — requer Mac/Xcode): 4/4 issues abertas — #77, #78, #79, #80
+- iOS Fase 2 (ON HOLD — decisão PO 2026-04-16): 4/4 issues abertas — #77, #78, #79, #80
 - UX & Gestao Patrimonial: 7 issues abertas — #151, #152, #154, #155, #158, #169, #170
 - QA pendente: 1 — #129 (RF-062, execução manual Luigi)
 
@@ -69,7 +82,7 @@
 - P1: RF-069 (#170) — Burn Rate por Categoria → v3.30.0
 - P1: RF-066 (#155) — Patrimônio Ativos/Passivos
 - P2: ENH-004 (#151), ENH-002 (#152), ENH-005 (#158)
-- BLOQUEADO: iOS Fase 2 (#77–#80) requer Mac/Xcode
+- ON HOLD: iOS Fase 2 (#77–#80) — pausado por decisão do PO (2026-04-16)
 
 ### Alertas
 - [QA-RF-062-PENDENTE] issue #129 — 50 TCs manuais, execução pelo Luigi
@@ -475,7 +488,7 @@
 | Manutenibilidade e Arquitetura | Completo | Concluído (v3.20.0) |
 | iOS App Fase 0 (Vite + Firebase npm) | 2/2 (100%) | Concluído |
 | iOS App Fase 1 (Capacitor + safe areas) | 2/2 (100%) | Concluído |
-| iOS App (Fases 2–5) | 4/17 (23.5%) | Em andamento (bloqueado: requer Mac/Xcode) |
+| iOS App (Fases 2–5) | 4/17 (23.5%) | **ON HOLD** (decisão PO 2026-04-16 — não cancelado) |
 | Tech Debt — testes | 5/5 módulos cobertos | **Concluído** ✅ (skeletons — PR #142) |
 
 ## Issues Abertas (18 total — verificado 2026-04-15)
@@ -537,7 +550,7 @@
 **Dashboard exibe R$ 3.500 (valor real), não R$ 8.750.**
 
 ## Prioridades para o Dev Manager
-- **P0:** iOS App Fase 2 (#77–#80) — requer Mac/Xcode (não executável no ambiente CLI Windows)
+- **ON HOLD:** iOS App Fase 2 (#77–#80) — pausado por decisão do PO (2026-04-16); não executar até retomada explícita
 - **P1:** QA RF-064 — Luigi executa #136–#139 manualmente (sem Dev Manager)
 - **Alertas:** [VIOLAÇÃO-REGRA-11] aguardando decisão PO
 
@@ -555,7 +568,7 @@
 - 2026-04-13 21:40: Dev Manager — Merge PR #141 tech debt: +47 testes pdfParser.js — v3.23.3, 470 testes total
 
 ## Notas Dev Manager (2026-04-14)
-- iOS Fase 2 (#77-#80) bloqueado: requer Mac com Xcode — aguardar sessão em ambiente macOS
+- iOS Fase 2 (#77-#80): ON HOLD por decisão do PO (2026-04-16) — não cancelado, aguardar retomada explícita
 - Tech debt de testes: **COMPLETAMENTE CONCLUÍDO** — todos os módulos testáveis em src/js/utils/ têm cobertura
 - chartColors.js: DOM-dependent via getComputedStyle, sem teste (justificado)
 - QA RF-062 (#129) e QA RF-064 (#136-#139) são para execução manual pelo Luigi
@@ -798,3 +811,5 @@
    sequenciais.
 
 ---
+
+## 

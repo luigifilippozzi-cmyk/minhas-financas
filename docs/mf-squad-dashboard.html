@@ -308,9 +308,9 @@
           <div class="ms-progress"><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:100%;background:var(--green);"></div></div><span class="ms-pct" style="color:var(--green);">100%</span></div>
         </div>
         <div class="milestone-row">
-          <div class="ms-badge" style="background:var(--blue-bg);color:var(--blue);">iOS F2</div>
-          <div class="ms-info"><h4>Fase 2 — Firebase Nativo</h4><p>0/4 issues (#77-#80)</p></div>
-          <div class="ms-progress"><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:0%;background:var(--blue);"></div></div><span class="ms-pct" style="color:var(--blue);">0%</span></div>
+          <div class="ms-badge" style="background:rgba(200,150,50,.15);color:#b8860b;">iOS F2</div>
+          <div class="ms-info"><h4>Fase 2 — Firebase Nativo</h4><p>0/4 issues (#77-#80) — <strong>ON HOLD</strong> (decisão PO 2026-04-16)</p></div>
+          <div class="ms-progress"><div class="progress-bar" style="width:80px"><div class="progress-fill" style="width:0%;background:#b8860b;"></div></div><span class="ms-pct" style="color:#b8860b;">0%</span></div>
         </div>
         <div class="milestone-row">
           <div class="ms-badge" style="background:rgba(139,144,160,.12);color:var(--text2);">iOS F3</div>
@@ -441,8 +441,8 @@
             <tr><td>#137</td><td>RF-064 TC-008-014: Save + Firestore + Score</td><td><span class="badge badge-blue">QA</span></td><td>RF-064 TestPlan</td></tr>
             <tr><td>#138</td><td>RF-064 TC-015-022: Dashboard + Agregados</td><td><span class="badge badge-blue">QA</span></td><td>RF-064 TestPlan</td></tr>
             <tr><td>#139</td><td>RF-064 TC-023-029: Fatura Liquidacao + Edge</td><td><span class="badge badge-blue">QA</span></td><td>RF-064 TestPlan</td></tr>
-            <tr><td>#77</td><td>Firebase Auth nativo</td><td><span class="badge badge-purple">P0 iOS</span></td><td>iOS Fase 2</td></tr>
-            <tr><td>#78</td><td>Firestore nativo</td><td><span class="badge badge-purple">P0 iOS</span></td><td>iOS Fase 2</td></tr>
+            <tr><td>#77</td><td>Firebase Auth nativo</td><td><span class="badge" style="background:rgba(200,150,50,.15);color:#b8860b;">On Hold</span></td><td>iOS Fase 2</td></tr>
+            <tr><td>#78</td><td>Firestore nativo</td><td><span class="badge" style="background:rgba(200,150,50,.15);color:#b8860b;">On Hold</span></td><td>iOS Fase 2</td></tr>
           </tbody>
         </table>
       </div>
@@ -473,6 +473,7 @@ const DASHBOARD_DATA = {
   // Dev Manager atualiza via PR + merge
   activity: [
     { time: "Apr 16", color: "var(--blue)", msg: "<strong>PM Agent</strong> — 🟢 Verde | v3.28.1 | 594 testes OK | CI verde | 22 issues (+1 nova #172 NRF-UI-WARM) | BUILD-BROKEN-P0 resolvido | QA #129 pendente (Luigi) | Próx P0: RF-068 #169 Saldo Real por Conta", tag: "pm" },
+    { time: "Apr 16", color: "#b8860b", msg: "<strong>PO — iOS Fase 2 ON HOLD</strong> — issues #77–#80 pausadas indefinidamente por decisão do PO. Não canceladas. Retomada será anunciada explicitamente.", tag: "po" },
     { time: "Apr 16", color: "var(--green)", msg: "<strong>PR #171 mergeado</strong> — fix(database): remover buscarDespesasMes duplicado — build e deploy restaurados — v3.28.1 | 594 testes | test-runner PASS", tag: "merge" },
     { time: "Apr 16", color: "var(--red)", msg: "<strong>PM Agent</strong> — 🔴 BUILD QUEBRADO: buscarDespesasMes duplicado em database.js linhas 665/1092 (param order diferente) | 5 CI runs vermelhos | 21 issues (2 novas: #169 RF-068, #170 RF-069) | P0: Dev Manager deve criar fix/MF-buscarDespesasMes-dedup", tag: "pm" },
     { time: "Apr 16", color: "var(--red)", msg: "<strong>CI FALHA (×5)</strong> — 🚀 Deploy Firebase Hosting — Build Vite: Identifier 'buscarDespesasMes' has already been declared — database.js:1092 | Desde 2026-04-16T02:52Z | Root cause: RF-067 adicionou linha 665 sem remover linha 1092", tag: "ci" },
@@ -538,14 +539,4 @@ function render() {
   const pmDot = document.getElementById("pmStatus");
   const pmText = document.getElementById("pmStatusText");
   if (diffHrs < 12) { pmDot.className = "status-dot active"; pmText.textContent = "Recente"; }
-  else if (diffHrs < 24) { pmDot.className = "status-dot idle"; pmText.textContent = "Desatualizado"; }
-  else { pmDot.className = "status-dot standby"; pmText.textContent = "Aguardando"; }
-
-  document.getElementById("dmStatus").className = "status-dot standby";
-  document.getElementById("dmStatusText").textContent = "Standby";
-}
-
-render();
-</script>
-</body>
-</html>
+  else 
