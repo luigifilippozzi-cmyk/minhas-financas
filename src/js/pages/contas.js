@@ -121,6 +121,9 @@ function renderizarListas() {
   cartoesEl.querySelectorAll('.btn-desativar-cartao').forEach(btn => {
     btn.addEventListener('click', () => desativarConta(btn.dataset.id));
   });
+  bancosEl.querySelectorAll('.btn-editar-saldo').forEach(btn => {
+    btn.addEventListener('click', () => abrirModalSaldo(btn.dataset.id));
+  });
 }
 
 function renderCartao(c) {
@@ -151,18 +154,67 @@ function renderCartao(c) {
 
 function renderBanco(c) {
   const legadoTag = c._legado ? ' <span style="font-size:.75rem;background:var(--warning-bg,#fff3cd);padding:2px 6px;border-radius:4px;">legado</span>' : '';
+  const saldoTag  = c.saldoInicial != null && c.dataReferenciaSaldo
+    ? `<span class="cat-desc" style="font-size:.78rem;color:var(--text-muted);">Saldo ref: R$ ${escHTML(Number(c.saldoInicial).toFixed(2).replace('.', ','))} em ${escHTML(c.dataReferenciaSaldo)}</span>`
+    : '';
   return `<div class="cat-item" style="border-left:4px solid ${escHTML(c.cor ?? '#546E7A')};opacity:${c._legado ? '.6' : '1'};">
     <div class="cat-item-main">
       <span class="cat-emoji">${escHTML(c.emoji)}</span>
       <div class="cat-info">
         <span class="cat-nome">${escHTML(c.nome)}${legadoTag}</span>
         <span class="cat-desc" style="font-size:.82rem;color:var(--text-muted);">${escHTML(c.tipo === 'dinheiro' ? 'Dinheiro' : 'Conta bancária')}</span>
+        ${saldoTag}
       </div>
+    </div>
+    <div class="cat-actions">
+      <button class="btn btn-outline btn-sm btn-editar-saldo" data-id="${escHTML(c.id)}">Saldo</button>
     </div>
   </div>`;
 }
 
 // ── Modal ─────────────────────────────────────────────────────
+
+// ── Modal de Saldo (RF-068) ───────────────────────────────────
+
+let _editandoSaldoId = null;
+
+function abrirModalSaldo(contaId) {
+  _editandoSaldoId = contaId;
+  const c = _contas.find(x => x.id === contaId);
+  if (!c) return;
+
+  document.getElementById('modal-saldo-titulo').textContent = `Saldo — ${c.nome}`;
+  document.getElementById('inp-saldo-inicial').value   = c.saldoInicial != null ? Number(c.saldoInicial) : '';
+  document.getElementById('inp-data-referencia').value = c.dataReferenciaSaldo ?? '';
+  document.getElementById('modal-saldo-banco').classList.remove('hidden');
+}
+
+function fecharModalSaldo() {
+  document.getElementById('modal-saldo-banco').classList.add('hidden');
+  _editandoSaldoId = null;
+}
+
+async function salvarSaldo(e) {
+  e.preventDefault();
+  if (!_editandoSaldoId) return;
+  // Verificar se a conta realmente pertence ao grupo atual (defense-in-depth)
+  if (!_contas.find(x => x.id === _editandoSaldoId)) return;
+
+  const saldoInicial        = parseFloat(document.getElementById('inp-saldo-inicial').value);
+  const dataReferenciaSaldo = document.getElementById('inp-data-referencia').value;
+
+  if (isNaN(saldoInicial) || !dataReferenciaSaldo) return;
+
+  try {
+    await atualizarConta(_editandoSaldoId, { saldoInicial, dataReferenciaSaldo });
+    fecharModalSaldo();
+  } catch (err) {
+    console.error('[contas] Erro ao salvar saldo:', err);
+    alert('Erro ao salvar saldo. Tente novamente.');
+  }
+}
+
+// ── Eventos ───────────────────────────────────────────────────
 
 function configurarEventos() {
   document.getElementById('btn-novo-cartao').addEventListener('click', () => abrirModalCartao(null));
@@ -173,6 +225,14 @@ function configurarEventos() {
   // Fechar modal ao clicar fora
   document.getElementById('modal-cartao').addEventListener('click', (e) => {
     if (e.target.id === 'modal-cartao') fecharModalCartao();
+  });
+
+  // RF-068: modal de saldo inicial
+  document.getElementById('btn-fechar-modal-saldo').addEventListener('click', fecharModalSaldo);
+  document.getElementById('btn-cancelar-saldo').addEventListener('click', fecharModalSaldo);
+  document.getElementById('form-saldo-banco').addEventListener('submit', salvarSaldo);
+  document.getElementById('modal-saldo-banco').addEventListener('click', (e) => {
+    if (e.target.id === 'modal-saldo-banco') fecharModalSaldo();
   });
 }
 

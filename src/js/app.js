@@ -18,6 +18,9 @@ import {
   buscarReceitasPeriodo,      // RF-017: gráficos
   buscarDespesasAno,          // RF-017: filtro anual
   buscarReceitasAno,          // RF-017: filtro anual
+  ouvirContas,                // RF-068: saldo real por conta
+  ouvirDespesasDesdeData,     // RF-068
+  ouvirReceitasDesdeData,     // RF-068
 } from './services/database.js';
 import { iniciarListenerCategorias } from './controllers/categorias.js';
 import {
@@ -57,6 +60,13 @@ let _unsubProj        = null; // RF-014: parcelamentos em aberto
 let _unsubRec         = null; // receitas do mês
 let _unsubCatRec      = null; // categorias de receita
 let _unsubProxFatura  = null; // RF-065: card Próxima Fatura
+// RF-068: saldo real por conta
+let _unsubContas      = null;
+let _unsubDespSaldo   = null;
+let _unsubRecSaldo    = null;
+let _contasAtivas     = [];
+let _despesasSaldo    = [];
+let _receitasSaldo    = [];
 
 // ── RF-017: Gráficos ──────────────────────────────────────────
 const MESES_ABREV = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
@@ -115,6 +125,7 @@ onAuthChange(async (user) => {
   iniciarListenerParcelamentos(estadoApp.perfil.grupoId);   // RF-014
   iniciarListenerCategoriasReceita(estadoApp.perfil.grupoId);
   iniciarListenerProximaFatura(estadoApp.perfil.grupoId);   // RF-065
+  iniciarListenerSaldoReal(estadoApp.perfil.grupoId);       // RF-068
   garantirCategoriasReceita(estadoApp.perfil.grupoId, CATEGORIAS_RECEITA_PADRAO).catch(() => {});
   garantirContasPadrao(estadoApp.perfil.grupoId, CONTAS_PADRAO).catch(() => {}); // NRF-004
   migrarCartaoGenerico(estadoApp.perfil.grupoId).catch(() => {}); // RF-062: marca cartão genérico como _legado
@@ -629,6 +640,98 @@ function iniciarListenerProximaFatura(grupoId) {
     const projecoes = despesas.filter(d => d.tipo === 'projecao');
     renderizarCardProximaFatura(projecoes);
   });
+}
+
+// ── RF-068: Saldo Real por Conta ──────────────────────────────
+
+function iniciarListenerSaldoReal(grupoId) {
+  if (_unsubContas) _unsubContas();
+
+  _unsubContas = ouvirContas(grupoId, (contas) => {
+    _contasAtivas = contas.filter(c => c.tipo !== 'cartao' && c.saldoInicial != null && c.dataReferenciaSaldo);
+
+    if (!_contasAtivas.length) {
+      const card = document.getElementById('card-saldo-real');
+      if (card) card.style.display = 'none';
+      return;
+    }
+
+    // Data de referência mais antiga entre todas as contas com saldo configurado
+    const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+    const dataMinIso = _contasAtivas
+      .map(c => c.dataReferenciaSaldo)
+      .filter(d => ISO_DATE_RE.test(d))
+      .sort()[0];
+    if (!dataMinIso) return;
+    const dataMin = new Date(dataMinIso + 'T00:00:00');
+
+    if (_unsubDespSaldo) _unsubDespSaldo();
+    if (_unsubRecSaldo)  _unsubRecSaldo();
+
+    _unsubDespSaldo = ouvirDespesasDesdeData(grupoId, dataMin, (desp) => {
+      _despesasSaldo = desp;
+      renderizarCardSaldoReal();
+    });
+    _unsubRecSaldo = ouvirReceitasDesdeData(grupoId, dataMin, (recs) => {
+      _receitasSaldo = recs;
+      renderizarCardSaldoReal();
+    });
+  });
+}
+
+function renderizarCardSaldoReal() {
+  const card = document.getElementById('card-saldo-real');
+  if (!card || !_contasAtivas.length) return;
+
+  const fmt = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v ?? 0);
+
+  // Calcula saldo real por conta
+  const saldosPorConta = _contasAtivas.map((conta) => {
+    const dataRef = new Date(conta.dataReferenciaSaldo + 'T00:00:00');
+
+    const totalDesp = _despesasSaldo
+      .filter(d => {
+        if (!d.contaId || d.contaId !== conta.id) return false;
+        // RN3: apenas movimentações reais
+        if (d.tipo === 'projecao' || d.tipo === 'projecao_paga' || d.tipo === 'transferencia_interna') return false;
+        const dt = d.data?.toDate?.() ?? new Date(d.data);
+        return dt >= dataRef;
+      })
+      .reduce((s, d) => s + (d.valor ?? 0), 0);
+
+    const totalRec = _receitasSaldo
+      .filter(r => {
+        if (!r.contaId || r.contaId !== conta.id) return false;
+        const dt = r.data?.toDate?.() ?? new Date(r.data);
+        return dt >= dataRef;
+      })
+      .reduce((s, r) => s + (r.valor ?? 0), 0);
+
+    const saldo = (conta.saldoInicial ?? 0) + totalRec - totalDesp;
+    return { conta, saldo };
+  });
+
+  const totalConsolidado = saldosPorConta.reduce((s, x) => s + x.saldo, 0);
+
+  const totalEl    = document.getElementById('saldo-real-consolidado');
+  const detalhesEl = document.getElementById('saldo-real-detalhes');
+
+  if (totalEl) {
+    totalEl.textContent = fmt(totalConsolidado);
+    totalEl.style.color = totalConsolidado < 0 ? 'var(--color-expense)' : '';
+  }
+
+  if (detalhesEl) {
+    detalhesEl.innerHTML = saldosPorConta.map(({ conta, saldo }) => {
+      const negativo = saldo < 0 ? ' saldo-real-linha--negativo' : '';
+      return `<div class="saldo-real-linha${negativo}">
+        <span>${escHTML(conta.emoji)} ${escHTML(conta.nome)}</span>
+        <span>${escHTML(fmt(saldo))}</span>
+      </div>`;
+    }).join('');
+  }
+
+  card.style.display = '';
 }
 
 function renderizarCardProximaFatura(projecoes) {
