@@ -539,4 +539,14 @@ function render() {
   const pmDot = document.getElementById("pmStatus");
   const pmText = document.getElementById("pmStatusText");
   if (diffHrs < 12) { pmDot.className = "status-dot active"; pmText.textContent = "Recente"; }
-  else 
+  else if (diffHrs < 24) { pmDot.className = "status-dot idle"; pmText.textContent = "Desatualizado"; }
+  else { pmDot.className = "status-dot standby"; pmText.textContent = "Aguardando"; }
+
+  document.getElementById("dmStatus").className = "status-dot standby";
+  document.getElementById("dmStatusText").textContent = "Standby";
+}
+
+render();
+</script>
+</body>
+</html>

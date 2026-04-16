@@ -812,4 +812,17 @@
 
 ---
 
-## 
+## Sess�o 2026-04-16 � PO Assistant (Cowork)
+- Vers�o na sess�o: v3.23.8
+- Milestone ativo: iOS Fase 2 (issues #77�#80)
+- Decis�o: defini��o de foco da pr�xima sess�o PO
+- Pr�xima sess�o � foco:
+  1. Validar PR do RF-067 quando DM abrir (revisar escopo, CA, subagentes acionados)
+  2. Autorizar RF-068 somente ap�s merge do RF-067 (evitar conflitos de contexto)
+  3. Rever escopo final de RF-066 (checar se CA est�o fechados antes de delegar)
+  4. Ao chegar em v3.32.0: decidir estrat�gia de branch para NRF-NAV F1 + NRF-UI-WARM
+     - Op��o A: branch �nica (menos churn, risco de PR grande)
+     - Op��o B: duas branches sequenciais (mais controle, mais overhead)
+- Bloqueios identificados: nenhum novo
+- Artefatos gerados para PM/DM: n�o (apenas registro de mem�ria)
+- Scripts PowerShell executados: atualiza��o de project_mf_status.md

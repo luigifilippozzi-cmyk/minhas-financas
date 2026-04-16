@@ -377,4 +377,4 @@ A definição de `mobile.html` é parte da NRF-NAV Fase 2 (v3.33.0). As issues d
 
 ---
 
-*Este documento deve ser atualizado a cada sessão PO em que decisões de produto de alto impacto forem tomadas. Não é um b
+*Este documento deve ser atualizado a cada sessão PO em que decisões de produto de alto impacto forem tomadas. Não é um backlog — é uma bússola.*
