@@ -7,6 +7,12 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.27.0] - 2026-04-16
+
+### Adicionado
+
+- **RF-065: card "Próxima Fatura" no dashboard + deep link ?tab=projecoes (#153):** novo card na grade de KPIs do dashboard que exibe o total projetado para o próximo mês de faturamento (`mesFatura = mês corrente + 1`), com breakdown por membro (Luigi / Ana). Usa `ouvirDespesasPorMesFatura()` com filtro `tipo='projecao'` — leitura somente (sem alterações no Firestore). `isConjunta=true`: usa `valorAlocado` para evitar dupla contagem. Card oculto por padrão; exibido apenas quando há projeções para o próximo mês. Link "ver projeções →" abre `fatura.html?tab=projecoes`. Em `fatura.js`: URL param `?tab=` detectado em `configurarEventos()` com whitelist `['todas','projecoes','conjuntas','liquidacao']`; tab ativada na primeira renderização via flag `_tabInicial` (one-time). 563 testes passando — PR #167.
+
 ## [3.26.0] - 2026-04-16
 
 ### Adicionado
