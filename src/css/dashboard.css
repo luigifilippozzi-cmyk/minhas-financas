@@ -94,6 +94,23 @@
 .resumo-card--meu-bolso::before { background: var(--color-budget); opacity: 1; }
 .resumo-card--familia::before   { background: var(--color-ok); opacity: 1; }
 .resumo-card--fatura::before    { background: var(--color-warning); opacity: 1; }
+.resumo-card--saldo-real::before { background: #0284c7; opacity: 1; } /* RF-068: saldo real — azul */
+
+/* RF-068: detalhes por conta no card Saldo Real */
+.saldo-real-detalhes {
+  margin-top: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.saldo-real-linha {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  gap: var(--space-3);
+}
+.saldo-real-linha--negativo { color: var(--color-expense); font-weight: 600; }
 
 .proxima-fatura-link {
   font-size: var(--font-size-xs);

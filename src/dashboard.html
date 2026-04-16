@@ -91,6 +91,13 @@
           <span class="resumo-valor" id="total-familia">R$ 0,00</span>
           <span class="resumo-sublabel">total conjunto do grupo</span>
         </div>
+        <!-- RF-068: card Saldo Real por Conta (visível apenas quando há contas com saldoInicial configurado) -->
+        <div class="card resumo-card resumo-card--saldo-real" id="card-saldo-real" style="display:none;">
+          <span class="resumo-label">🏦 Saldo Real</span>
+          <span class="resumo-valor" id="saldo-real-consolidado">R$ 0,00</span>
+          <span class="resumo-sublabel">total contas bancárias</span>
+          <div id="saldo-real-detalhes" class="saldo-real-detalhes"></div>
+        </div>
         <!-- RF-065: card Próxima Fatura (visível apenas quando há projeções para o próximo mês) -->
         <div class="card resumo-card resumo-card--fatura" id="card-proxima-fatura" style="display:none;">
           <span class="resumo-label">💳 Próxima Fatura</span>

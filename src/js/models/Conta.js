@@ -25,6 +25,12 @@ export function modelConta(dados) {
     ativa:   dados.ativa   !== false,    // default true
   };
 
+  // RF-068: campos de saldo para contas bancárias e dinheiro
+  if (base.tipo !== 'cartao') {
+    base.saldoInicial        = dados.saldoInicial != null ? Number(dados.saldoInicial) : 0;
+    base.dataReferenciaSaldo = dados.dataReferenciaSaldo ?? null;
+  }
+
   // RF-062: campos adicionais para cartões de crédito
   if (base.tipo === 'cartao') {
     if (dados.bandeira)        base.bandeira        = dados.bandeira;
