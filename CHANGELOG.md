@@ -7,6 +7,12 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.26.0] - 2026-04-16
+
+### Adicionado
+
+- **ENH-003: filtro "Não categorizada" + seletores segregados por tipo (#150):** (1) Em `base-dados.html`, adicionada opção "— Não categorizada" ao dropdown de filtro por categoria — exibe transações onde `categoriaId` é `null`, `''` ou aponta para uma categoria excluída. Sentinela `__nao_categorizada__` tratada em `aplicarFiltros()`. (2) Em `despesas.html`, modal e filtro de categoria agora exibem apenas categorias de tipo `'despesa'`; categorias de receita (Salário, Rendimentos) não aparecem mais. Categorias legacy sem campo `tipo` tratadas como despesa. `receitas.html` já estava correto — sem alteração. +15 TCs em `tests/pages/base-dados.filtro.test.js`. 563 testes passando — PR #165.
+
 ## [3.25.0] - 2026-04-15
 
 ### Adicionado
