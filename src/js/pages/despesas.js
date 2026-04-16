@@ -113,7 +113,11 @@ function iniciarListeners() {
   if (lista && !_despesas.length) lista.innerHTML = skeletonCards(5);
 
   _unsubCats = ouvirCategorias(_grupoId, (cats) => {
-    _categorias = cats.sort((a, b) => a.nome.localeCompare(b.nome));
+    // ENH-003: seletores de despesas exibem apenas categorias de tipo 'despesa'.
+    // Categorias legacy sem campo tipo são tratadas como despesa (padrão histórico).
+    _categorias = cats
+      .filter(c => !c.tipo || c.tipo === 'despesa')
+      .sort((a, b) => a.nome.localeCompare(b.nome));
     _catMap = Object.fromEntries(_categorias.map((c) => [c.id, c]));
     preencherSelectCategorias(_categorias);
     preencherFiltroCategorias(_categorias);

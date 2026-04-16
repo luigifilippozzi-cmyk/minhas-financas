@@ -333,6 +333,11 @@ function preencherFiltrosCategorias() {
   // Bug 2: usa categorias do grupo (categoriaId como value, nome para exibição)
   const atual = sel.value;
   sel.innerHTML = '<option value="">Todas as categorias</option>';
+  // ENH-003: opção para filtrar transações sem categoria válida
+  const optNaoCat = document.createElement('option');
+  optNaoCat.value = '__nao_categorizada__';
+  optNaoCat.textContent = '— Não categorizada';
+  sel.appendChild(optNaoCat);
   _categorias.forEach(cat => {
     const opt = document.createElement('option');
     opt.value = cat.id;
@@ -379,7 +384,10 @@ function aplicarFiltros() {
       else if (tipo === 'receita' && t._tipo !== 'receita') return false;
       else if (tipo === 'despesa' && (t._tipo !== 'despesa' || t.tipo === 'projecao')) return false;
     }
-    if (cat && t.categoriaId !== cat) return false;  // Bug 2: comparar por categoriaId
+    // ENH-003: sentinela especial para transações sem categoria válida
+    if (cat === '__nao_categorizada__') {
+      if (t.categoriaId && _categorias.some(c => c.id === t.categoriaId)) return false;
+    } else if (cat && t.categoriaId !== cat) return false;  // Bug 2: comparar por categoriaId
     if (resp && (t.responsavel ?? t.portador ?? '') !== resp) return false;  // RF-023
     // RF-025: no modo filtrado, mês/ano já é server-side; só filtrar client-side no fallback
     if (_modoCarregarTudo && (mes || ano)) {
