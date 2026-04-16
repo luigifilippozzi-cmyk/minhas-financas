@@ -461,17 +461,18 @@
 // Dashboard state — PM Agent updates this section, Dev Manager reads it
 const DASHBOARD_DATA = {
   // PM Agent atualiza estes campos:
-  lastUpdate: "2026-04-16 00:26",
-  version: "v3.28.0",
-  health: "red", // green | yellow | red
-  healthText: "🔴 BUILD QUEBRADO — buscarDespesasMes duplicado em database.js (linhas 665 e 1092) | CI vermelha 5 runs consecutivos | deploy Firebase inacessível",
+  lastUpdate: "2026-04-16 03:40",
+  version: "v3.28.1",
+  health: "green", // green | yellow | red
+  healthText: "🟢 Verde — BUILD-BROKEN-P0 resolvido (PR #171) | deploy Firebase restaurado | 594 testes OK",
   testsUnit: "594",
-  testsUnitStatus: "594 passando (local) — build Rollup/Vite falha",
+  testsUnitStatus: "594 passando",
   testsInt: "26",
   issuesOpen: 21,
   issuesSub: "UX milestone: 7 (#151,#152,#154,#155,#158,#169,#170) | iOS: 13 (Fases 2-5) | QA RF-062: 1 (#129)",
   // Dev Manager atualiza via PR + merge
   activity: [
+    { time: "Apr 16", color: "var(--green)", msg: "<strong>PR #171 mergeado</strong> — fix(database): remover buscarDespesasMes duplicado — build e deploy restaurados — v3.28.1 | 594 testes | test-runner PASS", tag: "merge" },
     { time: "Apr 16", color: "var(--red)", msg: "<strong>PM Agent</strong> — 🔴 BUILD QUEBRADO: buscarDespesasMes duplicado em database.js linhas 665/1092 (param order diferente) | 5 CI runs vermelhos | 21 issues (2 novas: #169 RF-068, #170 RF-069) | P0: Dev Manager deve criar fix/MF-buscarDespesasMes-dedup", tag: "pm" },
     { time: "Apr 16", color: "var(--red)", msg: "<strong>CI FALHA (×5)</strong> — 🚀 Deploy Firebase Hosting — Build Vite: Identifier 'buscarDespesasMes' has already been declared — database.js:1092 | Desde 2026-04-16T02:52Z | Root cause: RF-067 adicionou linha 665 sem remover linha 1092", tag: "ci" },
     { time: "Apr 16", color: "var(--blue)", msg: "<strong>docs: BUSSOLA_PRODUTO.md v2</strong> — RF-068 (Saldo Real por Conta), RF-069 (Burn Rate por Categoria), sequência revisada, iOS mobile | issues #169 e #170 criadas", tag: "commit" },
