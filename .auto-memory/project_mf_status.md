@@ -1,8 +1,36 @@
 # Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-16 00:26 (PM Agent — revisão diária)
-> Versão: v3.28.0 (CHANGELOG + package.json — sincronizados ✅)
-> Saúde: 🔴 VERMELHO — BUILD QUEBRADO (buscarDespesasMes duplicado database.js) | CI vermelha 5 runs | deploy Firebase inacessível
+> Atualizado em: 2026-04-16 03:40 (Dev Manager — sessão v3.28.1)
+> Versão: v3.28.1 (CHANGELOG + package.json — sincronizados ✅)
+> Saúde: 🟢 VERDE — BUILD-BROKEN-P0 resolvido (PR #171) | deploy Firebase restaurado | 594 testes OK
+
+---
+
+## Dev Manager — 2026-04-16 03:40
+
+### Sessão
+- Versão: v3.28.1
+- Tarefas concluídas: BUILD-BROKEN-P0 (buscarDespesasMes duplicado — database.js)
+- PRs criados: #171 — fix(database): remover buscarDespesasMes duplicado
+- PRs mergeados: #171 — CI verde (Vitest PASS ×2) + Deploy Firebase SUCCESS
+- Subagentes acionados: test-runner PASS (594/594)
+- CI: verde | Deploy Firebase: SUCCESS (restaurado após 5 runs consecutivos falhos)
+
+### Estado do milestone
+- iOS Fase 2 (BLOQUEADO — requer Mac/Xcode): 4/4 issues abertas — #77, #78, #79, #80
+- UX & Gestao Patrimonial: 7 issues abertas — #151, #152, #154, #155, #158, #169, #170
+- QA pendente: 1 — #129 (RF-062, execução manual Luigi)
+
+### Próximas prioridades
+- P0: RF-068 (#169) — Saldo Real por Conta (prioridade: alta) → v3.29.0
+- P1: RF-069 (#170) — Burn Rate por Categoria → v3.30.0
+- P1: RF-066 (#155) — Patrimônio Ativos/Passivos
+- P2: ENH-004 (#151), ENH-002 (#152), ENH-005 (#158)
+- BLOQUEADO: iOS Fase 2 (#77–#80) requer Mac/Xcode
+
+### Alertas
+- [QA-RF-062-PENDENTE] issue #129 — 50 TCs manuais, execução pelo Luigi
+- [DÍVIDA-TÉCNICA] chartColors.js — módulo pré-existente sem teste (não blocante)
 
 ---
 
@@ -689,5 +717,41 @@
 2. Apos merge RF-067 -> autorizar RF-068 no DM (artefato ja pronto em
    dm_tasks_pending.md).
 3. Revisar escopo de RF-066 uma ultima vez antes de autorizar.
+
+---
+
+## Sessao 2026-04-16 (continuacao) - PO Assistant (Cowork)
+
+- Decisao adicional: criar NRF-UI-WARM como homenagem a estetica
+  Anthropic/Claude (Luigi e fa da ferramenta - tributo visual SEM uso
+  de IP proprietario).
+- Escopo: paleta terracota/ivory/kraft + fontes Fraunces+Inter
+  self-hosted + tabular nums + glifo U+2732 em estados automaticos.
+- Estrategia: casar com NRF-NAV Fase 1 em v3.32.0 para evitar retrabalho
+  de componentes apos migracao da navbar.
+
+### Novos artefatos registrados
+- NRF-UI-WARM (#172) P2 v3.32.0 - Identidade Visual Warm Finance
+- Label nova: nrf-ui-warm (cor terracota #CC785C - homenagem a propria paleta)
+- Label nova: design-system (#6B7F8C - pode ser reusada em futuras issues)
+
+### Sequencia final aprovada v3.28.0 -> v3.33.0
+1. RF-067 (#166) v3.28.0 - forecast caixa - EM ANDAMENTO
+2. RF-068 (#169) v3.29.0 - saldo real por conta - P1
+3. RF-066 (#155) v3.30.0 - patrimonio - P2
+4. RF-069 (#170) v3.31.0 - burn rate - P2
+5. NRF-NAV F1 (#154) + NRF-UI-WARM (#172) v3.32.0 - CASADOS
+6. NRF-NAV F2 (#154) v3.33.0 - consolidacao + mobile.html
+
+### Milestone UX & Gestao Patrimonial
+- 8 open / 5 closed = 38.5% concluido (13 issues totais)
+
+### Proxima sessao PO - foco (atualizado)
+1. Validar PR do RF-067 quando DM abrir
+2. Autorizar RF-068 apos merge RF-067
+3. Rever escopo final de RF-066
+4. Quando chegar a v3.32.0: decidir definitivamente se NRF-NAV F1 e
+   NRF-UI-WARM vao casadas na mesma branch ou em duas branches separadas
+   sequenciais.
 
 ---
