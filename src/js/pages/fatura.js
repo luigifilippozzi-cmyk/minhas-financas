@@ -29,6 +29,7 @@ let _catMap     = {};
 let _despesas   = [];        // despesas do mês filtradas pelo cartão
 let _cartaoId   = '';        // contaId do cartão selecionado
 let _tabAtiva   = 'todas';
+let _tabInicial = null;      // RF-065: tab a ativar na primeira renderização (via URL ?tab=)
 
 let _unsubContas        = null;
 let _unsubCats          = null;
@@ -71,6 +72,14 @@ onAuthChange(async (user) => {
 
 // ── Configuração de eventos ───────────────────────────────────
 function configurarEventos() {
+  // RF-065: se URL contém ?tab=projecoes (link do card Próxima Fatura no dashboard),
+  // ativar a tab Projeções na primeira renderização dos dados.
+  const tabParam = new URLSearchParams(window.location.search).get('tab');
+  if (['todas', 'projecoes', 'conjuntas', 'liquidacao'].includes(tabParam)) {
+    _tabAtiva   = tabParam;
+    _tabInicial = tabParam;
+  }
+
   document.getElementById('btn-mes-ant').addEventListener('click', () => {
     _mes--; if (_mes < 1) { _mes = 12; _ano--; }
     atualizarTituloMes();
@@ -185,6 +194,11 @@ function renderizarTudo() {
   document.getElementById('fat-resumo-cards').style.display = '';
   const conteudo = document.getElementById('fat-conteudo');
   if (conteudo) { conteudo.style.display = ''; conteudo.classList.add('fade-in'); }
+  // RF-065: ativar tab inicial (via ?tab= URL param) apenas uma vez
+  if (_tabInicial) {
+    ativarTab(_tabInicial);
+    _tabInicial = null;
+  }
 }
 
 // ── Membros do grupo ──────────────────────────────────────────
