@@ -23,6 +23,7 @@ export function modelReceita(dados) {
     'origem',       // NRF-006: 'importacao' | 'manual'
     'chave_dedup',  // NRF-006: deduplicação
     'importadoEm',  // NRF-006: timestamp de importação
+    'mesFatura',    // BUG-032: ciclo de faturamento "YYYY-MM" — necessário para estornos de cartão
     'origemBanco',  // RF-021: banco/emissor detectado ('itau', 'nubank', ...)
     'tipo',                    // RF-063: 'transferencia_interna' (receita-lado do par)
     'contrapartidaId',         // RF-063: id da despesa/receita contraparte
