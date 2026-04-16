@@ -73,9 +73,12 @@ export function parsearLinhasCSVXLSX(rows, {
     idxConta    = h.findIndex(c => c.includes('conta') || c.includes('banco'));
     idxCredito  = h.findIndex(c => c.includes('credito'));
     idxDebito   = h.findIndex(c => c.includes('debito'));
-    if (idxData < 0)     idxData = 0;
-    if (idxEstab < 0)    idxEstab = 1;
-    if (idxPortador < 0) idxPortador = 2;
+    if (idxData < 0)  idxData = 0;
+    if (idxEstab < 0) idxEstab = 1;
+    // BUG-030: NÃO aplicar fallback para idxPortador quando o header foi detectado.
+    // Extratos bancários não têm coluna portador/titular; o fallback idxPortador=2
+    // apontava para a coluna Valor, salvando o valor bruto ("-42.5") como responsavel.
+    // Manter idxPortador=-1 → portador='' na leitura abaixo.
     if (idxValor < 0 && idxCredito < 0) idxValor = 3;
   }
   const dataRows = headerIdx >= 0 ? rows.slice(headerIdx + 1) : rows.slice(1);
@@ -91,7 +94,8 @@ export function parsearLinhasCSVXLSX(rows, {
     // BUG-028: BTG XLS inclui horário em "Data e hora", e.g. "30/03/2026 18:43" → extrair só a data
     const dataRaw  = String(row[idxData]     ?? '').trim().split(' ')[0];
     const estab    = String(row[idxEstab]    ?? '').trim();
-    const portador = String(row[idxPortador] ?? '').trim();
+    // BUG-030: idxPortador=-1 quando o header não tem coluna portador/titular (extrato bancário)
+    const portador = idxPortador >= 0 ? String(row[idxPortador] ?? '').trim() : '';
     const valorRaw = String(row[idxValor]    ?? '').trim();
     // NRF-002.1: normaliza "X de Y" → "XX/YY" para compatibilidade com projeções
     const parcela  = idxParcela >= 0 ? normalizarParcela(String(row[idxParcela] ?? '').trim()) : '-';
