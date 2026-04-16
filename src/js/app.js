@@ -10,6 +10,7 @@ import {
   ouvirParcelamentosAbertos,
   ouvirReceitas,
   ouvirCategoriasReceita,
+  ouvirDespesasPorMesFatura,  // RF-065: card Próxima Fatura
   garantirCategoriasReceita,
   garantirContasPadrao,       // NRF-004
   migrarCartaoGenerico,       // RF-062
@@ -29,7 +30,7 @@ import { CATEGORIAS_RECEITA_PADRAO } from './models/Receita.js';
 import { CONTAS_PADRAO } from './models/Conta.js';            // NRF-004
 import { mesAnoAtual, definirTexto, isMovimentacaoReal } from './utils/helpers.js';
 import { coresGrafico } from './utils/chartColors.js';
-import { nomeMes } from './utils/formatters.js';
+import { nomeMes, escHTML } from './utils/formatters.js';
 import { skeletonCards, errorStateHTML } from './utils/skeletons.js';
 import { inicializarCapacitor } from './utils/capacitor.js';
 
@@ -37,7 +38,8 @@ import { inicializarCapacitor } from './utils/capacitor.js';
 let estadoApp = {
   usuario:    null,
   perfil:     null,
-  nomeAtual:  '',   // nome do usuário logado conforme nomesMembros do grupo (fix #90)
+  grupo:      null,         // RF-065: card Próxima Fatura — membros do grupo
+  nomeAtual:  '',           // nome do usuário logado conforme nomesMembros do grupo (fix #90)
   mes:        mesAnoAtual().mes,
   ano:        mesAnoAtual().ano,
   categorias:         [],
@@ -48,12 +50,13 @@ let estadoApp = {
 };
 
 // Referências para unsubscribe ao trocar período
-let _unsubCats    = null;
-let _unsubDesp    = null;
-let _unsubOrc     = null;
-let _unsubProj    = null; // RF-014: parcelamentos em aberto
-let _unsubRec     = null; // receitas do mês
-let _unsubCatRec  = null; // categorias de receita
+let _unsubCats        = null;
+let _unsubDesp        = null;
+let _unsubOrc         = null;
+let _unsubProj        = null; // RF-014: parcelamentos em aberto
+let _unsubRec         = null; // receitas do mês
+let _unsubCatRec      = null; // categorias de receita
+let _unsubProxFatura  = null; // RF-065: card Próxima Fatura
 
 // ── RF-017: Gráficos ──────────────────────────────────────────
 const MESES_ABREV = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
@@ -93,6 +96,7 @@ onAuthChange(async (user) => {
     // Resolve nome do usuário logado para cálculo correto de "Meu Bolso" (fix #90)
     const grupo = await buscarGrupo(estadoApp.perfil?.grupoId);
     estadoApp.nomeAtual = grupo?.nomesMembros?.[user.uid] ?? user.email ?? '';
+    estadoApp.grupo = grupo; // RF-065: armazenar membros para card Próxima Fatura
   } catch (_err) {
     // Falha ao buscar perfil (ex: erro de rede) → redireciona para login por segurança
     window.location.href = 'login.html';
@@ -108,8 +112,9 @@ onAuthChange(async (user) => {
   atualizarTituloPeriodo();
   preencherSelectPeriodo();
   iniciarListeners();
-  iniciarListenerParcelamentos(estadoApp.perfil.grupoId); // RF-014
+  iniciarListenerParcelamentos(estadoApp.perfil.grupoId);   // RF-014
   iniciarListenerCategoriasReceita(estadoApp.perfil.grupoId);
+  iniciarListenerProximaFatura(estadoApp.perfil.grupoId);   // RF-065
   garantirCategoriasReceita(estadoApp.perfil.grupoId, CATEGORIAS_RECEITA_PADRAO).catch(() => {});
   garantirContasPadrao(estadoApp.perfil.grupoId, CONTAS_PADRAO).catch(() => {}); // NRF-004
   migrarCartaoGenerico(estadoApp.perfil.grupoId).catch(() => {}); // RF-062: marca cartão genérico como _legado
@@ -608,4 +613,61 @@ function preencherSelectPeriodo() {
 function atualizarTituloPeriodo() {
   const el = document.getElementById('mes-ano-atual');
   if (el) el.textContent = `${nomeMes(estadoApp.mes)} ${estadoApp.ano}`;
+}
+
+// ── RF-065: Card Próxima Fatura ───────────────────────────────
+
+function iniciarListenerProximaFatura(grupoId) {
+  if (_unsubProxFatura) _unsubProxFatura();
+  const agora = new Date();
+  let nextMes = agora.getMonth() + 2; // +1 zero-index, +1 próximo mês
+  let nextAno = agora.getFullYear();
+  if (nextMes > 12) { nextMes = 1; nextAno++; }
+  const proximoMesFatura = `${nextAno}-${String(nextMes).padStart(2, '0')}`;
+
+  _unsubProxFatura = ouvirDespesasPorMesFatura(grupoId, proximoMesFatura, (despesas) => {
+    const projecoes = despesas.filter(d => d.tipo === 'projecao');
+    renderizarCardProximaFatura(projecoes);
+  });
+}
+
+function renderizarCardProximaFatura(projecoes) {
+  const card = document.getElementById('card-proxima-fatura');
+  if (!card) return;
+  if (!projecoes.length) {
+    card.style.display = 'none';
+    return;
+  }
+  card.style.display = '';
+
+  // Total geral da fatura (soma de todos os valores)
+  const total = projecoes.reduce((s, d) => s + (d.valor ?? 0), 0);
+
+  // Totais por membro (individual + 50% conjuntas via valorAlocado)
+  const membros = estadoApp.grupo?.nomesMembros
+    ? Object.entries(estadoApp.grupo.nomesMembros).map(([, nome]) => ({
+        nome,
+        key: nome.split(' ')[0].toLowerCase(),
+      }))
+    : [];
+
+  const conjuntas = projecoes.filter(d => d.isConjunta);
+  const porMembro = {};
+  membros.forEach(m => {
+    const ind   = projecoes.filter(d =>
+      !d.isConjunta && (d.responsavel || d.portador || '').toLowerCase().startsWith(m.key)
+    );
+    const tInd  = ind.reduce((s, d) => s + (d.valor ?? 0), 0);
+    const tConj = conjuntas.reduce((s, d) => s + (d.valorAlocado ?? (d.valor ?? 0) / 2), 0);
+    porMembro[m.key] = tInd + tConj;
+  });
+
+  const totalEl   = document.getElementById('proxima-fatura-total');
+  const membrosEl = document.getElementById('proxima-fatura-membros');
+  if (totalEl) totalEl.textContent = formatarMoedaDash(total);
+  if (membrosEl && membros.length) {
+    membrosEl.innerHTML = membros.map(m =>
+      `${escHTML(m.nome.split(' ')[0])}: ${formatarMoedaDash(porMembro[m.key] ?? 0)}`
+    ).join(' · ');
+  }
 }

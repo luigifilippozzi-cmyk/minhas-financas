@@ -93,6 +93,16 @@
 .resumo-card--disponivel::before { background: var(--color-primary); opacity: 0.5; }
 .resumo-card--meu-bolso::before { background: var(--color-budget); opacity: 1; }
 .resumo-card--familia::before   { background: var(--color-ok); opacity: 1; }
+.resumo-card--fatura::before    { background: var(--color-warning); opacity: 1; }
+
+.proxima-fatura-link {
+  font-size: var(--font-size-xs);
+  color: var(--color-primary);
+  text-decoration: none;
+  margin-top: var(--space-2);
+  font-weight: 600;
+}
+.proxima-fatura-link:hover { text-decoration: underline; }
 
 .resumo-label {
   font-size: var(--font-size-xs);

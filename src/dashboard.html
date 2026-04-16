@@ -91,6 +91,13 @@
           <span class="resumo-valor" id="total-familia">R$ 0,00</span>
           <span class="resumo-sublabel">total conjunto do grupo</span>
         </div>
+        <!-- RF-065: card Próxima Fatura (visível apenas quando há projeções para o próximo mês) -->
+        <div class="card resumo-card resumo-card--fatura" id="card-proxima-fatura" style="display:none;">
+          <span class="resumo-label">💳 Próxima Fatura</span>
+          <span class="resumo-valor" id="proxima-fatura-total">R$ 0,00</span>
+          <div id="proxima-fatura-membros" class="resumo-sublabel"></div>
+          <a href="fatura.html?tab=projecoes" class="proxima-fatura-link">ver projeções →</a>
+        </div>
       </div>
 
       <!-- ── Categorias de Despesas ── -->
