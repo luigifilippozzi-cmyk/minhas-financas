@@ -7,6 +7,16 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.29.0] - 2026-04-16
+
+### Adicionado
+
+- **RF-068: Saldo Real por Conta (#169):** card "🏦 Saldo Real" no Cockpit do Dashboard exibe saldo consolidado de todas as contas bancárias e dinheiro ativas, com lista expansível por conta e alerta vermelho em saldo negativo. Usuário configura `saldoInicial` (valor atual) e `dataReferenciaSaldo` (data de referência) via Configurações > Contas — botão "Saldo" adicionado a cada conta bancária. Saldo Real = `saldoInicial + SUM(receitas) − SUM(despesas reais + pagamentos_fatura)` desde `dataReferenciaSaldo`. Card visível apenas quando ≥ 1 conta tem saldo configurado; invisível para cartões. Novos módulos: `ouvirDespesasDesdeData` e `ouvirReceitasDesdeData` em `database.js` (listeners onSnapshot por grupoId desde uma data); `iniciarListenerSaldoReal` e `renderizarCardSaldoReal` em `app.js`. Guard de membership em `salvarSaldo`; validação `ISO_DATE_RE` em `dataReferenciaSaldo`. Usa índices Firestore existentes `(grupoId, data DESC)`. 594 testes passando — PR #174.
+
+### Corrigido
+
+- **XSS: `escHTML()` ausente em `renderizarPainelParcelamentos` (`app.js`):** `p.responsavel`, `p.portador` e `p.descricao` (dados do Firestore/import) eram inseridos via `innerHTML` sem sanitização — vetor potencial de XSS com dados maliciosos importados. Detectado pelo security-reviewer durante revisão do RF-068. 594 testes passando — PR #176.
+
 ## [3.28.1] - 2026-04-16
 
 ### Corrigido

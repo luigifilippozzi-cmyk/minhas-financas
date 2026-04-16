@@ -1,8 +1,55 @@
 # Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-16 (PO — decisão iOS Fase 2 on hold)
-> Versão: v3.28.1 (CHANGELOG + package.json — sincronizados ✅)
-> Saúde: 🟢 VERDE — CI verde | 594 testes OK | deploy Firebase OK | BUILD-BROKEN-P0 resolvido (PR #171)
+> Atualizado em: 2026-04-16 14:55 (Dev Manager — v3.29.0 entregue)
+> Versão: v3.29.0 (CHANGELOG + package.json — sincronizados ✅)
+> Saúde: 🟢 VERDE — CI verde | 594 testes OK | deploy Firebase OK | RF-068 Saldo Real por Conta entregue
+
+---
+
+## Dev Manager — 2026-04-16 14:55
+
+### Sessão
+- Versão: v3.29.0
+- Tarefas concluídas: RF-068 Saldo Real por Conta (#169); XSS fix renderizarPainelParcelamentos
+- PRs criados: #174 (RF-068), #175 (fechado — base errada), #176 (XSS fix)
+- PRs mergeados: #174 (RF-068 v3.29.0), #176 (XSS fix)
+- Subagentes acionados: test-runner PASS (594/594), security-reviewer PASS (2 achados Medium/Low corrigidos)
+- CI: verde ✅ | Deploy Firebase: SUCCESS (automático pós-merge)
+- Resolução git: PR #173 fechado (continha RF-068+XSS juntos); PRs separados criados
+- BUG-032 mesFatura: JÁ ESTAVA CORRIGIDO em origin/main (opcionais corretos em Despesa.js e Receita.js)
+
+### Estado do milestone
+- iOS Fase 2 (ON HOLD — decisão PO): 4/4 issues abertas — #77, #78, #79, #80
+- UX & Gestao Patrimonial: 7 issues abertas — #151, #152, #154, #155, #158, #170, #172
+  - RF-068 (#169) ✅ FECHADA (entregue v3.29.0)
+- QA pendente: 1 — #129 (RF-062, execução manual Luigi)
+
+### Próximas prioridades
+- P0: RF-069 (#170) — Burn Rate por Categoria → v3.30.0
+- P1: RF-066 (#155) — Patrimônio Ativos/Passivos
+- P2: ENH-004 (#151), ENH-002 (#152), ENH-005 (#158), NRF-UI-WARM (#172)
+- BLOQUEADO: iOS Fase 2 (#77–#80) — ON HOLD decisão PO
+
+### Alertas
+- [QA-RF-062-PENDENTE] issue #129 — 50 TCs manuais, execução pelo Luigi
+- [DÍVIDA-TÉCNICA] chartColors.js — módulo pré-existente sem teste (não blocante)
+- Nenhum [VIOLAÇÃO-REGRA-11] ativo
+
+---
+
+## PO — 2026-04-16 — QA Bloco 1 RF-062 concluído (13/14 PASS)
+
+**Sessão PO (Cowork)** — QA manual #129, Bloco 1: CRUD de Cartões
+
+- Resultado: **13/14 PASS** · 1 N/A (TC-012 — empty state impossível) · 0 FAIL
+- Nenhuma regressão · 0 violações de regras invioláveis
+- TCs validados: TC-001 a TC-014 (criação, edição, desativação, validação, XSS, modal dismiss, seção bancárias read-only)
+- Dados de teste limpos (cartões TESTE-*/XSS desativados)
+- Descoberta: auto-colorização por nome de banco não documentada em DESIGN_SYSTEM.md
+- Decisões de pauta: RF-068 adiado para próxima sessão; NRF-UI-WARM mantido P2
+- Despacho: `docs/sessoes/2026-04-16_despacho_sessao_PO.md`
+- Comentário consolidado pendente de post na issue #129 (script PS gerado)
+- Próxima sessão: Bloco 2 (Importação, TCs 15–35) + autorizar RF-068 se Bloco 2 pass
 
 ---
 
@@ -38,7 +85,7 @@
 - Nova desde última sessão PM: #172 (NRF-UI-WARM — Identidade Visual Warm Finance: paleta terracota + ivory)
 
 ### Alertas ativos
-- [QA-RF-062-PENDENTE] issue #129 — 50 TCs manuais RF-062 Cartões como Contas Individuais (execução pelo Luigi)
+- [QA-RF-062-BLOCO1-DONE] issue #129 — Bloco 1 concluído (13/14 PASS). Blocos 2 e 3 pendentes (TCs 15–50)
 - [DÍVIDA-TÉCNICA] chartColors.js — módulo pré-existente sem teste (não blocante)
 
 ### Alertas resolvidos
