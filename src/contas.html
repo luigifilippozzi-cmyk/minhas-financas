@@ -78,6 +78,33 @@
 
   </main>
 
+  <!-- RF-068: Modal Saldo Inicial (banco/dinheiro) -->
+  <div id="modal-saldo-banco" class="modal hidden">
+    <div class="modal-content" style="max-width:400px;">
+      <div class="modal-header">
+        <h3 id="modal-saldo-titulo">Configurar Saldo</h3>
+        <button id="btn-fechar-modal-saldo" class="modal-close">&times;</button>
+      </div>
+      <p style="font-size:.87rem;color:var(--text-muted);margin-bottom:1rem;">
+        Informe o saldo atual da conta e a data de referência. O app calculará o saldo real somando receitas e subtraindo despesas a partir dessa data.
+      </p>
+      <form id="form-saldo-banco" autocomplete="off">
+        <div class="form-group">
+          <label for="inp-saldo-inicial">Saldo atual (R$) *</label>
+          <input id="inp-saldo-inicial" class="form-input" type="number" step="0.01" placeholder="Ex: 3500.00" required />
+        </div>
+        <div class="form-group">
+          <label for="inp-data-referencia">Data de referência *</label>
+          <input id="inp-data-referencia" class="form-input" type="date" required />
+        </div>
+        <div class="modal-footer" style="margin-top:1rem;">
+          <button type="button" id="btn-cancelar-saldo" class="btn btn-outline">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar Saldo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Modal: Criar/Editar Cartão -->
   <div id="modal-cartao" class="modal hidden">
     <div class="modal-content" style="max-width:520px;">

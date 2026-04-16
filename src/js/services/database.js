@@ -271,6 +271,48 @@ export async function excluirConta(contaId) {
 }
 
 /**
+ * RF-068: Listener em tempo real de despesas do grupo desde uma data de referência.
+ * Usado para cálculo de saldo real por conta.
+ * @param {string} grupoId
+ * @param {Date}   dataReferencia — data mínima (inclusive)
+ * @param {Function} callback — recebe array de despesas
+ * @returns {Function} unsubscribe
+ */
+export function ouvirDespesasDesdeData(grupoId, dataReferencia, callback) {
+  const q = query(
+    collection(db, 'despesas'),
+    where('grupoId', '==', grupoId),
+    where('data', '>=', dataReferencia),
+    orderBy('data', 'desc'),
+  );
+  return onSnapshot(q,
+    (snap) => { callback(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); },
+    (err)  => { console.error('[ouvirDespesasDesdeData] Erro no listener:', err); },
+  );
+}
+
+/**
+ * RF-068: Listener em tempo real de receitas do grupo desde uma data de referência.
+ * Usado para cálculo de saldo real por conta.
+ * @param {string} grupoId
+ * @param {Date}   dataReferencia — data mínima (inclusive)
+ * @param {Function} callback — recebe array de receitas
+ * @returns {Function} unsubscribe
+ */
+export function ouvirReceitasDesdeData(grupoId, dataReferencia, callback) {
+  const q = query(
+    collection(db, 'receitas'),
+    where('grupoId', '==', grupoId),
+    where('data', '>=', dataReferencia),
+    orderBy('data', 'desc'),
+  );
+  return onSnapshot(q,
+    (snap) => { callback(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); },
+    (err)  => { console.error('[ouvirReceitasDesdeData] Erro no listener:', err); },
+  );
+}
+
+/**
  * Garante que todas as contas padrão existam para o grupo (upsert por nome).
  * Novos bancos adicionados ao CONTAS_PADRAO serão inseridos automaticamente
  * mesmo em grupos que já possuem contas.
