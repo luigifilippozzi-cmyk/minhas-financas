@@ -1087,23 +1087,6 @@ export async function reconciliarTransferenciasPendentes(grupoId) {
 // ── Planejamento Mensal (RF-060) ────────────────────────────
 
 /**
- * Busca despesas de um mês específico (leitura única).
- */
-export async function buscarDespesasMes(grupoId, mes, ano) {
-  const inicio = new Date(ano, mes - 1, 1);
-  const fim    = new Date(ano, mes, 0, 23, 59, 59);
-  const q = query(
-    collection(db, 'despesas'),
-    where('grupoId', '==', grupoId),
-    where('data', '>=', inicio),
-    where('data', '<=', fim),
-    orderBy('data', 'desc'),
-  );
-  const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-}
-
-/**
  * Verifica se já existe planejamento para grupoId/mes/ano.
  */
 export async function existePlanejamento(grupoId, mes, ano) {
