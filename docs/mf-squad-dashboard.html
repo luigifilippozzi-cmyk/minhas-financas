@@ -461,17 +461,20 @@
 // Dashboard state — PM Agent updates this section, Dev Manager reads it
 const DASHBOARD_DATA = {
   // PM Agent atualiza estes campos:
-  lastUpdate: "2026-04-15 23:55",
+  lastUpdate: "2026-04-16 00:26",
   version: "v3.28.0",
-  health: "green", // green | yellow | red
-  healthText: "✅ RF-067 entregue (PR #168) | 594 testes OK | CI verde | QA #129 pendente (manual Luigi)",
+  health: "red", // green | yellow | red
+  healthText: "🔴 BUILD QUEBRADO — buscarDespesasMes duplicado em database.js (linhas 665 e 1092) | CI vermelha 5 runs consecutivos | deploy Firebase inacessível",
   testsUnit: "594",
-  testsUnitStatus: "594 passando",
+  testsUnitStatus: "594 passando (local) — build Rollup/Vite falha",
   testsInt: "26",
-  issuesOpen: 19,
-  issuesSub: "UX milestone: 5 (#151,#152,#154,#155,#158) | iOS: 13 (Fases 2-5) | QA RF-062: 1 (#129)",
+  issuesOpen: 21,
+  issuesSub: "UX milestone: 7 (#151,#152,#154,#155,#158,#169,#170) | iOS: 13 (Fases 2-5) | QA RF-062: 1 (#129)",
   // Dev Manager atualiza via PR + merge
   activity: [
+    { time: "Apr 16", color: "var(--red)", msg: "<strong>PM Agent</strong> — 🔴 BUILD QUEBRADO: buscarDespesasMes duplicado em database.js linhas 665/1092 (param order diferente) | 5 CI runs vermelhos | 21 issues (2 novas: #169 RF-068, #170 RF-069) | P0: Dev Manager deve criar fix/MF-buscarDespesasMes-dedup", tag: "pm" },
+    { time: "Apr 16", color: "var(--red)", msg: "<strong>CI FALHA (×5)</strong> — 🚀 Deploy Firebase Hosting — Build Vite: Identifier 'buscarDespesasMes' has already been declared — database.js:1092 | Desde 2026-04-16T02:52Z | Root cause: RF-067 adicionou linha 665 sem remover linha 1092", tag: "ci" },
+    { time: "Apr 16", color: "var(--blue)", msg: "<strong>docs: BUSSOLA_PRODUTO.md v2</strong> — RF-068 (Saldo Real por Conta), RF-069 (Burn Rate por Categoria), sequência revisada, iOS mobile | issues #169 e #170 criadas", tag: "commit" },
     { time: "Apr 15", color: "var(--blue)", msg: "<strong>PM Agent</strong> — Revisão diária: v3.28.0 | 594 testes OK | CI verde | 19 issues | saúde Verde — RF-067 entregue (PR #168) | QA #129 pendente (manual Luigi) | chartColors.js sem teste (dívida pré-existente)", tag: "pm" },
     { time: "Apr 17", color: "var(--green)", msg: "<strong>PR #168 mergeado</strong> — feat(fluxo-caixa): RF-067 Forecast de Caixa Prospectivo 6 Meses — v3.28.0 | 594 testes | test-runner PASS", tag: "merge" },
     { time: "Apr 16", color: "var(--green)", msg: "<strong>PR #167 mergeado</strong> — feat(dashboard): RF-065 card Próxima Fatura + deep link ?tab=projecoes — v3.27.0 | 563 testes | test-runner PASS", tag: "merge" },
@@ -528,7 +531,7 @@ function render() {
 
   // Agent status
   const now = new Date();
-  const lastPM = new Date("2026-04-15T23:55:00");
+  const lastPM = new Date("2026-04-16T00:26:00");
   const diffHrs = (now - lastPM) / 36e5;
   const pmDot = document.getElementById("pmStatus");
   const pmText = document.getElementById("pmStatusText");
