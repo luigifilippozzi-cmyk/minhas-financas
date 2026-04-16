@@ -1,8 +1,45 @@
 # Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-16 14:55 (Dev Manager — v3.29.0 entregue)
+> Atualizado em: 2026-04-16 18:51 (PM Agent — revisão diária)
 > Versão: v3.29.0 (CHANGELOG + package.json — sincronizados ✅)
-> Saúde: 🟢 VERDE — CI verde | 594 testes OK | deploy Firebase OK | RF-068 Saldo Real por Conta entregue
+> Saúde: 🟢 VERDE — CI verde | 594 testes OK | deploy Firebase OK | sem violações ativas | velocidade alta
+
+---
+
+## PM Agent — 2026-04-16 18:51
+
+### Estado
+- Versão: v3.29.0
+- Milestones ativos:
+  - 📱 App Mobile iOS — Capacitor (23.5%, 4/17 — Fase 2 ON HOLD por decisão PO)
+  - 🎨 UX & Gestao Patrimonial (46.2%, 6/13 — ativo, alta velocidade)
+- Saúde: 🟢 VERDE — CI verde (deploy chore em andamento), 594 testes OK, 0 PRs abertos
+- Testes: 594 unit (24 arquivos) + 26 int — todos passando ✅
+- CI: 🟡 Deploy em andamento (chore changelog) | CI testes: ✅ SUCCESS | Último deploy completo: SUCCESS
+
+### Issues abertas (21 total)
+- Fase 2 iOS (ON HOLD): #77, #78, #79, #80
+- Fases 3–5 iOS (bloqueadas por Fase 2): #81, #82, #83, #84, #85, #86, #87, #88, #89
+- UX & Gestao Patrimonial: #151, #152, #154, #155, #158, #170, #172
+- QA pendente: #129 (RF-062, execução manual Luigi — Bloco 1 PASS 13/14; Blocos 2–4 pendentes)
+- Novas desde última sessão (PM 07:28): nenhuma nova issue aberta
+
+### Alertas ativos
+- [QA-RF-062-PENDENTE] issue #129 — Blocos 2–4 manuais pendentes (execução Luigi)
+- [DÍVIDA-TÉCNICA] chartColors.js — módulo sem teste (pré-existente, não blocante)
+- Nenhum [VIOLAÇÃO-REGRA-11] ativo
+
+### Prioridades para Dev Manager
+- P0: RF-069 (#170) — Burn Rate por Categoria → v3.30.0
+- P1: RF-066 (#155) — Patrimônio Ativos/Passivos
+- P2: ENH-004 (#151), ENH-002 (#152), ENH-005 (#158), NRF-NAV (#154), NRF-UI-WARM (#172)
+- BLOQUEADO: iOS Fase 2 (#77–#80) — ON HOLD decisão PO
+
+### Atividade recente
+- Último PR mergeado: #176 fix(app) XSS escHTML (2026-04-16 21:30)
+- Commits diretos main (últimas 24h): aae56a4 chore(changelog) — OK (docs-only, sem src/)
+- Issues fechadas últimos 7 dias: 10 (velocidade muito alta) — #147, #148, #149, #150, #153, #156, #157, #162, #166, #169
+- Subagentes acionados (última sessão DM): test-runner PASS (594/594), security-reviewer PASS
 
 ---
 
