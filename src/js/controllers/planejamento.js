@@ -42,9 +42,9 @@ export async function gerarPlanoPara(grupoId, mes, ano) {
   if (mesN2 < 1) { mesN2 = 12; anoN2--; }
 
   const [despN1, despN2, despAtual, orcamentos] = await Promise.all([
-    buscarDespesasMes(grupoId, mesN1, anoN1),
-    buscarDespesasMes(grupoId, mesN2, anoN2),
-    buscarDespesasMes(grupoId, mes, ano),
+    buscarDespesasMes(grupoId, anoN1, mesN1),
+    buscarDespesasMes(grupoId, anoN2, mesN2),
+    buscarDespesasMes(grupoId, ano, mes),
     buscarOrcamentos(grupoId, mes, ano),
   ]);
 
