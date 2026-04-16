@@ -7,6 +7,12 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.28.0] - 2026-04-17
+
+### Adicionado
+
+- **RF-067: Forecast de Caixa Prospectivo 6 Meses (#166):** seção "🔮 Forecast — Próximos 6 Meses" adicionada à página `fluxo-caixa.html` com decomposição visível por componente. Novo módulo `forecastEngine.js` (stateless/puro): recebe arrays de despesas N-1/N-2, receitas N-1/N-2, projeções Firestore e orçamentos; retorna projeção por mês com campos `receitasEsperadas` (receitas recorrentes alta+média), `recorrentes` (despesas fixas detectadas), `parcelas` (tipo:'projecao', certo), `variaveis` (teto de orçamentos) e `saldoProjetado`. Flag `estimativaLimitada` acende badge de aviso quando histórico tem < 3 transações em N-1 ou N-2. Cross-year suportado (projeções que cruzam virada de ano). 3 novas funções em `database.js`: `buscarDespesasMes`, `buscarReceitasMes`, `buscarProjecoesRange`. Forecast é SOMENTE LEITURA — não cria/altera documentos Firestore. 31 novos TCs em `tests/utils/forecastEngine.test.js`. 563 → 594 testes passando — PR #168.
+
 ## [3.27.0] - 2026-04-16
 
 ### Adicionado
