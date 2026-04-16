@@ -783,11 +783,40 @@ a:hover { text-decoration: underline; }
   font-weight: 600;
   white-space: nowrap;
 }
-.fc-badge--ok       { background: var(--color-income-bg); color: var(--color-income-dark); }
-.fc-badge--negativo { background: var(--color-danger-light); color: var(--color-danger); }
-.fc-badge--critico  { background: var(--color-warning-light); color: var(--color-warning-text); }
-.fc-badge--futuro   { background: var(--color-info-light); color: var(--color-info-text); }
-.fc-badge--vazio    { background: var(--color-surface-alt); color: var(--color-text-muted); }
+.fc-badge--ok        { background: var(--color-income-bg); color: var(--color-income-dark); }
+.fc-badge--negativo  { background: var(--color-danger-light); color: var(--color-danger); }
+.fc-badge--critico   { background: var(--color-warning-light); color: var(--color-warning-text); }
+.fc-badge--futuro    { background: var(--color-info-light); color: var(--color-info-text); }
+.fc-badge--vazio     { background: var(--color-surface-alt); color: var(--color-text-muted); }
+.fc-badge--estimativa { background: #fff3cd; color: #856404; }
+
+/* Forecast de Caixa (RF-067) */
+.fc-forecast-card { margin-top: 1.25rem; }
+.fc-forecast-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: .75rem;
+  margin-bottom: 1rem;
+}
+.fc-forecast-titulo-row { display: flex; flex-direction: column; gap: .25rem; }
+.fc-forecast-subtitulo  { font-size: .8rem; color: var(--color-text-muted); }
+.fc-forecast-alerta {
+  font-size: .8rem;
+  padding: .35rem .75rem;
+  align-self: flex-start;
+}
+.fc-forecast-legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem 1rem;
+  margin-top: .75rem;
+  padding-top: .75rem;
+  border-top: 1px solid var(--color-border);
+  font-size: .75rem;
+  color: var(--color-text-muted);
+}
 
 /* Empty state */
 .fc-empty {
