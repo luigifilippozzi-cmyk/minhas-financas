@@ -36,6 +36,7 @@ import { coresGrafico } from './utils/chartColors.js';
 import { nomeMes, escHTML } from './utils/formatters.js';
 import { skeletonCards, errorStateHTML } from './utils/skeletons.js';
 import { inicializarCapacitor } from './utils/capacitor.js';
+import { calcularBurnRate } from './utils/burnRateCalculator.js'; // RF-069
 
 // ── Estado Global ─────────────────────────────────────────────
 let estadoApp = {
@@ -173,6 +174,7 @@ function iniciarListeners() {
       estadoApp.receitas,
       estadoApp.despesas.filter(isMovimentacaoReal).reduce((s, d) => s + (d.valor ?? 0), 0),
     );
+    renderizarBurnRate(); // RF-069
     if (_filtroCat === 'mes') renderizarGraficoCategorias(); // RF-017
     renderizarGraficoEvolucao(); // RF-017
   });
@@ -181,6 +183,7 @@ function iniciarListeners() {
   _unsubOrc = iniciarListenerOrcamentos(grupoId, mes, ano, (orc) => {
     estadoApp.orcamentos = orc;
     renderizarDashboard(estadoApp.categorias, estadoApp.despesas, estadoApp.orcamentos, estadoApp.nomeAtual);
+    renderizarBurnRate(); // RF-069
   });
 
   // Receitas do mês
@@ -732,6 +735,64 @@ function renderizarCardSaldoReal() {
   }
 
   card.style.display = '';
+}
+
+// ── RF-069: Burn Rate por Categoria ─────────────────────────
+
+function renderizarBurnRate() {
+  const widget = document.getElementById('burn-rate-widget');
+  const lista  = document.getElementById('burn-rate-lista');
+  if (!widget || !lista) return;
+
+  const hoje = new Date();
+  const mesHoje = hoje.getMonth() + 1;
+  const anoHoje = hoje.getFullYear();
+
+  // Burn rate só faz sentido para o mês corrente (dados em tempo real)
+  if (estadoApp.mes !== mesHoje || estadoApp.ano !== anoHoje) {
+    widget.classList.add('hidden');
+    return;
+  }
+
+  const itens = calcularBurnRate({
+    despesasMes: estadoApp.despesas,
+    orcamentos:  estadoApp.orcamentos,
+    categorias:  estadoApp.categorias,
+    hoje,
+  });
+
+  if (!itens.length) {
+    widget.classList.add('hidden');
+    return;
+  }
+
+  widget.classList.remove('hidden');
+
+  const fmt = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v ?? 0);
+
+  const labelBadge = { verde: 'OK', amarelo: 'ATENÇÃO', vermelho: 'RISCO' };
+
+  lista.innerHTML = itens.map((item) => {
+    const cls = item.classificacao;
+    const pctFmt = item.amostrasInsuficientes
+      ? '—'
+      : `${item.percentualProjetado.toFixed(0)}%`;
+
+    const valoresHtml = item.amostrasInsuficientes
+      ? `<span class="burn-rate-insuficiente">amostra insuficiente (&lt;3 dias com dados)</span>`
+      : `Gasto: <strong>${escHTML(fmt(item.gastoMes))}</strong> · Projeção: <strong>${escHTML(fmt(item.projecaoMensal))}</strong> de ${escHTML(fmt(item.orcamento))}`;
+
+    return `
+      <div class="burn-rate-item">
+        <div class="burn-rate-item-nome">
+          <span>${escHTML(item.categoriaEmoji)}</span>
+          <span>${escHTML(item.categoriaNome)}</span>
+          <span class="burn-rate-badge burn-rate-badge--${cls}">${labelBadge[cls]}</span>
+        </div>
+        <div class="burn-rate-item-pct burn-rate-item-pct--${cls}">${escHTML(pctFmt)}</div>
+        <div class="burn-rate-item-valores">${valoresHtml}</div>
+      </div>`;
+  }).join('');
 }
 
 function renderizarCardProximaFatura(projecoes) {
