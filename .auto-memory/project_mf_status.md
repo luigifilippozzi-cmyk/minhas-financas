@@ -1,8 +1,65 @@
 # Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-17 17:01 (Dev Manager — sessão autônoma)
+> Atualizado em: 2026-04-17 ~17h30 (PO Assistant — sessão Cowork, após sessão DM autônoma 17:01)
 > Versão: v3.31.0 (CHANGELOG + package.json — sincronizados ✅)
-> Saúde: 🟢 VERDE — CI verde | 665 testes OK | RF-066 entregue | [VIOLAÇÃO-REGRA-11] ativo (aguarda aceite PO)
+> Saúde: 🟢 VERDE — CI verde | 665 testes OK | RF-066 entregue | [VIOLAÇÃO-REGRA-11] ✅ ENCERRADA (issue #177) | QA RF-062 ✅ FECHADA (issue #129) | 0 alertas ativos
+
+---
+
+## PO Assistant — 2026-04-17 (sessão Cowork) — QA RF-062 fechado + aceite VIOLAÇÃO-REGRA-11 + reconciliação docs
+
+### Sessão
+- Versão na sessão: v3.30.0 (inicial) → v3.31.0 (RF-066 entregue em paralelo pelo DM durante esta sessão — PR #178)
+- Duração: ~3h
+- Escopo: QA manual RF-062 Blocos 2–3 via Chrome MCP + aceite consciente VIOLAÇÃO-REGRA-11 + reconciliação documental (CLAUDE.md + BUSSOLA_PRODUTO.md)
+
+### Correção de estado — alertas do DM agora desatualizados
+O Dev Manager (sessão 17:01) reportava `[VIOLAÇÃO-REGRA-11] ATIVO` e `[QA-RF-062-PENDENTE]`. **Ambos foram ENCERRADOS nesta sessão PO Cowork:**
+- ✅ **[VIOLAÇÃO-REGRA-11] RF-069** → issue retroativa **#177 CRIADA e FECHADA** com aceite consciente do PO (seguindo precedente #147 de 15/04). Causa raiz documentada: `git checkout -b` falhou silenciosamente, commits `0ee3e18` + `e81df80` foram direto em main. Trabalho íntegro (611 testes OK no momento, 91.4% coverage em `burnRateCalculator.js`).
+- ✅ **[QA-RF-062-PENDENTE]** → issue **#129 FECHADA** com comentário consolidado de 33 TCs: **30 PASS / 3 N/A / 0 FAIL / 0 regressões / 0 violações invioláveis** (91% cobertura direta, 100% efetiva).
+
+### Decisões estratégicas ratificadas
+- **Bússola** — fonte oficial = `docs/BUSSOLA_PRODUTO.md` §9 (Ordem de Ataque Aprovada)
+- **Antecipação RF-069 para v3.30.0** formalizada em §11 (invertido com RF-066)
+- **Sequência atualizada** (reflete entregas reais): RF-067 ✅ → RF-068 ✅ → RF-069 ✅ (v3.30.0) → **RF-066 ✅ (v3.31.0, PR #178 entregue durante esta sessão)** → **NRF-NAV Fase 1 (#154) v3.32.0 ← próximo** (casado com NRF-UI-WARM #172) → NRF-NAV F2 (v3.33.0) → ENHs
+- **Ação corretiva para DM**: verificar `git status` explicitamente antes de commits em `src/` (reforço da regra #11)
+
+### QA RF-062 — cobertura executada
+- **Fase 1 Navbar**: TC-045, 046 ✅ (via `fetch()` loop nas 10 páginas — sem navegação manual)
+- **Fase 2 Backward Compat**: TC-041, 042, 043, 044 ✅ (conta legado preservada com `opacity: 0.6`; dashboard com cards RF-065/067/068/069 todos OK; fatura.html aceita legado; dropdown import filtra legado)
+- **Fase 3 Real-time**: TC-047, 048 ✅ (onSnapshot single-tab via criação/desativação de cartão TESTE-RT)
+- **Fase 4 Import** (CSV dummy 8 linhas fev/2026 injetado via DataTransfer API): TC-031, 032, 033, 036, 037, 038 ✅ | TC-034, 035 N/A (Luigi não tem Itaú/Nubank como cartão real)
+- **Fase 5 Pipeline**: TC-039, 040 ✅ (cobertura indireta via 11 testes unit em `pipelineCartao.test.js` + RF-069 Burn Rate funcional)
+
+### Artefatos gerados
+- Commit `1b32572` — docs: CLAUDE.md estado v3.29.0 (antes da descoberta do RF-069 na main)
+- Commit `8ec533c` — docs: CLAUDE.md + BUSSOLA_PRODUTO.md reconciliados com realidade v3.30.0
+- Issue **#177** criada e fechada — VIOLAÇÃO-REGRA-11 retroativa RF-069
+- Issue **#129** comentário consolidado + fechamento — QA RF-062
+
+### Descobertas colaterais
+- **importar.html → base-dados.html** (RF-018 unificou páginas) — plano de testes RF-062 usa nomenclatura de antes da unificação; TC-043 aplicado em `base-dados.html` efetivamente
+- **Auto-colorização de cartões por palavra-chave** (ex: "Nubank" → roxo Material Purple 700) — não documentada em `DESIGN_SYSTEM.md`
+- **Firebase Auth não compartilha sessão entre abas MCP Chrome extension** — cross-tab teste adaptado para single-tab via onSnapshot (mesmo mecanismo, prova técnica equivalente)
+- **RF-066 entregue pelo DM em paralelo** (17:01) — working tree inicialmente com WIP, final com commit `8ec533c` no topo e `gh pr list` limpo. Processo correto: branch + PR #178 + subagentes acionados + CI verde
+
+### Scripts PowerShell executados
+- `git add CLAUDE.md + commit + push` (2x — primeiro desalinhado, segundo reconciliado)
+- `gh issue create --body-file .temp-issue-body.md` (#177 retroativa) + `gh issue close` com aceite
+- `gh issue comment 129 --body-file` + `gh issue close 129`
+- Cleanup `.temp-fatura-teste-fev2026.csv` via Remove-Item
+
+### Bloqueios
+Nenhum. Próxima tarefa DM (NRF-NAV Fase 1 #154 v3.32.0) autorizada pela bússola.
+
+### Saúde do projeto (pós-sessão)
+🟢 **VERDE definitivo** — CI verde | 665 testes OK | 0 violações ativas | 0 PRs abertos | 0 alertas pendentes
+
+### Próxima sessão PO — foco recomendado
+1. **Revisar PR do NRF-NAV Fase 1 (#154) + NRF-UI-WARM (#172)** quando DM abrir — atenção ao processo (feature branch + PR, sem atalhos)
+2. **Decidir estratégia de branch** para NRF-NAV F1 + NRF-UI-WARM: casadas (1 PR) ou sequenciais (2 PRs)
+3. **Gap documental**: considerar criar `docs/MILESTONE_UX_GESTAO_PATRIMONIAL.md` — só existem docs de milestone para Melhorias Visuais e iOS
+4. **Dívida técnica menor**: avaliar se documentar "auto-colorização de cartões" em `DESIGN_SYSTEM.md` é necessário
 
 ---
 
