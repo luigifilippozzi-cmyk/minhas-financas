@@ -41,7 +41,12 @@
 | RF-061 | Categorias e Orçamentos — Separação Despesa vs Receita | Alta | ✅ Implementado |
 | RF-062 | Cartões de Crédito como Contas Individuais | Alta | ✅ Implementado (v3.21.0, PR #128) |
 | RF-063 | Transferências Intra-Grupo (Settlement entre Membros) | Alta | ✅ Implementado (v3.22.0, PR #132) |
-| RF-064 | Reconciliação de Pagamento de Fatura de Cartão | Alta | ⚪ Pendente |
+| RF-064 | Reconciliação de Pagamento de Fatura de Cartão | Alta | ✅ Implementado (v3.23.0, PR #134) |
+| RF-065 | Card "Próxima Fatura" no Dashboard + deep link `?tab=projecoes` | Média | ✅ Implementado (v3.27.0, PR #167) |
+| RF-066 | Patrimônio Ativos/Passivos com Evolução e Taxa de Poupança | Alta | ✅ Implementado (v3.31.0, PR #178) |
+| RF-067 | Forecast de Caixa Prospectivo 6 Meses | Alta | ✅ Implementado (v3.28.0, PR #168) |
+| RF-068 | Saldo Real por Conta no Cockpit do Dashboard | Alta | ✅ Implementado (v3.29.0, PR #174) |
+| RF-069 | Burn Rate por Categoria (Ritmo de Gasto) | Média | ✅ Implementado (v3.30.0, commit `0ee3e18`) |
 
 ---
 

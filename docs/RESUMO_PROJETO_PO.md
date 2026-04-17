@@ -1,7 +1,7 @@
 # Resumo do Projeto & Instruções do PO — Minhas Finanças
 
 > Documento de referência para sessões futuras nesta área de trabalho.
-> Atualizado em: 2026-04-14
+> Atualizado em: 2026-04-17
 
 ---
 
@@ -11,7 +11,9 @@
 
 **Stack tecnológico:** vanilla JavaScript (sem frameworks), Vite 5 (bundler MPA com 13 páginas HTML), Firebase Auth + Cloud Firestore, Capacitor 8 (iOS), Chart.js v4, SheetJS (XLSX).
 
-**Versão atual:** v3.23.4 (abril 2026) com 501 testes unitários e 26 testes de integração.
+**Versão atual:** v3.31.0 (abril 2026) com 665 testes unitários e 26 testes de integração.
+
+**Bússola estratégica:** `docs/BUSSOLA_PRODUTO.md` §9 — Ordem de Ataque Aprovada — é a fonte da verdade para priorização de RFs.
 
 ---
 
@@ -19,26 +21,30 @@
 
 | Milestone | Progresso | Status |
 |-----------|-----------|--------|
-| Requisitos Funcionais (42 RFs) | 42/42 | Concluído |
+| Requisitos Funcionais (backlog anterior) | 42/42 | Concluído |
 | Melhorias Visuais (tokens, responsividade, acessibilidade) | 26/26 | Concluído |
 | Reconciliação Fatura ↔ Extrato (RF-062/063/064) | 3/3 | Concluído (v3.23.0) |
 | Tech Debt — testes (cobertura total utils/) | 5/5 | Concluído (v3.23.4) |
 | Manutenibilidade e Arquitetura (unificação import #96) | Completo | Concluído (v3.20.0) |
 | iOS App — Fase 0 (Vite + Firebase npm) | 2/2 | Concluído (v3.18.0) |
 | iOS App — Fase 1 (Capacitor + safe areas) | 2/2 | Concluído (v3.19.0) |
-| iOS App — Fase 2 (Firebase nativo: auth, FCM, biometria) | 0/4 | Pendente |
-| iOS App — Fase 3 (UX mobile: icons, splash, dark mode) | 0/3 | Pendente |
-| iOS App — Fase 4 (TestFlight: assinatura, provisioning) | 0/3 | Pendente |
-| iOS App — Fase 5 (Backlog: Face ID, push, camera) | 0/3 | Backlog |
+| UX & Gestão Patrimonial (RF-065/066/067/068/069 + ENHs + NRFs) | 8/13 (62%) | 🟢 Ativo |
+| iOS App — Fase 2 (Firebase nativo: auth, FCM, biometria) | 0/4 | ⏸️ ON HOLD (decisão PO 2026-04-16) |
+| iOS App — Fase 3 (UX mobile: icons, splash, dark mode) | 0/3 | ⚪ Aguardando Fase 2 |
+| iOS App — Fase 4 (TestFlight: assinatura, provisioning) | 0/3 | ⚪ Aguardando Fase 2 |
+| iOS App — Fase 5 (Backlog: Face ID, push, camera) | 0/3 | ⚪ Backlog |
 
 ---
 
-## 3. Próximas Prioridades (Fila do PO)
+## 3. Próximas Prioridades (fonte: `docs/BUSSOLA_PRODUTO.md` §9)
 
-1. **iOS Fase 2** — Integração Firebase nativa via plugins Capacitor (issues #77–#80): GoogleService-Info.plist, auth nativo, FCM push, biometria
-2. **iOS Fase 3** — Ajustes UX mobile (issues #81–#83): ícones do app, splash screen, dark mode, haptic feedback
-3. **iOS Fase 4** — Distribuição TestFlight (issues #84–#86): Apple Developer Program, Xcode signing, Fastlane
-4. **Tech Debt** — ✅ Concluído: todos os módulos em `src/js/utils/` têm cobertura de testes (501 TCs)
+1. **NRF-NAV Fase 1** (#154) v3.32.0 — Navbar 5 seções gerenciais (Cockpit / Futuro / Histórico / Transações / Config). **Casado com NRF-UI-WARM** (#172, paleta warm finance) — decisão PO pendente: 1 PR conjunto ou 2 sequenciais.
+2. **NRF-NAV Fase 2** (#154) v3.33.0 — Consolidação de páginas (merge Projeções + Planejamento na seção Futuro). Absorve ENH-005.
+3. **ENH-004** (#151) — Melhorias UX tela fatura (P3, após estrutura gerencial)
+4. **ENH-002** (#152) — Bulk categorização (P3, após estrutura gerencial)
+5. **iOS Fase 2** (#77–#80) — ⏸️ ON HOLD indefinido até Apple Developer Program ativado
+
+**QA RF-062 concluído** em 2026-04-17 — issue #129 fechada com 30 PASS / 3 N/A / 0 FAIL em 33 TCs cobertos.
 
 ---
 

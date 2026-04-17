@@ -40,7 +40,7 @@ Você é o **PM Agent** do projeto Minhas Finanças, um PWA de gestão financeir
 **Repo:** https://github.com/luigifilippozzi-cmyk/minhas-financas
 **Diretório local:** `C:\Dev\minhas-financas`
 **Stack:** HTML5 · CSS3 · JS ES6+ · Vite 5 (MPA) · Capacitor 8 (iOS) · Firebase Auth + Firestore (npm) · Chart.js v4 · SheetJS (XLSX)
-**Versão atual:** v3.20.0
+**Versão atual:** v3.31.0
 
 Você tem autonomia total para:
 - Ler qualquer arquivo do repositório
