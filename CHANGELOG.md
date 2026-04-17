@@ -7,6 +7,12 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.31.0] - 2026-04-17
+
+### Adicionado
+
+- **RF-066: Patrimônio Ativos/Passivos (#155):** nova página `patrimonio.html` com gestão completa de carteira de investimentos (atualização manual) e repositório de dívidas extrajudiciais, calculando Patrimônio Líquido em tempo real. Novos modelos: `Investimento.js` (tipos: renda_fixa, renda_variável, previdência, criptoativo, outro) e `PassivoExtrajudicial.js` (status: em_acompanhamento, em_negociação, parcelada, quitada). Novas coleções Firestore: `investimentos/{grupoId}/`, `passivos_extraju/{grupoId}/`, `patrimonio_historico/{grupoId}/{YYYY-MM}/snapshot`. Fórmula PL: saldoContas (derivado de transações via `isMovimentacaoReal()`) + totalInvestimentos − totalPassivosAtivos. KPIs: Saldo Contas, Investimentos, Total Ativos, Passivos Ativos, Patrimônio Líquido, Taxa de Poupança do mês. Gráfico Chart.js de evolução patrimonial histórica. Snapshot mensal salvo via botão manual; log automático no 1º dia do mês. Alerta visual ⚠ para investimentos sem atualização > 30 dias. Regra: investimentos NUNCA deletados — apenas arquivados (`ativo: false`). 54 novos testes unitários em `tests/models/Investimento.test.js`, `tests/models/PassivoExtrajudicial.test.js`, `tests/pages/patrimonio.test.js`. 665 testes passando — PR #178.
+
 ## [3.30.0] - 2026-04-16
 
 ### Adicionado

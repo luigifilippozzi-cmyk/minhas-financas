@@ -1,8 +1,48 @@
 # Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-17 00:40 (Dev Manager — sessão autônoma)
-> Versão: v3.30.0 (CHANGELOG + package.json — sincronizados ✅)
-> Saúde: 🟡 AMARELO — CI deploy em progresso | 611 testes OK | [VIOLAÇÃO-REGRA-11] ativo (aguarda aceite PO)
+> Atualizado em: 2026-04-17 17:01 (Dev Manager — sessão autônoma)
+> Versão: v3.31.0 (CHANGELOG + package.json — sincronizados ✅)
+> Saúde: 🟢 VERDE — CI verde | 665 testes OK | RF-066 entregue | [VIOLAÇÃO-REGRA-11] ativo (aguarda aceite PO)
+
+---
+
+## Dev Manager — 2026-04-17 17:01
+
+### Sessão
+- Versão: v3.31.0
+- Tarefas concluídas: RF-066 (#155) — Patrimônio Ativos/Passivos
+- PRs criados: #178 — feat(patrimonio): RF-066 Patrimônio Ativos/Passivos
+- PRs mergeados: #178 ✅
+- Subagentes acionados: test-runner PASS (665/665), security-reviewer PASS
+- CI: 🟢 Verde (Vitest PASS 1m48s) | Deploy Firebase: aguarda CI pós-merge
+- Branch stale deletada: feat/MF-170-burn-rate-por-categoria (local)
+
+### Arquivos entregues (RF-066)
+- src/patrimonio.html (nova página MPA)
+- src/js/pages/patrimonio.js (orquestrador DOM + listeners)
+- src/js/models/Investimento.js (factory + validação)
+- src/js/models/PassivoExtrajudicial.js (factory + validação)
+- src/js/services/database.js (+80 linhas: CRUD investimentos, passivos_extraju, snapshot)
+- vite.config.js (+1 entry point)
+- tests/models/Investimento.test.js (15 testes)
+- tests/models/PassivoExtrajudicial.test.js (13 testes)
+- tests/pages/patrimonio.test.js (26 testes) — lógica pura de cálculo
+
+### Estado do milestone
+- iOS Fase 2 (ON HOLD): 4/4 issues abertas — #77, #78, #79, #80
+- UX & Gestao Patrimonial: 8/13 → agora concluídas — issues abertas: #151, #152, #154, #158, #172
+- QA pendente: #129 (RF-062, Blocos 2–4 manuais pendentes — Luigi)
+
+### Próximas prioridades
+- P0: [VIOLAÇÃO-REGRA-11] aguarda aceite PO (RF-069 em main sem PR — sessão anterior)
+- P1: NRF-NAV Fase 1 (#154) — Navbar 5 seções — v3.32.0 (casada com NRF-UI-WARM #172)
+- P2: ENH-004 (#151), ENH-002 (#152), ENH-005 (#158), NRF-UI-WARM (#172)
+- BLOQUEADO: iOS Fase 2 (#77–#80) — ON HOLD decisão PO
+
+### Alertas
+- [VIOLAÇÃO-REGRA-11] ATIVO: Dev Manager commitou 2 commits com src/ direto em main (RF-069). Aguarda aceite consciente do PO antes de próxima implementação.
+- [QA-RF-062-PENDENTE] issue #129 — Blocos 2–4 manuais pendentes (execução Luigi)
+- [DÍVIDA-TÉCNICA] chartColors.js — módulo sem teste (pré-existente, não blocante)
 
 ---
 
