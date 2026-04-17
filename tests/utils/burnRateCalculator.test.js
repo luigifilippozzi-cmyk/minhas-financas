@@ -226,4 +226,66 @@ describe('calcularBurnRate', () => {
     expect(() => calcularBurnRate()).not.toThrow();
     expect(calcularBurnRate()).toEqual([]);
   });
+
+  it('aceita data como objeto Firestore Timestamp (com método toDate)', () => {
+    const dt = new Date();
+    dt.setDate(dt.getDate() - 1);
+    const firestoreTs = { toDate: () => dt };
+    const r = calcularBurnRate({
+      orcamentos: [orc('cat1', 1000)],
+      categorias: [cat('cat1')],
+      despesasMes: [
+        { categoriaId: 'cat1', valor: 100, data: firestoreTs, tipo: 'despesa' },
+        { categoriaId: 'cat1', valor: 100, data: firestoreTs, tipo: 'despesa' },
+        { categoriaId: 'cat1', valor: 100, data: { toDate: () => { const d2 = new Date(); d2.setDate(d2.getDate() - 2); return d2; } }, tipo: 'despesa' },
+        { categoriaId: 'cat1', valor: 100, data: { toDate: () => { const d3 = new Date(); d3.setDate(d3.getDate() - 3); return d3; } }, tipo: 'despesa' },
+      ],
+      hoje: HOJE,
+    });
+    expect(r).toHaveLength(1);
+    expect(r[0].burnRateDiario).toBeGreaterThan(0);
+  });
+
+  it('ignora catId do orçamento sem categoria correspondente', () => {
+    const r = calcularBurnRate({
+      orcamentos: [orc('inexistente', 500), orc('cat1', 1000)],
+      categorias: [cat('cat1')],
+      despesasMes: [
+        despesa('cat1', 100, 1),
+        despesa('cat1', 100, 2),
+        despesa('cat1', 100, 3),
+      ],
+      hoje: HOJE,
+    });
+    // 'inexistente' não está em categorias → ignorado
+    expect(r).toHaveLength(1);
+    expect(r[0].categoriaId).toBe('cat1');
+  });
+
+  it('trata valorLimite null/undefined no orçamento como ausente (ignora categoria)', () => {
+    const r = calcularBurnRate({
+      orcamentos: [{ categoriaId: 'cat1', valorLimite: null }],
+      categorias: [cat('cat1')],
+      despesasMes: [despesa('cat1', 100, 1)],
+      hoje: HOJE,
+    });
+    expect(r).toEqual([]);
+  });
+
+  it('ordena por percentualProjetado desc quando mesma classificação', () => {
+    // Dois itens com amostra insuficiente (ambos verde), mas percentuais diferentes
+    const r = calcularBurnRate({
+      orcamentos: [orc('cat1', 1000), orc('cat2', 100)],
+      categorias: [cat('cat1', 'Cat1', '🍕'), cat('cat2', 'Cat2', '🍔')],
+      despesasMes: [
+        despesa('cat1', 10, 1),  // gastoMes=10, pct=1%
+        despesa('cat2', 90, 1),  // gastoMes=90, pct=90%
+      ],
+      hoje: HOJE,
+    });
+    // Ambas: 1 dia → amostrasInsuficientes=true → projecaoMensal=gastoMes
+    // cat2: 90/100=90% > cat1: 10/1000=1% → cat2 primeiro
+    expect(r[0].categoriaId).toBe('cat2');
+    expect(r[1].categoriaId).toBe('cat1');
+  });
 });
