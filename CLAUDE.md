@@ -187,7 +187,7 @@ Todas as cores, sombras e fontes estão em `variables.css` como CSS custom prope
 
 - Framework: **Vitest** com `@vitest/coverage-v8`
 - Localização: `tests/` (espelho de `src/js/utils/` e `src/js/services/`)
-- **594 testes unitários** cobrindo: parsers, dedup, ajusteDetector, normalizador, pipelineCartao, importarDedup, detectorTransferenciaInterna, reconciliadorFatura, bankFingerprintMap, detectorOrigemArquivo, recurringDetector, pdfParser, skeletons, forecastEngine, saldoRealPorConta
+- **611 testes unitários** cobrindo: parsers, dedup, ajusteDetector, normalizador, pipelineCartao, importarDedup, detectorTransferenciaInterna, reconciliadorFatura, bankFingerprintMap, detectorOrigemArquivo, recurringDetector, pdfParser, skeletons, forecastEngine, saldoRealPorConta, burnRateCalculator
 - **26 testes de integração** (Firebase Emulator): regras Firestore, CRUD despesas, purge em lote
 - **Rodar antes de qualquer commit:** `npm test`
 - Testes de integração: `npm run test:integration` (requer emulador na porta 8080)
@@ -195,7 +195,7 @@ Todas as cores, sombras e fontes estão em `variables.css` como CSS custom prope
 
 ---
 
-## Estado Atual do Projeto (2026-04-16) — v3.29.0
+## Estado Atual do Projeto (2026-04-16) — v3.30.0
 
 ### Milestones
 | Milestone | Progresso | Status |
@@ -208,7 +208,7 @@ Todas as cores, sombras e fontes estão em `variables.css` como CSS custom prope
 | iOS App Fase 1 (Capacitor + safe areas) | 2/2 (100%) | ✅ Concluído |
 | iOS App Fase 2 (Firebase nativo) | 0/4 issues | ⏸️ ON HOLD (decisão PO 2026-04-16) |
 | iOS App Fases 3–5 (UX mobile + TestFlight + Push) | 0/9 issues | ⚪ Aguardando Fase 2 |
-| UX & Gestão Patrimonial | 6/13 (46%) | 🟢 Ativo — RF-065/067/068 entregues |
+| UX & Gestão Patrimonial | 7/13 (54%) | 🟢 Ativo — RF-065/067/068/069 entregues |
 | Tech Debt | 2/2 (100%) — testes | ✅ Concluído |
 
 ### Estrutura de Desenvolvimento (Squad IA)
@@ -216,7 +216,7 @@ Todas as cores, sombras e fontes estão em `variables.css` como CSS custom prope
 Luigi (Product Owner)
   ├── PM Agent          → Relatório diário, métricas, alertas (read-only)
   └── Dev Manager       → Executor de código, orquestrador de subagentes
-        ├── test-runner              → Vitest (594 testes) + coverage
+        ├── test-runner              → Vitest (611 testes) + coverage
         ├── security-reviewer        → Firestore rules, escHTML/XSS, auth
         └── import-pipeline-reviewer → Pipeline de importação (parser, dedup, ajuste)
 ```
@@ -225,8 +225,8 @@ Detalhes completos em `AGENTS.md`. Bússola estratégica em `docs/BUSSOLA_PRODUT
 ### Próximas prioridades (fonte: `docs/BUSSOLA_PRODUTO.md` §9 — Ordem de Ataque Aprovada)
 1. ~~**RF-067** — Forecast 6 meses — v3.28.0~~ ✅ Concluído (PR #168)
 2. ~~**RF-068** — Saldo Real por Conta — v3.29.0~~ ✅ Concluído (PR #174)
-3. **RF-066** — Patrimônio Ativos/Passivos expandido — issue `#155` — v3.30.0 (P2) ← próximo
-4. **RF-069** — Burn Rate por Categoria — issue `#170` — v3.31.0 (P2)
+3. ~~**RF-069** — Burn Rate por Categoria — v3.30.0~~ ✅ Concluído (commit `0ee3e18`; ordem invertida com RF-066 por decisão do PO em 2026-04-16 — ver §11 da bússola)
+4. **RF-066** — Patrimônio Ativos/Passivos expandido — issue `#155` — v3.31.0 (P2) ← próximo
 5. **NRF-NAV Fase 1** — Navbar 5 seções — issue `#154` — v3.32.0 (P2) — casada com NRF-UI-WARM (#172)
 6. **NRF-NAV Fase 2** — Consolidação de páginas — v3.33.0 (P2) — absorve ENH-005
 7. **iOS App Fase 2** — Firebase nativo — issues #77–#80 — **ON HOLD** até Apple Developer Program ativado
