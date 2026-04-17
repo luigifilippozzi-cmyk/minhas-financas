@@ -461,17 +461,19 @@
 // Dashboard state — PM Agent updates this section, Dev Manager reads it
 const DASHBOARD_DATA = {
   // PM Agent atualiza estes campos:
-  lastUpdate: "2026-04-16 19:12",
-  version: "v3.29.0",
-  health: "green", // green | yellow | red
-  healthText: "🟢 Verde — CI verde (3 deploys hoje) | 594 testes OK | 0 PRs abertos | sem violações ativas | P0: RF-069 Burn Rate #170 | QA #129 pendente (Luigi)",
-  testsUnit: "594",
-  testsUnitStatus: "594 passando",
+  lastUpdate: "2026-04-17 00:40",
+  version: "v3.30.0",
+  health: "yellow", // green | yellow | red
+  healthText: "🟡 Amarelo — CI deploy em progresso | 611 testes OK | 0 PRs abertos | [VIOLAÇÃO-REGRA-11] commits src/ direto em main (RF-069) — aguarda aceite PO | QA #129 pendente (Luigi)",
+  testsUnit: "611",
+  testsUnitStatus: "611 passando",
   testsInt: "26",
-  issuesOpen: 21,
-  issuesSub: "UX milestone: 7 | iOS: 13 (Fases 2-5, F2 ON HOLD) | QA RF-062: 1 (#129)",
+  issuesOpen: 20,
+  issuesSub: "UX milestone: 6 | iOS: 13 (Fases 2-5, F2 ON HOLD) | QA RF-062: 1 (#129)",
   // Dev Manager atualiza via PR + merge
   activity: [
+    { time: "Apr 17", color: "var(--orange)", msg: "<strong>[VIOLAÇÃO-REGRA-11]</strong> — Dev Manager commitou src/ direto em main (RF-069 Burn Rate, 2 commits). Causa: git checkout -b falhou silenciosamente, commits foram para main. Feature funciona — 611 testes OK, CI testes PASS na branch, deploy em progresso. Aguarda aceite consciente do PO.", tag: "ci" },
+    { time: "Apr 17", color: "var(--green)", msg: "<strong>feat(dashboard): RF-069 Burn Rate por Categoria — v3.30.0</strong> — card 'Ritmo de Gasto' no Cockpit. burnRateCalculator.js (stateless/puro). 17 testes unitários (91.4% branch). 611 testes passando. test-runner PASS (branch). CI em progresso.", tag: "commit" },
     { time: "Apr 16", color: "var(--blue)", msg: "<strong>PM Agent</strong> — 🟢 Verde | v3.29.0 | 594 testes OK | CI verde (3 deploys bem-sucedidos) | 21 issues | UX milestone 7 open | iOS Fase 2 ON HOLD | sem violações ativas | 3 branches remotas stale (feat/MF-169, fix/MF-xss-parc, fix/MF-xss) | P0: RF-069 #170 Burn Rate | QA #129 pendente (Luigi)", tag: "pm" },
     { time: "Apr 16", color: "var(--blue)", msg: "<strong>PM Agent</strong> — 🟢 Verde | v3.29.0 | 594 testes OK | CI verde (deploy em andamento — chore) | 21 issues | UX milestone 46% (6/13) | iOS Fase 2 ON HOLD | sem violações ativas | P0: RF-069 #170 Burn Rate | QA #129 pendente (Luigi)", tag: "pm" },
     { time: "Apr 16", color: "var(--green)", msg: "<strong>PR #176 mergeado</strong> — fix(app): escHTML em renderizarPainelParcelamentos — XSS via Firestore/import | 594 testes | security-reviewer PASS", tag: "merge" },

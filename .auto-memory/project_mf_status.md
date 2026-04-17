@@ -1,8 +1,38 @@
 # Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-16 19:12 (PM Agent — revisão diária)
-> Versão: v3.29.0 (CHANGELOG + package.json — sincronizados ✅)
-> Saúde: 🟢 VERDE — CI verde | 594 testes OK | deploy Firebase OK | sem violações ativas | velocidade alta
+> Atualizado em: 2026-04-17 00:40 (Dev Manager — sessão autônoma)
+> Versão: v3.30.0 (CHANGELOG + package.json — sincronizados ✅)
+> Saúde: 🟡 AMARELO — CI deploy em progresso | 611 testes OK | [VIOLAÇÃO-REGRA-11] ativo (aguarda aceite PO)
+
+---
+
+## Dev Manager — 2026-04-17 00:40
+
+### Sessão
+- Versão: v3.30.0
+- Tarefas concluídas: RF-069 (#170) — Burn Rate por Categoria
+- Commits diretos em main: 0ee3e18 feat(dashboard) RF-069, e81df80 test(dashboard)
+- PRs criados: nenhum (VIOLAÇÃO — commits foram direto em main por falha no git checkout -b)
+- PRs mergeados: nenhum
+- Subagentes acionados: test-runner PASS (611/611, branch PASS via CI)
+- CI: 🟡 Deploy em progresso (2 runs) | Testes: ✅ SUCCESS (feat/MF-170 branch)
+- Branch stale deletada: fix/MF-xss-parc-parcelamentos (as outras já tinham sido deletadas)
+
+### Estado do milestone
+- iOS Fase 2 (ON HOLD): 4/4 issues abertas — #77, #78, #79, #80
+- UX & Gestao Patrimonial: 6/13 → agora 7/13 (RF-069 fechado) — issues abertas: #151, #152, #154, #155, #158, #172
+- QA pendente: #129 (RF-062, Blocos 2–4 manuais pendentes — Luigi)
+
+### Próximas prioridades
+- P0: [VIOLAÇÃO-REGRA-11] aguarda aceite PO (RF-069 em main sem PR)
+- P1: RF-066 (#155) — Patrimônio Ativos/Passivos
+- P2: ENH-004 (#151), ENH-002 (#152), ENH-005 (#158), NRF-NAV (#154), NRF-UI-WARM (#172)
+- BLOQUEADO: iOS Fase 2 (#77–#80) — ON HOLD decisão PO
+
+### Alertas
+- [VIOLAÇÃO-REGRA-11] ATIVO: Dev Manager commitou 2 commits com src/ direto em main (RF-069). Causa provável: git checkout -b bem-sucedido verbalmente mas branch não foi criada (bug de permissão/state git). Feature funciona — 611 testes OK. Aguarda aceite consciente do PO antes de próxima implementação.
+- [QA-RF-062-PENDENTE] issue #129 — Blocos 2–4 manuais pendentes (execução Luigi)
+- [DÍVIDA-TÉCNICA] chartColors.js — módulo sem teste (pré-existente, não blocante)
 
 ---
 
