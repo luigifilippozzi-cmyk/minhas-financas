@@ -461,17 +461,19 @@
 // Dashboard state — PM Agent updates this section, Dev Manager reads it
 const DASHBOARD_DATA = {
   // PM Agent atualiza estes campos:
-  lastUpdate: "2026-04-17 17:01",
+  lastUpdate: "2026-04-17 17:15",
   version: "v3.31.0",
   health: "green", // green | yellow | red
-  healthText: "🟢 Verde — CI deploy verde | 665 testes OK | 0 PRs abertos | RF-066 Patrimônio entregue (PR #178) | [VIOLAÇÃO-REGRA-11] aguarda aceite PO | QA #129 pendente (Luigi)",
+  healthText: "🟢 Verde — CI verde | 665 testes OK | 0 PRs abertos | RF-066 entregue (PR #178) | [VIOLAÇÃO-REGRA-11] ✅ encerrada (PO aceite #177) | QA RF-062 ✅ encerrada (#129) | 0 alertas ativos | Próximo: NRF-NAV Fase 1 (#154) v3.32.0",
   testsUnit: "665",
   testsUnitStatus: "665 passando",
   testsInt: "26",
-  issuesOpen: 19,
-  issuesSub: "UX milestone: 5 | iOS: 13 (Fases 2-5, F2 ON HOLD) | QA RF-062: 1 (#129)",
+  issuesOpen: 18,
+  issuesSub: "UX milestone: 5 | iOS: 13 (Fases 2-5, F2 ON HOLD)",
   // Dev Manager atualiza via PR + merge
   activity: [
+    { time: "Apr 17", color: "var(--blue)", msg: "<strong>PM Agent</strong> — 🟢 Verde | v3.31.0 | 665 testes OK | CI verde | 18 issues | UX milestone 62% (8/13) | iOS Fase 2 ON HOLD | [VIOLAÇÃO-REGRA-11] ✅ encerrada (PO aceite #177) | QA RF-062 ✅ encerrada (#129) | 0 alertas ativos | Próximo: NRF-NAV Fase 1 (#154) v3.32.0 casada com NRF-UI-WARM (#172)", tag: "pm" },
+    { time: "Apr 17", color: "var(--green)", msg: "<strong>PO Cowork — QA RF-062 ✅ ENCERRADA</strong> — issue #129 fechada com 30 PASS / 3 N/A / 0 FAIL (91% cobertura direta, 100% efetiva). [VIOLAÇÃO-REGRA-11] #177 aceita conscientemente pelo PO.", tag: "po" },
     { time: "Apr 17", color: "var(--green)", msg: "<strong>PR #178 mergeado</strong> — feat(patrimonio): RF-066 Patrimônio Ativos/Passivos — v3.31.0 | nova página patrimonio.html | CRUD investimentos/passivos | KPIs + gráfico | 54 novos testes (665 total) | test-runner PASS | security-reviewer PASS", tag: "merge" },
     { time: "Apr 17", color: "var(--orange)", msg: "<strong>[VIOLAÇÃO-REGRA-11]</strong> — Dev Manager commitou src/ direto em main (RF-069 Burn Rate, 2 commits). Causa: git checkout -b falhou silenciosamente, commits foram para main. Feature funciona — 611 testes OK, CI testes PASS na branch, deploy em progresso. Aguarda aceite consciente do PO.", tag: "ci" },
     { time: "Apr 17", color: "var(--green)", msg: "<strong>feat(dashboard): RF-069 Burn Rate por Categoria — v3.30.0</strong> — card 'Ritmo de Gasto' no Cockpit. burnRateCalculator.js (stateless/puro). 17 testes unitários (91.4% branch). 611 testes passando. test-runner PASS (branch). CI em progresso.", tag: "commit" },

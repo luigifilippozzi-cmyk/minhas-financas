@@ -1,8 +1,54 @@
 # Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-17 ~17h30 (PO Assistant — sessão Cowork, após sessão DM autônoma 17:01)
+> Atualizado em: 2026-04-17 17:15 (PM Agent — scheduled run autônoma)
 > Versão: v3.31.0 (CHANGELOG + package.json — sincronizados ✅)
-> Saúde: 🟢 VERDE — CI verde | 665 testes OK | RF-066 entregue | [VIOLAÇÃO-REGRA-11] ✅ ENCERRADA (issue #177) | QA RF-062 ✅ FECHADA (issue #129) | 0 alertas ativos
+> Saúde: 🟢 VERDE — CI verde | 665 testes OK | 0 alertas ativos | 0 QA pendentes | 0 violações ativas
+
+---
+
+## PM Agent — 2026-04-17 17:15
+
+### Estado
+- Versão: v3.31.0
+- Milestone ativo primário: UX & Gestao Patrimonial (62%, 8/13 fechadas)
+- Milestone iOS: 📱 App Mobile iOS — Capacitor (24%, 4/17) — **ON HOLD**
+- Saúde: 🟢 Verde — CI verde | 665 testes OK | 0 PRs abertos | 0 branches ativas
+- Testes: 665 unit + 26 int — todos passando ✅
+- CI: deploy Firebase Hosting in-progress (run 20:11Z) — anteriores success
+
+### Issues abertas (18 total)
+- UX milestone (5): #172 NRF-UI-WARM | #158 ENH-005 | #154 NRF-NAV | #152 ENH-002 | #151 ENH-004
+- iOS Fase 2 (P0 — ON HOLD): #77, #78, #79, #80
+- iOS Fase 3: #81, #82, #83
+- iOS Fase 4: #84, #85, #86
+- iOS Fase 5: #87, #88, #89
+- QA pendente: **NENHUMA** (todas fechadas) ✅
+- Novas desde última sessão: nenhuma
+
+### Alertas ativos
+- NENHUM ✅
+- [VIOLAÇÃO-REGRA-11] #177 — ENCERRADA com aceite PO (2026-04-17 sessão Cowork)
+- [QA-RF-062-PENDENTE] #129 — ENCERRADA 2026-04-17T20:07Z (30 PASS / 3 N/A / 0 FAIL)
+- [QA-RF-064] #136–#139 — ENCERRADAS 2026-04-15
+- Dívida técnica: `chartColors.js` sem teste unitário (pré-existente, baixa prioridade)
+
+### Prioridades para Dev Manager
+- P0: **NRF-NAV Fase 1 (#154) v3.32.0** — navbar 5 seções gerenciais (feature branch + PR obrigatório)
+  - casada com NRF-UI-WARM (#172) — decidir se 1 PR conjunto ou 2 sequenciais (PO deve definir)
+- P1: NRF-NAV Fase 2 (v3.33.0) → ENH-002 (#152) → ENH-004 (#151) → ENH-005 (#158)
+- iOS: ON HOLD indefinido até Apple Developer Program ativo
+
+### Atividade recente (últimas 24h)
+- PR #178 mergeado — feat(patrimonio): RF-066 Ativos/Passivos — v3.31.0 ✅
+- Sessão PO Cowork: QA RF-062 #129 fechada | VIOLAÇÃO-REGRA-11 #177 aceita e fechada
+- Commit e77ca8c: chore(memory) — reconciliação docs pós-sessão Cowork (direto main OK — chore)
+- Commits sem PR em src/: NENHUM detectado nesta sessão ✅
+- Issues fechadas últimas 24h: #155 (RF-066), #129 (QA RF-062), #177 (VIOLAÇÃO)
+- Subagentes acionados (sessão DM 17:01): test-runner PASS | security-reviewer PASS
+
+### Working tree
+- package-lock.json: modificado (não staged) — provavelmente npm install automático
+- docs/sessoes/: diretório não rastreado — artefatos da sessão PO Cowork
 
 ---
 
