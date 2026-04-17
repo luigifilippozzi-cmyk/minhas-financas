@@ -314,20 +314,22 @@ Estes princípios devem guiar qualquer nova tela, RF ou redesenho:
 
 ## 9. Ordem de Ataque Aprovada
 
-Sequência de implementação aprovada pelo PO em 2026-04-16, incorporando todos os novos RFs:
+Sequência de implementação aprovada pelo PO em 2026-04-16. Revisada na mesma data para refletir a antecipação do RF-069 (ver §11 — Registro de Decisões).
 
-| # | Item | Versão | Prioridade | Justificativa |
-|---|---|---|---|---|
-| 1 | **RF-067** — Forecast 6 meses | v3.28.0 | P2 | Em progresso. Maior salto qualitativo — habilita H3 |
-| 2 | **RF-068** — Saldo Real por Conta | v3.29.0 | P1 | Âncora de liquidez. Habilita H1 no Cockpit. Pré-requisito para forecast evoluir para saldo projetado |
-| 3 | **RF-066** — Patrimônio expandido | v3.30.0 | P2 | Completa H3 (net worth + evolução + taxa poupança) |
-| 4 | **RF-069** — Burn Rate por Categoria | v3.31.0 | P2 | Completa H2 (projeção intramês). Baixa complexidade — pode ser paralelo |
-| 5 | **NRF-NAV Fase 1** — Navbar 5 seções | v3.32.0 | P2 | Define onde tudo vai. Só navbar, sem lógica. Cockpit já tem saldo (RF-068) + forecast (RF-067) + burn rate (RF-069) |
-| 6 | **NRF-NAV Fase 2** — Consolidação de páginas | v3.33.0 | P2 | Merge de Projeções + Planejamento na seção Futuro. Absorve ENH-005. |
-| 7 | **ENH-004** — UX tela fatura | v3.34.0+ | P3 | Polish operacional, após estrutura gerencial estabelecida |
-| 8 | **ENH-002** — Bulk categorização | v3.34.0+ | P3 | Polish operacional, após estrutura gerencial estabelecida |
+| # | Item | Versão | Prioridade | Status | Justificativa |
+|---|---|---|---|---|---|
+| 1 | **RF-067** — Forecast 6 meses | v3.28.0 | P2 | ✅ Entregue (PR #168) | Maior salto qualitativo — habilitou H3 |
+| 2 | **RF-068** — Saldo Real por Conta | v3.29.0 | P1 | ✅ Entregue (PR #174) | Âncora de liquidez. Habilita H1 no Cockpit |
+| 3 | **RF-069** — Burn Rate por Categoria | v3.30.0 | P2 | ✅ Entregue (commit `0ee3e18`) | Completa H2 (projeção intramês). **Antecipado** em relação à sequência original (era #4) por decisão do PO fora de sessão — ver §11 |
+| 4 | **RF-066** — Patrimônio expandido | v3.31.0 | P2 | ⬜ Próximo | Completa H3 (net worth + evolução + taxa poupança). **Realocado** de v3.30.0 → v3.31.0 em função da antecipação do RF-069 |
+| 5 | **NRF-NAV Fase 1** — Navbar 5 seções | v3.32.0 | P2 | ⬜ | Define onde tudo vai. Cockpit já tem saldo (RF-068) + forecast (RF-067) + burn rate (RF-069). Casada com NRF-UI-WARM (#172) |
+| 6 | **NRF-NAV Fase 2** — Consolidação de páginas | v3.33.0 | P2 | ⬜ | Merge de Projeções + Planejamento na seção Futuro. Absorve ENH-005 |
+| 7 | **ENH-004** — UX tela fatura | v3.34.0+ | P3 | ⬜ | Polish operacional, após estrutura gerencial estabelecida |
+| 8 | **ENH-002** — Bulk categorização | v3.34.0+ | P3 | ⬜ | Polish operacional, após estrutura gerencial estabelecida |
 
 **Nota sobre o iOS:** iOS Fase 2 (#77–#80) está em **ON HOLD** por decisão do PO (2026-04-16). Não cancelado — quando retomado, é P0 e entra em paralelo sem afetar a sequência acima.
+
+**Nota de processo:** RF-069 foi entregue via commit direto em `main` (violação técnica da Regra Inviolável #11 do CLAUDE.md). Registrado como alerta de processo em `.auto-memory/project_mf_status.md` na sessão PO de 2026-04-16. O trabalho em si foi íntegro: CHANGELOG atualizado, 611 testes passando, coverage 91.4% em `burnRateCalculator.js`.
 
 ---
 
@@ -374,6 +376,7 @@ A definição de `mobile.html` é parte da NRF-NAV Fase 2 (v3.33.0). As issues d
 | 2026-04-16 | ENH-004 e ENH-002 rebaixados para P3 — após estrutura gerencial | PO Cowork |
 | 2026-04-16 | Sequência aprovada: RF-067→RF-068→RF-066→RF-069→NRF-NAV F1→F2→ENHs | PO Cowork |
 | 2026-04-16 | mobile.html deve incluir saldo, forecast resumido e burn rate | PO Cowork |
+| 2026-04-16 | **RF-069 antecipado para v3.30.0** (entregue commit `0ee3e18` fora de sessão PO formal). **RF-066 realocado para v3.31.0.** Processo: commit direto em `main` violou Regra Inviolável #11 — trabalho íntegro (611 testes, CHANGELOG OK), alerta registrado em `.auto-memory/project_mf_status.md` para o PM Agent reportar no próximo diário. Bússola §9 revisada nesta sessão. | PO Cowork |
 
 ---
 
