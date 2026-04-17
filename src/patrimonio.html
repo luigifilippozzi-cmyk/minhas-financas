@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Patrimônio — Minhas Finanças</title>
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <!-- Chart.js v4 — open source (github.com/chartjs/Chart.js) via jsDelivr CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+
+  <!-- Header / Navbar -->
+  <header class="navbar">
+    <div class="navbar-brand">
+      <i data-lucide="wallet" class="brand-icon"></i>
+      <span>Minhas Finanças</span>
+    </div>
+    <div class="navbar-user">
+      <span id="usuario-nome">Carregando...</span>
+      <a href="dashboard.html"      class="btn btn-outline btn-sm"><i data-lucide="layout-dashboard" class="nav-icon"></i> Dashboard</a>
+      <a href="planejamento.html"   class="btn btn-outline btn-sm"><i data-lucide="clipboard-list" class="nav-icon"></i> Planejamento</a>
+      <a href="despesas.html"       class="btn btn-outline btn-sm"><i data-lucide="trending-down" class="nav-icon"></i> Despesas</a>
+      <a href="receitas.html"       class="btn btn-outline btn-sm"><i data-lucide="wallet" class="nav-icon"></i> Receitas</a>
+      <a href="patrimonio.html"     class="btn btn-primary  btn-sm"><i data-lucide="building-2" class="nav-icon"></i> Patrimônio</a>
+      <a href="orcamentos.html"     class="btn btn-outline btn-sm"><i data-lucide="piggy-bank" class="nav-icon"></i> Orçamentos</a>
+      <a href="fluxo-caixa.html"    class="btn btn-outline btn-sm"><i data-lucide="line-chart" class="nav-icon"></i> Fluxo de Caixa</a>
+      <a href="base-dados.html"     class="btn btn-outline btn-sm"><i data-lucide="database" class="nav-icon"></i> Base de Dados</a>
+      <button id="btn-logout"       class="btn btn-outline btn-sm">Sair</button>
+    </div>
+  </header>
+
+  <!-- Conteúdo Principal -->
+  <main class="main-content">
+
+    <!-- ═══ KPIs PATRIMÔNIO ═══ -->
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">🏛️ Patrimônio</h2>
+        <div class="section-actions">
+          <button id="btn-snapshot" class="btn btn-outline btn-sm" title="Salvar snapshot mensal">📸 Snapshot</button>
+        </div>
+      </div>
+
+      <div class="resumo-cards" id="cards-pl">
+        <!-- Preenchido pelo JS -->
+      </div>
+    </section>
+
+    <!-- ═══ GRÁFICO DE EVOLUÇÃO ═══ -->
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">📈 Evolução Patrimonial</h2>
+      </div>
+      <div class="card" style="padding: var(--space-4);">
+        <canvas id="chart-evolucao" height="100"></canvas>
+      </div>
+    </section>
+
+    <!-- ═══ INVESTIMENTOS ═══ -->
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">💰 Investimentos</h2>
+        <div class="section-actions">
+          <button id="btn-novo-investimento" class="btn btn-primary btn-sm">+ Novo Investimento</button>
+        </div>
+      </div>
+      <div id="lista-investimentos">
+        <!-- Preenchido pelo JS -->
+      </div>
+    </section>
+
+    <!-- ═══ PASSIVOS EXTRAJUDICIAIS ═══ -->
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">⚖️ Dívidas Extrajudiciais</h2>
+        <div class="section-actions">
+          <button id="btn-novo-passivo" class="btn btn-danger btn-sm">+ Nova Dívida</button>
+        </div>
+      </div>
+      <div id="lista-passivos">
+        <!-- Preenchido pelo JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══ MODAL: Investimento ═══ -->
+  <div id="modal-investimento" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-inv-titulo" style="display:none;">
+    <div class="modal-overlay" id="modal-inv-overlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-inv-titulo" class="modal-title">Novo Investimento</h3>
+        <button class="modal-close" id="btn-fechar-inv" aria-label="Fechar">×</button>
+      </div>
+      <form id="form-investimento" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="inv-nome">Nome *</label>
+          <input type="text" id="inv-nome" class="form-input" placeholder="Ex: Tesouro IPCA+ 2029" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="inv-tipo">Tipo *</label>
+          <select id="inv-tipo" class="select-input">
+            <option value="renda_fixa">Renda Fixa</option>
+            <option value="renda_variavel">Renda Variável</option>
+            <option value="previdencia">Previdência</option>
+            <option value="criptoativo">Criptoativo</option>
+            <option value="outro">Outro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="inv-instituicao">Instituição</label>
+          <input type="text" id="inv-instituicao" class="form-input" placeholder="Ex: XP Investimentos" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="inv-valor-aplicado">Valor Aplicado *</label>
+            <input type="number" id="inv-valor-aplicado" class="form-input" min="0.01" step="0.01" placeholder="0,00" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="inv-valor-atual">Valor Atual *</label>
+            <input type="number" id="inv-valor-atual" class="form-input" min="0.01" step="0.01" placeholder="0,00" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="inv-liquidez">Liquidez</label>
+          <input type="text" id="inv-liquidez" class="form-input" placeholder="Ex: D+1, Diária, Vencimento" />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="inv-observacoes">Observações</label>
+          <textarea id="inv-observacoes" class="form-input" rows="2" placeholder="Notas opcionais"></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" id="btn-cancelar-inv" class="btn btn-outline">Cancelar</button>
+          <button type="submit" id="btn-salvar-inv" class="btn btn-primary">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══ MODAL: Passivo Extrajudicial ═══ -->
+  <div id="modal-passivo" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-pass-titulo" style="display:none;">
+    <div class="modal-overlay" id="modal-pass-overlay"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-pass-titulo" class="modal-title">Nova Dívida Extrajudicial</h3>
+        <button class="modal-close" id="btn-fechar-pass" aria-label="Fechar">×</button>
+      </div>
+      <form id="form-passivo" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="pass-credor">Credor *</label>
+          <input type="text" id="pass-credor" class="form-input" placeholder="Ex: Banco Safra" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="pass-descricao">Descrição</label>
+          <input type="text" id="pass-descricao" class="form-input" placeholder="Ex: Dívida contrato nº 123" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="pass-valor-original">Valor Original *</label>
+            <input type="number" id="pass-valor-original" class="form-input" min="0.01" step="0.01" placeholder="0,00" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="pass-valor-atualizado">Valor Atualizado</label>
+            <input type="number" id="pass-valor-atualizado" class="form-input" min="0.01" step="0.01" placeholder="0,00" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="pass-data-origem">Data de Origem</label>
+            <input type="date" id="pass-data-origem" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="pass-status">Status *</label>
+            <select id="pass-status" class="select-input">
+              <option value="em_acompanhamento">Em Acompanhamento</option>
+              <option value="em_negociacao">Em Negociação</option>
+              <option value="parcelada">Parcelada</option>
+              <option value="quitada">Quitada</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="pass-observacoes">Observações</label>
+          <textarea id="pass-observacoes" class="form-input" rows="2" placeholder="Notas opcionais"></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" id="btn-cancelar-pass" class="btn btn-outline">Cancelar</button>
+          <button type="submit" id="btn-salvar-pass" class="btn btn-primary">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══ MODAL: Confirmar Arquivar ═══ -->
+  <div id="modal-confirmar" class="modal" role="dialog" aria-modal="true" style="display:none;">
+    <div class="modal-overlay" id="modal-conf-overlay"></div>
+    <div class="modal-content modal-content-sm">
+      <div class="modal-header">
+        <h3 class="modal-title">Confirmar</h3>
+        <button class="modal-close" id="btn-fechar-conf" aria-label="Fechar">×</button>
+      </div>
+      <p id="modal-conf-texto" style="padding: var(--space-4);"></p>
+      <div class="modal-actions">
+        <button type="button" id="btn-cancelar-conf" class="btn btn-outline">Cancelar</button>
+        <button type="button" id="btn-confirmar-conf" class="btn btn-danger">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/pages/patrimonio.js"></script>
+</body>
+</html>

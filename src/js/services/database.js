@@ -1193,3 +1193,83 @@ export async function salvarItensPlanejamentoBatch(items) {
 export async function excluirItemPlanejamento(itemId) {
   return deleteDoc(doc(db, 'planejamento_items', itemId));
 }
+
+// ── RF-066: Patrimônio — Investimentos ───────────────────────
+
+export async function criarInvestimento(dados) {
+  return addDoc(collection(db, 'investimentos'), {
+    ...dados,
+    ativo: true,
+    dataCriacao: serverTimestamp(),
+  });
+}
+
+export function ouvirInvestimentos(grupoId, callback) {
+  const q = query(
+    collection(db, 'investimentos'),
+    where('grupoId', '==', grupoId),
+    where('ativo', '==', true),
+    orderBy('dataCriacao', 'desc'),
+  );
+  return onSnapshot(q,
+    (snap) => { callback(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); },
+    (err)  => { console.error('[ouvirInvestimentos] Erro no listener:', err); },
+  );
+}
+
+export async function atualizarInvestimento(investimentoId, dados) {
+  return updateDoc(doc(db, 'investimentos', investimentoId), dados);
+}
+
+// NUNCA deletar investimentos — apenas arquivar (ativo: false)
+export async function arquivarInvestimento(investimentoId) {
+  return updateDoc(doc(db, 'investimentos', investimentoId), { ativo: false });
+}
+
+// ── RF-066: Patrimônio — Passivos Extrajudiciais ─────────────
+
+export async function criarPassivoExtrajudicial(dados) {
+  return addDoc(collection(db, 'passivos_extraju'), {
+    ...dados,
+    dataCriacao: serverTimestamp(),
+  });
+}
+
+export function ouvirPassivosExtrajudiciais(grupoId, callback) {
+  const q = query(
+    collection(db, 'passivos_extraju'),
+    where('grupoId', '==', grupoId),
+    orderBy('dataCriacao', 'desc'),
+  );
+  return onSnapshot(q,
+    (snap) => { callback(snap.docs.map((d) => ({ id: d.id, ...d.data() }))); },
+    (err)  => { console.error('[ouvirPassivosExtrajudiciais] Erro no listener:', err); },
+  );
+}
+
+export async function atualizarPassivoExtrajudicial(passivoId, dados) {
+  return updateDoc(doc(db, 'passivos_extraju', passivoId), dados);
+}
+
+// ── RF-066: Patrimônio — Snapshot Mensal ─────────────────────
+
+export async function salvarSnapshotPatrimonial(grupoId, mesAno, dados) {
+  return setDoc(
+    doc(db, 'patrimonio_historico', grupoId, mesAno, 'snapshot'),
+    { ...dados, snapshotEm: serverTimestamp() },
+    { merge: true },
+  );
+}
+
+export async function buscarHistoricoPatrimonial(grupoId) {
+  const colRef = collection(db, 'patrimonio_historico', grupoId);
+  const snap   = await getDocs(colRef);
+  const itens  = [];
+  for (const mesDoc of snap.docs) {
+    const snapshotSnap = await getDoc(doc(db, 'patrimonio_historico', grupoId, mesDoc.id, 'snapshot'));
+    if (snapshotSnap.exists()) {
+      itens.push({ mesAno: mesDoc.id, ...snapshotSnap.data() });
+    }
+  }
+  return itens.sort((a, b) => a.mesAno.localeCompare(b.mesAno));
+}
