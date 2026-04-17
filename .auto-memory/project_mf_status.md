@@ -1211,3 +1211,26 @@ Nenhum. Próxima tarefa DM (NRF-NAV Fase 1 #154 v3.32.0) autorizada pela bússol
    CLAUDE.md / BUSSOLA �9-�11 / RESUMO / dashboard com nova sequencia de versoes
 
 ---
+
+## Sessão 2026-04-17 — PO Assistant (Cowork) — Decisão estratégica NRF-NAV F1 + NRF-UI-WARM
+- Versão na sessão: v3.31.0
+- Milestone ativo: UX & Gestão Patrimonial (8/13 — 62%)
+- Decisão: NRF-NAV Fase 1 (#154) + NRF-UI-WARM (#172) entregues em **1 PR conjunto** → v3.32.0
+  - Opção descartada: 2 PRs sequenciais (evita retrabalho visual e honra a casada prevista na Bússola §9/§11)
+  - Racional arquivado: navbar nova consome tokens warm; repaint é isolado em variables.css; escopo 100% UI sem risco de pipeline/Firestore
+  - Commits separados dentro do mesmo PR (#172 primeiro em variables.css, #154 depois na navbar)
+- Issues priorizadas: #154, #172 (juntas) — P1
+- Bugs registrados: nenhum
+- Melhorias registradas: nenhuma
+- RFs criados: nenhum
+- Bloqueios identificados: nenhum
+- Artefatos gerados para PM/DM: SIM — ambos gravados em .auto-memory\dm_tasks_pending.md e pm_tasks_pending.md (UTF-8 via AppendAllText)
+- Scripts PowerShell executados: 5 (Etapa 1A truncagem + 1B regravação DM; Etapa 2 handoff PM; Etapa 3 memória)
+- Próxima sessão PO — foco:
+  1. Revisar PR feat(ui+nav): NRF-UI-WARM + NRF-NAV F1 quando DM abrir — atenção especial a:
+     - cores hardcoded fora de variables.css (Regra #4)
+     - escHTML em innerHTML novos da navbar (Regra #7)
+     - link ativo correto em todas as 13 páginas
+     - CTA "Importar" com destaque visual
+  2. Aprovar ou vetar merge após verificar CI verde + 665 testes passando
+  3. Planejar NRF-NAV Fase 2 (v3.33.0): proposta de merge Projeções × Planejamento (Gap 5 da Bússola)
