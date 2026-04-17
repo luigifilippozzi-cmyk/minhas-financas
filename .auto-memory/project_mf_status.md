@@ -1,8 +1,45 @@
 # Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-17 17:15 (PM Agent — scheduled run autônoma)
+> Atualizado em: 2026-04-17 19:10 (PM Agent — scheduled run autônoma)
 > Versão: v3.31.0 (CHANGELOG + package.json — sincronizados ✅)
-> Saúde: 🟢 VERDE — CI verde | 665 testes OK | 0 alertas ativos | 0 QA pendentes | 0 violações ativas
+> Saúde: 🟢 VERDE — CI verde (5/5 success) | 665 testes OK | 0 alertas ativos | 0 QA pendentes | 0 violações ativas
+
+---
+
+## PM Agent — 2026-04-17 19:10
+
+### Estado
+- Versão: v3.31.0
+- Milestone ativo primário: UX & Gestao Patrimonial (62%, 8/13 fechadas)
+- Milestone iOS: 📱 App Mobile iOS — Capacitor (24%, 4/17) — **ON HOLD**
+- Saúde: 🟢 Verde — CI verde (5/5 Firebase deploy success) | 665 testes OK | 0 PRs abertos | 0 branches ativas
+- Testes: 665 unit + 26 int — todos passando ✅
+- CI: 5 runs consecutivos success (Firebase Hosting) — último: 2026-04-17T20:34Z
+
+### Issues abertas (18 total)
+- UX milestone (5): #172 NRF-UI-WARM | #158 ENH-005 | #154 NRF-NAV | #152 ENH-002 | #151 ENH-004
+- iOS Fase 2 (P0 — ON HOLD): #77, #78, #79, #80
+- iOS Fase 3: #81, #82, #83
+- iOS Fase 4: #84, #85, #86
+- iOS Fase 5: #87, #88, #89
+- QA pendente: **NENHUMA** (todas fechadas) ✅
+- Novas desde última sessão: nenhuma
+
+### Alertas ativos
+- NENHUM ✅
+- Histórico: [VIOLAÇÃO-REGRA-11] #177 encerrada com aceite PO (2026-04-17); QA RF-062 #129 encerrada (2026-04-17)
+
+### Prioridades para Dev Manager
+- P0: **NRF-NAV Fase 1 (#154) v3.32.0** — navbar 5 seções gerenciais (feature branch + PR obrigatório)
+  - casada com NRF-UI-WARM (#172) — decidir se 1 PR conjunto ou 2 sequenciais (PO deve definir)
+- P1: NRF-NAV Fase 2 (v3.33.0) → ENH-002 (#152) → ENH-004 (#151) → ENH-005 (#158)
+- iOS: ON HOLD indefinido até Apple Developer Program ativo
+
+### Atividade recente (últimas 24h)
+- Commits recentes: todos docs/chore — NENHUM commit src/ sem PR ✅
+- Issues fechadas últimas 24h: #177 (VIOLAÇÃO), #170 (RF-069), #155 (RF-066), #129 (QA RF-062)
+- Subagentes acionados: não registrado nesta sessão (read-only run)
+- Branches de feature ativas: **nenhuma**
 
 ---
 
@@ -1121,3 +1158,56 @@ Nenhum. Próxima tarefa DM (NRF-NAV Fase 1 #154 v3.32.0) autorizada pela bússol
 - Bloqueios identificados: nenhum novo
 - Artefatos gerados para PM/DM: n�o (apenas registro de mem�ria)
 - Scripts PowerShell executados: atualiza��o de project_mf_status.md
+
+## Sessao 2026-04-17 � PO Assistant (Cowork)
+
+- Versao na sessao: v3.31.0
+- Milestone ativo: UX & Gestao Patrimonial (#18) � 62% (8/13)
+- Sauda: Verde (665 testes OK, CI verde, 0 PRs abertos, 18 issues)
+
+### Decisoes da sessao
+1. NRF-NAV F1 (#154) e NRF-UI-WARM (#172) em PRs sequenciais (nao conjuntos):
+   - NRF-NAV F1 -> v3.32.0
+   - NRF-UI-WARM -> v3.33.0
+   - NRF-NAV F2 -> v3.34.0 (deslocada 1 versao)
+   Justificativa: preservar regra inviolavel da F1 (so navbar, nao toca logica
+   de pagina); permitir aferir contraste da paleta warm com navbar ja no ar;
+   reversibilidade granular; menos area por PR para security-reviewer.
+
+2. Criar docs/MILESTONE_UX_GESTAO_PATRIMONIAL.md como fonte canonica do
+   milestone #18 � fecha gap documental (unico milestone ativo sem doc
+   dedicado; iOS e Melhorias Visuais ja possuiam). Rascunho aprovado pelo
+   PO e gravado em .auto-memory\milestone_ux_gestao_patrimonial_rascunho.md
+   � DM executa criacao em docs/ e atualiza referencias cruzadas.
+
+3. Auto-colorizacao de cartoes em DESIGN_SYSTEM.md � ON HOLD (nao entra
+   no radar de metricas/alertas ate o PO reabrir).
+
+### Bugs registrados: nenhum
+### Melhorias registradas: nenhuma
+### RFs criados: nenhum
+
+### Bloqueios identificados
+- iOS Fase 2 (#77-#80) continua ON HOLD (Apple Developer Program).
+
+### Artefatos gerados
+- .auto-memory\pm_tasks_pending.md � bloco para PM Agent (decisoes + dashboard)
+- .auto-memory\dm_tasks_pending.md � bloco para Dev Manager (criar milestone
+  doc + reconciliar sequencia de versoes em CLAUDE.md, BUSSOLA �9/�11,
+  RESUMO_PROJETO_PO.md, dashboard HTML)
+- .auto-memory\milestone_ux_gestao_patrimonial_rascunho.md � rascunho
+  aprovado, 105 linhas, pronto para DM copiar para docs/
+
+### Scripts PowerShell executados
+1. Persistir tarefa PM Agent (pm_tasks_pending.md)
+2. Persistir tarefa Dev Manager (dm_tasks_pending.md)
+3. Gravar rascunho do milestone (milestone_ux_gestao_patrimonial_rascunho.md)
+4. Atualizar memoria persistente (project_mf_status.md � este bloco)
+
+### Proxima sessao PO � foco
+1. Validar PR do NRF-NAV F1 quando DM abrir (branch feat/MF-154-navbar-5-secoes, v3.32.0)
+2. Apos merge F1, autorizar NRF-UI-WARM (#172 v3.33.0)
+3. Confirmar que DM criou docs/MILESTONE_UX_GESTAO_PATRIMONIAL.md e atualizou
+   CLAUDE.md / BUSSOLA �9-�11 / RESUMO / dashboard com nova sequencia de versoes
+
+---
