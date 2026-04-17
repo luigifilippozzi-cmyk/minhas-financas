@@ -7,6 +7,12 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.30.0] - 2026-04-16
+
+### Adicionado
+
+- **RF-069: Burn Rate por Categoria (#170):** card "🔥 Ritmo de Gasto" adicionado ao Cockpit do Dashboard, exibindo burn rate (velocidade de consumo) por categoria com orçamento ativo no mês corrente. Novo módulo `burnRateCalculator.js` (stateless/puro): recebe arrays de despesas do mês, orçamentos e categorias; retorna projeção mensal por categoria com classificação visual verde/amarelo/vermelho. Regras: burn rate diário = SUM(despesas reais últimos 7 dias) / 7; projeção = gasto atual + burn rate × dias restantes; classificação verde ≤90%, amarelo 90–100%, vermelho >100% do orçamento; categorias com <3 dias de dados marcadas como "amostra insuficiente" (sem projeção extra). Card visível apenas no mês corrente (burn rate sobre dados em tempo real), atualizado via `onSnapshot` a cada nova despesa ou mudança de orçamento. Usa `isMovimentacaoReal()` para filtrar projeções e transferências internas. 13 novos testes unitários em `tests/utils/burnRateCalculator.test.js`. 607 testes passando — PR #177.
+
 ## [3.29.0] - 2026-04-16
 
 ### Adicionado
