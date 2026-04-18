@@ -1,116 +1,142 @@
 /* ============================================================
-   VARIÁVEIS GLOBAIS — Minhas Finanças
-   Design system inspirado em shadcn/ui (MIT) + Tremor (Apache 2.0)
-   Fonte: Inter (github.com/rsms/inter) — SIL Open Font License
+   VARIÁVEIS GLOBAIS — Minhas Finanças v3.32.0
+   Identidade Visual Warm Finance (NRF-UI-WARM #172)
+   Fontes: Inter Variable (SIL OFL) · Fraunces Variable (SIL OFL)
    ============================================================ */
 
-/* ── Inter Font — Google Fonts (open source) ── */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+/* ── Self-hosted fonts (RN3 — sem Google Fonts CDN) ── */
+@font-face {
+  font-family: 'Inter';
+  src: url('../assets/fonts/InterVariable.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Fraunces';
+  src: url('../assets/fonts/FrauncesVariable.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
-  /* ── Marca / Primária ────────────────────────────────────── */
-  --color-primary:        #6366f1;   /* Indigo 500 */
-  --color-primary-hover:  #4f46e5;   /* Indigo 600 */
-  --color-primary-light:  #eef2ff;   /* Indigo 50  */
-  --color-primary-ring:   rgba(99, 102, 241, 0.22);
+  /* ── Fontes ──────────────────────────────────────────────── */
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-ui:      'Inter', -apple-system, system-ui, sans-serif;
+  --font-numeric: 'Inter', system-ui, sans-serif;
+  --font-family:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* ── Marca / Primária (terracota) ────────────────────────── */
+  --color-primary:        #CC785C;
+  --color-primary-hover:  #B8684F;
+  --color-primary-light:  #FDF0EA;
+  --color-primary-ring:   rgba(204, 120, 92, 0.22);
 
   /* ── Superfície ──────────────────────────────────────────── */
-  --color-bg:             #f8fafc;   /* Slate 50 */
-  --color-surface:        #ffffff;
-  --color-surface-alt:    #f1f5f9;   /* Slate 100 */
-  --color-surface-hover:  #f8fafc;
-  --color-border:         #e2e8f0;   /* Slate 200 */
-  --color-border-hover:   #cbd5e1;   /* Slate 300 */
+  --color-bg:             #FAF9F5;   /* ivory quente */
+  --color-bg-app:         #FAF9F5;
+  --color-surface:        #FFFFFF;
+  --color-surface-alt:    #F0EEE6;   /* kraft */
+  --color-bg-muted:       #F0EEE6;
+  --color-surface-hover:  #FAF9F5;
+  --color-border:         #E3E0D6;
+  --color-border-hover:   #CCC8BC;
 
   /* ── Texto ───────────────────────────────────────────────── */
-  --color-text:           #0f172a;   /* Slate 900 */
-  --color-text-secondary: #475569;   /* Slate 600 */
-  --color-text-muted:     #64748b;   /* Slate 500 — contraste 5.6:1 (WCAG AA) */
-  --color-text-inverse:   #ffffff;
+  --color-text:           #1F1F1C;   /* carbono quente */
+  --color-ink:            #1F1F1C;
+  --color-text-secondary: #6B6A63;
+  --color-ink-muted:      #6B6A63;
+  --color-text-muted:     #8B8A82;   /* contraste 4.7:1 sobre #FAF9F5 — WCAG AA */
+  --color-text-inverse:   #FFFFFF;
 
   /* ── Status orçamentos ───────────────────────────────────── */
-  --color-ok:             #10b981;   /* Emerald 500 */
-  --color-ok-light:       #d1fae5;
-  --color-ok-text:        #065f46;
-  --color-warning:        #f59e0b;   /* Amber 500 */
-  --color-warning-light:  #fef3c7;
-  --color-warning-text:   #92400e;
-  --color-danger:         #ef4444;   /* Red 500 */
-  --color-danger-light:   #fee2e2;
-  --color-danger-text:    #991b1b;
-  --color-critical:       #8b5cf6;   /* Violet 500 */
-  --color-critical-light: #ede9fe;
-  --color-critical-text:  #5b21b6;
+  --color-ok:             #5B8C6B;   /* verde-musgo */
+  --color-positive:       #5B8C6B;
+  --color-ok-light:       #EBF5EF;
+  --color-ok-text:        #2D5C3A;
+  --color-warning:        #D4A55A;   /* âmbar-trigo */
+  --color-warning-light:  #FDF4E0;
+  --color-warning-text:   #7A5020;
+  --color-danger:         #B55440;   /* vermelho-terroso */
+  --color-danger-light:   #FDECEA;
+  --color-danger-text:    #6B2416;
+  --color-critical:       #8B6FB8;   /* violeta quente */
+  --color-critical-light: #F3EEFF;
+  --color-critical-text:  #4A2D7A;
 
   /* ── Finanças (semântica clara) ──────────────────────────── */
-  --color-income:         #10b981;   /* Verde — receitas */
-  --color-income-bg:      #f0fdf4;
-  --color-income-dark:    #166534;   /* Verde escuro para texto */
-  --color-income-border:  #86efac;
-  --color-expense:        #f43f5e;   /* Rose — despesas */
-  --color-expense-bg:     #fff1f2;
-  --color-expense-dark:   #9f1239;   /* Rose escuro para texto */
-  --color-balance:        #3b82f6;   /* Blue — saldo */
-  --color-balance-bg:     #eff6ff;
-  --color-balance-dark:   #1e40af;   /* Blue escuro para texto */
-  --color-balance-border: #93c5fd;
-  --color-budget:         #8b5cf6;   /* Violet — orçado */
-  --color-budget-bg:      #f5f3ff;
-  --color-budget-dark:    #5b21b6;   /* Violet escuro para texto */
+  --color-income:         #5B8C6B;
+  --color-income-bg:      #EBF5EF;
+  --color-income-dark:    #2D5C3A;
+  --color-income-border:  #A8D4B6;
+  --color-expense:        #B55440;
+  --color-expense-bg:     #FDECEA;
+  --color-expense-dark:   #6B2416;
+  --color-balance:        #4A7FA5;   /* azul-ardósia */
+  --color-balance-bg:     #EEF5FB;
+  --color-balance-dark:   #1E4D6B;
+  --color-balance-border: #9DC3DE;
+  --color-budget:         #8B6FB8;
+  --color-budget-bg:      #F3EEFF;
+  --color-budget-dark:    #4A2D7A;
 
   /* ── Info (azul funcional — fatura, parcelas) ────────────── */
-  --color-info:           #1565c0;   /* Blue 800 */
-  --color-info-light:     #e3f2fd;   /* Blue 50 */
-  --color-info-bg:        #f0f7ff;
-  --color-info-border:    #bbdefb;   /* Blue 100 */
-  --color-info-text:      #1565c0;   /* Blue 800 */
+  --color-info:           #4A7FA5;
+  --color-info-light:     #EEF5FB;
+  --color-info-bg:        #EEF5FB;
+  --color-info-border:    #9DC3DE;
+  --color-info-text:      #1E4D6B;
 
-  /* ── Conjunta (roxo — despesas compartilhadas) ───────────── */
-  --color-conjunta:       #7b1fa2;
-  --color-conjunta-light: #f3e5f5;
-  --color-conjunta-border:#ce93d8;
-  --color-conjunta-dark:  #4a148c;
+  /* ── Conjunta (despesas compartilhadas) ──────────────────── */
+  --color-conjunta:       #8B6FB8;
+  --color-conjunta-light: #F3EEFF;
+  --color-conjunta-border:#C4ADE6;
+  --color-conjunta-dark:  #4A2D7A;
 
   /* ── Overlays e efeitos ────────────────────────────────────── */
   --color-surface-glass:       rgba(255, 255, 255, 0.92);
-  --color-backdrop:            rgba(15, 23, 42, 0.45);
+  --color-backdrop:            rgba(31, 31, 28, 0.45);
   --color-text-inverse-muted:  rgba(255, 255, 255, 0.85);
-  --color-primary-shadow-25:   rgba(99, 102, 241, 0.25);
-  --color-primary-shadow-32:   rgba(99, 102, 241, 0.32);
-  --color-info-row:            rgba(21, 101, 192, 0.05);
+  --color-primary-shadow-25:   rgba(204, 120, 92, 0.25);
+  --color-primary-shadow-32:   rgba(204, 120, 92, 0.32);
+  --color-info-row:            rgba(74, 127, 165, 0.05);
 
   /* ── Fuzzy / Reconciliação ───────────────────────────────── */
-  --color-fuzzy-bg:            #fff8e1;
-  --color-fuzzy-text:          #e65100;
-  --color-fuzzy-border:        #ffcc02;
-  --color-fuzzy-row:           rgba(255, 193, 7, 0.08);
-  --color-fuzzy-row-hover:     rgba(255, 193, 7, 0.14);
+  --color-fuzzy-bg:            #FDF4E0;
+  --color-fuzzy-text:          #7A5020;
+  --color-fuzzy-border:        #D4A55A;
+  --color-fuzzy-row:           rgba(212, 165, 90, 0.08);
+  --color-fuzzy-row-hover:     rgba(212, 165, 90, 0.14);
 
-  /* ── Importação — erro e estados de linha ────────────────── */
-  --color-import-error-bg:     #fff8f0;
-  --color-import-error-text:   #b26a00;
-  --color-import-hint-bg:      #f8faff;
-  --color-import-hint-border:  #e0e7ff;
-  --color-import-invert-bg:    #fff7ed;
-  --color-import-invert-border:#fed7aa;
+  /* ── Importação — estados de linha ──────────────────────── */
+  --color-import-error-bg:     #FDF4E0;
+  --color-import-error-text:   #7A5020;
+  --color-import-hint-bg:      #F8F6F2;
+  --color-import-hint-border:  #E3E0D6;
+  --color-import-invert-bg:    #FDF0EA;
+  --color-import-invert-border:#EDCABB;
 
   /* ── Sombras refinadas ───────────────────────────────────── */
-  --shadow-xs:  0 1px 2px  rgba(15,23,42, 0.04);
-  --shadow-sm:  0 1px 3px  rgba(15,23,42, 0.07), 0 1px 2px rgba(15,23,42,0.04);
-  --shadow-md:  0 4px 8px  rgba(15,23,42, 0.07), 0 2px 4px rgba(15,23,42,0.04);
-  --shadow-lg:  0 10px 24px rgba(15,23,42, 0.09), 0 4px 8px rgba(15,23,42,0.05);
-  --shadow-xl:  0 20px 48px rgba(15,23,42, 0.12), 0 8px 16px rgba(15,23,42,0.06);
-  --shadow-card-hover: 0 8px 24px rgba(99,102,241, 0.12), 0 2px 8px rgba(15,23,42,0.06);
+  --shadow-xs:  0 1px 2px  rgba(31,31,28, 0.04);
+  --shadow-sm:  0 1px 3px  rgba(31,31,28, 0.07), 0 1px 2px rgba(31,31,28, 0.04);
+  --shadow-md:  0 4px 8px  rgba(31,31,28, 0.07), 0 2px 4px rgba(31,31,28, 0.04);
+  --shadow-lg:  0 10px 24px rgba(31,31,28, 0.09), 0 4px 8px rgba(31,31,28, 0.05);
+  --shadow-xl:  0 20px 48px rgba(31,31,28, 0.12), 0 8px 16px rgba(31,31,28, 0.06);
+  --shadow-card: 0 1px 3px rgba(31,31,28,0.06), 0 4px 12px rgba(31,31,28,0.04);
+  --shadow-card-hover: 0 8px 24px rgba(204,120,92, 0.12), 0 2px 8px rgba(31,31,28,0.06);
 
   /* ── Raios de borda ──────────────────────────────────────── */
   --radius-sm:   6px;
-  --radius-md:   10px;
-  --radius-lg:   14px;
+  --radius-md:   12px;
+  --radius-lg:   20px;
   --radius-xl:   20px;
   --radius-full: 9999px;
+  --radius-pill: 9999px;
 
   /* ── Tipografia ──────────────────────────────────────────── */
-  --font-family:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-size-xs:   11px;
   --font-size-sm:   13px;
   --font-size-base: 15px;
@@ -147,9 +173,100 @@
   --transition-slow: 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 
   /* ── Breakpoints (referência — usar nos @media) ────────── */
-  /* CSS custom properties não funcionam em @media(),          */
-  /* mas servem como fonte de verdade canônica do design system */
-  --bp-mobile:  640px;    /* < 640 px  = mobile   */
-  --bp-tablet: 1024px;    /* 640–1024  = tablet   */
-  /* > 1024 px = desktop                           */
+  --bp-mobile:  640px;
+  --bp-tablet: 1024px;
+}
+
+/* ── Dark mode tokens (RN6 — desbloqueia dark mode iOS issue #83) ── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-primary:        #D4896A;
+    --color-primary-hover:  #E09B7C;
+    --color-primary-light:  #3D2419;
+    --color-primary-ring:   rgba(212, 137, 106, 0.25);
+
+    --color-bg:             #1A1916;
+    --color-bg-app:         #1A1916;
+    --color-surface:        #242320;
+    --color-surface-alt:    #2E2C28;
+    --color-bg-muted:       #2E2C28;
+    --color-surface-hover:  #323028;
+    --color-border:         #3A3832;
+    --color-border-hover:   #504E46;
+
+    --color-text:           #F0EEE6;
+    --color-ink:            #F0EEE6;
+    --color-text-secondary: #A8A59E;
+    --color-ink-muted:      #A8A59E;
+    --color-text-muted:     #7A7870;
+    --color-text-inverse:   #1F1F1C;
+
+    --color-ok:             #7AAF8A;
+    --color-positive:       #7AAF8A;
+    --color-ok-light:       #1C3024;
+    --color-ok-text:        #C5E0CE;
+    --color-warning:        #E8BD78;
+    --color-warning-light:  #3A2C10;
+    --color-warning-text:   #F5DDA8;
+    --color-danger:         #D4765C;
+    --color-danger-light:   #3A1810;
+    --color-danger-text:    #F0BAA8;
+    --color-critical:       #AA8FD6;
+    --color-critical-light: #2A1A40;
+    --color-critical-text:  #D4B8F0;
+
+    --color-income:         #7AAF8A;
+    --color-income-bg:      #1C3024;
+    --color-income-dark:    #C5E0CE;
+    --color-income-border:  #3A6A4A;
+    --color-expense:        #D4765C;
+    --color-expense-bg:     #3A1810;
+    --color-expense-dark:   #F0BAA8;
+    --color-balance:        #6B9EC0;
+    --color-balance-bg:     #152030;
+    --color-balance-dark:   #B0D0E8;
+    --color-balance-border: #2A4A62;
+    --color-budget:         #AA8FD6;
+    --color-budget-bg:      #2A1A40;
+    --color-budget-dark:    #D4B8F0;
+
+    --color-info:           #6B9EC0;
+    --color-info-light:     #152030;
+    --color-info-bg:        #152030;
+    --color-info-border:    #2A4A62;
+    --color-info-text:      #B0D0E8;
+
+    --color-conjunta:       #AA8FD6;
+    --color-conjunta-light: #2A1A40;
+    --color-conjunta-border:#6A4EAA;
+    --color-conjunta-dark:  #D4B8F0;
+
+    --color-surface-glass:       rgba(36, 35, 32, 0.92);
+    --color-backdrop:            rgba(0, 0, 0, 0.60);
+    --color-text-inverse-muted:  rgba(255, 255, 255, 0.85);
+    --color-primary-shadow-25:   rgba(212, 137, 106, 0.20);
+    --color-primary-shadow-32:   rgba(212, 137, 106, 0.28);
+    --color-info-row:            rgba(107, 158, 192, 0.08);
+
+    --color-fuzzy-bg:            #3A2C10;
+    --color-fuzzy-text:          #F5DDA8;
+    --color-fuzzy-border:        #E8BD78;
+    --color-fuzzy-row:           rgba(232, 189, 120, 0.08);
+    --color-fuzzy-row-hover:     rgba(232, 189, 120, 0.15);
+
+    --color-import-error-bg:     #3A2C10;
+    --color-import-error-text:   #F5DDA8;
+    --color-import-hint-bg:      #2A2826;
+    --color-import-hint-border:  #3A3832;
+    --color-import-invert-bg:    #3D2419;
+    --color-import-invert-border:#5A3828;
+
+    --shadow-xs:  0 1px 2px  rgba(0,0,0, 0.20);
+    --shadow-sm:  0 1px 3px  rgba(0,0,0, 0.25), 0 1px 2px rgba(0,0,0, 0.15);
+    --shadow-md:  0 4px 8px  rgba(0,0,0, 0.30), 0 2px 4px rgba(0,0,0, 0.18);
+    --shadow-lg:  0 10px 24px rgba(0,0,0, 0.35), 0 4px 8px rgba(0,0,0, 0.22);
+    --shadow-xl:  0 20px 48px rgba(0,0,0, 0.40), 0 8px 16px rgba(0,0,0, 0.25);
+    --shadow-card: 0 1px 3px rgba(0,0,0,0.20), 0 4px 12px rgba(0,0,0,0.15);
+    --shadow-card-hover: 0 8px 24px rgba(212,137,106, 0.18), 0 2px 8px rgba(0,0,0,0.25);
+  }
 }
