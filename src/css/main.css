@@ -788,7 +788,7 @@ a:hover { text-decoration: underline; }
 .fc-badge--critico   { background: var(--color-warning-light); color: var(--color-warning-text); }
 .fc-badge--futuro    { background: var(--color-info-light); color: var(--color-info-text); }
 .fc-badge--vazio     { background: var(--color-surface-alt); color: var(--color-text-muted); }
-.fc-badge--estimativa { background: #fff3cd; color: #856404; }
+.fc-badge--estimativa { background: var(--color-warning-light); color: var(--color-warning-text); }
 
 /* Forecast de Caixa (RF-067) */
 .fc-forecast-card { margin-top: 1.25rem; }
@@ -906,13 +906,13 @@ a:hover { text-decoration: underline; }
 .fat-badge { display: inline-block; padding: .1rem .45rem; border-radius: 99px; font-size: .7rem; font-weight: 700; }
 .fat-badge--parc { background: var(--color-income-bg); color: var(--color-income-dark); }
 .fat-badge--vista { background: var(--color-info-light); color: var(--color-info-text); }
-.fat-badge--ok   { background: #dcfce7; color: #166534; }
-.fat-badge--warn { background: #fef3c7; color: #92400e; }
+.fat-badge--ok   { background: var(--color-ok-light); color: var(--color-ok-text); }
+.fat-badge--warn { background: var(--color-warning-light); color: var(--color-warning-text); }
 .fat-badge--neutral { background: var(--color-surface-alt); color: var(--color-text-secondary); }
 /* RF-064: alerta de liquidação */
 .fat-liquidacao-alert { display:flex; flex-direction:column; gap:.25rem; padding:.75rem 1rem; border-radius:var(--radius-md); margin-bottom:.75rem; font-size:var(--font-size-sm); }
-.fat-liquidacao-alert--ok   { background:#dcfce7; color:#166534; border-left:4px solid #22c55e; }
-.fat-liquidacao-alert--warn { background:#fef3c7; color:#92400e; border-left:4px solid #f59e0b; }
+.fat-liquidacao-alert--ok   { background:var(--color-ok-light); color:var(--color-ok-text); border-left:4px solid var(--color-ok); }
+.fat-liquidacao-alert--warn { background:var(--color-warning-light); color:var(--color-warning-text); border-left:4px solid var(--color-warning); }
 .fat-liquidacao-alert--info { background:var(--color-info-light); color:var(--color-info-text); border-left:4px solid var(--color-info); }
 .fat-score { color:var(--color-text-secondary); font-size:var(--font-size-xs); text-align:center; }
 .fat-resp-chip { background: var(--color-conjunta-light); color: var(--color-conjunta); padding: .1rem .4rem; border-radius: var(--radius-full); font-size: var(--font-size-xs); font-weight: 600; }
