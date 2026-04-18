@@ -326,8 +326,8 @@ function renderizarTabela(tipo) {
         <td>${formatarData(d.data?.toDate?.() ?? d.data)}</td>
         <td class="fat-td-estab">${escHTML(d.descricao ?? '—')}</td>
         <td><span class="fat-badge fat-badge--${d.parcela && d.parcela !== '-' ? 'parc' : 'vista'}">${d.parcela && d.parcela !== '-' ? 'P' : 'V'}</span></td>
-        <td>${d.parcela && d.parcela !== '-' ? d.parcela : '—'}</td>
-        <td>${_catMap[d.categoriaId]?.nome ?? '—'}</td>
+        <td>${d.parcela && d.parcela !== '-' ? escHTML(d.parcela) : '—'}</td>
+        <td>${escHTML(_catMap[d.categoriaId]?.nome ?? '—')}</td>
         <td class="fat-td-valor">${formatarMoeda(d.valor)}</td>
         <td class="fat-td-valor fat-td-split">${formatarMoeda(d.valorAlocado ?? (d.valor ?? 0) / 2)}</td>
       </tr>`).join('') || '<tr><td colspan="7" class="fat-td-empty">Nenhuma despesa conjunta</td></tr>';
@@ -354,8 +354,8 @@ function renderizarTabela(tipo) {
       <td>${formatarData(d.data?.toDate?.() ?? d.data)}</td>
       <td class="fat-td-estab">${escHTML(d.descricao ?? '—')}</td>
       <td><span class="fat-badge fat-badge--${d.parcela && d.parcela !== '-' ? 'parc' : 'vista'}">${d.parcela && d.parcela !== '-' ? 'P' : 'V'}</span></td>
-      <td>${d.parcela && d.parcela !== '-' ? d.parcela : '—'}</td>
-      <td>${_catMap[d.categoriaId]?.nome ?? '—'}</td>
+      <td>${d.parcela && d.parcela !== '-' ? escHTML(d.parcela) : '—'}</td>
+      <td>${escHTML(_catMap[d.categoriaId]?.nome ?? '—')}</td>
       <td class="fat-td-valor">${formatarMoeda(d.valor)}</td>
     </tr>`).join('') || '<tr><td colspan="6" class="fat-td-empty">Nenhuma despesa individual</td></tr>';
 }
@@ -370,8 +370,8 @@ function _rowTodas(d) {
     <td class="fat-td-estab">${escHTML(d.descricao ?? '—')}</td>
     <td><span class="fat-resp-chip">${escHTML(resp.split(' ')[0])}</span></td>
     <td><span class="fat-badge fat-badge--${tipo === 'P' ? 'parc' : 'vista'}">${tipo}</span></td>
-    <td>${d.parcela && d.parcela !== '-' ? d.parcela : '—'}</td>
-    <td>${_catMap[d.categoriaId]?.nome ?? '—'}</td>
+    <td>${d.parcela && d.parcela !== '-' ? escHTML(d.parcela) : '—'}</td>
+    <td>${escHTML(_catMap[d.categoriaId]?.nome ?? '—')}</td>
     <td class="fat-td-valor">${formatarMoeda(d.valor)}</td>
     <td class="fat-td-valor ${isConj ? 'fat-td-split' : ''}">${formatarMoeda(mesBol)}</td>
   </tr>`;
