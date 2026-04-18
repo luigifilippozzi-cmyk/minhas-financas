@@ -1234,3 +1234,94 @@ Nenhum. Próxima tarefa DM (NRF-NAV Fase 1 #154 v3.32.0) autorizada pela bússol
      - CTA "Importar" com destaque visual
   2. Aprovar ou vetar merge após verificar CI verde + 665 testes passando
   3. Planejar NRF-NAV Fase 2 (v3.33.0): proposta de merge Projeções × Planejamento (Gap 5 da Bússola)
+
+## Sessao 2026-04-17 — PO Assistant (Cowork) — v3.32.0 entregue + NRF-NAV F2 detalhada
+
+- Versao na sessao: v3.31.0 -> v3.32.0 (PR #179 mergeado)
+- Milestone ativo: UX & Gestao Patrimonial (#18) — 9/13 fechadas (~69%)
+- Saude: Verde
+
+### Entrega v3.32.0 — NRF-UI-WARM (#172)
+- PR #179 mergeado (merge commit 472fab1)
+- Issue #172 CLOSED (closes automatico)
+- Issue #154 (NRF-NAV F1) reposicionada para v3.33.0 solo
+- 665 testes passando | CI verde (2/2) | deploy Firebase iniciado apos merge
+- Paleta warm (terracota #CC785C / ivory #FAF9F5 / kraft #F0EEE6) + fontes
+  Fraunces/Inter self-hosted + glifo U+2732 em 6 pontos auto-calc.
+- Auditoria de Regras Invioláveis verificada pelo PO:
+    #4 OK — 124 hex novos, TODOS confinados em variables.css
+    #5 OK — zero gstatic.com no diff
+    #7 OK — glifo em template literal estatico (sem dado de usuario)
+    #10 OK — feat(ui): NRF-UI-WARM ... (v3.32.0)
+    #11 OK — feature branch + PR #179
+
+### Decisoes da sessao
+1. Decisao 17/04 "1 PR conjunto #154+#172" foi revisada: WIP do DM cobria so
+   warm; sem trabalho de navbar feito. Opcao (A) executada — warm sozinho
+   em v3.32.0, NRF-NAV F1 em v3.33.0 solo.
+2. NRF-NAV Fase 2 detalhada com 3 decisoes de arquitetura de informacao:
+   - Patrimonio permanece pagina propria (drill-down em Futuro)
+   - Timeline default 3 meses com toggle 1/3/6/12
+   - Aba Projecoes de fatura.html descontinuada no MESMO PR com redirect
+     deep link para futuro.html#timeline
+3. ENH-005 (#158) absorvida pela NRF-NAV Fase 2 (ja decidido em 2026-04-16,
+   confirmado)
+4. Cadeia de sucessao v3.33.0+:
+   v3.33.0 -> NRF-NAV F1 (#154) P1
+   v3.33.x -> NRF-NAV F2 (#154 + #158) P2
+   v3.34.0+ -> ENH-004 (#151), ENH-002 (#152) P3
+
+### Incidentes da sessao (todos recuperados)
+1. Git index.lock travado em .git/ — removido sem perda (outra sessao DM
+   encerrou mal)
+2. HEAD apontava para refs/heads/feat/ (branch invalida) — corrigido com
+   git symbolic-ref HEAD refs/heads/main
+3. WIP do DM encontrado em working tree de main (violacao Regra #11 em
+   progresso) — migrado para branch feat/MF-172-warm-finance-tokens-v3.32.0
+   sem perda
+4. Primeira tentativa de inserir bloco em CHANGELOG.md com encoding errado
+   (Get-Content -Raw sem -Encoding UTF8 em PS5.1) resultou em 1129 linhas
+   mojibake — restaurado do HEAD e re-aplicado com UTF-8 explicito
+5. PR criado sem milestone ("🎯 UX & Gestao Patrimonial" do comando nao
+   bateu com "UX & Gestao Patrimonial" real no GitHub) — milestone aplicado
+   via gh pr edit depois
+6. Fantasma CRLF/LF em src/*.html apos merge (core.autocrlf=true brigando
+   com .gitattributes eol=lf) — descartado via git checkout -- src/
+
+### Divida tecnica nova registrada para housekeeping do DM
+- **Normalizacao EOL:** core.autocrlf=true + .gitattributes eol=lf geram
+  fantasmas de git status apos pull. Fix sugerido (PR isolado):
+    git config --local core.autocrlf false
+    git add --renormalize .
+    git commit -m "chore: normalizar EOL para LF conforme .gitattributes"
+- **Nome do milestone:** divergencia entre GitHub ("UX & Gestao Patrimonial")
+  e docs/scripts ("🎯 UX & Gestão Patrimonial"). Decidir renomear no GitHub
+  OU padronizar docs.
+
+### Artefatos gerados para squad
+- Handoff DM: NRF-NAV F1 v3.33.0 + NRF-NAV F2 v3.33.x (com 3 decisoes de AI)
+  em .auto-memory/dm_tasks_pending.md
+- Handoff PM: reordenacao roadmap + nota housekeeping milestone
+  em .auto-memory/pm_tasks_pending.md
+- Commits desta sessao em main:
+    3ebe248 chore(memory): sessao PO 2026-04-17 — decisao 1 PR conjunto
+    702a731 feat(ui): NRF-UI-WARM ... (v3.32.0)
+    472fab1 Merge pull request #179
+    [proximo] chore(memory): sessao PO 2026-04-17 — v3.32.0 entregue
+
+### Scripts PowerShell executados nesta sessao
+- Diagnostico completo (status, branches, PRs, WIP)
+- Limpeza index.lock + symbolic-ref HEAD
+- Migracao WIP main -> feat/MF-172-warm-finance-tokens-v3.32.0
+- Bump package.json v3.31.0 -> v3.32.0 (npm version --no-git-tag-version)
+- Insercao de bloco v3.32.0 no CHANGELOG.md (2 tentativas: encoding OK na
+  segunda)
+- Auditoria refinada Regra #4 por arquivo
+- Merge PR #179 (gh pr merge --merge --delete-branch)
+- Gravacao handoffs DM+PM via [System.IO.File]::AppendAllText UTF-8 NoBOM
+- Atualizacao desta entrada de memoria
+
+### Proxima sessao PO — foco sugerido
+1. Aguardar DM abrir PR da NRF-NAV F1 (#154) em feat/MF-154-navbar-5-secoes-fase1-v3.33.0
+2. Revisar diff contra Regras #4/#7/#10/#11 (especialmente CTA Importar com cor primary sem hardcode)
+3. Decidir se housekeeping EOL + nome milestone entra antes ou depois da Fase 2
