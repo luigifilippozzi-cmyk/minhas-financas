@@ -7,6 +7,12 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.33.0] - 2026-04-17
+
+### Adicionado
+
+- **NRF-NAV Fase 1: navbar 5 seções gerenciais + CA3 Google Fonts removido (#154):** substituição completa da navbar flat (10 botões) por estrutura hierárquica de 5 seções — Cockpit, Futuro, Histórico, Transações e Config — usando elementos nativos `<details>`/`<summary>` (expand/collapse sem JS obrigatório). Novo módulo `src/js/nav.js`: hamburger toggle (mobile, `data-open` no `<nav>`), fechamento ao clicar fora, detecção da seção ativa por URL pathname e abertura automática do grupo correto via `sectionMap`. Regra especial: `fatura.html?tab=projecoes` mapeia para seção Futuro. CSS completo em `components.css` (~185 linhas): `.nav-section-group`, `.nav-section-btn`, `.nav-sub-menu` (dropdown absoluto), `.nav-section-btn--cta` (CTA terracota para Transações), responsive breakpoint 1024px (hamburger + drawer mobile full-screen). CA3 completado: removidas 3 tags Google Fonts CDN (`<link rel="preconnect">` + `<link href="...googleapis.com...">`) de todos os 13 HTML — zero CDN externo. `planejamento.html` recebe `nav.js` (ausente na geração anterior). 15 arquivos alterados, 1022 inserções, 217 remoções. 665 testes passando — PR #180.
+
 ## [3.32.0] - 2026-04-17
 
 ### Adicionado

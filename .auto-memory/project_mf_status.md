@@ -1,8 +1,52 @@
 # Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-17 19:10 (PM Agent — scheduled run autônoma)
-> Versão: v3.31.0 (CHANGELOG + package.json — sincronizados ✅)
-> Saúde: 🟢 VERDE — CI verde (5/5 success) | 665 testes OK | 0 alertas ativos | 0 QA pendentes | 0 violações ativas
+> Atualizado em: 2026-04-17 22:00 (Dev Manager — sessão autônoma)
+> Versão: v3.33.0 (CHANGELOG + package.json — sincronizados ✅)
+> Saúde: 🟢 VERDE — CI verde | 665 testes OK | 0 PRs abertos | 0 alertas ativos | 0 QA pendentes | 0 violações ativas
+
+---
+
+## Dev Manager — 2026-04-17 22:00
+
+### Estado
+- Versão: v3.33.0
+- Milestone ativo primário: UX & Gestao Patrimonial (77%, 10/13 fechadas)
+- Milestone iOS: 📱 App Mobile iOS — Capacitor (24%, 4/17) — **ON HOLD**
+- Saúde: 🟢 Verde — CI verde | 665 testes OK | 0 PRs abertos | 0 branches ativas
+- Testes: 665 unit + 26 int — todos passando ✅
+
+### Issues abertas (16 total)
+- UX milestone (3): #158 ENH-005 | #152 ENH-002 | #151 ENH-004
+- iOS Fase 2 (ON HOLD): #77, #78, #79, #80
+- iOS Fase 3: #81, #82, #83
+- iOS Fase 4: #84, #85, #86
+- iOS Fase 5: #87, #88, #89
+
+### Issues fechadas nesta sessão
+- #172 NRF-UI-WARM — PR #179 (sessão paralela)
+- #154 NRF-NAV Fase 1 — PR #180
+
+### PRs entregues
+- **PR #179** — feat(css): NRF-UI-WARM identidade visual Warm Finance — v3.32.0
+  - paleta terracota/ivory, Inter+Fraunces self-hosted, dark mode tokens, glifo ✲
+- **PR #180** — feat(navbar): NRF-NAV Fase 1 — navbar 5 seções gerenciais — v3.33.0
+  - nav.js criado, 11 HTMLs atualizados, CA3 Google Fonts removidos, hamburger mobile
+
+### Alertas ativos
+- NENHUM ✅
+- Tech debt registrado: XSS pré-existente em fatura.js (c.nome, _catMap, d.parcela sem escHTML) — não introduzido por esta sessão
+
+### Prioridades para próxima sessão (Dev Manager)
+- P1: NRF-NAV Fase 2 (#ENH-absorvido) → ENH-002 (#152) → ENH-004 (#151) → ENH-005 (#158)
+- iOS: ON HOLD indefinido até Apple Developer Program ativo
+
+### Atividade desta sessão
+- 2 PRs entregues (NRF-UI-WARM + NRF-NAV Fase 1)
+- 2 issues fechadas (#172, #154)
+- test-runner PASS (6/6) para ambos os PRs
+- security-reviewer PASS — sem vulnerabilidades introduzidas
+- Versão bumped: v3.31.0 → v3.32.0 → v3.33.0
+- Colisão de sessão paralela detectada e resolvida (stash + nova branch)
 
 ---
 
