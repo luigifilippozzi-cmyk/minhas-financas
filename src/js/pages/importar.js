@@ -470,7 +470,7 @@ function _atualizarBancoBadge() {
     badge.classList.add('hidden');
     return;
   }
-  badge.textContent = `${_origemEmoji} ${_origemLabel} identificado automaticamente`;
+  badge.textContent = `${_origemEmoji} ${_origemLabel} identificado automaticamente ✲`;
   badge.classList.remove('hidden');
 }
 
@@ -837,7 +837,7 @@ function _atualizarBadgeConta() {
   }
   const conta = _contaMap[contaId];
   const nome = conta ? `${conta.emoji ?? ''} ${conta.nome}`.trim() : contaId;
-  badge.textContent = `✅ Conta aplicada automaticamente: ${nome}`;
+  badge.textContent = `✅ Conta aplicada automaticamente: ${nome} ✲`;
   badge.classList.remove('hidden');
 }
 

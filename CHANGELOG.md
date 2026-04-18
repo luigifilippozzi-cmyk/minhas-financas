@@ -7,6 +7,11 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.32.0] - 2026-04-17
+
+### Adicionado
+
+- **NRF-UI-WARM: identidade visual Warm Finance + glifo auto-calc + fontes self-hosted (#172):** redesign da camada de tokens em `src/css/variables.css` com a paleta Warm Finance — terracota `#CC785C` (primária), ivory `#FAF9F5` (background), kraft `#F0EEE6` (surface alt), bordas e textos calibrados para contraste WCAG AA (texto muted `#8B8A82` com 4.7:1 sobre ivory). Fontes Inter Variable (UI/numeric) e Fraunces Variable (display) self-hosted em `src/assets/fonts/` (sem CDN externa). Nova classe utilitária `.auto-calc-glifo` para o glifo `✲` (U+2732), aplicada em estados calculados automaticamente: header "Ritmo de Gasto" (RF-069) e "Forecast — Próximos 6 Meses" (RF-067), badge "Auto" da Liquidação (RF-064), badge "estimativa" do forecast, e badges de detecção automática de banco e conta no importador. Zero hex hardcoded fora de `variables.css`. Repaint puramente cosmético — sem mudanças de lógica JS além da inserção do glifo em templates literais já existentes (sem impacto em pipeline, dedup, Firestore). 665 testes passando — PR #TBD.
 ## [3.31.0] - 2026-04-17
 
 ### Adicionado
