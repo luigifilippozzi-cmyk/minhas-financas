@@ -1,8 +1,44 @@
 # Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-17 22:00 (Dev Manager — sessão autônoma)
+> Atualizado em: 2026-04-17 22:45 (PM Agent — revisão diária)
 > Versão: v3.33.0 (CHANGELOG + package.json — sincronizados ✅)
 > Saúde: 🟢 VERDE — CI verde | 665 testes OK | 0 PRs abertos | 0 alertas ativos | 0 QA pendentes | 0 violações ativas
+
+---
+
+## PM Agent — 2026-04-17 22:45
+
+### Estado
+- Versão: v3.33.0
+- Milestone ativo primário: UX & Gestao Patrimonial (78.6%, 11/14 fechadas)
+- Milestone iOS: 📱 App Mobile iOS — Capacitor (23.5%, 4/17) — **ON HOLD**
+- Saúde: 🟢 Verde — CI verde (5/5 success) | 665 testes OK | 0 PRs abertos | 0 branches ativas (locais)
+- Testes: 665 unit + 26 int — todos passando ✅
+- CI: 5 runs consecutivos success — último: 2026-04-18T01:37Z (UTC) / 22:37 local
+
+### Issues abertas (16 total)
+- UX milestone (3): #158 ENH-005 | #152 ENH-002 | #151 ENH-004
+- iOS Fase 2 (ON HOLD): #77, #78, #79, #80
+- iOS Fase 3: #81, #82, #83
+- iOS Fase 4: #84, #85, #86
+- iOS Fase 5: #87, #88, #89
+- QA pendente: **NENHUMA** ✅
+- Novas desde última sessão: nenhuma
+
+### Alertas ativos
+- NENHUM ✅
+- Tech debt XSS em fatura.js (detectado DM 22:00) → **RESOLVIDO** via PR #181 (fix: escHTML em d.parcela e _catMap.nome)
+
+### Prioridades para Dev Manager
+- P1: NRF-NAV Fase 2 → ENH-002 (#152) → ENH-004 (#151) → ENH-005 (#158)
+- iOS: ON HOLD indefinido até Apple Developer Program ativo
+
+### Atividade recente
+- Último PR mergeado: #181 fix(fatura): XSS escHTML (2026-04-18T01:37Z)
+- PRs entregues desde sessão anterior: #179 (NRF-UI-WARM), #180 (NRF-NAV F1), #181 (fix XSS)
+- Issues fechadas desde última sessão PM (19:10): #154 (NRF-NAV), #172 (NRF-UI-WARM)
+- Commits sem PR detectados: NÃO — todos via feature branch + PR ✅
+- Subagentes acionados (DM 22:00): test-runner PASS + security-reviewer PASS (ambos os PRs)
 
 ---
 
