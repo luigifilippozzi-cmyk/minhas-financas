@@ -1325,3 +1325,27 @@ Nenhum. Próxima tarefa DM (NRF-NAV Fase 1 #154 v3.32.0) autorizada pela bússol
 1. Aguardar DM abrir PR da NRF-NAV F1 (#154) em feat/MF-154-navbar-5-secoes-fase1-v3.33.0
 2. Revisar diff contra Regras #4/#7/#10/#11 (especialmente CTA Importar com cor primary sem hardcode)
 3. Decidir se housekeeping EOL + nome milestone entra antes ou depois da Fase 2
+## Adendo Sessao 2026-04-17 — Proximas Acoes do PO (registrado para convergencia com PM)
+
+### Imediato — RESOLVIDO nesta linha
+- WIP do DM (12 HTMLs + 1 CSS + nav.js untracked) estava em main — violacao
+  Regra #11 em progresso (mesmo padrao do WIP do warm encontrado na abertura).
+- Acao tomada: git checkout feat/MF-154-navbar-5-secoes-fase1-v3.33.0 — WIP
+  viaja junto, branch ja existia desde Sub-passo 6 da sessao.
+- main agora limpa; trabalho do DM preservado integralmente na branch correta.
+
+### Proximas sessoes PO (resumo — detalhe completo em pm_tasks_pending.md)
+- Trigger 1: DM pushar PR NRF-NAV F1 (#154) → revisar contra Regras
+  Inviolaveis (atencao especial a #4 CTA Importar e nav.js sem listener leak)
+- Trigger 2: F1 mergeada → DM trazer proposta Fase 2 → aprovar/vetar com
+  base nas 3 decisoes ja tomadas (patrimonio pagina propria, timeline 3m,
+  redirect deep link)
+- Continuo: housekeeping (EOL normalize + nome milestone + regra 1 agente
+  por vez)
+
+### Convergencia com PM
+Item registrado em pm_tasks_pending.md para o PM amplificar no proximo
+relatorio diario. Saude do projeto deve ser monitorada por:
+- Verde: PR limpo na branch correta
+- Amarelo: WIP em main por > 1 dia (violacao RG-11 reincidente)
+- Vermelho: testes quebrados ou encoding corrompido em arquivo versionado
