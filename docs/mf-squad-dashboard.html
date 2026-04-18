@@ -461,10 +461,10 @@
 // Dashboard state — PM Agent updates this section, Dev Manager reads it
 const DASHBOARD_DATA = {
   // PM Agent atualiza estes campos:
-  lastUpdate: "2026-04-17 22:00",
+  lastUpdate: "2026-04-17 22:45",
   version: "v3.33.0",
   health: "green", // green | yellow | red
-  healthText: "🟢 Verde — CI verde | 665 testes OK | 0 PRs abertos | 0 alertas ativos | NRF-UI-WARM (#172) + NRF-NAV Fase 1 (#154) entregues — v3.32.0 + v3.33.0",
+  healthText: "🟢 Verde — CI verde | 665 testes OK | 0 PRs abertos | 0 alertas ativos | XSS tech debt resolvido (PR #181) | UX milestone 78.6% (11/14)",
   testsUnit: "665",
   testsUnitStatus: "665 passando",
   testsInt: "26",
@@ -472,6 +472,8 @@ const DASHBOARD_DATA = {
   issuesSub: "UX milestone: 3 | iOS: 13 (Fases 2-5, F2 ON HOLD)",
   // Dev Manager atualiza via PR + merge
   activity: [
+    { time: "Apr 17", color: "var(--blue)", msg: "<strong>PM Agent 22:45</strong> — 🟢 Verde | v3.33.0 | 665 testes OK | CI verde (5/5 success) | 16 issues | UX milestone 78.6% (11/14) | iOS ON HOLD | 0 alertas | XSS tech debt resolvido (PR #181) | Próximo: NRF-NAV Fase 2 → ENH-002 (#152) → ENH-004 (#151) → ENH-005 (#158)", tag: "pm" },
+    { time: "Apr 17", color: "var(--green)", msg: "<strong>PR #181 mergeado</strong> — fix(fatura): escHTML em d.parcela e _catMap.nome no innerHTML — XSS tech debt resolvido | 665 testes OK | security-reviewer implícito", tag: "merge" },
     { time: "Apr 17", color: "var(--green)", msg: "<strong>PR #180 mergeado</strong> — feat(navbar): NRF-NAV Fase 1 — navbar 5 seções gerenciais + CA3 Google Fonts (#154) — v3.33.0 | nav.js criado | 11 HTMLs atualizados | CA3: zero Google Fonts CDN em 13 HTMLs | hamburger mobile | active state detection | 665 testes OK | test-runner PASS | security-reviewer PASS", tag: "merge" },
     { time: "Apr 17", color: "var(--green)", msg: "<strong>PR #179 mergeado</strong> — feat(css): NRF-UI-WARM identidade visual Warm Finance (#172) — v3.32.0 | paleta terracota/ivory | Inter+Fraunces self-hosted | dark mode tokens | glifo ✲ auto-calc | zero hex hardcoded | 665 testes OK", tag: "merge" },
     { time: "Apr 17", color: "var(--blue)", msg: "<strong>PM Agent 19:10</strong> — 🟢 Verde | v3.31.0 | 665 testes OK | CI verde (5/5 success) | 18 issues | UX milestone 62% (8/13) | iOS ON HOLD | 0 alertas | Próximo: NRF-NAV Fase 1 (#154) v3.32.0 + NRF-UI-WARM (#172)", tag: "pm" },
