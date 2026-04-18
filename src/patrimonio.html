@@ -2,9 +2,6 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Patrimônio — Minhas Finanças</title>
   <link rel="stylesheet" href="css/variables.css" />
@@ -19,21 +16,74 @@
   <!-- Header / Navbar -->
   <header class="navbar">
     <div class="navbar-brand">
-      <i data-lucide="wallet" class="brand-icon"></i>
-      <span>Minhas Finanças</span>
+      <button class="nav-hamburger" id="nav-hamburger" aria-label="Abrir menu" aria-expanded="false">
+        <i data-lucide="menu"></i>
+      </button>
+      <a href="dashboard.html" class="navbar-brand-link">
+        <i data-lucide="wallet" class="brand-icon"></i>
+        <span>Minhas Finanças</span>
+      </a>
     </div>
-    <div class="navbar-user">
-      <span id="usuario-nome">Carregando...</span>
-      <a href="dashboard.html"      class="btn btn-outline btn-sm"><i data-lucide="layout-dashboard" class="nav-icon"></i> Dashboard</a>
-      <a href="planejamento.html"   class="btn btn-outline btn-sm"><i data-lucide="clipboard-list" class="nav-icon"></i> Planejamento</a>
-      <a href="despesas.html"       class="btn btn-outline btn-sm"><i data-lucide="trending-down" class="nav-icon"></i> Despesas</a>
-      <a href="receitas.html"       class="btn btn-outline btn-sm"><i data-lucide="wallet" class="nav-icon"></i> Receitas</a>
-      <a href="patrimonio.html"     class="btn btn-primary  btn-sm"><i data-lucide="building-2" class="nav-icon"></i> Patrimônio</a>
-      <a href="orcamentos.html"     class="btn btn-outline btn-sm"><i data-lucide="piggy-bank" class="nav-icon"></i> Orçamentos</a>
-      <a href="fluxo-caixa.html"    class="btn btn-outline btn-sm"><i data-lucide="line-chart" class="nav-icon"></i> Fluxo de Caixa</a>
-      <a href="base-dados.html"     class="btn btn-outline btn-sm"><i data-lucide="database" class="nav-icon"></i> Base de Dados</a>
-      <button id="btn-logout"       class="btn btn-outline btn-sm">Sair</button>
-    </div>
+    <nav class="nav-sections" id="nav-sections">
+      <a href="dashboard.html" class="nav-section-btn" data-page="dashboard">
+        <i data-lucide="layout-dashboard" class="nav-section-icon"></i>
+        <span>Cockpit</span>
+      </a>
+      <details class="nav-section-group" data-section="futuro">
+        <summary class="nav-section-btn">
+          <i data-lucide="trending-up" class="nav-section-icon"></i>
+          <span>Futuro</span>
+          <i data-lucide="chevron-down" class="nav-chevron"></i>
+        </summary>
+        <div class="nav-sub-menu">
+          <a href="fluxo-caixa.html" class="nav-sub-item" data-page="fluxo-caixa">🔮 Forecast</a>
+          <a href="planejamento.html" class="nav-sub-item" data-page="planejamento">📋 Planejamento</a>
+          <a href="fatura.html?tab=projecoes" class="nav-sub-item">💳 Projeções</a>
+        </div>
+      </details>
+      <details class="nav-section-group" data-section="historico">
+        <summary class="nav-section-btn">
+          <i data-lucide="bar-chart-2" class="nav-section-icon"></i>
+          <span>Histórico</span>
+          <i data-lucide="chevron-down" class="nav-chevron"></i>
+        </summary>
+        <div class="nav-sub-menu">
+          <a href="fluxo-caixa.html" class="nav-sub-item">📈 Fluxo Anual</a>
+          <a href="patrimonio.html" class="nav-sub-item" data-page="patrimonio">🏛️ Patrimônio</a>
+        </div>
+      </details>
+      <details class="nav-section-group nav-section-group--cta" data-section="transacoes">
+        <summary class="nav-section-btn nav-section-btn--cta">
+          <i data-lucide="layers" class="nav-section-icon"></i>
+          <span>Transações</span>
+          <i data-lucide="chevron-down" class="nav-chevron"></i>
+        </summary>
+        <div class="nav-sub-menu">
+          <a href="importar.html" class="nav-sub-item nav-sub-item--cta" data-page="importar">⬆️ Importar</a>
+          <a href="fatura.html" class="nav-sub-item" data-page="fatura">💳 Fatura</a>
+          <a href="despesas.html" class="nav-sub-item" data-page="despesas">📉 Despesas</a>
+          <a href="receitas.html" class="nav-sub-item" data-page="receitas">📈 Receitas</a>
+          <a href="base-dados.html" class="nav-sub-item" data-page="base-dados">🗃️ Base de Dados</a>
+        </div>
+      </details>
+      <details class="nav-section-group" data-section="config">
+        <summary class="nav-section-btn">
+          <i data-lucide="settings" class="nav-section-icon"></i>
+          <span>Config</span>
+          <i data-lucide="chevron-down" class="nav-chevron"></i>
+        </summary>
+        <div class="nav-sub-menu">
+          <a href="orcamentos.html" class="nav-sub-item" data-page="orcamentos">🎯 Orçamentos</a>
+          <a href="categorias.html" class="nav-sub-item" data-page="categorias">🏷️ Categorias</a>
+          <a href="contas.html" class="nav-sub-item" data-page="contas">🏦 Contas</a>
+          <a href="grupo.html" class="nav-sub-item" data-page="grupo">👥 Grupo</a>
+        </div>
+      </details>
+      <div class="nav-user">
+        <span id="usuario-nome" class="nav-username">Carregando...</span>
+        <button id="btn-logout" class="nav-logout-btn">Sair</button>
+      </div>
+    </nav>
   </header>
 
   <!-- Conteúdo Principal -->
@@ -215,5 +265,6 @@
   </div>
 
   <script type="module" src="js/pages/patrimonio.js"></script>
+  <script type="module" src="js/nav.js"></script>
 </body>
 </html>
