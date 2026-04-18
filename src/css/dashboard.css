@@ -94,7 +94,7 @@
 .resumo-card--meu-bolso::before { background: var(--color-budget); opacity: 1; }
 .resumo-card--familia::before   { background: var(--color-ok); opacity: 1; }
 .resumo-card--fatura::before    { background: var(--color-warning); opacity: 1; }
-.resumo-card--saldo-real::before { background: #0284c7; opacity: 1; } /* RF-068: saldo real — azul */
+.resumo-card--saldo-real::before { background: var(--color-balance); opacity: 1; }
 
 /* RF-068: detalhes por conta no card Saldo Real */
 .saldo-real-detalhes {
@@ -136,6 +136,7 @@
   color: var(--color-text);
   letter-spacing: -0.03em;
   line-height: 1.15;
+  font-variant-numeric: tabular-nums;
 }
 
 .resumo-sublabel {
@@ -282,6 +283,7 @@
   color: var(--color-expense);
   white-space: nowrap;
   letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
 }
 
 .despesa-acoes {
@@ -333,7 +335,7 @@
   grid-template-rows: auto auto;
   gap: var(--space-1) var(--space-4);
   padding: var(--space-3) var(--space-5);
-  border-bottom: 1px solid var(--color-border-light, #f1f5f9);
+  border-bottom: 1px solid var(--color-border);
   align-items: center;
 }
 
@@ -365,6 +367,7 @@
   font-size: var(--font-size-xs);
   color: var(--color-text-muted);
   grid-column: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .burn-rate-item-valores strong {
@@ -507,13 +510,13 @@
 
 .dash-filtro-btn--ativo {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-text-inverse);
   border-color: var(--color-primary);
 }
 
 .dash-filtro-btn--ativo:hover {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-text-inverse);
 }
 
 /* ══════════════════════════════════════════════════════════════

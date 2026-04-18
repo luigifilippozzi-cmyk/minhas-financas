@@ -424,7 +424,7 @@ function renderizarForecast(forecast) {
   tbody.innerHTML = forecast.map(({ mesLabel, ano, receitasEsperadas, recorrentes, parcelas, variaveis, saldoProjetado, estimativaLimitada }) => {
     const saldoCls = saldoProjetado >= 0 ? 'fc-verde' : 'fc-vermelho';
     const estimFlag = estimativaLimitada
-      ? '<span class="fc-badge fc-badge--estimativa" title="Dados históricos insuficientes (< 3 transações)">estimativa</span>'
+      ? '<span class="fc-badge fc-badge--estimativa" title="Dados históricos insuficientes (< 3 transações)">estimativa ✲</span>'
       : '';
     return `
       <tr class="fc-tr--futuro">

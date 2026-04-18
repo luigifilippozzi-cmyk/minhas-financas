@@ -641,7 +641,7 @@ function renderizarLiquidacao() {
   const rows = pagamentos.map((p) => {
     const { score, status, isParcial } = recalcularScoreFatura(p, totalFatura);
     const statusLabel = {
-      auto:     '<span class="fat-badge fat-badge--ok">✅ Auto</span>',
+      auto:     '<span class="fat-badge fat-badge--ok">✅ Auto ✲</span>',
       pendente: '<span class="fat-badge fat-badge--warn">⏳ Pendente</span>',
       ignorado: '<span class="fat-badge fat-badge--neutral">— Ignorado</span>',
     }[status] ?? '';

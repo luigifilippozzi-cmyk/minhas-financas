@@ -746,3 +746,14 @@ summary:focus-visible {
     transition: none !important;
   }
 }
+
+/* ── Glifo U+2732 — identifica itens calculados automaticamente (NRF-UI-WARM CA7) ── */
+.auto-calc-glifo {
+  font-size: .7em;
+  color: var(--color-text-muted);
+  opacity: 0.7;
+  vertical-align: super;
+  margin-left: .15em;
+  font-style: normal;
+  user-select: none;
+}
