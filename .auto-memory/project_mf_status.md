@@ -1,8 +1,73 @@
 # Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-19 07:00 (PM Agent — revisão diária)
-> Versão: v3.33.0 (CHANGELOG + package.json — sincronizados ✅)
-> Saúde: 🟢 VERDE — CI verde | 665 testes OK | 0 PRs abertos | 1 alerta leve (#182 sem milestone) | 0 QA pendentes | 0 violações ativas
+> Atualizado em: 2026-04-19 13:56 (Dev Manager — sessão autônoma)
+> Versão: v3.36.0 (CHANGELOG + package.json — sincronizados ✅)
+> Saúde: 🟢 VERDE — CI verde | 679 testes OK | 0 PRs abertos | ENH-002 + ENH-004 entregues | 0 QA pendentes | 0 violações ativas
+
+---
+
+## Dev Manager — 2026-04-19 13:56
+
+### Sessão
+- Versão: v3.36.0
+- Tarefas concluídas: package.json fix (v3.34.0) | ENH-002 (#152) — rota transferências | ENH-004 (#151) — 1 badge/linha
+- PRs criados: #184 (ENH-002) | #185 (ENH-004)
+- PRs mergeados: #184 ✅ | #185 ✅
+- Subagentes acionados: test-runner PASS (679/679 unit) × 2 | security-reviewer PASS × 2
+- CI: verde ✅ | Deploy Firebase: automático pós-merge (em andamento)
+
+### Estado do milestone
+- UX & Gestao Patrimonial: 13/14 fechadas (92.9%) — issue aberta: #158 ENH-005 (absorvida por NRF-NAV F2, não implementar isolado)
+- iOS Fase 2 (ON HOLD): 4/4 issues abertas — #77, #78, #79, #80
+- QA pendente: NENHUMA ✅
+- ENH-002 (#152): FECHADA ✅ via PR #184
+- ENH-004 (#151): FECHADA ✅ via PR #185
+
+### Fix XSS colaterais (Medium, pré-existentes — corrigidos durante ENH-002/004)
+- `base-dados.js` `preencherSelResp()` — escHTML() em nomes de membros
+- `despesas.js` `portBadge` — escHTML() em d.responsavel/portador
+
+### Próximas prioridades
+- P1: NRF-NAV Fase 2 (requer decisão PO sobre merge Projeções×Planejamento — ver BUSSOLA §Gap 5)
+- P2: ENH-005 (#158) — absorvida por NRF-NAV F2 (não implementar isolado)
+- iOS: ON HOLD indefinido
+
+### Alertas
+- NRF-NAV Fase 2 requer decisão PO sobre merge de Projeções×Planejamento ANTES de implementar
+- ENH-005 (#158) permanece aberta mas será resolvida pelo NRF-NAV Fase 2 — não fechar antecipadamente
+
+---
+
+## Dev Manager — 2026-04-19 10:00
+
+### Sessão
+- Versão: v3.34.0
+- Tarefas concluídas: RF-070 (#182) — Design System v1.0 Warm Finance formalizado
+- PRs criados: #183 — feat(design): RF-070 Design System v1.0 (v3.34.0)
+- PRs mergeados: #183 ✅
+- Subagentes acionados: test-runner PASS (665/665 unit) — security/pipeline N/A
+- CI: verde ✅ | Deploy Firebase: em andamento (automático pós-merge)
+
+### Estado do milestone
+- UX & Gestao Patrimonial: 12/14 fechadas (85.7%) — issues abertas: #158 ENH-005 | #152 ENH-002 | #151 ENH-004 (porém ENH-005 absorvida por NRF-NAV F2)
+- iOS Fase 2 (ON HOLD): 4/4 issues abertas — #77, #78, #79, #80
+- QA pendente: NENHUMA ✅
+- RF-070 (#182): FECHADA ✅ via PR #183
+
+### Novos artefatos criados (locais — gitignored)
+- `.auto-memory/design-decisions.md` — ADR v1.0 sobre escolha da paleta Warm Finance
+- `.auto-memory/questions-to-po.md` — placeholder estruturado para perguntas de design
+
+### Próximas prioridades
+- P1: NRF-NAV Fase 2 (requer proposta de merge Projeções×Planejamento ao PO antes de implementar)
+- P1: ENH-002 (#152) — exibir origem/destino em transferencias internas
+- P1: ENH-004 (#151) — progressive disclosure, 1 badge por linha
+- P2: ENH-005 (#158) — absorvida por NRF-NAV F2 (não implementar isolado)
+- iOS: ON HOLD indefinido
+
+### Alertas
+- package.json ainda em v3.33.0 — CHANGELOG menciona v3.34.0 mas package.json não foi atualizado (RF-070 é documentação, sem impacto em build; recomendado atualizar no próximo PR)
+- NRF-NAV Fase 2 requer decisão PO sobre merge de Projeções×Planejamento ANTES de implementar (ver BUSSOLA §Gap 5)
 
 ---
 

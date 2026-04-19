@@ -461,17 +461,20 @@
 // Dashboard state — PM Agent updates this section, Dev Manager reads it
 const DASHBOARD_DATA = {
   // PM Agent atualiza estes campos:
-  lastUpdate: "2026-04-19 10:00",
-  version: "v3.34.0",
+  lastUpdate: "2026-04-19 13:56",
+  version: "v3.36.0",
   health: "green", // green | yellow | red
-  healthText: "🟢 Verde — CI verde | 665 testes OK | 0 PRs abertos | Design System v1.0 formalizado (#182) | UX milestone 78.6% (11/14) | iOS ON HOLD",
-  testsUnit: "665",
-  testsUnitStatus: "665 passando",
+  healthText: "🟢 Verde — CI verde | 679 testes OK | 0 PRs abertos | ENH-002 + ENH-004 entregues | UX milestone 92.9% (13/14) | iOS ON HOLD",
+  testsUnit: "679",
+  testsUnitStatus: "679 passando",
   testsInt: "26",
-  issuesOpen: 16,
-  issuesSub: "UX milestone: 3 | iOS: 13 (F2 ON HOLD)",
+  issuesOpen: 14,
+  issuesSub: "UX milestone: 1 (#158 ENH-005) | iOS: 13 (F2 ON HOLD)",
   // Dev Manager atualiza via PR + merge
   activity: [
+    { time: "Apr 19", color: "var(--green)", msg: "<strong>PR #185 mergeado</strong> — feat(despesas): ENH-004 progressive disclosure 1 badge/linha (#151) — v3.36.0 | hierarquia transf &gt; projeção &gt; parcela &gt; conjunta &gt; portador | ▾ toggle &lt;details&gt; nativo | fix XSS portBadge | 679 testes | test-runner PASS | security-reviewer PASS", tag: "merge" },
+    { time: "Apr 19", color: "var(--green)", msg: "<strong>PR #184 mergeado</strong> — feat(base-dados): ENH-002 rota transferências internas + filtro (#152) — v3.35.0 | subtítulo portador→destino | badge 🔁 Transferência | filtro dedicado | fix XSS preencherSelResp | 679 testes (+14) | security-reviewer PASS", tag: "merge" },
+    { time: "Apr 19", color: "var(--blue)", msg: "<strong>chore: package.json v3.34.0</strong> — sincronização com CHANGELOG (estava em v3.33.0)", tag: "commit" },
     { time: "Apr 19", color: "var(--green)", msg: "<strong>PR #183 mergeado</strong> — feat(design): RF-070 Design System v1.0 Warm Finance — v3.34.0 | design-system/ criado | tokens.md + preview kpi-card.html self-hosted | AGENTS.md guard rail UI + §Design &amp; Frontend | 665 testes OK | test-runner PASS", tag: "merge" },
     { time: "Apr 19", color: "var(--blue)", msg: "<strong>PM Agent 07:00</strong> — 🟢 Verde | v3.33.0 | 665 testes OK | CI verde (5/5 success) | 17 issues (+1 nova #182 RF-070 Design System) | UX milestone 78.6% (11/14) | iOS ON HOLD | 0 alertas | 0 commits novos desde Apr 17 | Próximo: NRF-NAV Fase 2 → ENH-002 (#152) → ENH-004 (#151) → ENH-005 (#158) → RF-070 (#182)", tag: "pm" },
     { time: "Apr 17", color: "var(--blue)", msg: "<strong>PM Agent 22:45</strong> — 🟢 Verde | v3.33.0 | 665 testes OK | CI verde (5/5 success) | 16 issues | UX milestone 78.6% (11/14) | iOS ON HOLD | 0 alertas | XSS tech debt resolvido (PR #181) | Próximo: NRF-NAV Fase 2 → ENH-002 (#152) → ENH-004 (#151) → ENH-005 (#158)", tag: "pm" },
