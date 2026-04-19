@@ -1,8 +1,44 @@
 # Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-17 22:45 (PM Agent — revisão diária)
+> Atualizado em: 2026-04-19 07:00 (PM Agent — revisão diária)
 > Versão: v3.33.0 (CHANGELOG + package.json — sincronizados ✅)
-> Saúde: 🟢 VERDE — CI verde | 665 testes OK | 0 PRs abertos | 0 alertas ativos | 0 QA pendentes | 0 violações ativas
+> Saúde: 🟢 VERDE — CI verde | 665 testes OK | 0 PRs abertos | 1 alerta leve (#182 sem milestone) | 0 QA pendentes | 0 violações ativas
+
+---
+
+## PM Agent — 2026-04-19 07:00
+
+### Estado
+- Versão: v3.33.0
+- Milestone ativo primário: UX & Gestao Patrimonial (78.6%, 11/14 fechadas)
+- Milestone iOS: 📱 App Mobile iOS — Capacitor (23.5%, 4/17) — **ON HOLD**
+- Saúde: 🟢 Verde — CI verde (5/5 success) | 665 testes OK | 0 PRs abertos | 0 branches ativas
+- Testes: 665 unit + 26 int — todos passando ✅
+- CI: último run 2026-04-18T01:43Z — success
+
+### Issues abertas (17 total)
+- UX milestone (3): #158 ENH-005 | #152 ENH-002 | #151 ENH-004
+- RF-070 (1, SEM milestone): #182 Formalização Design System v1.0 (Warm Finance) + Governança — `prioridade: média`
+- iOS Fase 2 (ON HOLD): #77, #78, #79, #80
+- iOS Fase 3: #81, #82, #83
+- iOS Fase 4: #84, #85, #86
+- iOS Fase 5: #87, #88, #89
+- QA pendente: **NENHUMA** ✅
+- Novas desde última sessão (Apr 17 22:45): **#182 RF-070** (criada por Luigi)
+
+### Alertas ativos
+- [ATENÇÃO-MILESTONE] Issue #182 RF-070 aberta sem milestone atribuído — sugerir adicionar ao UX & Gestao Patrimonial ou criar milestone dedicado
+
+### Prioridades para Dev Manager
+- P1: NRF-NAV Fase 2 → ENH-002 (#152) → ENH-004 (#151) → ENH-005 (#158)
+- P2: RF-070 (#182) Design System v1.0 — sem milestone, aguarda decisão PO
+- iOS: ON HOLD indefinido até Apple Developer Program ativo
+
+### Atividade recente
+- Último PR mergeado: #181 fix(fatura): XSS escHTML (2026-04-18T01:37Z)
+- Commits novos desde sessão anterior: NENHUM — projeto estável desde Apr 17 22:37 UTC
+- Issues fechadas desde sessão anterior: NENHUMA
+- Subagentes acionados: não registrado
 
 ---
 
@@ -1429,3 +1465,19 @@ relatorio diario. Saude do projeto deve ser monitorada por:
 - Verde: PR limpo na branch correta
 - Amarelo: WIP em main por > 1 dia (violacao RG-11 reincidente)
 - Vermelho: testes quebrados ou encoding corrompido em arquivo versionado
+---
+
+## Sess�o 2026-04-19 � PO Assistant (Cowork)
+- Vers�o na sess�o: v3.33.0 (alvo pr�ximo: v3.34.0)
+- Milestone ativo: UX & Gest�o Patrimonial (78.6%, 11/14)
+- **Decis�o est�tica:** descartado o Design System "Family CFO v1.1" trazido pelo Claude chat (proposta estrangeira, n�o alinhada com NRF-UI-WARM em produ��o). Aproveitada apenas a estrutura de governan�a e a ideia de pasta `design-system/`.
+- **Decis�o estrat�gica:** promover NRF-UI-WARM (Warm Finance, v3.32.0) a Design System v1.0 oficial do MF.
+- **RF criado:** RF-070 � Formaliza��o do Design System v1.0 (Warm Finance) + Governan�a � Issue #182 � P2 � alvo v3.34.0
+- **ENH absorvido:** ENH-006 (checklist de design no handoff) consolidado dentro do RF-070, n�o criado separadamente
+- **Bugs registrados:** nenhum
+- **Melhorias registradas:** nenhuma (separadas)
+- **Bloqueios identificados:** nenhum
+- **Artefatos gerados para PM/DM:** sim � handoffs gravados em `.auto-memory/pm_tasks_pending.md` e `.auto-memory/dm_tasks_pending.md`
+- **Scripts PowerShell executados:** cria��o do label rf-070 (idempotente), cria��o da Issue #182, regrava��o dos handoffs
+- **Alerta legado pendente:** verificar commit direto em `main` do run #166 (14/04/2026) � regra inviol�vel #11 � ainda n�o tratado
+- **Pr�xima sess�o:** revisar PR do RF-070 quando o DM finalizar; depois retomar fila NRF-NAV Fase 2 (#154 absorveu, pr�ximo � ENH-002 #152)
