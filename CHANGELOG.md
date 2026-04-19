@@ -7,6 +7,12 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.34.0] - 2026-04-19
+
+### Adicionado
+
+- **RF-070: Design System v1.0 — formalização Warm Finance + governança (#182):** promoção da identidade visual NRF-UI-WARM (v3.32.0) a Design System v1.0 oficial do projeto. Nova pasta `design-system/` com `README.md` (guia de uso e contribuição), `tokens.md` (especificação humana de paleta, tipografia, spacing, motion e componentes canônicos) e `preview/kpi-card.html` (mini-Storybook self-hosted: três estados — conteúdo, loading, empty — sem CDN externa, fontes via `@font-face` apontando para `src/assets/fonts/`). Novo `.auto-memory/design-decisions.md` com ADR inicial documentando a decisão de não adotar a proposta ZIP v1.1 e de manter `variables.css` como fonte técnica canônica (sem `tokens.css` separado). Novo `.auto-memory/questions-to-po.md` como placeholder estruturado para perguntas de design. `AGENTS.md` acrescido de guard rail no topo (leitura de `tokens.md` obrigatória antes de task de UI), nova seção `## Design & Frontend` (ordem de leitura, hard constraints, three-state, mobile-first 375/414, regra do silêncio), fonte de instrução #3 atualizada e checklist de PR com 4 novos itens de UI. `CLAUDE.md` §Anti-patterns ganha entrada para `design-system/tokens.md`. 665 testes passando — PR #182.
+
 ## [3.33.0] - 2026-04-17
 
 ### Adicionado
