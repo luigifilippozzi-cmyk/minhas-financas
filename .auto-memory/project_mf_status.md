@@ -1,8 +1,37 @@
 # Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-19 13:56 (Dev Manager — sessão autônoma)
-> Versão: v3.36.0 (CHANGELOG + package.json — sincronizados ✅)
-> Saúde: 🟢 VERDE — CI verde | 679 testes OK | 0 PRs abertos | ENH-002 + ENH-004 entregues | 0 QA pendentes | 0 violações ativas
+> Atualizado em: 2026-04-19 14:00 (PM Agent — revisão diária)
+> Versão: v3.36.0 (CHANGELOG) | package.json = v3.34.0 ⚠️ [INCONSISTÊNCIA]
+> Saúde: 🟡 AMARELO — [INCONSISTÊNCIA] package.json desatualizado | CI deploy in-progress | 679 testes OK | 0 PRs abertos
+
+---
+
+## PM Agent — 2026-04-19 14:00
+
+### Estado
+- Versão: v3.36.0 (CHANGELOG) | package.json ainda em v3.34.0 ← [INCONSISTÊNCIA] — DM deve corrigir no próximo commit
+- Milestone primário: UX & Gestao Patrimonial (92.9%, 13/14 fechadas) — só #158 ENH-005 aberta (absorvida por NRF-NAV F2)
+- Milestone iOS: 📱 App Mobile iOS — Capacitor (23.5%, 4/17) — **ON HOLD** indefinido
+- Saúde: 🟡 Amarelo — package.json desync + CI deploy in-progress (não bloqueante)
+- Testes: 679 unit + 26 int — todos passando ✅
+- CI: deploy in-progress (run triggered por chore DM 13:56) | runs anteriores: success ✅
+
+### Issues abertas (14 total)
+- Fase 2 iOS (P0, ON HOLD): #77, #78, #79, #80
+- Fase 3 iOS: #81, #82, #83
+- Fase 4 iOS: #84, #85, #86
+- Fase 5 iOS: #87, #88, #89
+- UX milestone: #158 ENH-005 (não implementar isolado — absorvida por NRF-NAV F2)
+- Novas desde última sessão (DM 13:56): nenhuma
+
+### Alertas ativos
+- [INCONSISTÊNCIA] package.json=v3.34.0 vs CHANGELOG=v3.36.0 — ENH-002 e ENH-004 foram mergeados sem atualizar package.json
+
+### Prioridades para Dev Manager
+- P0: corrigir package.json → v3.36.0 (chore, commit direto na main)
+- P1: NRF-NAV Fase 2 — requer decisão PO sobre merge Projeções×Planejamento antes de implementar
+- P2: ENH-005 (#158) — aguardar NRF-NAV F2
+- iOS: ON HOLD indefinido
 
 ---
 
