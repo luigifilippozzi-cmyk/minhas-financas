@@ -368,7 +368,7 @@ function preencherSelResp() {
   if (!sel) return;
   const nomes = Object.values(_nomesMembros);
   sel.innerHTML = '<option value="">— selecione —</option>' +
-    nomes.map(n => `<option value="${n}">${n}</option>`).join('');
+    nomes.map(n => `<option value="${escHTML(n)}">${escHTML(n)}</option>`).join('');
 }
 
 function aplicarFiltros() {
@@ -380,9 +380,10 @@ function aplicarFiltros() {
 
   _filtradas = _todasTransacoes.filter(t => {
     if (tipo !== 'todos') {
-      if (tipo === 'projecao' && t.tipo !== 'projecao') return false;
+      if (tipo === 'transferencia_interna' && t.tipo !== 'transferencia_interna') return false;
+      else if (tipo === 'projecao' && t.tipo !== 'projecao') return false;
       else if (tipo === 'receita' && t._tipo !== 'receita') return false;
-      else if (tipo === 'despesa' && (t._tipo !== 'despesa' || t.tipo === 'projecao')) return false;
+      else if (tipo === 'despesa' && (t._tipo !== 'despesa' || t.tipo === 'projecao' || t.tipo === 'transferencia_interna')) return false;
     }
     // ENH-003: sentinela especial para transações sem categoria válida
     if (cat === '__nao_categorizada__') {
@@ -449,10 +450,23 @@ function renderizarPagina() {
       const catNome = catObj ? `${catObj.emoji ?? ''} ${catObj.nome}`.trim() : (t.categoriaId ?? '—');
       const resp    = t.responsavel ?? t.portador ?? '—';
 
+      // ENH-002: rota de transferência interna (portador → destino ou origem → portador)
+      let rotaTransf = '';
+      if (t.tipo === 'transferencia_interna') {
+        const portador = escHTML(t.portador ?? t.responsavel ?? '—');
+        if (t._tipo === 'despesa') {
+          const destNome = escHTML(_nomesMembros[t.membroDestinoId] ?? '?');
+          rotaTransf = `<div style="font-size:.7rem;color:var(--color-info-text);white-space:nowrap;margin-top:1px;">${portador} → ${destNome}</div>`;
+        } else {
+          const origNome = escHTML(_nomesMembros[t.membroOrigemId] ?? '?');
+          rotaTransf = `<div style="font-size:.7rem;color:var(--color-info-text);white-space:nowrap;margin-top:1px;">${origNome} → ${portador}</div>`;
+        }
+      }
+
       tr.innerHTML = `
         <td><input type="checkbox" class="ger-row-chk" data-id="${t.id}" data-colecao="${colecao}" ${checked} /></td>
         <td style="white-space:nowrap;">${dataStr}</td>
-        <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escHTML(desc)}">${escHTML(desc)}</td>
+        <td style="max-width:220px;" title="${escHTML(desc)}"><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(desc)}</div>${rotaTransf}</td>
         <td style="text-align:right;font-weight:600;">${valorStr}</td>
         <td><span class="ger-tipo-badge ${tipoClass}">${tipoLabel}</span></td>
         <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHTML(catNome)}</td>
@@ -492,12 +506,14 @@ function renderizarPagina() {
 }
 
 function _tipoLabel(t) {
+  if (t.tipo === 'transferencia_interna') return '🔁 Transferência';
   if (t.tipo === 'projecao') return '📆 Projeção';
   if (t._tipo === 'receita')  return '📥 Receita';
   return '💸 Despesa';
 }
 
 function _tipoClass(t) {
+  if (t.tipo === 'transferencia_interna') return 'ger-tipo-transf';
   if (t.tipo === 'projecao') return 'ger-tipo-projecao';
   if (t._tipo === 'receita')  return 'ger-tipo-receita';
   return 'ger-tipo-despesa';
