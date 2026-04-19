@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MF — KpiCard preview v1.0</title>
+<style>
+/* Self-hosted fonts — sem Google Fonts CDN */
+@font-face {
+  font-family: 'Inter';
+  src: url('../../src/assets/fonts/InterVariable.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Fraunces';
+  src: url('../../src/assets/fonts/FrauncesVariable.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Tokens — espelho de src/css/variables.css (fonte canônica) */
+:root {
+  /* Fontes */
+  --font-display:  'Fraunces', Georgia, serif;
+  --font-ui:       'Inter', -apple-system, system-ui, sans-serif;
+  --font-numeric:  'Inter', system-ui, sans-serif;
+
+  /* Superfícies */
+  --color-bg:           #FAF9F5;
+  --color-surface:      #FFFFFF;
+  --color-surface-alt:  #F0EEE6;
+  --color-border:       #E3E0D6;
+
+  /* Texto */
+  --color-text:           #1F1F1C;
+  --color-text-secondary: #6B6A63;
+  --color-text-muted:     #8B8A82;
+
+  /* Semântica financeira */
+  --color-income:      #5B8C6B;
+  --color-income-bg:   #EBF5EF;
+  --color-expense:     #B55440;
+  --color-expense-bg:  #FDECEA;
+  --color-warning:     #D4A55A;
+  --color-warning-bg:  #FDF4E0;
+
+  /* Marca */
+  --color-primary:       #CC785C;
+  --color-primary-light: #FDF0EA;
+
+  /* Escala tipográfica */
+  --text-xs:   0.75rem;
+  --text-sm:   0.875rem;
+  --text-base: 1rem;
+  --text-md:   1.125rem;
+  --text-lg:   1.5rem;
+  --text-xl:   2rem;
+  --text-2xl:  2.75rem;
+  --text-3xl:  4rem;
+
+  /* Pesos */
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+
+  /* Entrelinha */
+  --leading-tight:   1.0;
+  --leading-display: 1.15;
+  --leading-body:    1.5;
+
+  /* Letter-spacing */
+  --tracking-tight:   -0.02em;
+  --tracking-snug:    -0.01em;
+  --tracking-normal:   0em;
+  --tracking-wide:     0.1em;
+  --tracking-wider:    0.12em;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* Raio e sombras */
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   16px;
+  --radius-pill: 999px;
+  --shadow-sm:   0 1px 2px rgba(31, 31, 28, 0.04);
+  --shadow-md:   0 4px 16px rgba(31, 31, 28, 0.06);
+
+  /* Motion */
+  --ease:     cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 400ms;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-ui);
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+  -webkit-font-smoothing: antialiased;
+  padding: var(--space-6) var(--space-4);
+  min-height: 100vh;
+}
+
+.wrap { max-width: 720px; margin: 0 auto; }
+
+/* ---------- Header da página ---------- */
+.page-header { margin-bottom: var(--space-7); }
+
+.page-header .eyebrow {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-muted);
+  font-weight: var(--weight-medium);
+  margin-bottom: var(--space-2);
+}
+
+.page-header h1 {
+  font-family: var(--font-display);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-xl);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-snug);
+  color: var(--color-text);
+}
+
+.section-label {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-muted);
+  font-weight: var(--weight-medium);
+  margin-bottom: var(--space-3);
+  margin-top: var(--space-7);
+}
+.section-label:first-of-type { margin-top: 0; }
+
+/* ============ KpiCard ============ */
+.kpi-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-5);
+  transition: box-shadow var(--dur-base) var(--ease);
+  opacity: 0;
+  transform: translateY(4px);
+  animation: kpi-in var(--dur-slow) var(--ease) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kpi-card { animation: none; opacity: 1; transform: none; }
+}
+
+@keyframes kpi-in {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.kpi-card:hover { box-shadow: var(--shadow-md); }
+
+.kpi-card__label {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-muted);
+  font-weight: var(--weight-medium);
+  margin-bottom: var(--space-3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.kpi-card__question {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  text-transform: none;
+  letter-spacing: var(--tracking-normal);
+  font-weight: var(--weight-regular);
+  margin-bottom: var(--space-2);
+  font-style: italic;
+}
+
+.kpi-card__value {
+  font-family: var(--font-display);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-2xl);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: var(--space-3);
+}
+
+.kpi-card__value--hero { font-size: var(--text-3xl); }
+
+.kpi-card__delta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-numeric);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  font-variant-numeric: tabular-nums;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+}
+
+.kpi-card__delta--positive {
+  color: var(--color-income);
+  background: var(--color-income-bg);
+}
+.kpi-card__delta--negative {
+  color: var(--color-expense);
+  background: var(--color-expense-bg);
+}
+.kpi-card__delta--warning {
+  color: var(--color-warning);
+  background: var(--color-warning-bg);
+}
+
+.kpi-card__delta-context {
+  font-family: var(--font-ui);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  margin-left: var(--space-2);
+}
+
+.kpi-card__arrow { width: 12px; height: 12px; display: inline-block; }
+
+/* ============ Loading state ============ */
+.kpi-card--loading .skeleton {
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-md);
+  animation: skel-pulse 1.4s ease-in-out infinite;
+}
+@keyframes skel-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.kpi-card--loading .sk-label { height: 10px; width: 120px; margin-bottom: var(--space-3); }
+.kpi-card--loading .sk-value { height: 44px; width: 220px; margin-bottom: var(--space-4); }
+.kpi-card--loading .sk-delta { height: 24px; width: 160px; border-radius: var(--radius-pill); }
+
+/* ============ Empty state ============ */
+.kpi-card--empty {
+  border-style: dashed;
+  background: transparent;
+  box-shadow: none;
+}
+.kpi-card--empty .kpi-card__value {
+  color: var(--color-text-muted);
+  font-size: var(--text-lg);
+  font-style: italic;
+}
+.kpi-card--empty .empty-cta {
+  color: var(--color-primary);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* ---------- Grid de cards secundários ---------- */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+@media (max-width: 480px) {
+  .kpi-grid { grid-template-columns: 1fr; }
+}
+
+/* Stagger */
+.kpi-card:nth-child(1) { animation-delay: 0ms; }
+.kpi-card:nth-child(2) { animation-delay: 60ms; }
+.kpi-card:nth-child(3) { animation-delay: 120ms; }
+
+footer {
+  margin-top: var(--space-7);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="page-header">
+    <div class="eyebrow">Minhas Finanças · KpiCard v1.0</div>
+    <h1>Como estamos esse mês?</h1>
+  </header>
+
+  <!-- Variante Hero -->
+  <div class="section-label">Hero — pergunta principal do dashboard</div>
+  <div class="kpi-card">
+    <div class="kpi-card__label">Saldo disponível · Abril</div>
+    <div class="kpi-card__question">Quanto ainda podemos gastar até o fim do mês?</div>
+    <div class="kpi-card__value kpi-card__value--hero">R$ 3.842,17</div>
+    <span class="kpi-card__delta kpi-card__delta--positive">
+      <svg class="kpi-card__arrow" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><path d="M6 2 L10 7 L7 7 L7 10 L5 10 L5 7 L2 7 Z"/></svg>
+      R$ 340
+    </span>
+    <span class="kpi-card__delta-context">vs. média dos últimos 3 meses</span>
+  </div>
+
+  <!-- Grid de cards padrão -->
+  <div class="section-label">Padrão — secundários, respondem perguntas de apoio</div>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-card__label">Gastos do mês</div>
+      <div class="kpi-card__value">R$ 6.157,83</div>
+      <span class="kpi-card__delta kpi-card__delta--warning">
+        <svg class="kpi-card__arrow" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><path d="M6 10 L2 5 L5 5 L5 2 L7 2 L7 5 L10 5 Z"/></svg>
+        &minus;8,2%
+      </span>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-card__label">Receita prevista</div>
+      <div class="kpi-card__value">R$ 10.000,00</div>
+      <span class="kpi-card__delta kpi-card__delta--positive">Estável</span>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="section-label">Estado de carregamento</div>
+  <div class="kpi-card kpi-card--loading" aria-busy="true" aria-label="Carregando indicador">
+    <div class="skeleton sk-label"></div>
+    <div class="skeleton sk-value"></div>
+    <div class="skeleton sk-delta"></div>
+  </div>
+
+  <!-- Empty -->
+  <div class="section-label">Estado vazio</div>
+  <div class="kpi-card kpi-card--empty">
+    <div class="kpi-card__label">Investimentos</div>
+    <div class="kpi-card__value">Ainda sem dados</div>
+    <button class="empty-cta" type="button">Conectar conta →</button>
+  </div>
+
+  <footer>
+    Tokens aplicados de <code>/design-system/tokens.md</code> (fonte técnica canônica: <code>src/css/variables.css</code>).
+    Fontes: Fraunces Variable (display), Inter Variable (UI + numérico com tabular-nums).
+    Sem dependência de CDN externa.
+  </footer>
+
+</div>
+</body>
+</html>
