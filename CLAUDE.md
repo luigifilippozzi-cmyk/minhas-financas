@@ -314,10 +314,11 @@ git push origin main
 ## Anti-patterns — O que NÃO fazer
 
 - ❌ Deletar documentos `parcelamentos` — só `status: 'quitado'`
-- ❌ Hardcodar cores no CSS — usar variáveis de `variables.css`
+- ❌ Hardcodar cores no CSS — usar variáveis de `variables.css` (ver `design-system/tokens.md` para semântica)
 - ❌ `innerHTML` com dados do usuário sem `escHTML()` — XSS
 - ❌ Queries Firestore sem filtro `grupoId` — dados vazam entre grupos
 - ❌ Modificar `chave_dedup` após salvar — quebra deduplicação histórica
 - ❌ Omitir `mesFatura` em despesas de cartão — quebra a tela de fatura
 - ❌ Usar `deleteDoc` em lote sem batch — viola regras Firestore
 - ❌ `import` de Firebase via CDN (`gstatic.com`) — usar pacotes npm (`firebase/app`, `firebase/auth`, `firebase/firestore`)
+- ❌ Criar task de UI sem ler `design-system/tokens.md` primeiro — tokens definem paleta, tipografia e componentes canônicos
