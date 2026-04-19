@@ -359,7 +359,7 @@ function renderizarLista() {
     const portBadge = d.isConjunta
       ? `<span class="desp-resp-badge desp-resp-badge--conjunta">👫 compartilhada</span>`
       : (d.responsavel || d.portador)
-        ? `<span class="desp-resp-badge">${(d.responsavel || d.portador).split(' ')[0]}</span>`
+        ? `<span class="desp-resp-badge">${escHTML((d.responsavel || d.portador).split(' ')[0])}</span>`
         : '';
     const parcelaBadge = (d.parcela && d.parcela !== '-')
       ? `<span class="desp-parcela-badge">${d.parcela}</span>`
@@ -382,6 +382,22 @@ function renderizarLista() {
       ? '<span class="desp-transf-badge" title="Transferência entre membros do grupo — excluída dos agregados">🔁 transferência interna</span>'
       : '';
 
+    // ENH-004: 1 badge visível no estado compacto (hierarquia: transf > projeção > parcela > conjunta > portador)
+    let compactBadge = '';
+    if (isTransf)                          compactBadge = transfBadge;
+    else if (isProj)                       compactBadge = projBadge;
+    else if (d.parcela && d.parcela !== '-') compactBadge = parcelaBadge;
+    else if (d.isConjunta)                 compactBadge = conjuntaBadge;
+    else if (portBadge)                    compactBadge = portBadge;
+
+    // ENH-004: painel expansível com todos os metadados
+    const allBadges = [contaBadge, portBadge, parcelaBadge, projBadge, conjuntaBadge, transfBadge].filter(Boolean);
+    const detailPanel = allBadges.length > 1 ? `
+      <details class="desp-detail">
+        <summary class="desp-detail-toggle">▾</summary>
+        <div class="desp-detail-panel">${allBadges.join('')}</div>
+      </details>` : '';
+
     return `
     <div class="desp-item card${isProj ? ' desp-item--proj' : ''}${isTransf ? ' desp-item--transf' : ''}">
       <div class="desp-item-left">
@@ -389,7 +405,7 @@ function renderizarLista() {
         <span class="desp-item-descricao">${escHTML(d.descricao)}</span>
         <div class="desp-item-meta">
           <span class="desp-item-data">${dataFmt}</span>
-          ${contaBadge}${portBadge}${parcelaBadge}${projBadge}${conjuntaBadge}${transfBadge}
+          ${compactBadge}${detailPanel}
         </div>
       </div>
       <div class="desp-item-right">

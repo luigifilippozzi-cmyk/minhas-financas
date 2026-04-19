@@ -7,6 +7,12 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.36.0] - 2026-04-19
+
+### Adicionado
+
+- **ENH-004: progressive disclosure — 1 badge visível por linha de despesa (#151):** a listagem de despesas exibia até 6 badges simultâneos (conta, portador, parcela, projeção, conjunta, transferência). Agora o estado compacto exibe no máximo 1 badge de acordo com a hierarquia de prioridade: `transferência > projeção > parcela X/Y > conjunta > portador`. Um toggle `▾` aparece quando há mais de 1 metadado disponível, abrindo um painel expansível (`<details>`/`<summary>` nativo — zero JS extra) com todos os badges. Sem regressão em editar/excluir/filtrar. 679 testes passando.
+
 ## [3.35.0] - 2026-04-19
 
 ### Adicionado
