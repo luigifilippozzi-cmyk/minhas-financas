@@ -7,6 +7,12 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.35.0] - 2026-04-19
+
+### Adicionado
+
+- **ENH-002: exibir origem e destino em transferências internas (#152):** linhas com `tipo=transferencia_interna` na Base de Dados agora exibem a rota da transferência como subtítulo na coluna Descrição (`portador → destino` para despesas; `origem → portador` para receitas), resolvida via `_nomesMembros` do grupo. Badge de tipo renomeado para "🔁 Transferência" com cor info (`ger-tipo-transf`). Novo filtro "🔁 Transferências Internas" no seletor de tipo da aba Gerenciar. Filtro de despesas atualizado para excluir transferências internas ao selecionar "💸 Despesas". Todos os valores inseridos via `escHTML()`. 665 testes passando.
+
 ## [3.34.0] - 2026-04-19
 
 ### Adicionado
