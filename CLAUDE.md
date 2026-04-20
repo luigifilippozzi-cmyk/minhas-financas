@@ -8,7 +8,7 @@
 
 - **Usuários:** Luigi + Ana (casal)
 - **Dev:** Luigi (solo developer)
-- **Versão atual:** v3.37.0
+- **Versão atual:** v3.38.0
 - **Repo:** https://github.com/luigifilippozzi-cmyk/minhas-financas
 - **Stack:** HTML5 · CSS3 · JS ES6+ · **Vite 5** (bundler MPA) · **Capacitor 8** (iOS) · Firebase Auth · Cloud Firestore (via npm) · Chart.js v4 · SheetJS (XLSX)
 
@@ -208,7 +208,7 @@ Todas as cores, sombras e fontes estão em `variables.css` como CSS custom prope
 | iOS App Fase 1 (Capacitor + safe areas) | 2/2 (100%) | ✅ Concluído |
 | iOS App Fase 2 (Firebase nativo) | 0/4 issues | ⏸️ ON HOLD (decisão PO 2026-04-16) |
 | iOS App Fases 3–5 (UX mobile + TestFlight + Push) | 0/9 issues | ⚪ Aguardando Fase 2 |
-| UX & Gestão Patrimonial | 13/14 (93%) | 🟢 Quase concluído — só ENH-005 (#158) aguarda NRF-NAV F3 |
+| UX & Gestão Patrimonial | 15/15 (100%) | ✅ Concluído (v3.38.0) |
 | Tech Debt | 2/2 (100%) — testes | ✅ Concluído |
 
 ### Estrutura de Desenvolvimento (Squad IA)
@@ -225,8 +225,10 @@ Detalhes completos em `AGENTS.md`. Bússola estratégica em `docs/BUSSOLA_PRODUT
 ### Próximas prioridades
 1. ~~**NRF-NAV Fase 1** — Navbar 5 seções — v3.33.0~~ ✅ Concluído (PR #180)
 2. ~~**NRF-NAV Fase 2** — projecoesCartao.js + Cockpit + Compromissos — v3.37.0~~ ✅ Concluído (PR #187)
-3. **ENH-005** (#158) — Simplificar despesas.html — aguarda **NRF-NAV Fase 3** (P2)
+3. ~~**NRF-NAV Fase 3 + ENH-005** (#189 + #158) — Simplificar despesas.html + DS tokens — v3.38.0~~ ✅ Concluído (PR #190)
 4. **iOS App Fase 2** — Firebase nativo — issues #77–#80 — **ON HOLD** até Apple Developer Program ativado
+
+**Milestone UX & Gestão Patrimonial:** 100% concluído ✅ (v3.38.0 — 2026-04-20)
 
 **QA concluído:** issue #129 (RF-062) **fechada** em 2026-04-17 — 30 PASS / 3 N/A / 0 FAIL / 0 regressões em 33 TCs cobertos.
 
