@@ -1,8 +1,47 @@
 # Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-19 23:15 (PM Agent — revisão diária)
+> Atualizado em: 2026-04-20 06:42 (PM Agent — revisão diária)
 > Versão: v3.36.0 | package.json = v3.36.0 ✅ (sincronizado)
 > Saúde: 🟢 VERDE — CI verde | 679 testes OK | 0 PRs abertos | 0 violações | 15 issues | NRF-NAV F2 aguarda PO
+
+---
+
+## PM Agent — 2026-04-20 06:42
+
+### Estado
+- Versão: v3.36.0 (package.json ✅ sincronizado)
+- Milestone primário: UX & Gestao Patrimonial — quase concluído (13/14 fechadas, 92.9%) — só #158 ENH-005 aberta (absorvida por NRF-NAV F2, não implementar isolado)
+- Milestone iOS: 📱 App Mobile iOS — Capacitor (23.5%, 4/17) — **ON HOLD** indefinido
+- Saúde: 🟢 Verde — CI verde (5/5 success) | 679 testes | 0 PRs | 0 violações
+- Testes: 679 unit + 26 int — todos passando ✅
+- CI: 5/5 runs success (Deploy Firebase Hosting) ✅
+
+### Issues abertas (15 total)
+- Fase 2 iOS (P0, ON HOLD): #77, #78, #79, #80
+- Fase 3 iOS: #81, #82, #83
+- Fase 4 iOS: #84, #85, #86
+- Fase 5 iOS: #87, #88, #89
+- UX milestone: #158 ENH-005 (não implementar isolado — absorvida por NRF-NAV F2)
+- NRF-NAV F2: #186 RF-070 — Unificação Projeções/Planejamento (label `nrf-nav-f2` ✅ corrigido)
+- Novas desde última sessão PM (23:15): nenhuma
+
+### Alertas ativos
+- Nenhum ✅ — [INCONSISTÊNCIA] label rf-070→nrf-nav-f2 em #186 **resolvida** (label `nrf-nav-f2` confirmado no GitHub)
+
+### Prioridades para Dev Manager
+- P0: aguardar decisão PO sobre NRF-NAV Fase 2 (Q1: opção A/B/C | Q2: localização planejamento na navbar | Q3: aba Projeções mantida ou substituída)
+- P1: NRF-NAV Fase 2 (#186) — após decisão PO
+- P2: ENH-005 (#158) — aguardar NRF-NAV F2 (absorvida)
+- iOS: ON HOLD indefinido
+
+### Atividade recente (desde sessão PM 23:15 de ontem)
+- Último commit: chore(dashboard) PM Agent 23:15 (sem atividade nova)
+- Commits sem PR: nenhum detectado ✅
+- PRs mergeados desde última sessão: nenhum
+- Issues fechadas últimas 24h: nenhuma
+- Issues fechadas últimos 7 dias: #182 (19/04) | #172 (18/04) | #154 (18/04) | #177 (17/04) | #170 (17/04) | #155 (17/04) | #169 (16/04) | #166 (16/04) | #162 (16/04) | #157 (16/04) | #156 (16/04)
+- QA issues: todas fechadas ✅ (#129, #136–#139)
+- Subagentes acionados: nenhum (sessão read-only)
 
 ---
 
@@ -1696,3 +1735,21 @@ relatorio diario. Saude do projeto deve ser monitorada por:
     - gh issue comment #158 linkando ENH-005 ao RF-070 ? PENDENTE
 - Pr�xima sess�o: acompanhar entrega de NRF-NAV Fase 1 (#154); depois desenhar
   RF-071 em discovery dedicada
+
+---
+
+## Sessao 2026-04-20 — PO Assistant (Cowork)
+- Versao na sessao: v3.36.0
+- Milestone ativo: UX & Gestao Patrimonial (13/14 fechadas, 92.9%) | iOS Fase 2 ON HOLD
+- Decisao: NRF-NAV Fase 2 (#186) aprovada — **Opcao B (migracao parcial)**
+  - Q1: Opcao B � respeita H2/H3, resolve Gap 5 da BUSSOLA, ~6h
+  - Q2: planejamento.html vai para **Cockpit > Planejamento** (ferramenta gerencial H2)
+  - Q3: aba Projecoes em fatura.html **mantida** + link "ver consolidado em Futuro ->" (modulo compartilhado projecoesCartao.js elimina duplicacao de logica)
+- Issues priorizadas: #186 (P1, desbloqueada) | #158 ENH-005 adiada para NRF-NAV Fase 3
+- Bugs registrados: nenhum
+- Melhorias registradas: nenhuma
+- RFs criados: nenhum
+- Bloqueios identificados: nenhum � Dev Manager desbloqueado
+- Artefatos gerados para PM/DM: sim � handoff DM em dm_tasks_pending.md | comentario publicado em #186
+- Scripts PowerShell executados: (1) correcao label rf-070 -> nrf-nav-f2 em #186 | (2) gh issue comment #186 | (3) handoff DM | (4) memory update
+- Proxima sessao: revisao do PR feat/MF-186-nav-fase2-consolidacao apos CI verde
