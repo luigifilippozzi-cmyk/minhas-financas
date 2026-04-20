@@ -11,7 +11,7 @@
 
 import { onAuthChange, logout } from '../services/auth.js';
 import { buscarPerfil, buscarGrupo, atualizarDespesa } from '../services/database.js';
-import { ouvirCategorias, ouvirParcelamentosAbertos, ouvirContas } from '../services/database.js';
+import { ouvirCategorias, ouvirContas } from '../services/database.js';
 import {
   iniciarListenerDespesas,
   salvarDespesa,
@@ -20,6 +20,9 @@ import {
 import { formatarMoeda, formatarData, nomeMes, escHTML } from '../utils/formatters.js';
 import { dataHoje, isMovimentacaoReal } from '../utils/helpers.js';
 import { skeletonCards, emptyStateHTML, errorStateHTML } from '../utils/skeletons.js';
+
+const _COR_CAT_FALLBACK = getComputedStyle(document.documentElement)
+  .getPropertyValue('--color-text-muted').trim() || '#8B8A82';
 
 // ── Estado da página ──────────────────────────────────────────
 let _usuario    = null;
@@ -30,14 +33,12 @@ let _ano        = new Date().getFullYear();
 let _despesas   = [];
 let _categorias = [];
 let _catMap     = {};
-let _projecoes  = [];       // RF-014: parcelas futuras em aberto
 
 let _contas     = [];       // NRF-004: contas/bancos do grupo
 let _contaMap   = {};       // NRF-004: id → conta
 
-let _unsubDesp  = null;
-let _unsubCats  = null;
-let _unsubProj  = null;     // RF-014: listener de projeções
+let _unsubDesp   = null;
+let _unsubCats   = null;
 let _unsubContas = null;    // NRF-004: listener de contas
 let _idParaExcluir = null;
 
@@ -78,18 +79,8 @@ onAuthChange(async (user) => {
   configurarEventos();
   atualizarTituloMes();
   iniciarListeners();
-  iniciarListenerProjecoes();
   iniciarListenerContas(); // NRF-004
 });
-
-// ── Listener de Projeções (RF-014) ────────────────────────────
-function iniciarListenerProjecoes() {
-  if (_unsubProj) _unsubProj();
-  _unsubProj = ouvirParcelamentosAbertos(_grupoId, (projecoes) => {
-    _projecoes = projecoes;
-    renderizarPainelParcelamentos();
-  });
-}
 
 // ── NRF-004: Listener de Contas ───────────────────────────────
 function iniciarListenerContas() {
@@ -134,8 +125,6 @@ function iniciarListeners() {
       _despesas = despesas;
       atualizarChips();
       renderizarLista();
-      renderizarChipsResponsavel();
-      renderizarChipsCompartilhadas();
       preencherFiltroResponsavel();
       // Atalho ?editar=ID: abre modal com a despesa assim que dados chegam
       if (_atalhoAbrirEditar) {
@@ -152,144 +141,6 @@ function iniciarListeners() {
   }
 }
 
-// ── RF-014: Painel de Parcelamentos em Aberto ─────────────────
-function renderizarPainelParcelamentos() {
-  const widget = document.getElementById('parc-widget');
-  const lista  = document.getElementById('parc-lista-desp');
-  const total  = document.getElementById('parc-total-desp');
-  if (!widget || !lista || !total) return;
-
-  const hoje    = new Date();
-  const futuras = _projecoes.filter(p => {
-    const d = p.data?.toDate?.() ?? new Date(p.data);
-    return d > hoje;
-  });
-
-  if (!futuras.length) {
-    widget.classList.add('hidden');
-    return;
-  }
-
-  widget.classList.remove('hidden');
-
-  // Agrupa por responsável / portador
-  const porResp = {};
-  let totalGeral = 0;
-
-  futuras.forEach(p => {
-    const resp = p.responsavel || p.portador || '—';
-    const val  = p.valor ?? 0;
-    if (!porResp[resp]) porResp[resp] = { total: 0, items: [] };
-    porResp[resp].total += val;
-    porResp[resp].items.push(p);
-    totalGeral += val;
-  });
-
-  total.textContent = formatarMoeda(totalGeral);
-
-  // Renderiza linhas por responsável
-  lista.innerHTML = Object.entries(porResp).map(([resp, dados]) => {
-    const primeiroNome = resp.split(' ')[0];
-    return `
-    <div class="parc-resp-row">
-      <div class="parc-resp-header">
-        <span class="parc-resp-nome">👤 ${primeiroNome}</span>
-        <span class="parc-resp-total">${formatarMoeda(dados.total)}</span>
-      </div>
-      <div class="parc-resp-items">
-        ${agruparParPorCompra(dados.items)}
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function agruparParPorCompra(items) {
-  // Agrupa pelo parcelamento_id para mostrar 1 linha por compra
-  const compras = {};
-  items.forEach(p => {
-    const id = p.parcelamento_id ?? p.descricao;
-    if (!compras[id]) compras[id] = { descricao: p.descricao, valor: p.valor, parcelas: [] };
-    compras[id].parcelas.push(p.parcela ?? '—');
-  });
-  return Object.values(compras).map(c => {
-    const qtd    = c.parcelas.length;
-    const total  = c.valor * qtd;
-    const parcs  = c.parcelas.slice(0, 3).join(', ') + (qtd > 3 ? '…' : '');
-    return `
-    <div class="parc-compra-item">
-      <span class="parc-compra-desc">${c.descricao}</span>
-      <span class="parc-compra-info">${qtd} parcela${qtd > 1 ? 's' : ''} (${parcs})</span>
-      <span class="parc-compra-valor">${formatarMoeda(total)}</span>
-    </div>`;
-  }).join('');
-}
-
-// ── NRF-001: Chips de despesas compartilhadas por usuário ────
-function renderizarChipsCompartilhadas() {
-  const container = document.getElementById('chips-compartilhadas');
-  if (!container) return;
-
-  const conjuntas = _despesas.filter(d => isMovimentacaoReal(d) && d.isConjunta);
-  if (!conjuntas.length) {
-    container.innerHTML = '';
-    return;
-  }
-
-  // Soma valorAlocado de conjuntas por membro do grupo
-  const porResp = {};
-  Object.values(_grupo?.nomesMembros ?? {}).forEach(m => {
-    const nome = m.split(' ')[0];
-    porResp[nome] = conjuntas.reduce((s, d) => s + (d.valorAlocado ?? (d.valor ?? 0) / 2), 0);
-  });
-
-  container.innerHTML = Object.entries(porResp).map(([nome, val]) => `
-    <div class="desp-chip desp-chip-compartilhada">
-      <span class="desp-chip-label">👫 ${nome}</span>
-      <span class="desp-chip-valor">${formatarMoeda(val)}</span>
-    </div>`
-  ).join('');
-}
-
-// ── RF-014: Chips por responsável ────────────────────────────
-function renderizarChipsResponsavel() {
-  const container = document.getElementById('chips-responsavel');
-  if (!container) return;
-
-  const porResp = {};
-  _despesas
-    .filter(isMovimentacaoReal)
-    .forEach(d => {
-      if (d.isConjunta) {
-        // Despesa conjunta 50/50: cada membro do grupo paga valorAlocado
-        const share = d.valorAlocado ?? (d.valor ?? 0) / 2;
-        Object.values(_grupo?.nomesMembros ?? {}).forEach(m => {
-          const nome = m.split(' ')[0];
-          if (!porResp[nome]) porResp[nome] = 0;
-          porResp[nome] += share;
-        });
-      } else {
-        const resp = d.responsavel || d.portador || '';
-        if (!resp) return;
-        const nome = resp.split(' ')[0];
-        if (!porResp[nome]) porResp[nome] = 0;
-        porResp[nome] += d.valor ?? 0;
-      }
-    });
-
-
-  if (!Object.keys(porResp).length) {
-    container.innerHTML = '';
-    return;
-  }
-
-  container.innerHTML = Object.entries(porResp).map(([nome, val]) => `
-    <div class="desp-chip desp-chip-resp">
-      <span class="desp-chip-label">💳 ${nome}</span>
-      <span class="desp-chip-valor">${formatarMoeda(val)}</span>
-    </div>`
-  ).join('');
-}
-
 // ── RF-014: Dropdown de responsável no modal ─────────────────
 function preencherDropdownResponsavel() {
   const sel = document.getElementById('despesa-responsavel');
@@ -297,7 +148,7 @@ function preencherDropdownResponsavel() {
 
   const nomes = Object.values(_grupo.nomesMembros ?? {});
   sel.innerHTML = '<option value="">Selecione o responsável</option>' +
-    nomes.map(n => `<option value="${n}">${n}</option>`).join('');
+    nomes.map(n => `<option value="${escHTML(n)}">${escHTML(n)}</option>`).join('');
 }
 
 // ── RF-014: Filtro por responsável ──────────────────────────
@@ -315,7 +166,7 @@ function preencherFiltroResponsavel() {
   )].sort();
 
   sel.innerHTML = '<option value="">Todos os responsáveis</option>' +
-    responsaveis.map(r => `<option value="${r}">${r}</option>`).join('');
+    responsaveis.map(r => `<option value="${escHTML(r)}">${escHTML(r)}</option>`).join('');
   if (atual) sel.value = atual;
 }
 
@@ -350,8 +201,8 @@ function renderizarLista() {
     const cat      = _catMap[d.categoriaId];
     const emoji    = cat?.emoji ?? '❓';
     const nome     = cat?.nome  ?? '—';
-    const cor      = cat?.cor   ?? '#6c757d';
-    const badge    = `<span class="desp-cat-badge" style="background:${cor}22;color:${cor};">${emoji} ${nome}</span>`;
+    const cor      = cat?.cor   ?? _COR_CAT_FALLBACK;
+    const badge    = `<span class="desp-cat-badge" style="background:${cor}22;color:${cor};">${escHTML(emoji)} ${escHTML(nome)}</span>`;
     const dataFmt  = formatarData(d.data);
     const isProj   = d.tipo === 'projecao';
 
@@ -370,7 +221,7 @@ function renderizarLista() {
     // NRF-004: badge conta/banco
     const conta = _contaMap[d.contaId];
     const contaBadge = conta
-      ? `<span class="desp-conta-badge" style="background:${conta.cor}18;color:${conta.cor};border-color:${conta.cor}44;" title="${conta.nome}">${conta.emoji} ${conta.nome}</span>`
+      ? `<span class="desp-conta-badge" style="background:${conta.cor}18;color:${conta.cor};border-color:${conta.cor}44;" title="${escHTML(conta.nome)}">${escHTML(conta.emoji)} ${escHTML(conta.nome)}</span>`
       : '';
     // NRF-001: badge conjunta
     const conjuntaBadge = d.isConjunta
@@ -413,21 +264,21 @@ function renderizarLista() {
         <div class="desp-item-acoes">
           <button
             class="btn btn-sm btn-outline"
-            onclick="window._despEditar('${d.id}')"
+            onclick="window._despEditar('${escHTML(d.id)}')"
             title="Editar"
           >✏️</button>
           ${!isTransf ? `<button
             class="btn btn-sm btn-outline"
-            onclick="window._despMarcarTransferencia('${d.id}')"
+            onclick="window._despMarcarTransferencia('${escHTML(d.id)}')"
             title="Marcar como transferência interna"
           >🔁</button>` : `<button
             class="btn btn-sm btn-outline"
-            onclick="window._despDesmarcarTransferencia('${d.id}')"
+            onclick="window._despDesmarcarTransferencia('${escHTML(d.id)}')"
             title="Desmarcar transferência interna"
           >↩️</button>`}
           <button
             class="btn btn-sm btn-danger"
-            onclick="window._despExcluir('${d.id}','${d.descricao.replace(/'/g, "\\'")}')"
+            onclick="window._despExcluir('${escHTML(d.id)}','${escHTML(d.descricao).replace(/'/g, "\\'")}')"
             title="Excluir"
           >🗑️</button>
         </div>
@@ -445,22 +296,6 @@ function atualizarChips() {
   const chipCount = document.getElementById('chip-count');
   if (chipTotal) chipTotal.textContent = formatarMoeda(total);
   if (chipCount) chipCount.textContent = count;
-
-  // NRF-001: "Meu Bolso" = minhas individuais + valorAlocado das conjuntas (fix convidado)
-  const nomeUsuarioAtual = (_grupo?.nomesMembros?.[_usuario?.uid] ?? '').trim();
-  const meuBolso = reais.reduce((s, d) => {
-    if (d.isConjunta) return s + (d.valorAlocado ?? d.valor / 2);
-    const resp = (d.responsavel || d.portador || '').trim();
-    if (nomeUsuarioAtual && resp === nomeUsuarioAtual) return s + d.valor;
-    return s;
-  }, 0);
-  const chipMB    = document.getElementById('chip-meu-bolso');
-  const chipMBVal = document.getElementById('chip-meu-bolso-valor');
-  if (chipMB && chipMBVal) {
-    const hasConjunta = reais.some(d => d.isConjunta);
-    chipMB.style.display = hasConjunta ? '' : 'none';
-    chipMBVal.textContent = formatarMoeda(meuBolso);
-  }
 }
 
 function atualizarTituloMes() {
@@ -488,7 +323,7 @@ function preencherSelectCategorias(cats) {
   if (!sel) return;
   const atual = sel.value;
   sel.innerHTML = '<option value="">Selecione uma categoria</option>' +
-    cats.map(c => `<option value="${c.id}">${c.emoji} ${c.nome}</option>`).join('');
+    cats.map(c => `<option value="${escHTML(c.id)}">${escHTML(c.emoji)} ${escHTML(c.nome)}</option>`).join('');
   if (atual) sel.value = atual;
 }
 
@@ -497,7 +332,7 @@ function preencherFiltroCategorias(cats) {
   if (!sel) return;
   const atual = sel.value;
   sel.innerHTML = '<option value="">Todas as categorias</option>' +
-    cats.map(c => `<option value="${c.id}">${c.emoji} ${c.nome}</option>`).join('');
+    cats.map(c => `<option value="${escHTML(c.id)}">${escHTML(c.emoji)} ${escHTML(c.nome)}</option>`).join('');
   if (atual) sel.value = atual;
 }
 
@@ -507,7 +342,7 @@ function preencherSelectContas(contas) {
   if (!sel) return;
   const atual = sel.value;
   sel.innerHTML = '<option value="">Selecione a conta (opcional)</option>' +
-    contas.map(c => `<option value="${c.id}">${c.emoji} ${c.nome}</option>`).join('');
+    contas.map(c => `<option value="${escHTML(c.id)}">${escHTML(c.emoji)} ${escHTML(c.nome)}</option>`).join('');
   if (atual) sel.value = atual;
 }
 
@@ -516,7 +351,7 @@ function preencherFiltroContas(contas) {
   if (!sel) return;
   const atual = sel.value;
   sel.innerHTML = '<option value="">Todas as contas</option>' +
-    contas.map(c => `<option value="${c.id}">${c.emoji} ${c.nome}</option>`).join('');
+    contas.map(c => `<option value="${escHTML(c.id)}">${escHTML(c.emoji)} ${escHTML(c.nome)}</option>`).join('');
   if (atual) sel.value = atual;
 }
 
@@ -734,36 +569,6 @@ function configurarEventos() {
 
   // Exportar CSV
   document.getElementById('btn-exportar-csv')?.addEventListener('click', () => exportarCSV());
-
-  // RF-014: toggle painel parcelamentos (header interno)
-  document.getElementById('parc-toggle')?.addEventListener('click', () => {
-    const body = document.getElementById('parc-body-desp');
-    if (body) body.classList.toggle('parc-body--collapsed');
-    const icon = document.querySelector('#parc-toggle .parc-toggle-icon');
-    if (icon) icon.textContent = body?.classList.contains('parc-body--collapsed') ? '▸' : '▾';
-  });
-
-  // CT-009.5: botão externo de visibilidade do painel de parcelamentos
-  document.getElementById('btn-ver-parc-desp')?.addEventListener('click', () => {
-    const widget = document.getElementById('parc-widget');
-    if (!widget) return;
-    if (widget.classList.contains('hidden')) {
-      widget.classList.remove('hidden');
-      // Expande o body caso esteja colapsado
-      const body = document.getElementById('parc-body-desp');
-      if (body) body.classList.remove('parc-body--collapsed');
-      const icon = document.querySelector('#parc-toggle .parc-toggle-icon');
-      if (icon) icon.textContent = '▾';
-      // Mostra empty-state se não houver lista
-      const lista = document.getElementById('parc-lista-desp');
-      if (lista && !lista.querySelector('.parc-resp-row')) {
-        lista.innerHTML = '<p class="empty-state" style="font-size:.85rem;padding:.5rem 0;">Nenhum parcelamento em aberto no momento.</p>';
-      }
-    } else {
-      widget.classList.add('hidden');
-    }
-    widget.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  });
 }
 
 // ── Exportação CSV ────────────────────────────────────────────
