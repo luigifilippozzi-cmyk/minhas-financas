@@ -1,6 +1,6 @@
 {
   "name": "minhas-financas",
-  "version": "3.36.0",
+  "version": "3.37.0",
   "description": "Aplicativo web de gestão financeira familiar com Firebase",
   "main": "src/js/app.js",
   "type": "module",
