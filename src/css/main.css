@@ -944,6 +944,9 @@ a:hover { text-decoration: underline; }
 
 /* Projeções */
 .fat-loading { text-align: center; color: var(--color-text-muted); padding: var(--space-6); font-style: italic; }
+.fat-proj-link-futuro { text-align: right; padding: var(--space-3) var(--space-4) var(--space-2); font-size: var(--font-size-sm); }
+.link-sutil { color: var(--color-text-muted); text-decoration: none; }
+.link-sutil:hover { color: var(--color-primary); text-decoration: underline; }
 
 /* ── RF-019: Badge de conta aplicada automaticamente ── */
 .imp-conta-auto-badge {

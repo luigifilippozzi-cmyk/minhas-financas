@@ -26,10 +26,17 @@
       </a>
     </div>
     <nav class="nav-sections" id="nav-sections">
-      <a href="dashboard.html" class="nav-section-btn" data-page="dashboard">
-        <i data-lucide="layout-dashboard" class="nav-section-icon"></i>
-        <span>Cockpit</span>
-      </a>
+      <details class="nav-section-group" data-section="cockpit">
+        <summary class="nav-section-btn">
+          <i data-lucide="layout-dashboard" class="nav-section-icon"></i>
+          <span>Cockpit</span>
+          <i data-lucide="chevron-down" class="nav-chevron"></i>
+        </summary>
+        <div class="nav-sub-menu">
+          <a href="dashboard.html" class="nav-sub-item" data-page="dashboard">🏠 Dashboard</a>
+          <a href="planejamento.html" class="nav-sub-item" data-page="planejamento">📋 Planejamento</a>
+        </div>
+      </details>
       <details class="nav-section-group" data-section="futuro">
         <summary class="nav-section-btn">
           <i data-lucide="trending-up" class="nav-section-icon"></i>
@@ -38,7 +45,6 @@
         </summary>
         <div class="nav-sub-menu">
           <a href="fluxo-caixa.html" class="nav-sub-item" data-page="fluxo-caixa">🔮 Forecast</a>
-          <a href="planejamento.html" class="nav-sub-item" data-page="planejamento">📋 Planejamento</a>
           <a href="fatura.html?tab=projecoes" class="nav-sub-item">💳 Projeções</a>
         </div>
       </details>
@@ -205,6 +211,34 @@
           <span><strong>Parcelas</strong> = comprometido (certo)</span>
           <span>·</span>
           <span><strong>Variáveis</strong> = teto de orçamento</span>
+        </div>
+      </div>
+
+      <!-- ═══ SEÇÃO: COMPROMISSOS COMPROMETIDOS (NRF-NAV F2) ═══ -->
+      <div class="card fc-forecast-card" id="compromissos">
+        <div class="fc-forecast-header">
+          <div class="fc-forecast-titulo-row">
+            <h3 class="fc-tabela-titulo">📅 Compromissos Comprometidos — Próximos 6 Meses</h3>
+            <span class="fc-forecast-subtitulo">Parcelas futuras importadas — todos os cartões agregados</span>
+          </div>
+        </div>
+        <div class="fc-tabela-scroll">
+          <table class="fc-tabela">
+            <thead>
+              <tr>
+                <th>Mês</th>
+                <th class="fc-th-num">Total Comprometido</th>
+              </tr>
+            </thead>
+            <tbody id="fc-compromissos-tbody">
+              <tr><td colspan="2" class="fc-empty">Carregando compromissos...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="fc-forecast-legenda">
+          <span>Fonte: parcelas importadas com tipo <strong>projeção</strong> — certeza, não estimativa</span>
+          <span>·</span>
+          <span><a href="fatura.html?tab=projecoes" class="link-sutil">ver por cartão →</a></span>
         </div>
       </div>
 
