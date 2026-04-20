@@ -461,10 +461,10 @@
 // Dashboard state — PM Agent updates this section, Dev Manager reads it
 const DASHBOARD_DATA = {
   // PM Agent atualiza estes campos:
-  lastUpdate: "2026-04-20 08:15",
+  lastUpdate: "2026-04-20 08:19",
   version: "v3.37.0",
   health: "green", // green | yellow | red
-  healthText: "🟢 Verde — CI verde | 698 testes OK | PR #188 mergeado | 0 violações | 15 issues | dívida chartColors.js liquidada",
+  healthText: "🟢 Verde — CI verde | 698 testes OK | 0 PRs | 0 violações | 15 issues | NRF-NAV F2 entregue | NRF-NAV F3 aguarda decisão PO",
   testsUnit: "698",
   testsUnitStatus: "698 passando",
   testsInt: "26",
@@ -472,6 +472,7 @@ const DASHBOARD_DATA = {
   issuesSub: "UX: 2 (#158 ENH-005, #189 NRF-NAV F3 — aguarda PO) | iOS: 13 (ON HOLD)",
   // Dev Manager atualiza via PR + merge
   activity: [
+    { time: "Apr 20", color: "var(--blue)", msg: "<strong>PM Agent 08:19</strong> — 🟢 Verde | v3.37.0 | 698 testes OK (▲19 vs. sessão anterior) | CI verde | 0 PRs abertos | 0 violações | UX milestone 13/15 (86.7%) — #189 NRF-NAV F3 adicionada | [DECISÃO-PO-PENDENTE] #189 opção A/B/C + absorção #158 | iOS 4/17 ON HOLD | NRF-NAV F2 ✅ entregue (PR #187 + PR #188)", tag: "pm" },
     { time: "Apr 20", color: "var(--accent)", msg: "<strong>Issue #189 criada</strong> — NRF-NAV Fase 3 — Consolidação de páginas + ENH-005 | milestone UX &amp; Gestao Patrimonial | 3 opções (A/B/C) propostas ao PO | ENH-005 (#158) absorvida", tag: "feat" },
     { time: "Apr 20", color: "var(--green)", msg: "<strong>PR #188 mergeado</strong> — test(utils): cobertura chartColors.js — 8 testes | dívida técnica P0 liquidada | vi.stubGlobal para getComputedStyle+document | cache hit validado | 698 testes (▲8) | test-runner PASS", tag: "merge" },
     { time: "Apr 20", color: "var(--green)", msg: "<strong>Dev Manager 08:15</strong> — 🟢 Verde | v3.37.0 | 698 testes OK | CI verde | 0 PRs abertos | 0 violações | stale branch pruned | chartColors.js coberto | NRF-NAV F3 proposta ao PO (#189)", tag: "merge" },
