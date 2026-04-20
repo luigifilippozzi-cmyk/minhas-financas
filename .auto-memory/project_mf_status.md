@@ -1,8 +1,83 @@
 # Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-20 08:51 (Dev Manager — NRF-NAV F3 concluída)
+> Atualizado em: 2026-04-20 12:14 (PM Agent — revisão diária)
 > Versão: v3.38.0 | package.json = v3.38.0 ✅ (sincronizado)
-> Saúde: 🟢 VERDE — CI verde | 698 testes OK | 0 PRs abertos | 0 violações | 13 issues | UX milestone 100% ✅
+> Saúde: 🟢 VERDE — CI verde | 727 testes OK | 0 PRs abertos | 0 violações | 13 issues (iOS ON HOLD) | UX milestone 100% ✅
+
+---
+
+## PM Agent — 2026-04-20 12:14
+
+### Estado
+- Versão: v3.38.0
+- Milestone primário: UX & Gestão Patrimonial (100%, 15/15) ✅ CONCLUÍDO
+- Milestone iOS: ON HOLD (23.5%, 4/17) — aguarda Apple Developer Program
+- Saúde: verde — CI verde, 727 testes OK, 0 PRs, 0 violações, sem issues P0/P1
+- Testes: 727 unit (31 arquivos) + 26 int — todos passando
+- CI: 5/5 success (Deploy Firebase + Testes unitários) | Deploy Firebase: success
+
+### Issues abertas (13 total)
+- Milestone primário: nenhuma (milestone 100% concluído ✅)
+- iOS ON HOLD: #77–#89 (13 issues — não priorizar)
+- Novas desde última sessão PM (08:19): nenhuma
+- Issues sem milestone: nenhuma (scripts/po-diagnostic.js não é issue — é arquivo não-rastreado)
+
+### Alertas ativos
+- [iOS-ON-HOLD] #77–#89 pausadas — aguarda Apple Developer Program (sem mudança)
+- [ARQUIVO-NÃO-RASTREADO] scripts/po-diagnostic.js criado mas não commitado ao git — DM deve verificar se deve ser commitado ou adicionado ao .gitignore
+
+### Resolvidos nesta sessão
+- [DECISÃO-PO-PENDENTE] #186 NRF-NAV F2 RESOLVIDA ✅ — Opção B implementada (PR #187), issue fechada em 2026-04-20T10:34
+
+### Prioridades para Dev Manager
+- P0: nenhuma
+- P1: nenhuma — milestone UX 100% concluído
+- P3: iOS Fase 2 (ON HOLD)
+- Sugestão: verificar scripts/po-diagnostic.js (commit ou .gitignore?) + explorar próximos RFs via BUSSOLA_PRODUTO.md §9
+
+### Atividade recente (desde PM 08:19)
+- PR #190 mergeado: feat(despesas) NRF-NAV F3 Opção B — ENH-005 + DS tokens + XSS hardening | 698→698 testes | issues #189 + #158 fechadas
+- PR #191 mergeado: test(pipelineBanco) 29 testes | 698→727 testes | dívida técnica eliminada
+- Issue #186 fechada em 10:34 (DECISÃO-PO-PENDENTE resolvida)
+- Commits diretos em src/ sem PR: nenhum ✅
+- Subagentes acionados (DM): test-runner PASS + security-reviewer PASS (PR #190)
+
+---
+
+## Dev Manager — 2026-04-20 11:15
+
+### Sessão
+- Versão: v3.38.0 (derivada de package.json)
+- Tarefas concluídas: tech debt — testes pipelineBanco.js (29 testes) | BUSSOLA corrigida (RF-066 ✅ + NRF-NAV F3 ✅) | *.bak adicionado ao .gitignore
+- PRs criados: #191 — test(pipelineBanco): 29 testes
+- PRs mergeados: #191 ✅ CI verde (Vitest PASS)
+- Issues fechadas: nenhuma (tech debt não tem issue própria)
+- Subagentes acionados: test-runner implícito (727/727 PASS)
+- CI: verde | Deploy Firebase: success (auto pós-commits docs/)
+
+### Estado dos milestones
+- UX & Gestao Patrimonial (primário): **15/15 (100%) ✅ CONCLUÍDO**
+- iOS Fase 2 (P3 — ON HOLD): 4/4 issues abertas — #77, #78, #79, #80
+- iOS Fases 3–5 (P3 — aguardando F2): 9 issues abertas — #81–#89
+- QA pendente: 0
+
+### Decisões pendentes do PO
+- Nenhuma ✅ — milestone UX & Gestão Patrimonial concluído, sem issues P0/P1
+
+### Próximas prioridades
+- P0: nenhuma
+- P1: nenhuma
+- P3: iOS Fase 2 (ON HOLD até Apple Developer Program ativado)
+- Backlog: pipelineBanco.js agora coberto; módulos sem teste restantes são pages/ DOM-only (categorias, contas, fatura, fluxo-caixa, grupo, index, orcamentos, planejamento, receitas) — difíceis de testar unitariamente, não são P0
+
+### Alertas
+- Nenhum ✅
+
+### O que foi feito (resumo técnico)
+- `tests/pages/pipelineBanco.test.js`: 29 testes — parsearLinhasPDF (formatos DD/MM/YYYY, DD/MM/YY, DD/MM, DD-MM, DD.MM; validação; BUG-011 isNegativo; metadados), classificarBanco (4 combinações isNegativo×sinaisInvertidos; erro; mutação), processarExtratoBancario (smoke tests)
+- `docs/BUSSOLA_PRODUTO.md`: RF-066 corrigido de "⬜ Próximo" → "✅ Entregue (PR #178)"; NRF-NAV F3 de "⬜ Próximo" → "✅ Entregue (PR #190)"
+- `.gitignore`: `*.bak` adicionado — ignora backups temporários do squad IA
+- Branches stale pruned: feat/MF-189-nrf-nav-f3-opcao-b + feat/MF-tech-debt-pipelineBanco-tests
 
 ---
 
