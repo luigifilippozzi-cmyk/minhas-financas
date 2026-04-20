@@ -321,7 +321,7 @@ Sequência de implementação aprovada pelo PO em 2026-04-16. Revisada na mesma 
 | 1 | **RF-067** — Forecast 6 meses | v3.28.0 | P2 | ✅ Entregue (PR #168) | Maior salto qualitativo — habilitou H3 |
 | 2 | **RF-068** — Saldo Real por Conta | v3.29.0 | P1 | ✅ Entregue (PR #174) | Âncora de liquidez. Habilita H1 no Cockpit |
 | 3 | **RF-069** — Burn Rate por Categoria | v3.30.0 | P2 | ✅ Entregue (commit `0ee3e18`) | Completa H2 (projeção intramês). **Antecipado** em relação à sequência original (era #4) por decisão do PO fora de sessão — ver §11 |
-| 4 | **RF-066** — Patrimônio expandido | v3.31.0 | P2 | ⬜ Próximo | Completa H3 (net worth + evolução + taxa poupança). **Realocado** de v3.30.0 → v3.31.0 em função da antecipação do RF-069 |
+| 4 | **RF-066** — Patrimônio expandido | v3.31.0 | P2 | ✅ Entregue (PR #178) | Completa H3 (net worth + evolução + taxa poupança). patrimonio.html + Investimento.js + PassivoExtrajudicial.js |
 | 5 | **NRF-NAV Fase 1** — Navbar 5 seções | v3.32.0 | P2 | ✅ Entregue (PR #180) | Define onde tudo vai. Casada com NRF-UI-WARM (#172) |
 | 6 | **NRF-NAV Fase 2** — Consolidação Projeções×Planejamento | v3.37.0 | P2 | ✅ Entregue (PR #187) | Compromissos unificados em Futuro + Cockpit |
 | 7 | **NRF-NAV Fase 3** — ENH-005 + DS refinements | v3.38.0 | P2 | ✅ Entregue (PR #190) | Simplifica despesas.html + alinha tokens DS. Opção C (merge receitas/despesas) rejeitada — requer RF próprio |
