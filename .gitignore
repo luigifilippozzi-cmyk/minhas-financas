@@ -54,6 +54,9 @@ DerivedData/
 # Scripts de debug/dev local (snapshots temporários do importar.js)
 importar-*.js
 
+# Backups temporários
+*.bak
+
 # Squad IA -- estado efemero (adicionado 2026-04-10, pre-migration para C:\Dev)
 .auto-memory/
 SESSAO_HOJE.md
