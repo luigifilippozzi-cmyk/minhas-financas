@@ -15,6 +15,7 @@ import { formatarMoeda, formatarData, nomeMes, escHTML } from '../utils/formatte
 import { recalcularScoreFatura } from '../utils/reconciliadorFatura.js';
 import { skeletonTableRows, errorStateHTML } from '../utils/skeletons.js';
 import { CONTAS_PADRAO } from '../models/Conta.js';
+import { iniciar as iniciarProjecoes } from '../utils/projecoesCartao.js';
 
 // ── Estado ────────────────────────────────────────────────────
 let _usuario    = null;
@@ -35,6 +36,7 @@ let _unsubContas        = null;
 let _unsubCats          = null;
 let _unsubDesp          = null;
 let _unsubDespMesFatura = null;  // BUG-022: listener paralelo por mesFatura
+let _unsubProjecoes     = [];    // NRF-NAV F2: listeners do módulo projecoesCartao
 
 // ── Inicialização ─────────────────────────────────────────────
 onAuthChange(async (user) => {
@@ -115,7 +117,7 @@ function preencherSeletorCartao() {
   sel.innerHTML = '<option value="">— selecione —</option>' +
     cartoes.map(c => {
       const tag = c._legado ? ' (legado)' : '';
-      return `<option value="${c.id}">${c.emoji} ${c.nome}${tag}</option>`;
+      return `<option value="${escHTML(c.id)}">${escHTML(c.emoji)} ${escHTML(c.nome)}${escHTML(tag)}</option>`;
     }).join('');
   if (anterior && cartoes.find(c => c.id === anterior)) {
     sel.value = anterior;
@@ -405,56 +407,31 @@ function renderizarResumoDetalhado(membros) {
 }
 
 // ── Projeções futuras ─────────────────────────────────────────
-async function carregarProjecoes() {
+function carregarProjecoes() {
+  _unsubProjecoes.forEach(fn => fn());
+  _unsubProjecoes = [];
+
   const container = document.getElementById('fat-proj-content');
   container.innerHTML = '<p class="fat-loading">Carregando...</p>';
   if (!_cartaoId) { container.innerHTML = '<p class="fat-loading">Selecione um cartão.</p>'; return; }
 
-  // Carrega próximos 6 meses de projeções (parcelas pendentes)
-  const projecoesPorMes = {};
-  const hoje = new Date();
-  const inicio = new Date(_ano, _mes - 1, 1); // mês atual + 1
-  inicio.setMonth(inicio.getMonth() + 1);
-
-  for (let i = 0; i < 6; i++) {
-    const m = new Date(inicio);
-    m.setMonth(m.getMonth() + i);
-    projecoesPorMes[`${m.getFullYear()}-${m.getMonth() + 1}`] = {
-      mes: m.getMonth() + 1, ano: m.getFullYear(), total: 0, porMembro: {}
-    };
-  }
-
-  // Usa os dados já importados (projeções são status='pendente' com data futura)
-  // Cria listeners para cada mês futuro
   const membros = _membrosDoGrupo();
-  let pendentes = 0;
-  const unsubProjs = [];
 
-  for (let i = 0; i < 6; i++) {
-    const m = new Date(inicio);
-    m.setMonth(m.getMonth() + i);
-    const mes = m.getMonth() + 1, ano = m.getFullYear();
-    const key = `${ano}-${mes}`;
-
-    const unsub = ouvirDespesas(_grupoId, mes, ano, (desp) => {
-      const filtradas = desp.filter(d => d.contaId === _cartaoId && d.tipo === 'projecao');
-      projecoesPorMes[key] = { mes, ano, total: 0, porMembro: {}, despesas: filtradas };
-
-      // Calcula por membro
+  _unsubProjecoes = iniciarProjecoes(_grupoId, _cartaoId, _mes, _ano, (dadosPorMes) => {
+    // Enriquecer com porMembro antes de renderizar
+    Object.values(dadosPorMes).forEach(entry => {
+      entry.porMembro = {};
       membros.forEach(memb => {
-        const ind = filtradas.filter(d => !d.isConjunta && (d.responsavel || d.portador || '').toLowerCase().startsWith(memb.key));
-        const conj = filtradas.filter(d => d.isConjunta);
+        const ind  = entry.despesas.filter(d => !d.isConjunta && (d.responsavel || d.portador || '').toLowerCase().startsWith(memb.key));
+        const conj = entry.despesas.filter(d => d.isConjunta);
         const tInd  = ind.reduce((s, d) => s + (d.valor ?? 0), 0);
         const tConj = conj.reduce((s, d) => s + (d.valorAlocado ?? (d.valor ?? 0) / 2), 0);
-        projecoesPorMes[key].porMembro[memb.key] = tInd + tConj;
+        entry.porMembro[memb.key] = tInd + tConj;
       });
-      projecoesPorMes[key].total = Object.values(projecoesPorMes[key].porMembro).reduce((s, v) => s + v, 0);
-
-      pendentes++;
-      if (pendentes >= 6) renderizarProjecoes(projecoesPorMes, membros);
+      entry.total = Object.values(entry.porMembro).reduce((s, v) => s + v, 0);
     });
-    unsubProjs.push(unsub);
-  }
+    renderizarProjecoes(dadosPorMes, membros);
+  });
 }
 
 function renderizarProjecoes(projecoesPorMes, membros) {
@@ -488,7 +465,10 @@ function renderizarProjecoes(projecoesPorMes, membros) {
         </tr></thead>
         <tbody>${rows}</tbody>
       </table>
-    </div>`;
+    </div>
+    <p class="fat-proj-link-futuro">
+      <a href="fluxo-caixa.html#compromissos" class="link-sutil">📊 ver todos os cartões consolidados em Futuro →</a>
+    </p>`;
 }
 
 // ── Tabs ──────────────────────────────────────────────────────

@@ -16,6 +16,7 @@ import {
 import { gerarForecast } from '../utils/forecastEngine.js';
 import { coresGrafico } from '../utils/chartColors.js';
 import { isMovimentacaoReal } from '../utils/helpers.js';
+import { buscarProjecoesAgregadas } from '../utils/projecoesCartao.js';
 
 // ── Constantes ────────────────────────────────────────────────
 
@@ -108,8 +109,8 @@ async function carregarFluxo() {
   } finally {
     mostrarLoading(false);
   }
-  // Forecast: sempre baseado na data atual (independente do ano selecionado)
-  await carregarForecast();
+  // Forecast e compromissos: sempre baseados na data atual
+  await Promise.all([carregarForecast(), carregarCompromissos()]);
 }
 
 function agregarMensalmente(despesas, receitas, orcamentos) {
@@ -444,4 +445,38 @@ function renderizarForecast(forecast) {
  */
 function escMesLabel(label, ano) {
   return `${label}/${String(ano).slice(2)}`;
+}
+
+// ── NRF-NAV F2: Compromissos Comprometidos ────────────────────
+
+async function carregarCompromissos() {
+  const tbody = document.getElementById('fc-compromissos-tbody');
+  if (!tbody) return;
+
+  try {
+    const hoje = new Date();
+    const dadosPorMes = await buscarProjecoesAgregadas(_grupoId, hoje.getMonth() + 1, hoje.getFullYear());
+    const meses = Object.values(dadosPorMes).sort((a, b) =>
+      a.ano !== b.ano ? a.ano - b.ano : a.mes - b.mes
+    );
+
+    const temDados = meses.some(m => m.total > 0);
+    if (!temDados) {
+      tbody.innerHTML = '<tr><td colspan="2" class="fc-empty">Nenhuma parcela comprometida nos próximos 6 meses.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = meses.map(({ mes, ano, total }) => {
+      if (total === 0) return '';
+      const saldoCls = 'fc-vermelho';
+      return `<tr class="fc-tr--futuro">
+        <td class="fc-td-mes">${MESES_COMPLETOS[mes - 1]} ${ano}</td>
+        <td class="fc-td-num ${saldoCls}">${fmt(total)}</td>
+      </tr>`;
+    }).filter(Boolean).join('');
+  } catch (err) {
+    console.error('[fluxo-caixa] Erro ao carregar compromissos:', err);
+    const tbody2 = document.getElementById('fc-compromissos-tbody');
+    if (tbody2) tbody2.innerHTML = '<tr><td colspan="2" class="fc-empty">Erro ao carregar compromissos.</td></tr>';
+  }
 }

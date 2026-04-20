@@ -27,7 +27,7 @@
 
   const sectionMap = {
     dashboard:    'cockpit',
-    planejamento: 'futuro',
+    planejamento: 'cockpit',
     patrimonio:   'historico',
     importar:     'transacoes',
     fatura:       'transacoes',
@@ -45,10 +45,7 @@
   // fatura?tab=projecoes → seção Futuro
   if (page === 'fatura' && params.get('tab') === 'projecoes') section = 'futuro';
 
-  if (section === 'cockpit') {
-    const cockpit = navEl.querySelector('.nav-section-btn[data-page="dashboard"]');
-    cockpit?.setAttribute('data-active', '');
-  } else if (section) {
+  if (section) {
     const group = navEl.querySelector(`.nav-section-group[data-section="${section}"]`);
     if (group) {
       group.setAttribute('open', '');

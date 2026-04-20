@@ -7,6 +7,18 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.37.0] - 2026-04-20
+
+### Adicionado
+
+- **NRF-NAV Fase 2: consolidação Projeções×Futuro + Planejamento→Cockpit (#186):** extração de `carregarProjecoes()` + `renderizarProjecoes()` de `fatura.js` para novo módulo reutilizável `src/js/utils/projecoesCartao.js` com duas exports: `iniciar(grupoId, cartaoId, mes, ano, onUpdate)` → listener em tempo real por cartão (retorna array de unsubscribes; caller gerencia cleanup, zero leak) e `buscarProjecoesAgregadas(grupoId, mes, ano)` → one-shot fetch de todos os cartões agregados por `mesFatura`. Nova seção "📅 Compromissos Comprometidos — Próximos 6 Meses" adicionada a `fluxo-caixa.html` (âncora `#compromissos`) consumindo o módulo para agregar parcelas importadas de todos os cartões. Link sutil "ver todos os cartões consolidados em Futuro →" adicionado à aba Projeções de `fatura.html`. Navbar refatorada: `planejamento.html` migrado da seção Futuro para nova seção **Cockpit** (agora `<details>` com sub-itens Dashboard + Planejamento) em todos os 11 HTMLs; `nav.js` atualizado com `planejamento: 'cockpit'` no sectionMap (Q2=Cockpit, decisão PO 2026-04-20). 11 novos testes em `tests/utils/projecoesCartao.test.js`. 690 testes passando.
+
+### Modificado
+
+- `src/js/pages/fatura.js`: `carregarProjecoes()` refatorado para delegar ao módulo `projecoesCartao.js`; cleanup de `_unsubProjecoes[]` garantido ao recarregar; cálculo `porMembro` permanece em fatura.js (acesso a `_membrosDoGrupo()`).
+- `src/js/pages/fluxo-caixa.js`: `carregarForecast()` e novo `carregarCompromissos()` rodando em paralelo via `Promise.all`.
+- `src/js/nav.js`: `planejamento` mapeado para seção `cockpit` (antes `futuro`); branch especial de ativação do Cockpit removida (agora usa lógica genérica de `<details>`).
+
 ## [3.36.0] - 2026-04-19
 
 ### Adicionado
