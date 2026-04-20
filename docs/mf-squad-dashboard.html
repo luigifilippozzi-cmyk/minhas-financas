@@ -461,10 +461,10 @@
 // Dashboard state — PM Agent updates this section, Dev Manager reads it
 const DASHBOARD_DATA = {
   // PM Agent atualiza estes campos:
-  lastUpdate: "2026-04-19 14:00",
+  lastUpdate: "2026-04-19 22:45",
   version: "v3.36.0",
-  health: "yellow", // green | yellow | red
-  healthText: "🟡 Amarelo — [INCONSISTÊNCIA] package.json v3.34.0 vs CHANGELOG v3.36.0 | CI deploy em andamento | 679 testes OK | 0 PRs abertos | UX 92.9% (13/14) | iOS ON HOLD",
+  health: "green", // green | yellow | red
+  healthText: "🟢 Verde — CI verde (3/3 success) | 679 testes OK | package.json sincronizado v3.36.0 | 0 PRs abertos | 0 violações | UX 92.9% (13/14) | iOS ON HOLD | proposta NRF-NAV F2 pronta — aguarda PO",
   testsUnit: "679",
   testsUnitStatus: "679 passando",
   testsInt: "26",
@@ -472,6 +472,9 @@ const DASHBOARD_DATA = {
   issuesSub: "UX milestone: 1 (#158 ENH-005) | iOS: 13 (F2 ON HOLD)",
   // Dev Manager atualiza via PR + merge
   activity: [
+    { time: "Apr 19", color: "var(--green)", msg: "<strong>Dev Manager 22:45</strong> — 🟢 Verde | v3.36.0 | 679 testes OK | package.json sincronizado (v3.34.0→v3.36.0) | CI verde | proposta merge Projeções×Planejamento criada (.auto-memory/proposta-nav-fase2-merge.md) — aguarda decisão PO Q1/Q2/Q3 | 14 issues | 0 PRs abertos | 0 bloqueios", tag: "merge" },
+    { time: "Apr 19", color: "var(--blue)", msg: "<strong>chore: package.json v3.36.0</strong> — sincronização com CHANGELOG (estava em v3.34.0 — [INCONSISTÊNCIA] resolvida)", tag: "commit" },
+    { time: "Apr 19", color: "var(--blue)", msg: "<strong>docs: proposta NRF-NAV Fase 2</strong> — análise técnica de merge Projeções×Planejamento com 3 opções (A/B/C) + estimativa de esforço + perguntas ao PO — .auto-memory/proposta-nav-fase2-merge.md", tag: "commit" },
     { time: "Apr 19", color: "var(--yellow)", msg: "<strong>PM Agent 14:00</strong> — 🟡 Amarelo | v3.36.0 | 679 testes OK | CI deploy in-progress | 14 issues | [INCONSISTÊNCIA] package.json=v3.34.0 vs CHANGELOG=v3.36.0 — DM deve corrigir | UX milestone 92.9% (13/14) | iOS ON HOLD | 0 PRs abertos | 0 QA pendentes | 0 violações", tag: "pm" },
     { time: "Apr 19", color: "var(--green)", msg: "<strong>PR #185 mergeado</strong> — feat(despesas): ENH-004 progressive disclosure 1 badge/linha (#151) — v3.36.0 | hierarquia transf &gt; projeção &gt; parcela &gt; conjunta &gt; portador | ▾ toggle &lt;details&gt; nativo | fix XSS portBadge | 679 testes | test-runner PASS | security-reviewer PASS", tag: "merge" },
     { time: "Apr 19", color: "var(--green)", msg: "<strong>PR #184 mergeado</strong> — feat(base-dados): ENH-002 rota transferências internas + filtro (#152) — v3.35.0 | subtítulo portador→destino | badge 🔁 Transferência | filtro dedicado | fix XSS preencherSelResp | 679 testes (+14) | security-reviewer PASS", tag: "merge" },
