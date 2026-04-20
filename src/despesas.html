@@ -106,8 +106,6 @@
       </div>
 
       <div style="display:flex;gap:.5rem;">
-        <!-- CT-009.5: botão de visibilidade do painel de parcelamentos -->
-        <button id="btn-ver-parc-desp" class="btn btn-outline" title="Ver parcelamentos em aberto">💳 Parcelas</button>
         <button id="btn-exportar-csv" class="btn btn-outline" title="Exportar CSV">📥 Exportar CSV</button>
         <button id="btn-nova-despesa" class="btn btn-primary">+ Nova Despesa</button>
       </div>
@@ -122,30 +120,6 @@
       <div class="desp-chip desp-chip-count">
         <span class="desp-chip-label">Registros</span>
         <span class="desp-chip-valor" id="chip-count">0</span>
-      </div>
-      <!-- NRF-001: chip "Meu Bolso" — minha parte das conjuntas + individuais -->
-      <div class="desp-chip desp-chip-meu-bolso" id="chip-meu-bolso" style="display:none;">
-        <span class="desp-chip-label">👤 Meu Bolso</span>
-        <span class="desp-chip-valor" id="chip-meu-bolso-valor">R$ 0,00</span>
-      </div>
-      <!-- RF-014: chips por responsável (preenchidos via JS) -->
-      <div id="chips-responsavel" style="display:contents;"></div>
-      <!-- NRF-001: chips de compartilhadas por usuário (preenchidos via JS) -->
-      <div id="chips-compartilhadas" style="display:contents;"></div>
-    </div>
-
-    <!-- ═══ RF-014: PARCELAMENTOS EM ABERTO ═══ -->
-    <div class="card parc-widget hidden" id="parc-widget">
-      <div class="parc-widget-header" id="parc-toggle" style="cursor:pointer;">
-        <span>💳 Parcelamentos em Aberto</span>
-        <div style="display:flex;align-items:center;gap:.75rem;">
-          <span class="parc-total-valor" id="parc-total-desp">R$ 0,00</span>
-          <span class="parc-toggle-icon">▾</span>
-        </div>
-      </div>
-      <div id="parc-body-desp" class="parc-body">
-        <!-- Linha por portador, expandível -->
-        <div id="parc-lista-desp"></div>
       </div>
     </div>
 
