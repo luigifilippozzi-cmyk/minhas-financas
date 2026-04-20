@@ -8,7 +8,7 @@
 
 - **Usuários:** Luigi + Ana (casal)
 - **Dev:** Luigi (solo developer)
-- **Versão atual:** v3.31.0
+- **Versão atual:** v3.37.0
 - **Repo:** https://github.com/luigifilippozzi-cmyk/minhas-financas
 - **Stack:** HTML5 · CSS3 · JS ES6+ · **Vite 5** (bundler MPA) · **Capacitor 8** (iOS) · Firebase Auth · Cloud Firestore (via npm) · Chart.js v4 · SheetJS (XLSX)
 
@@ -195,7 +195,7 @@ Todas as cores, sombras e fontes estão em `variables.css` como CSS custom prope
 
 ---
 
-## Estado Atual do Projeto (2026-04-17) — v3.31.0
+## Estado Atual do Projeto (2026-04-20) — v3.37.0
 
 ### Milestones
 | Milestone | Progresso | Status |
@@ -208,7 +208,7 @@ Todas as cores, sombras e fontes estão em `variables.css` como CSS custom prope
 | iOS App Fase 1 (Capacitor + safe areas) | 2/2 (100%) | ✅ Concluído |
 | iOS App Fase 2 (Firebase nativo) | 0/4 issues | ⏸️ ON HOLD (decisão PO 2026-04-16) |
 | iOS App Fases 3–5 (UX mobile + TestFlight + Push) | 0/9 issues | ⚪ Aguardando Fase 2 |
-| UX & Gestão Patrimonial | 8/13 (62%) | 🟢 Ativo — RF-065/066/067/068/069 entregues |
+| UX & Gestão Patrimonial | 13/14 (93%) | 🟢 Quase concluído — só ENH-005 (#158) aguarda NRF-NAV F3 |
 | Tech Debt | 2/2 (100%) — testes | ✅ Concluído |
 
 ### Estrutura de Desenvolvimento (Squad IA)
@@ -216,22 +216,19 @@ Todas as cores, sombras e fontes estão em `variables.css` como CSS custom prope
 Luigi (Product Owner)
   ├── PM Agent          → Relatório diário, métricas, alertas (read-only)
   └── Dev Manager       → Executor de código, orquestrador de subagentes
-        ├── test-runner              → Vitest (665 testes) + coverage
+        ├── test-runner              → Vitest (690 testes) + coverage
         ├── security-reviewer        → Firestore rules, escHTML/XSS, auth
         └── import-pipeline-reviewer → Pipeline de importação (parser, dedup, ajuste)
 ```
 Detalhes completos em `AGENTS.md`. Bússola estratégica em `docs/BUSSOLA_PRODUTO.md`. Memória persistente em `.auto-memory/project_mf_status.md`.
 
-### Próximas prioridades (fonte: `docs/BUSSOLA_PRODUTO.md` §9 — Ordem de Ataque Aprovada)
-1. ~~**RF-067** — Forecast 6 meses — v3.28.0~~ ✅ Concluído (PR #168)
-2. ~~**RF-068** — Saldo Real por Conta — v3.29.0~~ ✅ Concluído (PR #174)
-3. ~~**RF-069** — Burn Rate por Categoria — v3.30.0~~ ✅ Concluído (commit `0ee3e18`; ordem invertida com RF-066 por decisão do PO em 2026-04-16 — ver §11 da bússola)
-4. ~~**RF-066** — Patrimônio Ativos/Passivos expandido — v3.31.0~~ ✅ Concluído (PR #178)
-5. **NRF-NAV Fase 1** — Navbar 5 seções — issue `#154` — v3.32.0 (P2) ← próximo — casada com NRF-UI-WARM (#172); decisão PO pendente: 1 PR conjunto ou 2 sequenciais
-6. **NRF-NAV Fase 2** — Consolidação de páginas — v3.33.0 (P2) — absorve ENH-005
-7. **iOS App Fase 2** — Firebase nativo — issues #77–#80 — **ON HOLD** até Apple Developer Program ativado
+### Próximas prioridades
+1. ~~**NRF-NAV Fase 1** — Navbar 5 seções — v3.33.0~~ ✅ Concluído (PR #180)
+2. ~~**NRF-NAV Fase 2** — projecoesCartao.js + Cockpit + Compromissos — v3.37.0~~ ✅ Concluído (PR #187)
+3. **ENH-005** (#158) — Simplificar despesas.html — aguarda **NRF-NAV Fase 3** (P2)
+4. **iOS App Fase 2** — Firebase nativo — issues #77–#80 — **ON HOLD** até Apple Developer Program ativado
 
-**QA concluído:** issue #129 (RF-062) **fechada** em 2026-04-17 — 30 PASS / 3 N/A / 0 FAIL / 0 regressões em 33 TCs cobertos (ver sessão PO Cowork em `.auto-memory/project_mf_status.md`).
+**QA concluído:** issue #129 (RF-062) **fechada** em 2026-04-17 — 30 PASS / 3 N/A / 0 FAIL / 0 regressões em 33 TCs cobertos.
 
 ### Documentação de referência
 | Arquivo | Conteúdo |
