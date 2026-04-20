@@ -1,8 +1,43 @@
 # Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-20 08:15 (Dev Manager — sessão autônoma)
+> Atualizado em: 2026-04-20 08:19 (PM Agent — revisão diária)
 > Versão: v3.37.0 | package.json = v3.37.0 ✅ (sincronizado)
-> Saúde: 🟢 VERDE — CI verde | 698 testes OK | 0 PRs abertos | 0 violações | 15 issues | chartColors.js coberto | NRF-NAV F3 proposta (#189)
+> Saúde: 🟢 VERDE — CI verde | 698 testes OK | 0 PRs abertos | 0 violações | 15 issues | NRF-NAV F2 entregue | NRF-NAV F3 aguarda PO
+
+---
+
+## PM Agent — 2026-04-20 08:19
+
+### Estado
+- Versão: v3.37.0
+- Milestone primário: UX & Gestao Patrimonial (86.7%, 13/15 issues — 2 abertas: #158 ENH-005 + #189 NRF-NAV F3)
+- Milestone iOS: ON HOLD (23.5%, 4/17) — aguarda Apple Dev Program
+- Saúde: 🟢 VERDE — CI verde | 698 testes OK | 0 PRs | 0 violações | 0 bugs P0
+- Testes: 698 unit + 26 int — todos passando
+- CI: último run completado com success | 1 deploy in_progress (auto pós-chore)
+
+### Issues abertas (15 total)
+- Milestone primário (UX): #158 ENH-005 (absorvida por #189), #189 NRF-NAV F3 (aguarda decisão PO opção A/B/C)
+- iOS ON HOLD: #77–#89 (13 issues — não priorizar)
+- Novas desde sessão anterior: #189 NRF-NAV F3 (criada pelo Dev Manager às 08:15)
+
+### Alertas ativos
+- [DECISÃO-PO-PENDENTE] #189 NRF-NAV F3 — Dev Manager propôs 3 opções (A/B/C) ao PO. Aguarda: (1) opção de escopo preferida, (2) confirmação absorção ENH-005 #158. Criado 2026-04-20.
+- [iOS-ON-HOLD] Fase 2 pausada indefinidamente — só retomar com sinal explícito do PO sobre Apple Developer Program.
+
+### Prioridades para Dev Manager
+- P0: nenhuma (sem bugs P0, sem violações)
+- P1: NRF-NAV Fase 3 (#189) — bloqueado aguardando decisão PO sobre escopo (A/B/C) + absorção #158
+- P3: iOS Fase 2 (ON HOLD)
+
+### Atividade recente
+- Último PR mergeado: #188 test(utils) chartColors.js — 8 testes (698 total)
+- Penúltimo PR mergeado: #187 feat(nav) NRF-NAV Fase 2 — projecoesCartao.js + Compromissos + Cockpit
+- Issue #186 fechada: NRF-NAV F2 concluída (2026-04-20)
+- Issue #189 aberta: NRF-NAV F3 proposta (2026-04-20)
+- Commits sem PR em src/: não — todos via feature branch + PR ✅
+- Subagentes acionados (PR #187): security-reviewer PASS (1 HIGH corrigido: escHTML preencherSeletorCartao)
+- Módulos utils/ sem teste: 0 ✅
 
 ---
 
