@@ -7,6 +7,18 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.38.0] - 2026-04-20
+
+### Modificado
+
+- **NRF-NAV Fase 3 Opção B — ENH-005 + Design System refinements (#189):** simplificação de `despesas.html` (ENH-005 absorvida de #158): removidos KPI carousel de portadores/responsáveis (`chips-responsavel`, `chips-compartilhadas`, `chip-meu-bolso`) e widget "Parcelamentos em Aberto" — o cabeçalho da página agora exibe apenas Total do Mês + Contagem de Registros, focando a tela em seu papel operacional de CRUD/listagem. Listener `ouvirParcelamentosAbertos` e funções `renderizarPainelParcelamentos`, `agruparParPorCompra`, `renderizarChipsResponsavel`, `renderizarChipsCompartilhadas` removidos de `despesas.js`; `_unsubProj` eliminado (zero memory leak). Parcelamentos acessíveis via seção Futuro → Projeções (PR #187).
+- **Design System tokens — substituição de cores hardcoded (RF-070):** `fluxo-caixa.html` legend dots migrados de hex hardcoded (`#2e7d32`, `#c62828`, `#9e9e9e`, `#1565c0`) para tokens `var(--color-income)`, `var(--color-expense)`, `var(--color-text-muted)`, `var(--color-info)`. `components.css` — shadow do `.btn-danger:hover` migrado de `rgba(239,68,68,0.28)` (cor pré-rebrand) para novo token `--shadow-danger` alinhado ao Warm Finance. `despesas.js` — fallback de cor de categoria migrado de `#6c757d` para `getComputedStyle` + `--color-text-muted`.
+- **Segurança (XSS hardening) — `despesas.js`:** `escHTML()` aplicado em: `onclick` com `d.id` (4 botões inline), `<option>` de responsáveis, responsáveis do filtro, categorias (nome+emoji+id) e contas (nome+emoji+id); `title` de badge de conta sanitizado.
+
+### Removido
+
+- `despesas.html`: KPI carousel (chips de portador/responsável + Meu Bolso), widget "Parcelamentos em Aberto", botão `btn-ver-parc-desp` (ENH-005 — issue #158 absorvida).
+
 ## [3.37.0] - 2026-04-20
 
 ### Adicionado
