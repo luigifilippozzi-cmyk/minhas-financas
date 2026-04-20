@@ -1,8 +1,82 @@
 # Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-19 14:00 (PM Agent — revisão diária)
-> Versão: v3.36.0 (CHANGELOG) | package.json = v3.34.0 ⚠️ [INCONSISTÊNCIA]
-> Saúde: 🟡 AMARELO — [INCONSISTÊNCIA] package.json desatualizado | CI deploy in-progress | 679 testes OK | 0 PRs abertos
+> Atualizado em: 2026-04-19 23:15 (PM Agent — revisão diária)
+> Versão: v3.36.0 | package.json = v3.36.0 ✅ (sincronizado)
+> Saúde: 🟢 VERDE — CI verde | 679 testes OK | 0 PRs abertos | 0 violações | 15 issues | NRF-NAV F2 aguarda PO
+
+---
+
+## PM Agent — 2026-04-19 23:15
+
+### Estado
+- Versão: v3.36.0 (package.json ✅ sincronizado)
+- Milestone primário: UX & Gestao Patrimonial — quase concluído (13/14 fechadas, 92.9%) — só #158 ENH-005 aberta (absorvida por NRF-NAV F2)
+- Milestone iOS: 📱 App Mobile iOS — Capacitor (23.5%, 4/17) — **ON HOLD** indefinido
+- Saúde: 🟢 Verde — CI verde (5/5 success) | 679 testes | 0 PRs | 0 violações
+- Testes: 679 unit + 26 int — todos passando ✅
+- CI: 5/5 runs success (Deploy Firebase Hosting) ✅
+
+### Issues abertas (15 total)
+- Fase 2 iOS (P0, ON HOLD): #77, #78, #79, #80
+- Fase 3 iOS: #81, #82, #83
+- Fase 4 iOS: #84, #85, #86
+- Fase 5 iOS: #87, #88, #89
+- UX milestone: #158 ENH-005 (não implementar isolado — absorvida por NRF-NAV F2)
+- **NOVA** #186: RF-070 NRF-NAV Fase 2 — Unificação Projeções/Planejamento (label `rf-070`, sem milestone)
+- Novas desde última sessão DM (22:45): #186
+
+### Alertas ativos
+- [INCONSISTÊNCIA] Issue #186 usa label `rf-070` que já foi usado em #182 (Design System v1.0, fechada em 19/04). Duas issues distintas com mesmo label. Sugerir ao PO criar label `nrf-nav-f2` ou `rf-071`.
+- (Sem outros alertas ativos)
+
+### Prioridades para Dev Manager
+- P0: aguardar decisão PO sobre NRF-NAV Fase 2 (Q1: opção A/B/C | Q2: localização planejamento na navbar | Q3: aba Projeções mantida ou substituída)
+- P1: NRF-NAV Fase 2 (#186) — após decisão PO
+- P2: ENH-005 (#158) — aguardar NRF-NAV F2
+- iOS: ON HOLD indefinido
+
+### Atividade recente (desde última sessão PM 14:00)
+- Último commit: chore(dashboard) Dev Manager 22:45 — package.json sync + proposta NRF-NAV F2
+- chore: d28e69c — sincronizar package.json v3.36.0 ✅
+- Commits sem PR: sim (2 chore — permitidos por CLAUDE.md)
+- PRs mergeados desde última sessão: nenhum
+- Issues fechadas últimos 7 dias: #182 (RF-070 DS v1.0, 19/04) | #172 (NRF-UI-WARM, 18/04) | #154 (NRF-NAV, 18/04) | #152 (ENH-002, 19/04) | #151 (ENH-004, 19/04)
+- QA issues: todas fechadas ✅ (#129, #136-#139)
+- Subagentes acionados: não registrado nesta sessão
+
+---
+
+## Dev Manager — 2026-04-19 22:45
+
+### Sessão
+- Versão: v3.36.0
+- Tarefas concluídas: (1) package.json sync v3.34.0→v3.36.0 | (2) proposta NRF-NAV Fase 2 — merge Projeções×Planejamento
+- PRs criados: nenhum (chore direto em main)
+- PRs mergeados: nenhum
+- Subagentes acionados: nenhum (tasks de chore/docs)
+- CI: verde ✅ | Deploy Firebase: automático em andamento
+
+### Estado do milestone
+- UX & Gestao Patrimonial: 13/14 fechadas (92.9%) — issue aberta: #158 ENH-005 (absorvida por NRF-NAV F2, não implementar isolado)
+- iOS Fase 2 (ON HOLD): 4/4 issues abertas — #77, #78, #79, #80
+- QA pendente: NENHUMA ✅
+
+### Proposta NRF-NAV Fase 2
+- **Arquivo:** `.auto-memory/proposta-nav-fase2-merge.md` (gitignored — local only)
+- **Recomendação Dev Manager:** Opção B — migração parcial
+  - aba Projeções de fatura.html → seção "Futuro" (extração de módulo `projecoesCartao.js`)
+  - planejamento.html → Cockpit drill-down (link "ver planejamento →")
+  - Esforço estimado: ~6h (extração módulo + integração + testes)
+- **Aguarda PO responder Q1/Q2/Q3 antes de qualquer implementação**
+
+### Próximas prioridades
+- P0: aguardar decisão PO sobre NRF-NAV Fase 2 (Q1: opção A/B/C | Q2: localização planejamento na navbar | Q3: aba Projeções mantida ou substituída por link)
+- P1: NRF-NAV Fase 2 (após decisão PO)
+- P2: ENH-005 (#158) — absorvida por NRF-NAV F2 (não implementar isolado)
+- iOS: ON HOLD indefinido
+
+### Alertas
+- Nenhum ✅ — [INCONSISTÊNCIA] package.json resolvida
 
 ---
 
@@ -1575,3 +1649,50 @@ relatorio diario. Saude do projeto deve ser monitorada por:
 - **Scripts PowerShell executados:** cria��o do label rf-070 (idempotente), cria��o da Issue #182, regrava��o dos handoffs
 - **Alerta legado pendente:** verificar commit direto em `main` do run #166 (14/04/2026) � regra inviol�vel #11 � ainda n�o tratado
 - **Pr�xima sess�o:** revisar PR do RF-070 quando o DM finalizar; depois retomar fila NRF-NAV Fase 2 (#154 absorveu, pr�ximo � ENH-002 #152)
+
+## Sessao 2026-04-19 � PO Assistant (Cowork)
+- Versao na sessao: CHANGELOG=v3.36.0 | package.json=v3.34.0 (inconsistencia a corrigir)
+- Milestone ativo: UX & Gestao Patrimonial 92,9% (13/14)
+- Decisoes:
+  - Item 1 APROVADO � DM deve corrigir package.json -> v3.36.0 (commit direto na main, sem PR)
+  - Item 2 POSTERGADO � NRF-NAV Fase 2 requer sessao de discovery dedicada; DM permanece em standby ate PO conduzir as 3 perguntas e gerar RF formal
+  - Item 3 APROVADO � 6 branches remotas stale deletadas pelo PO
+- Issues priorizadas: chore package.json (P0 imediato) > NRF-NAV F2 (P1 apos discovery) > ENH-005 #158 (aguarda NRF-NAV F2)
+- Bugs registrados: nenhum
+- Melhorias registradas: nenhuma (sugerida mas nao formalizada: auto-bump de versao em CI para evitar nova desync)
+- RFs criados: nenhum
+- Bloqueios identificados: NRF-NAV F2 bloqueado ate discovery de merge Projecoes x Planejamento (BUSSOLA Gap 5)
+- Artefatos gerados para PM/DM: sim � tarefa DM para chore package.json
+- Scripts PowerShell executados: sincronizar main | deletar 6 branches remotas | registrar tarefa DM | atualizar memoria
+- Proxima sessao: discovery NRF-NAV Fase 2 (3 perguntas de arquitetura de informacao)
+
+## Sess�o 2026-04-19 � PO Assistant (Cowork)
+- Vers�o na sess�o: v3.31.0
+- Milestone ativo: UX & Gest�o Patrimonial (8/13 � 62%)
+- Decis�o: Abrir discovery NRF-NAV Fase 2 e desmembrar em RF-070 (merge de
+  p�ginas em tabs) + RF-071 (tab Caixa Futuro + agregador � a desenhar)
+- RFs criados: RF-070 � Unifica��o de Proje��es e Planejamento (issue #186)
+- RFs registrados como placeholder: RF-071 � Tab Caixa Futuro + agregadorFuturo.js
+- Decis�es de produto nesta sess�o:
+    1. Rota unificada: reutilizar planejamento.html (n�o criar futuro.html)
+    2. Escopo Fase 2: tabs 1:1, sem terceira tab "Caixa Futuro" (adiado para RF-071)
+    3. Depend�ncia HARD: NRF-NAV Fase 1 (#154) antes de iniciar RF-070
+- Trade-off registrado: motiva��o declarada era "vis�o de caixa futuro", mas
+  escolha de UX (tabs lado a lado) n�o entrega essa vis�o � por isso RF-071
+  foi criado como continua��o obrigat�ria para fechar a dor original
+- Higiene: label rf-070 existia com descri��o "Design System v1.0" (�rf�o,
+  sem contraparte em docs/CLAUDE.md/b�ssola). Resolvido via Op��o A �
+  descri��o do label atualizada para refletir o novo escopo. N�mero RF-070
+  permanece com o merge Proje��es/Planejamento.
+- Issues priorizadas: #154 (NRF-NAV Fase 1) ? #186 (RF-070) ? RF-071 (a criar)
+- Bloqueios identificados: #186 bloqueado at� #154 mergeada
+- Artefatos gerados para PM/DM: dm_tasks_pending.md e pm_tasks_pending.md
+  atualizados com RF-070 e placeholder RF-071
+- Scripts PowerShell executados:
+    - Registro DM/PM em .auto-memory ?
+    - gh label create refactor ?
+    - gh issue create RF-070 via body-file ? (issue #186)
+    - gh label edit rf-070 descri��o ?
+    - gh issue comment #158 linkando ENH-005 ao RF-070 ? PENDENTE
+- Pr�xima sess�o: acompanhar entrega de NRF-NAV Fase 1 (#154); depois desenhar
+  RF-071 em discovery dedicada
