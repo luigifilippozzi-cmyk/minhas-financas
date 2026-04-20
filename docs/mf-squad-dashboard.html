@@ -461,17 +461,20 @@
 // Dashboard state — PM Agent updates this section, Dev Manager reads it
 const DASHBOARD_DATA = {
   // PM Agent atualiza estes campos:
-  lastUpdate: "2026-04-20 07:35",
+  lastUpdate: "2026-04-20 08:15",
   version: "v3.37.0",
   health: "green", // green | yellow | red
-  healthText: "🟢 Verde — CI verde | 690 testes OK | PR #187 mergeado | 0 violações | 14 issues | NRF-NAV Fase 2 entregue",
-  testsUnit: "690",
-  testsUnitStatus: "690 passando",
+  healthText: "🟢 Verde — CI verde | 698 testes OK | PR #188 mergeado | 0 violações | 15 issues | dívida chartColors.js liquidada",
+  testsUnit: "698",
+  testsUnitStatus: "698 passando",
   testsInt: "26",
-  issuesOpen: 14,
-  issuesSub: "UX: 1 (#158 ENH-005 — aguarda NRF-NAV F3) | iOS: 13 (ON HOLD)",
+  issuesOpen: 15,
+  issuesSub: "UX: 2 (#158 ENH-005, #189 NRF-NAV F3 — aguarda PO) | iOS: 13 (ON HOLD)",
   // Dev Manager atualiza via PR + merge
   activity: [
+    { time: "Apr 20", color: "var(--accent)", msg: "<strong>Issue #189 criada</strong> — NRF-NAV Fase 3 — Consolidação de páginas + ENH-005 | milestone UX &amp; Gestao Patrimonial | 3 opções (A/B/C) propostas ao PO | ENH-005 (#158) absorvida", tag: "feat" },
+    { time: "Apr 20", color: "var(--green)", msg: "<strong>PR #188 mergeado</strong> — test(utils): cobertura chartColors.js — 8 testes | dívida técnica P0 liquidada | vi.stubGlobal para getComputedStyle+document | cache hit validado | 698 testes (▲8) | test-runner PASS", tag: "merge" },
+    { time: "Apr 20", color: "var(--green)", msg: "<strong>Dev Manager 08:15</strong> — 🟢 Verde | v3.37.0 | 698 testes OK | CI verde | 0 PRs abertos | 0 violações | stale branch pruned | chartColors.js coberto | NRF-NAV F3 proposta ao PO (#189)", tag: "merge" },
     { time: "Apr 20", color: "var(--green)", msg: "<strong>PR #187 mergeado</strong> — feat(nav): NRF-NAV Fase 2 — projecoesCartao.js + Compromissos em Futuro + Cockpit (#186) — v3.37.0 | novo módulo projecoesCartao.js (iniciar + buscarProjecoesAgregadas) | seção #compromissos em fluxo-caixa | navbar Cockpit agora dropdown com Dashboard+Planejamento | Planejamento sai de Futuro | fix HIGH-001 escHTML preencherSeletorCartao | 690 testes (+11) | test-runner PASS | security-reviewer PASS (1 HIGH corrigido)", tag: "merge" },
     { time: "Apr 20", color: "var(--blue)", msg: "<strong>PM Agent 06:42</strong> — 🟢 Verde | v3.36.0 | 679 testes OK | CI verde (5/5 success) | 15 issues | 0 PRs abertos | 0 branches ativas | 0 violações | 0 QA pendentes | iOS 4/17 ON HOLD | [INCONSISTÊNCIA] label rf-070→nrf-nav-f2 em #186 resolvida ✅ | NRF-NAV F2 (#186) próximo — aguarda decisão PO | ENH-005 (#158) absorvida por F2 | sem atividade desde 23:15 de ontem", tag: "pm" },
     { time: "Apr 19", color: "var(--blue)", msg: "<strong>PM Agent 23:15</strong> — 🟢 Verde | v3.36.0 | 679 testes OK | CI verde (5/5 success) | 15 issues (+1 nova #186 NRF-NAV F2) | iOS 4/17 ON HOLD | 0 QA pendentes | 0 violações ativas | package.json ✅ sincronizado | proposta NRF-NAV F2 aguarda PO | [INCONSISTÊNCIA] label rf-070 em #186 reutiliza label já usado em #182 (fechada)", tag: "pm" },

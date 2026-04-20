@@ -1,8 +1,38 @@
 # Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-20 07:35 (Dev Manager — sessão autônoma)
+> Atualizado em: 2026-04-20 08:15 (Dev Manager — sessão autônoma)
 > Versão: v3.37.0 | package.json = v3.37.0 ✅ (sincronizado)
-> Saúde: 🟢 VERDE — CI verde | 690 testes OK | 0 PRs abertos | 0 violações | 14 issues | NRF-NAV F2 entregue
+> Saúde: 🟢 VERDE — CI verde | 698 testes OK | 0 PRs abertos | 0 violações | 15 issues | chartColors.js coberto | NRF-NAV F3 proposta (#189)
+
+---
+
+## Dev Manager — 2026-04-20 08:15
+
+### Sessão
+- Versão: v3.37.0 (derivada de package.json)
+- Tarefas concluídas: dívida técnica chartColors.js (P0) + proposta NRF-NAV F3
+- PRs criados: #188 — test(utils): cobertura para chartColors.js — 8 testes
+- PRs mergeados: #188 ✅ CI verde (Vitest PASS)
+- Issues criadas: #189 — NRF-NAV Fase 3 — Consolidação de páginas + ENH-005
+- Subagentes acionados: nenhum (apenas testes, sem alterações em src/ ou pipeline)
+- CI: verde | Deploy Firebase: em andamento (auto após merge #188)
+
+### Estado dos milestones
+- UX & Gestao Patrimonial (primário): 13/14 issues fechadas (UX) + 2 abertas: #158 ENH-005, #189 NRF-NAV F3
+- iOS Fase 2 (P3 — ON HOLD): 4/4 issues abertas — #77, #78, #79, #80
+- iOS Fases 3–5 (P3 — aguardando F2): 9 issues abertas — #81–#89
+- QA pendente: 0
+
+### Decisões pendentes do PO
+- **NRF-NAV F3 #189** — escolher opção A/B/C de escopo (mínimo / médio / consolidação completa) + confirmar absorção ENH-005 #158
+
+### Próximas prioridades
+- P1: NRF-NAV Fase 3 (#189) — aguarda decisão PO sobre opção A/B/C
+- P1: ENH-005 (#158) — absorvida por NRF-NAV F3
+- P3: iOS Fase 2 (ON HOLD até Apple Developer Program ativado)
+
+### Alertas
+- Nenhum ✅
 
 ---
 
