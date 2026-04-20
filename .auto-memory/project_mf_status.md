@@ -1,8 +1,38 @@
 # Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-20 06:42 (PM Agent — revisão diária)
-> Versão: v3.36.0 | package.json = v3.36.0 ✅ (sincronizado)
-> Saúde: 🟢 VERDE — CI verde | 679 testes OK | 0 PRs abertos | 0 violações | 15 issues | NRF-NAV F2 aguarda PO
+> Atualizado em: 2026-04-20 07:35 (Dev Manager — sessão autônoma)
+> Versão: v3.37.0 | package.json = v3.37.0 ✅ (sincronizado)
+> Saúde: 🟢 VERDE — CI verde | 690 testes OK | 0 PRs abertos | 0 violações | 14 issues | NRF-NAV F2 entregue
+
+---
+
+## Dev Manager — 2026-04-20 07:35
+
+### Sessão
+- Versão: v3.37.0 (derivada de package.json)
+- Tarefas concluídas: NRF-NAV Fase 2 (#186)
+- PRs criados: #187 — feat(nav): NRF-NAV Fase 2 — projecoesCartao.js + Compromissos em Futuro + Cockpit
+- PRs mergeados: #187 ✅ CI verde
+- Subagentes acionados: security-reviewer PASS (1 HIGH corrigido: escHTML preencherSeletorCartao)
+- CI: verde | Deploy Firebase: em andamento (auto após merge)
+
+### Estado dos milestones
+- UX & Gestao Patrimonial (primário): 13/14 issues fechadas — só #158 ENH-005 aberta (aguarda NRF-NAV F3)
+- iOS Fase 2 (P3 — ON HOLD): 4/4 issues abertas — #77, #78, #79, #80
+- iOS Fases 3–5 (P3 — aguardando F2): 9 issues abertas
+- QA pendente: 0
+
+### Decisões pendentes do PO
+- Nenhuma — NRF-NAV F2 implementado com decisão PO de 2026-04-20 (Q1=B, Q2=Cockpit, Q3=manter aba+link)
+
+### Próximas prioridades
+- P1: ENH-005 (#158) — absorvida por NRF-NAV Fase 3 (consolidação de páginas) — aguardar decisão PO sobre escopo F3
+- P3: iOS Fase 2 (ON HOLD até Apple Developer Program ativado)
+
+### Alertas
+- Nenhum ✅
+
+---
 
 ---
 
