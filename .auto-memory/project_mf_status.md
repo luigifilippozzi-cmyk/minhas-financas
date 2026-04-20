@@ -1,8 +1,46 @@
 # Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-20 08:19 (PM Agent — revisão diária)
-> Versão: v3.37.0 | package.json = v3.37.0 ✅ (sincronizado)
-> Saúde: 🟢 VERDE — CI verde | 698 testes OK | 0 PRs abertos | 0 violações | 15 issues | NRF-NAV F2 entregue | NRF-NAV F3 aguarda PO
+> Atualizado em: 2026-04-20 08:51 (Dev Manager — NRF-NAV F3 concluída)
+> Versão: v3.38.0 | package.json = v3.38.0 ✅ (sincronizado)
+> Saúde: 🟢 VERDE — CI verde | 698 testes OK | 0 PRs abertos | 0 violações | 13 issues | UX milestone 100% ✅
+
+---
+
+## Dev Manager — 2026-04-20 08:51
+
+### Sessão
+- Versão: v3.38.0 (derivada de package.json)
+- Tarefas concluídas: NRF-NAV Fase 3 Opção B (#189) + ENH-005 (#158 absorvida)
+- PRs criados: #190 — feat(despesas): NRF-NAV Fase 3 — ENH-005 + DS tokens + XSS hardening
+- PRs mergeados: #190 ✅ CI verde (Vitest PASS)
+- Issues fechadas: #189 (NRF-NAV F3) + #158 (ENH-005) — auto-fechadas pelo merge
+- Subagentes acionados: test-runner PASS (698/698) | security-reviewer PASS (3 FAILs identificados e corrigidos)
+- CI: verde | Deploy Firebase: em andamento (auto após merge #190)
+
+### Estado dos milestones
+- UX & Gestao Patrimonial (primário): **15/15 (100%) ✅ CONCLUÍDO**
+- iOS Fase 2 (P3 — ON HOLD): 4/4 issues abertas — #77, #78, #79, #80
+- iOS Fases 3–5 (P3 — aguardando F2): 9 issues abertas — #81–#89
+- QA pendente: 0
+
+### Decisões pendentes do PO
+- Nenhuma ✅ — milestone UX & Gestão Patrimonial concluído
+
+### Próximas prioridades
+- P0: nenhuma (sem bugs P0, sem violações)
+- P1: nenhuma (milestone UX 100% concluído)
+- P3: iOS Fase 2 (ON HOLD até Apple Developer Program ativado)
+
+### Alertas
+- Nenhum ✅
+
+### O que foi feito (resumo técnico)
+- `despesas.html`: removidos KPI carousel (chips responsável/compartilhadas/Meu Bolso) e widget Parcelamentos em Aberto. Header fica com Total do Mês + Contagem.
+- `despesas.js`: removidos listener `ouvirParcelamentosAbertos`, `_unsubProj`, 5 funções auxiliares (painel parcelamentos + chips). Zero memory leak.
+- `fluxo-caixa.html`: 4 legend dots migrados de hex hardcoded para tokens CSS (var(--color-income), var(--color-expense), var(--color-text-muted), var(--color-info)).
+- `components.css`: shadow `.btn-danger:hover` migrado para novo token `--shadow-danger` (corrige cor pré-rebrand rgba(239,68,68) → rgba(181,84,64)).
+- `variables.css`: `--shadow-danger` adicionado (light + dark mode).
+- `despesas.js` XSS: `escHTML()` em onclick d.id (4 botões), `<option>` de categorias/contas/responsáveis, atributo title de badge conta.
 
 ---
 
@@ -1848,3 +1886,16 @@ relatorio diario. Saude do projeto deve ser monitorada por:
 - Artefatos gerados para PM/DM: sim � handoff DM em dm_tasks_pending.md | comentario publicado em #186
 - Scripts PowerShell executados: (1) correcao label rf-070 -> nrf-nav-f2 em #186 | (2) gh issue comment #186 | (3) handoff DM | (4) memory update
 - Proxima sessao: revisao do PR feat/MF-186-nav-fase2-consolidacao apos CI verde
+
+## Sessao 2026-04-20 � PO Assistant (Cowork)
+- Versao na sessao: v3.37.0
+- Milestone primario: UX & Gestao Patrimonial � 13/15 antes da sessao; 13/14 (92.9%) apos fechamento de #158
+- Decisao: NRF-NAV Fase 3 (#189) = Opcao B � ENH-005 + refinamentos Design System. Opcao C (merge receitas/despesas) rejeitada � requer RF proprio se vier no futuro.
+- Issue fechada: #158 ENH-005 (absorvida por #189) � fechamento gerencial para evitar dupla contagem
+- Issues priorizadas: #189 (P2)
+- Bugs registrados: nenhum
+- Melhorias registradas: nenhuma (ENH-005 absorvida)
+- RFs criados: nenhum
+- Artefatos gerados para PM/DM: sim � 2 artefatos registrados em .auto-memory/
+- Scripts PowerShell executados: fechamento #158 + registro tarefas PM/DM + atualizacao memoria
+- Proxima sessao: revisar PR de F3 quando DM abrir; atualizar Bussola �9 apos merge
