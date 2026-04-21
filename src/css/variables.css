@@ -137,6 +137,14 @@
   --radius-full: 9999px;
   --radius-pill: 9999px;
 
+  /* ── Hero cards (NRF-VISUAL F1 #192) ────────────────────────── */
+  --color-surface-hero:        #1F1F1C;
+  --color-surface-hero-alt:    #2A2926;
+  --color-text-on-hero:        #FAF9F5;
+  --color-text-on-hero-muted:  rgba(250, 249, 245, 0.72);
+  --color-border-on-hero:      rgba(250, 249, 245, 0.12);
+  --shadow-hero: 0 8px 24px rgba(31, 31, 28, 0.30), 0 2px 8px rgba(31, 31, 28, 0.18);
+
   /* ── Tipografia ──────────────────────────────────────────── */
   --font-size-xs:   11px;
   --font-size-sm:   13px;
@@ -148,6 +156,14 @@
   --line-height-tight:   1.2;
   --line-height-normal:  1.5;
   --line-height-relaxed: 1.65;
+
+  /* ── KPI e gráficos (NRF-VISUAL F1 #192) ────────────────────── */
+  --font-size-kpi:            28px;
+  --font-size-kpi-hero:       40px;
+  --font-size-chart-tick:     13px;
+  --font-size-chart-legend:   14px;
+  --font-size-chart-title:    13px;
+  --font-size-chart-tooltip:  14px;
 
   /* ── Espaçamento ─────────────────────────────────────────── */
   --space-1:  4px;
@@ -270,5 +286,12 @@
     --shadow-card: 0 1px 3px rgba(0,0,0,0.20), 0 4px 12px rgba(0,0,0,0.15);
     --shadow-card-hover: 0 8px 24px rgba(212,137,106, 0.18), 0 2px 8px rgba(0,0,0,0.25);
     --shadow-danger: 0 4px 10px rgba(212,118,92,0.22);
+
+    /* ── Hero cards dark (NRF-VISUAL F1 #192) ───────────────────── */
+    --color-surface-hero:        #0F0F0E;
+    --color-surface-hero-alt:    #1A1916;
+    --color-text-on-hero-muted:  rgba(250, 249, 245, 0.65);
+    --color-border-on-hero:      rgba(250, 249, 245, 0.10);
+    --shadow-hero: 0 8px 24px rgba(0, 0, 0, 0.50), 0 2px 8px rgba(0, 0, 0, 0.35);
   }
 }

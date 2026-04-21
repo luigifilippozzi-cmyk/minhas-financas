@@ -310,6 +310,8 @@ Estes princípios devem guiar qualquer nova tela, RF ou redesenho:
 
 **P5 — Uma única fonte da verdade por contexto.** Acabar com a duplicação de Projeções (fatura.html) e Planejamento (planejamento.html). Cada dado financeiro deve ter uma única tela canônica. Consolidação planejada na NRF-NAV Fase 2.
 
+**P6 — Hierarquia visual reflete hierarquia de decisão.** Cards que demandam ação imediata do controller (saldo real, fatura próxima, estouro de orçamento) devem se destacar visualmente dos cards informativos. "Tudo igual" é ruim — o olho precisa de âncoras. Ver §12 para os princípios visuais PV1–PV6.
+
 ---
 
 ## 9. Ordem de Ataque Aprovada
@@ -325,8 +327,9 @@ Sequência de implementação aprovada pelo PO em 2026-04-16. Revisada na mesma 
 | 5 | **NRF-NAV Fase 1** — Navbar 5 seções | v3.32.0 | P2 | ✅ Entregue (PR #180) | Define onde tudo vai. Casada com NRF-UI-WARM (#172) |
 | 6 | **NRF-NAV Fase 2** — Consolidação Projeções×Planejamento | v3.37.0 | P2 | ✅ Entregue (PR #187) | Compromissos unificados em Futuro + Cockpit |
 | 7 | **NRF-NAV Fase 3** — ENH-005 + DS refinements | v3.38.0 | P2 | ✅ Entregue (PR #190) | Simplifica despesas.html + alinha tokens DS. Opção C (merge receitas/despesas) rejeitada — requer RF próprio |
-| 8 | **ENH-004** — UX tela fatura | v3.39.0+ | P3 | ⬜ | Polish operacional |
-| 9 | **ENH-002** — Bulk categorização | v3.39.0+ | P3 | ⬜ | Polish operacional |
+| 8 | **NRF-VISUAL F1** — Hierarquia visual Cockpit (#192) | v3.39.0 | P2 | ✅ Entregue (PR #193) | Contraste hero, tipografia gráficos, card-hero Saldo Real / Fatura / Burn Rate |
+| 9 | **ENH-004** — UX tela fatura | v3.40.0+ | P3 | ⬜ | Polish operacional |
+| 10 | **ENH-002** — Bulk categorização | v3.40.0+ | P3 | ⬜ | Polish operacional |
 
 **Nota sobre o iOS:** iOS Fase 2 (#77–#80) está em **ON HOLD** por decisão do PO (2026-04-16). Não cancelado — quando retomado, é P0 e entra em paralelo sem afetar a sequência acima.
 
@@ -379,6 +382,25 @@ A definição de `mobile.html` é parte da NRF-NAV Fase 2 (v3.33.0). As issues d
 | 2026-04-16 | mobile.html deve incluir saldo, forecast resumido e burn rate | PO Cowork |
 | 2026-04-16 | **RF-069 antecipado para v3.30.0** (entregue commit `0ee3e18` fora de sessão PO formal). **RF-066 realocado para v3.31.0.** Processo: commit direto em `main` violou Regra Inviolável #11 — trabalho íntegro (611 testes, CHANGELOG OK), alerta registrado em `.auto-memory/project_mf_status.md` para o PM Agent reportar no próximo diário. Bússola §9 revisada nesta sessão. | PO Cowork |
 | 2026-04-20 | **NRF-NAV F2 entregue (PR #187). F3 (#189) aprovada = Opção B** — ENH-005 + DS refinements (v3.38.0). Opção C (merge receitas/despesas) rejeitada. #158 ENH-005 fechada como absorvida por #189. | PO Cowork |
+| 2026-04-21 | **NRF-VISUAL Fase 1 aprovada (#192) = Opção B** — 1–3 cards hero por tela (PV4). Tokens hero, `.card-hero`/`.card-subtle`, `chartDefaults.js`, migração Cockpit. Bússola §12 criada com PV1–PV6. | PO Cowork |
+
+---
+
+## 12. Princípios Visuais — Hierarquia Controller (NRF-VISUAL)
+
+> Criados em 2026-04-21. Guiam todas as decisões de hierarquia visual do Cockpit e futuras telas.
+
+**PV1 — Contraste serve à decisão.** Elementos que pedem ação imediata do controller (saldo crítico, fatura, estouro) têm contraste máximo. Elementos informativos têm contraste standard.
+
+**PV2 — Uma âncora visual por tela.** Cada tela tem exatamente um elemento que "ancora" o olhar: o KPI mais relevante para o controller naquele contexto. No Cockpit, é o Saldo Real.
+
+**PV3 — Tamanho de fonte sinaliza importância.** KPI hero = 40px, KPI padrão = 28px, valor de card = 22px, detalhe = 13px. Nunca usar 40px para dados secundários.
+
+**PV4 — Máximo 3 heros simultâneos por tela.** Acima de 3, o impacto do hero dilui. No Cockpit: Saldo Real (permanente) + Próxima Fatura (≤7 dias) + Burn Rate (estouro >10%).
+
+**PV5 — Tokens ou nada.** Nenhuma cor hardcoded em CSS. Cada decisão de cor passa por `variables.css`. Isso garante dark mode coerente e facilita futuras revisões de paleta.
+
+**PV6 — Legibilidade de gráfico = legibilidade de decisão.** Ticks ≥ 13px, legend/tooltip ≥ 14px. Gráfico ilegível é gráfico inútil para o controller familiar.
 
 ---
 
