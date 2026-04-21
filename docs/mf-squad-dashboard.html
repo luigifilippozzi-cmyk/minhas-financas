@@ -461,17 +461,19 @@
 // Dashboard state — PM Agent updates this section, Dev Manager reads it
 const DASHBOARD_DATA = {
   // PM Agent atualiza estes campos:
-  lastUpdate: "2026-04-21 11:45",
+  lastUpdate: "2026-04-21 19:50",
   version: "v3.39.0",
   health: "green", // green | yellow | red
-  healthText: "🟢 Verde — CI verde (3/3) | 733 testes OK | 0 PRs | 0 violações | 13 issues iOS ON HOLD | UX milestone 100% ✅ | sem P0/P1",
+  healthText: "🟢 Verde — CI verde (5/5) | 733 testes OK | 0 PRs | 0 violações | 7 NRF-UX P1 sem milestone (#194–#200) | 13 iOS ON HOLD | UX 100% ✅",
   testsUnit: "733",
   testsUnitStatus: "733 passando",
   testsInt: "26",
-  issuesOpen: 13,
-  issuesSub: "iOS ON HOLD: 13 (#77–#89) | 0 sem milestone | 0 P0/P1 | UX 100% ✅",
+  issuesOpen: 20,
+  issuesSub: "NRF-UX P1: 7 (#194–#200) sem milestone | iOS ON HOLD: 13 (#77–#89) | 0 P0/P1 bloqueantes | UX 100% ✅",
   // Dev Manager atualiza via PR + merge
   activity: [
+    { time: "Apr 21", color: "var(--blue)", msg: "<strong>PM Agent 19:50</strong> — 🟢 Verde | v3.39.0 | 733 testes OK (verificado ao vivo) | CI verde (5/5 Deploy Firebase success) | 20 issues: 7 NRF-UX P1 sem milestone (#194–#200) + 13 iOS ON HOLD (#77–#89) | 0 PRs | 0 branches ativas | 0 violações | UX 100% ✅ (15/15) | iOS 23.5% (4/17) ON HOLD | P2 tech debt: 4 controllers sem testes — aguarda PO | estado idêntico à sessão 19:44 (nenhuma atividade intermediária)", tag: "pm" },
+    { time: "Apr 21", color: "var(--blue)", msg: "<strong>PM Agent 19:44</strong> — 🟢 Verde | v3.39.0 | 733 testes OK | CI verde (5/5 success) | 20 issues abertas | 0 PRs | 0 violações | [NOVO] 7 issues NRF-UX (#194–#200) criadas após sessão 08:33: F2 Fraunces, F3 emojis, F4 Lucide, F5 skeletons, F6 espaçamento, F7 Chart.js, F8 microcopy — prioridade alta, sem milestone — aguarda PO definir milestone e ordem de ataque | iOS ON HOLD 23.5% (4/17, #77–#89) | P2 tech debt: 4 controllers sem testes (aguarda PO) | UX milestone 100% ✅ (15/15)", tag: "pm" },
     { time: "Apr 21", color: "var(--blue)", msg: "<strong>Dev Manager 11:45</strong> — 🟢 Verde | v3.39.0 | 733 testes OK | CI verde (3/3 success, Deploy Firebase ✅) | 0 PRs abertos | 0 violações | 13 issues todas iOS ON HOLD (#77–#89) | branch órfã feat/MF-192 já removida | P2 tech debt registrado: 4 controllers sem testes (categorias, orcamentos, planejamento, receitas-dashboard) — aguarda PO para priorizar | UX milestone 100% ✅ | próxima iniciativa: aguarda PO (NRF-VISUAL F2?)", tag: "dm" },
     { time: "Apr 21", color: "var(--blue)", msg: "<strong>PM Agent 08:33</strong> — 🟢 Verde | v3.39.0 | 733 testes OK (▲6 vs sessão anterior) | CI verde (5/5 success, Deploy Firebase ×3) | 13 issues todas iOS ON HOLD (#77–#89) | 0 PRs abertos | 0 branches ativas | 0 violações | UX &amp; Gestão Patrimonial 100% ✅ (15/15) | iOS ON HOLD 23.5% (4/17) | próximos passos: PO define nova iniciativa pós-UX ou NRF-VISUAL F2", tag: "pm" },
     { time: "Apr 21", color: "var(--green)", msg: "<strong>PR #193 mergeado</strong> — feat(visual): NRF-VISUAL F1 — hierarquia de contraste + tipografia (v3.39.0) | tokens hero (light+dark), .card-hero/.card-subtle, chartDefaults.js, Cockpit: Saldo Real hero permanente + Fatura ≤7d + BurnRate >110% | ticks 11/12→13px legend 14px | 6 testes novos | 727→733 testes | test-runner PASS | #192 fechada", tag: "merge" },

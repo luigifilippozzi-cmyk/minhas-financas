@@ -1,8 +1,79 @@
 ﻿# Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-21 11:45 (Dev Manager — sessão autônoma)
+> Atualizado em: 2026-04-21 19:50 (PM Agent — sessão autônoma)
 > Versão: v3.39.0 | package.json = v3.39.0 ✅ (sincronizado)
-> Saúde: 🟢 VERDE — CI verde | 733 testes OK | 0 PRs abertos | 0 violações | 13 issues iOS ON HOLD | UX 100% ✅
+> Saúde: 🟢 VERDE — CI verde | 733 testes OK | 0 PRs abertos | 0 violações | 7 NRF-UX P1 sem milestone | 13 iOS ON HOLD | UX 100% ✅
+
+---
+
+## PM Agent — 2026-04-21 19:50
+
+### Estado
+- Versão: v3.39.0
+- Milestone primário: UX & Gestão Patrimonial (100%, 15/15) ✅ CONCLUÍDO
+- Milestone iOS: ON HOLD (23.5%, 4/17) — aguarda Apple Developer Program
+- Saúde: verde — CI verde (5/5 Deploy Firebase success), 733 testes OK, 0 PRs, 0 violações, 0 P0/P1
+- Testes: 733 unit (32 arquivos, todos passando — verificado ao vivo) + 26 int
+- CI: success — Deploy Firebase (5 runs, todos success, último às 11:41)
+
+### Issues abertas (20 total)
+- NRF-UX (sem milestone, prioridade alta): #194 F2 Fraunces+docs, #195 F3 emojis, #196 F4 Lucide, #197 F5 skeletons, #198 F6 espaçamento, #199 F7 Chart.js, #200 F8 microcopy
+- iOS ON HOLD: #77–#89 (13 issues — não priorizar até Apple Developer Program)
+- Novas desde última sessão PM (19:44): nenhuma (estado idêntico)
+
+### Alertas ativos
+- [NOVO-BACKLOG] 7 issues NRF-UX (#194–#200) sem milestone — prioridade alta — PO deve definir milestone e ordem de ataque
+- [iOS-ON-HOLD] #77–#89 pausadas — aguarda Apple Developer Program (sem mudança)
+- [P2-TECH-DEBT] 4 controllers sem testes: categorias.js, orcamentos.js, planejamento.js, receitas-dashboard.js — aguarda PO priorizar
+
+### Prioridades para Dev Manager
+- P0: nenhuma
+- P1: NRF-UX F2 (#194 — Fraunces + patches docs) — quando PO confirmar milestone
+- P2: NRF-UX F3–F8 (#195–#200) — após F2
+- P2: testes de controllers (aguarda PO)
+- P3: iOS Fase 2 (#77–#80) — aguarda Apple Developer Program
+
+### Atividade recente
+- Último PR mergeado: #193 feat(visual) NRF-VISUAL F1 hierarquia de contraste (2026-04-21 09:52)
+- Commits diretos em src/ sem PR: nenhum ✅
+- Issues fechadas últimos 7 dias: #192 (21/04), #189 (20/04), #186 (20/04), #182 (19/04), #172 (18/04), #177 (17/04), #170 (17/04), #169 (16/04), #166 (16/04), #162 (16/04) = 10 issues
+- Subagentes acionados: nenhum (sem implementação nova)
+
+---
+
+## PM Agent — 2026-04-21 19:44
+
+### Estado
+- Versão: v3.39.0
+- Milestone primário: UX & Gestão Patrimonial (100%, 15/15) ✅ CONCLUÍDO
+- Milestone iOS: ON HOLD (23.5%, 4/17) — aguarda Apple Developer Program
+- Saúde: verde — CI verde (5/5 success), 733 testes OK, 0 PRs, 0 violações, 0 P0/P1
+- Testes: 733 unit (32 arquivos, todos passando) + 26 int
+- CI: success — Deploy Firebase (5 runs, todos success) | Testes: success
+
+### Issues abertas (20 total)
+- NRF-UX (novas, sem milestone, prioridade alta): #194 F2 Fraunces+docs, #195 F3 emojis, #196 F4 Lucide, #197 F5 skeletons, #198 F6 espaçamento, #199 F7 Chart.js, #200 F8 microcopy
+- iOS ON HOLD: #77–#89 (13 issues — não priorizar até Apple Developer Program)
+- Novas desde última sessão PM (08:33): 7 issues NRF-UX (#194–#200)
+
+### Alertas ativos
+- [NOVO-BACKLOG] 7 issues NRF-UX (#194–#200) criadas após sessão 08:33 — prioridade alta, sem milestone — PO deve definir milestone e ordem de ataque
+- [iOS-ON-HOLD] #77–#89 pausadas — aguarda Apple Developer Program (sem mudança)
+- [P2-TECH-DEBT] 4 controllers sem testes: categorias.js, orcamentos.js, planejamento.js, receitas-dashboard.js — aguarda PO priorizar
+
+### Prioridades para Dev Manager
+- P0: nenhuma
+- P1: NRF-UX F2 (#194 — Fraunces + patches docs) — quando PO confirmar e abrir milestone
+- P2: NRF-UX F3–F8 (#195–#200) — após F2
+- P2: testes de controllers (aguarda PO)
+- P3: iOS Fase 2 (#77–#80) — aguarda Apple Developer Program
+
+### Atividade recente
+- Último PR mergeado: #193 feat(visual) NRF-VISUAL F1 hierarquia de contraste (2026-04-21 09:52)
+- Commits diretos em src/ sem PR: nenhum ✅
+- Issues fechadas últimos 7 dias: #192 (21/04), #189 (20/04), #186 (20/04), #182 (19/04) = 4 issues
+- Subagentes acionados (PR #193): test-runner PASS | security-reviewer N/A | import-pipeline-reviewer N/A
+- Branch remota órfã feat/MF-192: já removida (DM confirmou)
 
 ---
 
@@ -2167,3 +2238,56 @@ relatorio diario. Saude do projeto deve ser monitorada por:
 - PO valida no PR: screenshots antes/depois, contraste, migração correta dos patches documentais
 
 
+
+---
+
+## Sessão 2026-04-21 — PO Assistant (Cowork) — NRF-UX umbrella
+
+### Estado na sessão
+- Versão: v3.39.0 (após PR #193 — NRF-VISUAL F1 / NRF-UX F1 retroativo)
+- Milestone UX & Gestão Patrimonial: 15/15 (100%) — sem alteração
+- Milestone iOS: ON HOLD (4/17)
+- Testes: 733 unit + 26 int — todos passando
+- Saúde: 🟢 VERDE
+
+### Decisões tomadas
+1. **Renomeação de umbrella**: NRF-VISUAL → **NRF-UX** (escopo ampliado de UX completa, não apenas visual). F1 (#192 / PR #193) conta retroativamente como NRF-UX F1.
+2. **7 novas fases criadas (F2–F8)** como issues GitHub:
+   - F2 → #194 (Fraunces + patches de governança)
+   - F3 → #195 (remover emojis de chrome)
+   - F4 → #196 (unificar Lucide)
+   - F5 → #197 (skeletons)
+   - F6 → #198 (espaçamento / ritmo vertical)
+   - F7 → #199 (Chart.js tokens + tabular-nums)
+   - F8 → #200 (microcopy)
+3. **Novo subagente `ux-reviewer`** aprovado — subordinado ao Dev Manager (sem autonomia). Acionado em todo PR front-end.
+4. **Bússola §12.5 (PUX1–PUX6)** desenhada — 6 princípios de experiência (hierarquia, tipografia, iconografia, cor, espaço, ritmo).
+5. **Regra Inviolável #14** no CLAUDE.md: PR front-end sem relatório `ux-reviewer` é bloqueante.
+
+### Issues criadas
+- 7 issues (#194 a #200) com labels `nrf-ux`, `enhancement`, `prioridade: alta`. Sem milestone (umbrella separado).
+
+### Decisões pendentes do PO
+- Nenhuma. Backlog DM populado com 7 fases sequenciais.
+
+### Artefatos gerados (todos em `.auto-memory/proposals/`)
+- `MF_Prompt_UXReviewer_Squad.md` — prompt do subagente
+- `bussola_patch_12-5_e_9.md` — patch de §12.5 + §9 da Bússola
+- `agents_patch_ux_reviewer.md` — patch de AGENTS.md + CLAUDE.md (Regra #14)
+- `nrf-ux-issues-map.md` — mapeamento F2→#194 … F8→#200
+- `issues/nrf-ux-f2.md` … `issues/nrf-ux-f8.md` — 7 bodies usados nas issues GitHub
+- `deltas/pm_delta.md`, `deltas/dm_delta.md`, `deltas/mf_status_delta.md` — blocos aplicados em handoff files
+
+### Scripts PowerShell executados
+- Etapa 1: criar label `nrf-ux` + pasta `proposals`
+- Etapa 2: 3 propostas escritas pelas ferramentas do agente (não via paste — evita problema com triple-backticks)
+- Etapa 3: criar 7 issues via loop com captura de saída e validação por regex
+- Etapa 4: anexar deltas em pm_tasks_pending, dm_tasks_pending e project_mf_status (este arquivo)
+
+### Mudança de processo
+A partir desta sessão (registrada como feedback memory `feedback_passo_a_passo_assistido.md`): processos com execução humana são entregues **etapa a etapa, com pausa para feedback**, em vez de bloco único. Aplicado já nas 4 etapas desta sessão.
+
+### Próxima sessão — foco sugerido
+- DM executa NRF-UX F2 (#194) — Fraunces + 3 patches em PR único (v3.40.0)
+- Após merge: `ux-reviewer` faz sua estreia e governança PUX está oficialmente ativa
+- Em seguida, escolher entre F3, F4 ou F7 conforme apetite (F7 é o mais alinhado com o pedido original do PO sobre fontes em gráficos)
