@@ -7,6 +7,17 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.39.1] - 2026-04-21
+
+### Adicionado
+
+- **NRF-UX F2 — Fraunces nos títulos + ux-reviewer + patches de governança (#194):**
+  - `src/css/components.css`: `h1, h2 { font-family: var(--font-display); }` — Fraunces Variable ativa em todos os títulos de página (`.section-title` h2 e `.auth-title` h1). Fonte já self-hosted via `@font-face` com `font-display: swap`.
+  - `docs/BUSSOLA_PRODUTO.md`: §12.5 PUX1–PUX6 (Princípios de Experiência) inserida; §9 Ordem de Ataque atualizada com fila NRF-UX F2–F8.
+  - `docs/MF_Prompt_UXReviewer_Squad.md`: prompt completo do subagente `ux-reviewer` criado.
+  - `AGENTS.md`: subagente `ux-reviewer` adicionado com trigger, entregável e protocolo.
+  - `CLAUDE.md`: Regra Inviolável #14 — PR com HTML/CSS sem relatório `ux-reviewer` = BLOQUEANTE.
+
 ## [3.39.0] - 2026-04-21
 
 ### Adicionado
