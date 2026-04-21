@@ -1,8 +1,48 @@
 ﻿# Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-21 08:33 (PM Agent — sessão diária)
+> Atualizado em: 2026-04-21 11:45 (Dev Manager — sessão autônoma)
 > Versão: v3.39.0 | package.json = v3.39.0 ✅ (sincronizado)
 > Saúde: 🟢 VERDE — CI verde | 733 testes OK | 0 PRs abertos | 0 violações | 13 issues iOS ON HOLD | UX 100% ✅
+
+---
+
+## Dev Manager — 2026-04-21 11:45
+
+### Sessão
+- Versão: v3.39.0 (derivada de package.json)
+- Tarefas concluídas: nenhuma implementação (sem P0/P1 pendentes)
+- PRs criados: nenhum
+- PRs mergeados: nenhum
+- Subagentes acionados: nenhum (sem implementação)
+- CI: verde (3/3 Deploy Firebase success) | Deploy Firebase: success
+- Branch órfã feat/MF-192-nrf-visual-f1-hierarquia: já removida do remoto (não existia)
+
+### Estado dos milestones
+- UX & Gestão Patrimonial (primário): 15/15 issues fechadas ✅ CONCLUÍDO
+- iOS Fase 2 (P3 — ON HOLD): 4/4 issues abertas — #77, #78, #79, #80
+- iOS Fases 3–5 (P3 — aguardando F2): 9 issues abertas — #81–#89
+- QA pendente: nenhum
+
+### P2 Tech Debt identificado (controllers sem testes)
+- `src/js/controllers/categorias.js` (120 linhas) — sem arquivo de teste correspondente
+- `src/js/controllers/orcamentos.js` (107 linhas) — sem arquivo de teste correspondente
+- `src/js/controllers/planejamento.js` (230 linhas) — sem arquivo de teste correspondente
+- `src/js/controllers/receitas-dashboard.js` (65 linhas) — sem arquivo de teste correspondente
+- Avaliação: nenhum crítico no nível dos utils (pipeline, dedup, parsers); aguarda decisão PO
+- Todos utils (src/js/utils/*.js) têm cobertura de teste ✅
+
+### Decisões pendentes do PO
+- Próxima iniciativa: PO define (NRF-VISUAL F2? nova feature? iOS retomada?)
+
+### Próximas prioridades
+- P0: nenhuma
+- P1: nenhuma
+- P2: NRF-VISUAL Fase 2 (fluxo-caixa.html + Histórico, v3.40.0) — quando PO abrir issue
+- P2: testes de controllers (categorias, orcamentos, planejamento, receitas-dashboard) — aguarda PO priorizar
+- P3: iOS Fase 2 (#77–#80) — aguarda Apple Developer Program
+
+### Alertas
+- [iOS-ON-HOLD] #77–#89 pausadas — aguarda Apple Developer Program (sem mudança)
 
 ---
 
