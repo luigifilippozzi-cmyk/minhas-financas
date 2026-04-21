@@ -1,8 +1,44 @@
 ﻿# Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-21 19:50 (PM Agent — sessão autônoma)
-> Versão: v3.39.0 | package.json = v3.39.0 ✅ (sincronizado)
-> Saúde: 🟢 VERDE — CI verde | 733 testes OK | 0 PRs abertos | 0 violações | 7 NRF-UX P1 sem milestone | 13 iOS ON HOLD | UX 100% ✅
+> Atualizado em: 2026-04-21 20:05 (Dev Manager — sessão autônoma)
+> Versão: v3.39.1 | package.json = v3.39.0 (CHANGELOG v3.39.1 — bump pendente)
+> Saúde: 🟢 VERDE — CI verde | 733 testes OK | 0 PRs abertos | 0 violações | 6 NRF-UX P1 sem milestone | 13 iOS ON HOLD | UX 100% ✅
+
+---
+
+## Dev Manager — 2026-04-21 20:05
+
+### Sessão
+- Versão: v3.39.1 (derivada do CHANGELOG; package.json ainda em v3.39.0 — bump de PATCH pode ser feito pelo PO ou próxima sessão)
+- Tarefas concluídas: NRF-UX F2 (#194)
+- PRs criados: #201 — feat(design-system): NRF-UX F2 — Fraunces nos títulos + ux-reviewer + patches governança
+- PRs mergeados: #201
+- Subagentes acionados: test-runner PASS (733/733) | ux-reviewer PASS (estreia — aprovado sem mudanças) | security-reviewer N/A | import-pipeline-reviewer N/A
+- CI: verde | Deploy Firebase: success
+
+### Estado dos milestones
+- UX & Gestão Patrimonial (primário): 15/15 issues fechadas ✅ CONCLUÍDO
+- iOS Fase 2 (P3 — ON HOLD): 4/4 issues abertas — #77, #78, #79, #80
+- iOS Fases 3–5 (P3 — aguardando F2): 9/9 issues abertas
+- QA pendente: nenhum
+
+### Issues abertas (19 total)
+- NRF-UX sem milestone (P1 — aguarda PO confirmar): #195 F3 emojis, #196 F4 Lucide, #197 F5 skeletons, #198 F6 espaçamento, #199 F7 Chart.js, #200 F8 microcopy
+- iOS ON HOLD: #77–#89 (13 issues)
+
+### Decisões pendentes do PO
+- NRF-UX F3–F8 (#195–#200): PO deve confirmar milestone para liberar implementação
+
+### Próximas prioridades
+- P1: NRF-UX F3 (#195 — Remover emojis de chrome) — quando PO confirmar milestone
+- P2: NRF-UX F4–F8 (#196–#200) — em sequência
+- P2: testes de controllers (categorias, orcamentos, planejamento, receitas-dashboard) — aguarda PO
+- P3: iOS Fase 2 (#77–#80) — aguarda Apple Developer Program
+
+### Alertas
+- [NOVO-BACKLOG] 6 issues NRF-UX (#195–#200) sem milestone — PO deve definir milestone e ordem
+- [P2-TECH-DEBT] 4 controllers sem testes — aguarda PO priorizar
+- [iOS-ON-HOLD] #77–#89 pausadas — aguarda Apple Developer Program
 
 ---
 
