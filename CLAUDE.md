@@ -321,3 +321,17 @@ git push origin main
 - ❌ Usar `deleteDoc` em lote sem batch — viola regras Firestore
 - ❌ `import` de Firebase via CDN (`gstatic.com`) — usar pacotes npm (`firebase/app`, `firebase/auth`, `firebase/firestore`)
 - ❌ Criar task de UI sem ler `design-system/tokens.md` primeiro — tokens definem paleta, tipografia e componentes canônicos
+
+---
+
+## Regra Inviolável #14 — ux-reviewer obrigatório
+
+> **Regra #14:** PR que toca `src/**/*.html`, `src/css/**/*.css` ou templates inline (`src/js/pages/*.js` com `innerHTML`) **sem relatório do subagente `ux-reviewer` anexado** → BLOQUEANTE. Dev Manager não abre merge sem o relatório.
+
+**Quando acionar o `ux-reviewer`:**
+- Qualquer `.html` em `src/`
+- Qualquer `.css` em `src/css/`
+- Templates inline em `src/js/pages/*.js` que emitem HTML via `innerHTML`
+- Mudanças em `src/js/utils/chartColors.js`
+
+**Referência:** `docs/MF_Prompt_UXReviewer_Squad.md` — critérios PUX1–PUX6 (Bússola §12.5)

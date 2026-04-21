@@ -314,26 +314,38 @@ Estes princípios devem guiar qualquer nova tela, RF ou redesenho:
 
 ---
 
-## 9. Ordem de Ataque Aprovada
+## 9. Ordem de Ataque Aprovada (atualizada 2026-04-21)
 
-Sequência de implementação aprovada pelo PO em 2026-04-16. Revisada na mesma data para refletir a antecipação do RF-069 (ver §11 — Registro de Decisões).
+**Concluídos (v3.38.0):**
 
-| # | Item | Versão | Prioridade | Status | Justificativa |
-|---|---|---|---|---|---|
-| 1 | **RF-067** — Forecast 6 meses | v3.28.0 | P2 | ✅ Entregue (PR #168) | Maior salto qualitativo — habilitou H3 |
-| 2 | **RF-068** — Saldo Real por Conta | v3.29.0 | P1 | ✅ Entregue (PR #174) | Âncora de liquidez. Habilita H1 no Cockpit |
-| 3 | **RF-069** — Burn Rate por Categoria | v3.30.0 | P2 | ✅ Entregue (commit `0ee3e18`) | Completa H2 (projeção intramês). **Antecipado** em relação à sequência original (era #4) por decisão do PO fora de sessão — ver §11 |
-| 4 | **RF-066** — Patrimônio expandido | v3.31.0 | P2 | ✅ Entregue (PR #178) | Completa H3 (net worth + evolução + taxa poupança). patrimonio.html + Investimento.js + PassivoExtrajudicial.js |
-| 5 | **NRF-NAV Fase 1** — Navbar 5 seções | v3.32.0 | P2 | ✅ Entregue (PR #180) | Define onde tudo vai. Casada com NRF-UI-WARM (#172) |
-| 6 | **NRF-NAV Fase 2** — Consolidação Projeções×Planejamento | v3.37.0 | P2 | ✅ Entregue (PR #187) | Compromissos unificados em Futuro + Cockpit |
-| 7 | **NRF-NAV Fase 3** — ENH-005 + DS refinements | v3.38.0 | P2 | ✅ Entregue (PR #190) | Simplifica despesas.html + alinha tokens DS. Opção C (merge receitas/despesas) rejeitada — requer RF próprio |
-| 8 | **NRF-VISUAL F1** — Hierarquia visual Cockpit (#192) | v3.39.0 | P2 | ✅ Entregue (PR #193) | Contraste hero, tipografia gráficos, card-hero Saldo Real / Fatura / Burn Rate |
-| 9 | **ENH-004** — UX tela fatura | v3.40.0+ | P3 | ⬜ | Polish operacional |
-| 10 | **ENH-002** — Bulk categorização | v3.40.0+ | P3 | ⬜ | Polish operacional |
+1. RF-067 Forecast 6 meses
+2. RF-068 Saldo Real por Conta
+3. RF-069 Burn Rate por Categoria
+4. RF-066 Patrimônio Ativos/Passivos
+5. NRF-NAV F1 — Navbar 5 seções
+6. NRF-NAV F2 — projecoesCartao unificado (#187)
+7. NRF-NAV F3 — Simplificar despesas.html + ENH-005 tokens (#190)
 
-**Nota sobre o iOS:** iOS Fase 2 (#77–#80) está em **ON HOLD** por decisão do PO (2026-04-16). Não cancelado — quando retomado, é P0 e entra em paralelo sem afetar a sequência acima.
+**Em execução:**
 
-**Nota de processo:** RF-069 foi entregue via commit direto em `main` (violação técnica da Regra Inviolável #11 do CLAUDE.md). Registrado como alerta de processo em `.auto-memory/project_mf_status.md` na sessão PO de 2026-04-16. O trabalho em si foi íntegro: CHANGELOG atualizado, 611 testes passando, coverage 91.4% em `burnRateCalculator.js`.
+8. NRF-UX F1 — Visual foundation: hero tokens + dark cards (#192, ex NRF-VISUAL)
+
+**Em fila (NRF-UX umbrella):**
+
+9. NRF-UX F2 — Fraunces nos títulos + patches desta Bússola (§12.5, §9) ← **esta entrega**
+10. NRF-UX F3 — Remover emojis de chrome (dashboard, navbar, headers)
+11. NRF-UX F4 — Unificar iconografia Lucide
+12. NRF-UX F5 — Skeletons e estados de loading
+13. NRF-UX F6 — Espaçamento e ritmo vertical
+14. NRF-UX F7 — Chart.js tokens + tabular-nums
+15. NRF-UX F8 — Microcopy e vocabulário
+
+**ON HOLD:**
+
+16. iOS App F2–F5 — aguarda Apple Developer Program
+
+**Regra:** cada fase NRF-UX é um PR independente e exige relatório do
+`ux-reviewer` (Regra Inviolável #14 do `CLAUDE.md`).
 
 ---
 
@@ -401,6 +413,36 @@ A definição de `mobile.html` é parte da NRF-NAV Fase 2 (v3.33.0). As issues d
 **PV5 — Tokens ou nada.** Nenhuma cor hardcoded em CSS. Cada decisão de cor passa por `variables.css`. Isso garante dark mode coerente e facilita futuras revisões de paleta.
 
 **PV6 — Legibilidade de gráfico = legibilidade de decisão.** Ticks ≥ 13px, legend/tooltip ≥ 14px. Gráfico ilegível é gráfico inútil para o controller familiar.
+
+---
+
+## 12.5 — Princípios de Experiência (PUX)
+
+> Criados em 2026-04-21 (NRF-UX F2). Estendem §12 para além de cor/tipografia e cobrem fluxo, navegação e micro-interações. São critérios de revisão do subagente `ux-reviewer`.
+
+**PUX1 — Hierarquia clara**
+Cada tela tem 1 a 3 elementos hero (KPI principal, gráfico âncora, ação principal).
+Secundários ficam visivelmente menores. Sem "mar de cards iguais".
+
+**PUX2 — Tipografia disciplinada**
+Títulos em Fraunces (display), corpo em Inter. Escala limitada (tokens `--fs-*`).
+Números financeiros grandes usam `font-variant-numeric: tabular-nums`.
+
+**PUX3 — Iconografia única**
+Lucide como biblioteca única em chrome de UI. Emojis aceitáveis apenas em
+dados do usuário (nomes de categoria). Nunca em navbar, cards, headers.
+
+**PUX4 — Cor com intenção**
+Cores sempre via tokens. Tokens semânticos (`--color-income`, `--color-danger`)
+em contextos corretos. Contraste AA/AAA em textos sobre hero surfaces dark.
+
+**PUX5 — Espaço respiratório**
+Padding e gaps via tokens. Hero cards ganham ar. Densidade em tabelas e listas,
+nunca em KPIs.
+
+**PUX6 — Ritmo e movimento sóbrios**
+Animações com durações/eases dos tokens. Skeletons para loading. Sem bounce,
+rotate ou wobble em elementos funcionais.
 
 ---
 
