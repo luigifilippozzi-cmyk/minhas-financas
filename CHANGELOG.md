@@ -7,6 +7,27 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.39.0] - 2026-04-21
+
+### Adicionado
+
+- **NRF-VISUAL Fase 1 — Hierarquia Visual Controller (#192):** implementação de hierarquia de contraste no Cockpit para destacar KPIs de decisão imediata.
+  - Novos tokens em `variables.css` (light + dark): `--color-surface-hero` (#1F1F1C/dark #0F0F0E), `--color-surface-hero-alt`, `--color-text-on-hero` (#FAF9F5), `--color-text-on-hero-muted`, `--color-border-on-hero`, `--shadow-hero`, `--font-size-kpi` (28px), `--font-size-kpi-hero` (40px), `--font-size-chart-tick` (13px), `--font-size-chart-legend` (14px), `--font-size-chart-title` (13px), `--font-size-chart-tooltip` (14px).
+  - Novos componentes em `components.css`: `.card-hero` (fundo carbono, texto ivory, shadow hero, KPI 40px, dark mode pareado), `.card-subtle` (fundo surface-alt). Regra PV4: máximo 3 heros simultâneos.
+  - Novo módulo `src/js/utils/chartDefaults.js`: `aplicarDefaultsControllerCharts()` configura `Chart.defaults.font.size = 14`, tooltip bodyFont/titleFont = 14, legend labels font = 14.
+  - 6 testes unitários em `tests/utils/chartDefaults.test.js`.
+
+### Modificado
+
+- **Cockpit — card Saldo Real (RF-068):** `card-saldo-real` recebe `.card-hero` permanente em `dashboard.html` e em `renderizarCardSaldoReal()` — sempre hero quando visível (PV2: âncora principal do Cockpit).
+- **Cockpit — card Próxima Fatura (RF-065):** `renderizarCardProximaFatura()` em `app.js` recebe `proximoMesFatura` como parâmetro e aplica `.card-hero` condicionalmente quando `diasAte ≤ 7` (fatura vence em ≤ 7 dias).
+- **Cockpit — Burn Rate (RF-069):** `renderizarBurnRate()` aplica `.card-hero` ao widget quando qualquer categoria projeta estouro > 10% do orçamento (`percentualProjetado > 110`).
+- **Tipografia de gráficos — `app.js`:** ticks atualizados de 11/12px → 13px; legend de 12px → 14px (2 gráficos: categorias e evolução mensal).
+- **Tipografia de gráficos — `fluxo-caixa.js`:** ticks/títulos de eixo atualizados de 11/12px → 13px (gráfico fluxo anual).
+- `app.js`: importa e chama `aplicarDefaultsControllerCharts()` no boot, após `inicializarCapacitor()`.
+- `docs/DESIGN_SYSTEM.md` §2, §8, §10: tokens de KPI/gráfico documentados; `.card-hero` e `.card-subtle` adicionados a §8 Cards; contraste hero (≥12:1) registrado em §10 Acessibilidade.
+- `docs/BUSSOLA_PRODUTO.md` §8, §9, §11, §12: P6 adicionado aos princípios de design; §9 atualizado com NRF-VISUAL F1 como item 8; decisão de 2026-04-21 registrada em §11; nova seção §12 com PV1–PV6 (Princípios Visuais Controller).
+
 ## [3.38.0] - 2026-04-20
 
 ### Modificado

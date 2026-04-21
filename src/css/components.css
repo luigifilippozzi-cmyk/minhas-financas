@@ -515,6 +515,74 @@ body {
 .card:hover { box-shadow: var(--shadow-md); }
 
 /* ══════════════════════════════════════════════════════════════
+   CARD HERO + CARD SUBTLE — NRF-VISUAL F1 (#192)
+   Contraste: hero ≥ 12:1, label ≥ 4.5:1 (WCAG AA)
+   Regra PV4: máximo 3 cards hero simultâneos por tela
+   ══════════════════════════════════════════════════════════════ */
+
+.card-hero {
+  background: var(--color-surface-hero);
+  border-color: var(--color-border-on-hero);
+  box-shadow: var(--shadow-hero);
+  color: var(--color-text-on-hero);
+}
+.card-hero:hover {
+  box-shadow: var(--shadow-hero);
+  transform: translateY(-2px);
+}
+.card-hero .resumo-label {
+  color: var(--color-text-on-hero-muted);
+}
+.card-hero .resumo-valor {
+  color: var(--color-text-on-hero);
+  font-size: var(--font-size-kpi-hero);
+}
+.card-hero .resumo-sublabel {
+  color: var(--color-text-on-hero-muted);
+}
+.card-hero .proxima-fatura-link {
+  color: var(--color-text-on-hero-muted);
+}
+.card-hero .proxima-fatura-link:hover {
+  color: var(--color-text-on-hero);
+  text-decoration: underline;
+}
+.card-hero.resumo-card::before {
+  opacity: 0;
+}
+.card-hero .saldo-real-linha {
+  color: var(--color-text-on-hero-muted);
+}
+.card-hero .saldo-real-linha--negativo {
+  color: var(--color-danger);
+}
+
+/* burn-rate-widget em estado de alerta crítico */
+.card-hero.burn-rate-widget .burn-rate-header {
+  background: var(--color-surface-hero-alt);
+  border-bottom-color: var(--color-border-on-hero);
+}
+.card-hero.burn-rate-widget .burn-rate-titulo,
+.card-hero.burn-rate-widget .burn-rate-item-nome {
+  color: var(--color-text-on-hero);
+}
+.card-hero.burn-rate-widget .burn-rate-subtitle,
+.card-hero.burn-rate-widget .burn-rate-item-valores {
+  color: var(--color-text-on-hero-muted);
+}
+.card-hero.burn-rate-widget .burn-rate-item-valores strong {
+  color: var(--color-text-on-hero);
+}
+.card-hero.burn-rate-widget .burn-rate-item {
+  border-bottom-color: var(--color-border-on-hero);
+}
+
+.card-subtle {
+  background: var(--color-surface-alt);
+  border-color: var(--color-border);
+}
+
+/* ══════════════════════════════════════════════════════════════
    FORMULÁRIOS
    ══════════════════════════════════════════════════════════════ */
 

@@ -37,6 +37,7 @@ import { nomeMes, escHTML } from './utils/formatters.js';
 import { skeletonCards, errorStateHTML } from './utils/skeletons.js';
 import { inicializarCapacitor } from './utils/capacitor.js';
 import { calcularBurnRate } from './utils/burnRateCalculator.js'; // RF-069
+import { aplicarDefaultsControllerCharts } from './utils/chartDefaults.js'; // NRF-VISUAL F1
 
 // ── Estado Global ─────────────────────────────────────────────
 let estadoApp = {
@@ -93,6 +94,7 @@ function _ultimos6Meses(mesAtual, anoAtual) {
 // ── Inicialização ─────────────────────────────────────────────
 
 inicializarCapacitor();
+aplicarDefaultsControllerCharts(); // NRF-VISUAL F1: tipografia Controller nos gráficos
 
 onAuthChange(async (user) => {
   if (!user) {
@@ -341,7 +343,7 @@ function renderizarGraficoCategorias() {
       maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: { display: true, position: 'top', labels: { font: { size: 12 }, boxWidth: 14 } },
+        legend: { display: true, position: 'top', labels: { font: { size: 14 }, boxWidth: 14 } },
         tooltip: {
           callbacks: {
             label: (ctx) => {
@@ -353,10 +355,10 @@ function renderizarGraficoCategorias() {
         },
       },
       scales: {
-        x: { grid: { color: 'rgba(0,0,0,.04)' }, ticks: { font: { size: 11 } } },
+        x: { grid: { color: 'rgba(0,0,0,.04)' }, ticks: { font: { size: 13 } } },
         y: {
           beginAtZero: true,
-          ticks: { callback: (v) => fmtC(v), font: { size: 11 } },
+          ticks: { callback: (v) => fmtC(v), font: { size: 13 } },
         },
       },
     },
@@ -437,22 +439,22 @@ function renderizarGraficoEvolucao() {
       maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: { display: true, position: 'top', labels: { font: { size: 12 }, boxWidth: 14 } },
+        legend: { display: true, position: 'top', labels: { font: { size: 14 }, boxWidth: 14 } },
         tooltip: { callbacks: { label: (ctx) => ` ${ctx.dataset.label}: ${fmt(ctx.parsed.y)}` } },
       },
       scales: {
-        x: { grid: { color: 'rgba(0,0,0,.04)' }, ticks: { font: { size: 12 } } },
+        x: { grid: { color: 'rgba(0,0,0,.04)' }, ticks: { font: { size: 13 } } },
         y: {
           beginAtZero: true,
           grid: { color: 'rgba(0,0,0,.04)' },
-          ticks: { callback: (v) => fmtC(v), font: { size: 11 } },
-          title: { display: true, text: 'R$ / mês', font: { size: 11 } },
+          ticks: { callback: (v) => fmtC(v), font: { size: 13 } },
+          title: { display: true, text: 'R$ / mês', font: { size: 13 } },
         },
         yAcum: {
           position: 'right',
           grid: { drawOnChartArea: false },
-          ticks: { callback: (v) => fmtC(v), font: { size: 11 } },
-          title: { display: true, text: 'Acumulado', font: { size: 11 } },
+          ticks: { callback: (v) => fmtC(v), font: { size: 13 } },
+          title: { display: true, text: 'Acumulado', font: { size: 13 } },
         },
       },
     },
@@ -641,7 +643,7 @@ function iniciarListenerProximaFatura(grupoId) {
 
   _unsubProxFatura = ouvirDespesasPorMesFatura(grupoId, proximoMesFatura, (despesas) => {
     const projecoes = despesas.filter(d => d.tipo === 'projecao');
-    renderizarCardProximaFatura(projecoes);
+    renderizarCardProximaFatura(projecoes, proximoMesFatura);
   });
 }
 
@@ -735,6 +737,7 @@ function renderizarCardSaldoReal() {
   }
 
   card.style.display = '';
+  card.classList.add('card-hero'); // RF-068: saldo real é sempre hero quando visível (PV2)
 }
 
 // ── RF-069: Burn Rate por Categoria ─────────────────────────
@@ -768,6 +771,10 @@ function renderizarBurnRate() {
 
   widget.classList.remove('hidden');
 
+  // NRF-VISUAL F1: hero quando qualquer categoria projeta estouro > 10% (PV4)
+  const temEstouro = itens.some(i => !i.amostrasInsuficientes && i.percentualProjetado > 110);
+  widget.classList.toggle('card-hero', temEstouro);
+
   const fmt = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v ?? 0);
 
   const labelBadge = { verde: 'OK', amarelo: 'ATENÇÃO', vermelho: 'RISCO' };
@@ -795,14 +802,23 @@ function renderizarBurnRate() {
   }).join('');
 }
 
-function renderizarCardProximaFatura(projecoes) {
+function renderizarCardProximaFatura(projecoes, proximoMesFatura) {
   const card = document.getElementById('card-proxima-fatura');
   if (!card) return;
   if (!projecoes.length) {
     card.style.display = 'none';
+    card.classList.remove('card-hero');
     return;
   }
   card.style.display = '';
+
+  // NRF-VISUAL F1: hero quando fatura vence em ≤ 7 dias (PV4)
+  if (proximoMesFatura) {
+    const [fatAno, fatMes] = proximoMesFatura.split('-').map(Number);
+    const faturaDue = new Date(fatAno, fatMes - 1, 1);
+    const diasAte   = Math.ceil((faturaDue - new Date()) / 86_400_000);
+    card.classList.toggle('card-hero', diasAte <= 7);
+  }
 
   // Total geral da fatura (soma de todos os valores)
   const total = projecoes.reduce((s, d) => s + (d.valor ?? 0), 0);
