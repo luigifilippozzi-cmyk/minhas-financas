@@ -1,471 +1,506 @@
-# Minhas Finanças — Estado do Projeto (Auto-Memory)
+﻿# Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-20 12:14 (PM Agent — revisão diária)
+> Atualizado em: 2026-04-21 06:30 (PM Agent — revisão diária)
 > Versão: v3.38.0 | package.json = v3.38.0 ✅ (sincronizado)
-> Saúde: 🟢 VERDE — CI verde | 727 testes OK | 0 PRs abertos | 0 violações | 13 issues (iOS ON HOLD) | UX milestone 100% ✅
+> Saúde: 🟢 VERDE — CI verde | 727 testes OK | 0 PRs abertos | 0 violações | 13 issues (12 iOS ON HOLD + #192 NRF-VISUAL) | UX milestone 100% ✅
+
+---
+
+## PM Agent — 2026-04-21 06:30
+
+### Estado
+- Versão: v3.38.0
+- Milestone primário: UX & Gestão Patrimonial (100%, 15/15) ✅ CONCLUÍDO
+- Milestone iOS: ON HOLD (23.5%, 4/17) — aguarda Apple Developer Program
+- Saúde: verde — CI verde (Deploy Firebase 09:22 UTC), 727 testes OK, 0 PRs, 0 violações, sem issues P0/P1
+- Testes: 727 unit (31 arquivos, todos passando) + 26 int
+- CI: success — Deploy Firebase 2026-04-21T09:22:48Z | Testes: success (último 2026-04-20T14:17)
+
+### Issues abertas (13 total)
+- Milestone primário: nenhuma (milestone 100% concluído ✅)
+- iOS ON HOLD: #77–#89 (12 issues — não priorizar)
+- NRF-VISUAL sem milestone: #192 NRF-VISUAL Fase 1 — Hierarquia de contraste, cards hero e tipografia de gráfico (v3.39.0) — criada pelo PO em sessão Cowork 2026-04-21, Opção B aprovada, P2
+- Novas desde última sessão PM (2026-04-20 12:14): #192
+
+### Alertas ativos
+- [iOS-ON-HOLD] #77–#89 pausadas — aguarda Apple Developer Program (sem mudança)
+- [ARQUIVO-NÃO-RASTREADO] docs/PLANO_DE_TESTES_v3.38.0.md + docs/PLANO_DE_TESTES_v3.38.0.xlsx + scripts/po-diagnostic.js — DM deve verificar se commita ou adiciona ao .gitignore
+
+### Prioridades para Dev Manager
+- P0: nenhuma
+- P1: #192 NRF-VISUAL Fase 1 (P2 per issue) — implementar em feat/MF-192-nrf-visual-f1 | escopo: tokens variables.css, card-hero/card-subtle components.css, chartDefaults.js, migração Cockpit, tipografia charts | subagentes: test-runner + security-reviewer (se tocar innerHTML)
+- P3: iOS Fase 2 (ON HOLD)
+- Ação: commit ou .gitignore para PLANO_DE_TESTES_v3.38.0.md/.xlsx + scripts/po-diagnostic.js
+
+### Atividade recente
+- Último PR mergeado: #191 test(pipelineBanco) 29 testes (2026-04-20)
+- Commits diretos em src/ sem PR: nenhum ✅
+- Issues fechadas últimos 7 dias: #189 (NRF-NAV F3) + #186 (NRF-NAV F2) + #158 (ENH-005) + #182 (RF-070 DS) = 4 issues fechadas (2026-04-19/20)
+- Issues abertas novas: #192 NRF-VISUAL Fase 1 (2026-04-21)
+- Subagentes acionados: não registrado nesta sessão (PM Agent read-only)
 
 ---
 
 ## PM Agent — 2026-04-20 12:14
 
 ### Estado
-- Versão: v3.38.0
-- Milestone primário: UX & Gestão Patrimonial (100%, 15/15) ✅ CONCLUÍDO
-- Milestone iOS: ON HOLD (23.5%, 4/17) — aguarda Apple Developer Program
-- Saúde: verde — CI verde, 727 testes OK, 0 PRs, 0 violações, sem issues P0/P1
-- Testes: 727 unit (31 arquivos) + 26 int — todos passando
-- CI: 5/5 success (Deploy Firebase + Testes unitários) | Deploy Firebase: success
+- VersÃ£o: v3.38.0
+- Milestone primÃ¡rio: UX & GestÃ£o Patrimonial (100%, 15/15) âœ… CONCLUÃDO
+- Milestone iOS: ON HOLD (23.5%, 4/17) â€” aguarda Apple Developer Program
+- SaÃºde: verde â€” CI verde, 727 testes OK, 0 PRs, 0 violaÃ§Ãµes, sem issues P0/P1
+- Testes: 727 unit (31 arquivos) + 26 int â€” todos passando
+- CI: 5/5 success (Deploy Firebase + Testes unitÃ¡rios) | Deploy Firebase: success
 
 ### Issues abertas (13 total)
-- Milestone primário: nenhuma (milestone 100% concluído ✅)
-- iOS ON HOLD: #77–#89 (13 issues — não priorizar)
-- Novas desde última sessão PM (08:19): nenhuma
-- Issues sem milestone: nenhuma (scripts/po-diagnostic.js não é issue — é arquivo não-rastreado)
+- Milestone primÃ¡rio: nenhuma (milestone 100% concluÃ­do âœ…)
+- iOS ON HOLD: #77â€“#89 (13 issues â€” nÃ£o priorizar)
+- Novas desde Ãºltima sessÃ£o PM (08:19): nenhuma
+- Issues sem milestone: nenhuma (scripts/po-diagnostic.js nÃ£o Ã© issue â€” Ã© arquivo nÃ£o-rastreado)
 
 ### Alertas ativos
-- [iOS-ON-HOLD] #77–#89 pausadas — aguarda Apple Developer Program (sem mudança)
-- [ARQUIVO-NÃO-RASTREADO] scripts/po-diagnostic.js criado mas não commitado ao git — DM deve verificar se deve ser commitado ou adicionado ao .gitignore
+- [iOS-ON-HOLD] #77â€“#89 pausadas â€” aguarda Apple Developer Program (sem mudanÃ§a)
+- [ARQUIVO-NÃƒO-RASTREADO] scripts/po-diagnostic.js criado mas nÃ£o commitado ao git â€” DM deve verificar se deve ser commitado ou adicionado ao .gitignore
 
-### Resolvidos nesta sessão
-- [DECISÃO-PO-PENDENTE] #186 NRF-NAV F2 RESOLVIDA ✅ — Opção B implementada (PR #187), issue fechada em 2026-04-20T10:34
+### Resolvidos nesta sessÃ£o
+- [DECISÃƒO-PO-PENDENTE] #186 NRF-NAV F2 RESOLVIDA âœ… â€” OpÃ§Ã£o B implementada (PR #187), issue fechada em 2026-04-20T10:34
 
 ### Prioridades para Dev Manager
 - P0: nenhuma
-- P1: nenhuma — milestone UX 100% concluído
+- P1: nenhuma â€” milestone UX 100% concluÃ­do
 - P3: iOS Fase 2 (ON HOLD)
-- Sugestão: verificar scripts/po-diagnostic.js (commit ou .gitignore?) + explorar próximos RFs via BUSSOLA_PRODUTO.md §9
+- SugestÃ£o: verificar scripts/po-diagnostic.js (commit ou .gitignore?) + explorar prÃ³ximos RFs via BUSSOLA_PRODUTO.md Â§9
 
 ### Atividade recente (desde PM 08:19)
-- PR #190 mergeado: feat(despesas) NRF-NAV F3 Opção B — ENH-005 + DS tokens + XSS hardening | 698→698 testes | issues #189 + #158 fechadas
-- PR #191 mergeado: test(pipelineBanco) 29 testes | 698→727 testes | dívida técnica eliminada
-- Issue #186 fechada em 10:34 (DECISÃO-PO-PENDENTE resolvida)
-- Commits diretos em src/ sem PR: nenhum ✅
+- PR #190 mergeado: feat(despesas) NRF-NAV F3 OpÃ§Ã£o B â€” ENH-005 + DS tokens + XSS hardening | 698â†’698 testes | issues #189 + #158 fechadas
+- PR #191 mergeado: test(pipelineBanco) 29 testes | 698â†’727 testes | dÃ­vida tÃ©cnica eliminada
+- Issue #186 fechada em 10:34 (DECISÃƒO-PO-PENDENTE resolvida)
+- Commits diretos em src/ sem PR: nenhum âœ…
 - Subagentes acionados (DM): test-runner PASS + security-reviewer PASS (PR #190)
 
 ---
 
-## Dev Manager — 2026-04-20 11:15
+## Dev Manager â€” 2026-04-20 11:15
 
-### Sessão
-- Versão: v3.38.0 (derivada de package.json)
-- Tarefas concluídas: tech debt — testes pipelineBanco.js (29 testes) | BUSSOLA corrigida (RF-066 ✅ + NRF-NAV F3 ✅) | *.bak adicionado ao .gitignore
-- PRs criados: #191 — test(pipelineBanco): 29 testes
-- PRs mergeados: #191 ✅ CI verde (Vitest PASS)
-- Issues fechadas: nenhuma (tech debt não tem issue própria)
-- Subagentes acionados: test-runner implícito (727/727 PASS)
-- CI: verde | Deploy Firebase: success (auto pós-commits docs/)
+### SessÃ£o
+- VersÃ£o: v3.38.0 (derivada de package.json)
+- Tarefas concluÃ­das: tech debt â€” testes pipelineBanco.js (29 testes) | BUSSOLA corrigida (RF-066 âœ… + NRF-NAV F3 âœ…) | *.bak adicionado ao .gitignore
+- PRs criados: #191 â€” test(pipelineBanco): 29 testes
+- PRs mergeados: #191 âœ… CI verde (Vitest PASS)
+- Issues fechadas: nenhuma (tech debt nÃ£o tem issue prÃ³pria)
+- Subagentes acionados: test-runner implÃ­cito (727/727 PASS)
+- CI: verde | Deploy Firebase: success (auto pÃ³s-commits docs/)
 
 ### Estado dos milestones
-- UX & Gestao Patrimonial (primário): **15/15 (100%) ✅ CONCLUÍDO**
-- iOS Fase 2 (P3 — ON HOLD): 4/4 issues abertas — #77, #78, #79, #80
-- iOS Fases 3–5 (P3 — aguardando F2): 9 issues abertas — #81–#89
+- UX & Gestao Patrimonial (primÃ¡rio): **15/15 (100%) âœ… CONCLUÃDO**
+- iOS Fase 2 (P3 â€” ON HOLD): 4/4 issues abertas â€” #77, #78, #79, #80
+- iOS Fases 3â€“5 (P3 â€” aguardando F2): 9 issues abertas â€” #81â€“#89
 - QA pendente: 0
 
-### Decisões pendentes do PO
-- Nenhuma ✅ — milestone UX & Gestão Patrimonial concluído, sem issues P0/P1
+### DecisÃµes pendentes do PO
+- Nenhuma âœ… â€” milestone UX & GestÃ£o Patrimonial concluÃ­do, sem issues P0/P1
 
-### Próximas prioridades
+### PrÃ³ximas prioridades
 - P0: nenhuma
 - P1: nenhuma
-- P3: iOS Fase 2 (ON HOLD até Apple Developer Program ativado)
-- Backlog: pipelineBanco.js agora coberto; módulos sem teste restantes são pages/ DOM-only (categorias, contas, fatura, fluxo-caixa, grupo, index, orcamentos, planejamento, receitas) — difíceis de testar unitariamente, não são P0
+- P3: iOS Fase 2 (ON HOLD atÃ© Apple Developer Program ativado)
+- Backlog: pipelineBanco.js agora coberto; mÃ³dulos sem teste restantes sÃ£o pages/ DOM-only (categorias, contas, fatura, fluxo-caixa, grupo, index, orcamentos, planejamento, receitas) â€” difÃ­ceis de testar unitariamente, nÃ£o sÃ£o P0
 
 ### Alertas
-- Nenhum ✅
+- Nenhum âœ…
 
-### O que foi feito (resumo técnico)
-- `tests/pages/pipelineBanco.test.js`: 29 testes — parsearLinhasPDF (formatos DD/MM/YYYY, DD/MM/YY, DD/MM, DD-MM, DD.MM; validação; BUG-011 isNegativo; metadados), classificarBanco (4 combinações isNegativo×sinaisInvertidos; erro; mutação), processarExtratoBancario (smoke tests)
-- `docs/BUSSOLA_PRODUTO.md`: RF-066 corrigido de "⬜ Próximo" → "✅ Entregue (PR #178)"; NRF-NAV F3 de "⬜ Próximo" → "✅ Entregue (PR #190)"
-- `.gitignore`: `*.bak` adicionado — ignora backups temporários do squad IA
+### O que foi feito (resumo tÃ©cnico)
+- `tests/pages/pipelineBanco.test.js`: 29 testes â€” parsearLinhasPDF (formatos DD/MM/YYYY, DD/MM/YY, DD/MM, DD-MM, DD.MM; validaÃ§Ã£o; BUG-011 isNegativo; metadados), classificarBanco (4 combinaÃ§Ãµes isNegativoÃ—sinaisInvertidos; erro; mutaÃ§Ã£o), processarExtratoBancario (smoke tests)
+- `docs/BUSSOLA_PRODUTO.md`: RF-066 corrigido de "â¬œ PrÃ³ximo" â†’ "âœ… Entregue (PR #178)"; NRF-NAV F3 de "â¬œ PrÃ³ximo" â†’ "âœ… Entregue (PR #190)"
+- `.gitignore`: `*.bak` adicionado â€” ignora backups temporÃ¡rios do squad IA
 - Branches stale pruned: feat/MF-189-nrf-nav-f3-opcao-b + feat/MF-tech-debt-pipelineBanco-tests
 
 ---
 
-## Dev Manager — 2026-04-20 08:51
+## Dev Manager â€” 2026-04-20 08:51
 
-### Sessão
-- Versão: v3.38.0 (derivada de package.json)
-- Tarefas concluídas: NRF-NAV Fase 3 Opção B (#189) + ENH-005 (#158 absorvida)
-- PRs criados: #190 — feat(despesas): NRF-NAV Fase 3 — ENH-005 + DS tokens + XSS hardening
-- PRs mergeados: #190 ✅ CI verde (Vitest PASS)
-- Issues fechadas: #189 (NRF-NAV F3) + #158 (ENH-005) — auto-fechadas pelo merge
+### SessÃ£o
+- VersÃ£o: v3.38.0 (derivada de package.json)
+- Tarefas concluÃ­das: NRF-NAV Fase 3 OpÃ§Ã£o B (#189) + ENH-005 (#158 absorvida)
+- PRs criados: #190 â€” feat(despesas): NRF-NAV Fase 3 â€” ENH-005 + DS tokens + XSS hardening
+- PRs mergeados: #190 âœ… CI verde (Vitest PASS)
+- Issues fechadas: #189 (NRF-NAV F3) + #158 (ENH-005) â€” auto-fechadas pelo merge
 - Subagentes acionados: test-runner PASS (698/698) | security-reviewer PASS (3 FAILs identificados e corrigidos)
-- CI: verde | Deploy Firebase: em andamento (auto após merge #190)
+- CI: verde | Deploy Firebase: em andamento (auto apÃ³s merge #190)
 
 ### Estado dos milestones
-- UX & Gestao Patrimonial (primário): **15/15 (100%) ✅ CONCLUÍDO**
-- iOS Fase 2 (P3 — ON HOLD): 4/4 issues abertas — #77, #78, #79, #80
-- iOS Fases 3–5 (P3 — aguardando F2): 9 issues abertas — #81–#89
+- UX & Gestao Patrimonial (primÃ¡rio): **15/15 (100%) âœ… CONCLUÃDO**
+- iOS Fase 2 (P3 â€” ON HOLD): 4/4 issues abertas â€” #77, #78, #79, #80
+- iOS Fases 3â€“5 (P3 â€” aguardando F2): 9 issues abertas â€” #81â€“#89
 - QA pendente: 0
 
-### Decisões pendentes do PO
-- Nenhuma ✅ — milestone UX & Gestão Patrimonial concluído
+### DecisÃµes pendentes do PO
+- Nenhuma âœ… â€” milestone UX & GestÃ£o Patrimonial concluÃ­do
 
-### Próximas prioridades
-- P0: nenhuma (sem bugs P0, sem violações)
-- P1: nenhuma (milestone UX 100% concluído)
-- P3: iOS Fase 2 (ON HOLD até Apple Developer Program ativado)
+### PrÃ³ximas prioridades
+- P0: nenhuma (sem bugs P0, sem violaÃ§Ãµes)
+- P1: nenhuma (milestone UX 100% concluÃ­do)
+- P3: iOS Fase 2 (ON HOLD atÃ© Apple Developer Program ativado)
 
 ### Alertas
-- Nenhum ✅
+- Nenhum âœ…
 
-### O que foi feito (resumo técnico)
-- `despesas.html`: removidos KPI carousel (chips responsável/compartilhadas/Meu Bolso) e widget Parcelamentos em Aberto. Header fica com Total do Mês + Contagem.
-- `despesas.js`: removidos listener `ouvirParcelamentosAbertos`, `_unsubProj`, 5 funções auxiliares (painel parcelamentos + chips). Zero memory leak.
+### O que foi feito (resumo tÃ©cnico)
+- `despesas.html`: removidos KPI carousel (chips responsÃ¡vel/compartilhadas/Meu Bolso) e widget Parcelamentos em Aberto. Header fica com Total do MÃªs + Contagem.
+- `despesas.js`: removidos listener `ouvirParcelamentosAbertos`, `_unsubProj`, 5 funÃ§Ãµes auxiliares (painel parcelamentos + chips). Zero memory leak.
 - `fluxo-caixa.html`: 4 legend dots migrados de hex hardcoded para tokens CSS (var(--color-income), var(--color-expense), var(--color-text-muted), var(--color-info)).
-- `components.css`: shadow `.btn-danger:hover` migrado para novo token `--shadow-danger` (corrige cor pré-rebrand rgba(239,68,68) → rgba(181,84,64)).
+- `components.css`: shadow `.btn-danger:hover` migrado para novo token `--shadow-danger` (corrige cor prÃ©-rebrand rgba(239,68,68) â†’ rgba(181,84,64)).
 - `variables.css`: `--shadow-danger` adicionado (light + dark mode).
-- `despesas.js` XSS: `escHTML()` em onclick d.id (4 botões), `<option>` de categorias/contas/responsáveis, atributo title de badge conta.
+- `despesas.js` XSS: `escHTML()` em onclick d.id (4 botÃµes), `<option>` de categorias/contas/responsÃ¡veis, atributo title de badge conta.
 
 ---
 
-## PM Agent — 2026-04-20 08:19
+## PM Agent â€” 2026-04-20 08:19
 
 ### Estado
-- Versão: v3.37.0
-- Milestone primário: UX & Gestao Patrimonial (86.7%, 13/15 issues — 2 abertas: #158 ENH-005 + #189 NRF-NAV F3)
-- Milestone iOS: ON HOLD (23.5%, 4/17) — aguarda Apple Dev Program
-- Saúde: 🟢 VERDE — CI verde | 698 testes OK | 0 PRs | 0 violações | 0 bugs P0
-- Testes: 698 unit + 26 int — todos passando
-- CI: último run completado com success | 1 deploy in_progress (auto pós-chore)
+- VersÃ£o: v3.37.0
+- Milestone primÃ¡rio: UX & Gestao Patrimonial (86.7%, 13/15 issues â€” 2 abertas: #158 ENH-005 + #189 NRF-NAV F3)
+- Milestone iOS: ON HOLD (23.5%, 4/17) â€” aguarda Apple Dev Program
+- SaÃºde: ðŸŸ¢ VERDE â€” CI verde | 698 testes OK | 0 PRs | 0 violaÃ§Ãµes | 0 bugs P0
+- Testes: 698 unit + 26 int â€” todos passando
+- CI: Ãºltimo run completado com success | 1 deploy in_progress (auto pÃ³s-chore)
 
 ### Issues abertas (15 total)
-- Milestone primário (UX): #158 ENH-005 (absorvida por #189), #189 NRF-NAV F3 (aguarda decisão PO opção A/B/C)
-- iOS ON HOLD: #77–#89 (13 issues — não priorizar)
-- Novas desde sessão anterior: #189 NRF-NAV F3 (criada pelo Dev Manager às 08:15)
+- Milestone primÃ¡rio (UX): #158 ENH-005 (absorvida por #189), #189 NRF-NAV F3 (aguarda decisÃ£o PO opÃ§Ã£o A/B/C)
+- iOS ON HOLD: #77â€“#89 (13 issues â€” nÃ£o priorizar)
+- Novas desde sessÃ£o anterior: #189 NRF-NAV F3 (criada pelo Dev Manager Ã s 08:15)
 
 ### Alertas ativos
-- [DECISÃO-PO-PENDENTE] #189 NRF-NAV F3 — Dev Manager propôs 3 opções (A/B/C) ao PO. Aguarda: (1) opção de escopo preferida, (2) confirmação absorção ENH-005 #158. Criado 2026-04-20.
-- [iOS-ON-HOLD] Fase 2 pausada indefinidamente — só retomar com sinal explícito do PO sobre Apple Developer Program.
+- [DECISÃƒO-PO-PENDENTE] #189 NRF-NAV F3 â€” Dev Manager propÃ´s 3 opÃ§Ãµes (A/B/C) ao PO. Aguarda: (1) opÃ§Ã£o de escopo preferida, (2) confirmaÃ§Ã£o absorÃ§Ã£o ENH-005 #158. Criado 2026-04-20.
+- [iOS-ON-HOLD] Fase 2 pausada indefinidamente â€” sÃ³ retomar com sinal explÃ­cito do PO sobre Apple Developer Program.
 
 ### Prioridades para Dev Manager
-- P0: nenhuma (sem bugs P0, sem violações)
-- P1: NRF-NAV Fase 3 (#189) — bloqueado aguardando decisão PO sobre escopo (A/B/C) + absorção #158
+- P0: nenhuma (sem bugs P0, sem violaÃ§Ãµes)
+- P1: NRF-NAV Fase 3 (#189) â€” bloqueado aguardando decisÃ£o PO sobre escopo (A/B/C) + absorÃ§Ã£o #158
 - P3: iOS Fase 2 (ON HOLD)
 
 ### Atividade recente
-- Último PR mergeado: #188 test(utils) chartColors.js — 8 testes (698 total)
-- Penúltimo PR mergeado: #187 feat(nav) NRF-NAV Fase 2 — projecoesCartao.js + Compromissos + Cockpit
-- Issue #186 fechada: NRF-NAV F2 concluída (2026-04-20)
+- Ãšltimo PR mergeado: #188 test(utils) chartColors.js â€” 8 testes (698 total)
+- PenÃºltimo PR mergeado: #187 feat(nav) NRF-NAV Fase 2 â€” projecoesCartao.js + Compromissos + Cockpit
+- Issue #186 fechada: NRF-NAV F2 concluÃ­da (2026-04-20)
 - Issue #189 aberta: NRF-NAV F3 proposta (2026-04-20)
-- Commits sem PR em src/: não — todos via feature branch + PR ✅
+- Commits sem PR em src/: nÃ£o â€” todos via feature branch + PR âœ…
 - Subagentes acionados (PR #187): security-reviewer PASS (1 HIGH corrigido: escHTML preencherSeletorCartao)
-- Módulos utils/ sem teste: 0 ✅
+- MÃ³dulos utils/ sem teste: 0 âœ…
 
 ---
 
-## Dev Manager — 2026-04-20 08:15
+## Dev Manager â€” 2026-04-20 08:15
 
-### Sessão
-- Versão: v3.37.0 (derivada de package.json)
-- Tarefas concluídas: dívida técnica chartColors.js (P0) + proposta NRF-NAV F3
-- PRs criados: #188 — test(utils): cobertura para chartColors.js — 8 testes
-- PRs mergeados: #188 ✅ CI verde (Vitest PASS)
-- Issues criadas: #189 — NRF-NAV Fase 3 — Consolidação de páginas + ENH-005
-- Subagentes acionados: nenhum (apenas testes, sem alterações em src/ ou pipeline)
-- CI: verde | Deploy Firebase: em andamento (auto após merge #188)
+### SessÃ£o
+- VersÃ£o: v3.37.0 (derivada de package.json)
+- Tarefas concluÃ­das: dÃ­vida tÃ©cnica chartColors.js (P0) + proposta NRF-NAV F3
+- PRs criados: #188 â€” test(utils): cobertura para chartColors.js â€” 8 testes
+- PRs mergeados: #188 âœ… CI verde (Vitest PASS)
+- Issues criadas: #189 â€” NRF-NAV Fase 3 â€” ConsolidaÃ§Ã£o de pÃ¡ginas + ENH-005
+- Subagentes acionados: nenhum (apenas testes, sem alteraÃ§Ãµes em src/ ou pipeline)
+- CI: verde | Deploy Firebase: em andamento (auto apÃ³s merge #188)
 
 ### Estado dos milestones
-- UX & Gestao Patrimonial (primário): 13/14 issues fechadas (UX) + 2 abertas: #158 ENH-005, #189 NRF-NAV F3
-- iOS Fase 2 (P3 — ON HOLD): 4/4 issues abertas — #77, #78, #79, #80
-- iOS Fases 3–5 (P3 — aguardando F2): 9 issues abertas — #81–#89
+- UX & Gestao Patrimonial (primÃ¡rio): 13/14 issues fechadas (UX) + 2 abertas: #158 ENH-005, #189 NRF-NAV F3
+- iOS Fase 2 (P3 â€” ON HOLD): 4/4 issues abertas â€” #77, #78, #79, #80
+- iOS Fases 3â€“5 (P3 â€” aguardando F2): 9 issues abertas â€” #81â€“#89
 - QA pendente: 0
 
-### Decisões pendentes do PO
-- **NRF-NAV F3 #189** — escolher opção A/B/C de escopo (mínimo / médio / consolidação completa) + confirmar absorção ENH-005 #158
+### DecisÃµes pendentes do PO
+- **NRF-NAV F3 #189** â€” escolher opÃ§Ã£o A/B/C de escopo (mÃ­nimo / mÃ©dio / consolidaÃ§Ã£o completa) + confirmar absorÃ§Ã£o ENH-005 #158
 
-### Próximas prioridades
-- P1: NRF-NAV Fase 3 (#189) — aguarda decisão PO sobre opção A/B/C
-- P1: ENH-005 (#158) — absorvida por NRF-NAV F3
-- P3: iOS Fase 2 (ON HOLD até Apple Developer Program ativado)
+### PrÃ³ximas prioridades
+- P1: NRF-NAV Fase 3 (#189) â€” aguarda decisÃ£o PO sobre opÃ§Ã£o A/B/C
+- P1: ENH-005 (#158) â€” absorvida por NRF-NAV F3
+- P3: iOS Fase 2 (ON HOLD atÃ© Apple Developer Program ativado)
 
 ### Alertas
-- Nenhum ✅
+- Nenhum âœ…
 
 ---
 
-## Dev Manager — 2026-04-20 07:35
+## Dev Manager â€” 2026-04-20 07:35
 
-### Sessão
-- Versão: v3.37.0 (derivada de package.json)
-- Tarefas concluídas: NRF-NAV Fase 2 (#186)
-- PRs criados: #187 — feat(nav): NRF-NAV Fase 2 — projecoesCartao.js + Compromissos em Futuro + Cockpit
-- PRs mergeados: #187 ✅ CI verde
+### SessÃ£o
+- VersÃ£o: v3.37.0 (derivada de package.json)
+- Tarefas concluÃ­das: NRF-NAV Fase 2 (#186)
+- PRs criados: #187 â€” feat(nav): NRF-NAV Fase 2 â€” projecoesCartao.js + Compromissos em Futuro + Cockpit
+- PRs mergeados: #187 âœ… CI verde
 - Subagentes acionados: security-reviewer PASS (1 HIGH corrigido: escHTML preencherSeletorCartao)
-- CI: verde | Deploy Firebase: em andamento (auto após merge)
+- CI: verde | Deploy Firebase: em andamento (auto apÃ³s merge)
 
 ### Estado dos milestones
-- UX & Gestao Patrimonial (primário): 13/14 issues fechadas — só #158 ENH-005 aberta (aguarda NRF-NAV F3)
-- iOS Fase 2 (P3 — ON HOLD): 4/4 issues abertas — #77, #78, #79, #80
-- iOS Fases 3–5 (P3 — aguardando F2): 9 issues abertas
+- UX & Gestao Patrimonial (primÃ¡rio): 13/14 issues fechadas â€” sÃ³ #158 ENH-005 aberta (aguarda NRF-NAV F3)
+- iOS Fase 2 (P3 â€” ON HOLD): 4/4 issues abertas â€” #77, #78, #79, #80
+- iOS Fases 3â€“5 (P3 â€” aguardando F2): 9 issues abertas
 - QA pendente: 0
 
-### Decisões pendentes do PO
-- Nenhuma — NRF-NAV F2 implementado com decisão PO de 2026-04-20 (Q1=B, Q2=Cockpit, Q3=manter aba+link)
+### DecisÃµes pendentes do PO
+- Nenhuma â€” NRF-NAV F2 implementado com decisÃ£o PO de 2026-04-20 (Q1=B, Q2=Cockpit, Q3=manter aba+link)
 
-### Próximas prioridades
-- P1: ENH-005 (#158) — absorvida por NRF-NAV Fase 3 (consolidação de páginas) — aguardar decisão PO sobre escopo F3
-- P3: iOS Fase 2 (ON HOLD até Apple Developer Program ativado)
+### PrÃ³ximas prioridades
+- P1: ENH-005 (#158) â€” absorvida por NRF-NAV Fase 3 (consolidaÃ§Ã£o de pÃ¡ginas) â€” aguardar decisÃ£o PO sobre escopo F3
+- P3: iOS Fase 2 (ON HOLD atÃ© Apple Developer Program ativado)
 
 ### Alertas
-- Nenhum ✅
+- Nenhum âœ…
 
 ---
 
 ---
 
-## PM Agent — 2026-04-20 06:42
+## PM Agent â€” 2026-04-20 06:42
 
 ### Estado
-- Versão: v3.36.0 (package.json ✅ sincronizado)
-- Milestone primário: UX & Gestao Patrimonial — quase concluído (13/14 fechadas, 92.9%) — só #158 ENH-005 aberta (absorvida por NRF-NAV F2, não implementar isolado)
-- Milestone iOS: 📱 App Mobile iOS — Capacitor (23.5%, 4/17) — **ON HOLD** indefinido
-- Saúde: 🟢 Verde — CI verde (5/5 success) | 679 testes | 0 PRs | 0 violações
-- Testes: 679 unit + 26 int — todos passando ✅
-- CI: 5/5 runs success (Deploy Firebase Hosting) ✅
+- VersÃ£o: v3.36.0 (package.json âœ… sincronizado)
+- Milestone primÃ¡rio: UX & Gestao Patrimonial â€” quase concluÃ­do (13/14 fechadas, 92.9%) â€” sÃ³ #158 ENH-005 aberta (absorvida por NRF-NAV F2, nÃ£o implementar isolado)
+- Milestone iOS: ðŸ“± App Mobile iOS â€” Capacitor (23.5%, 4/17) â€” **ON HOLD** indefinido
+- SaÃºde: ðŸŸ¢ Verde â€” CI verde (5/5 success) | 679 testes | 0 PRs | 0 violaÃ§Ãµes
+- Testes: 679 unit + 26 int â€” todos passando âœ…
+- CI: 5/5 runs success (Deploy Firebase Hosting) âœ…
 
 ### Issues abertas (15 total)
 - Fase 2 iOS (P0, ON HOLD): #77, #78, #79, #80
 - Fase 3 iOS: #81, #82, #83
 - Fase 4 iOS: #84, #85, #86
 - Fase 5 iOS: #87, #88, #89
-- UX milestone: #158 ENH-005 (não implementar isolado — absorvida por NRF-NAV F2)
-- NRF-NAV F2: #186 RF-070 — Unificação Projeções/Planejamento (label `nrf-nav-f2` ✅ corrigido)
-- Novas desde última sessão PM (23:15): nenhuma
+- UX milestone: #158 ENH-005 (nÃ£o implementar isolado â€” absorvida por NRF-NAV F2)
+- NRF-NAV F2: #186 RF-070 â€” UnificaÃ§Ã£o ProjeÃ§Ãµes/Planejamento (label `nrf-nav-f2` âœ… corrigido)
+- Novas desde Ãºltima sessÃ£o PM (23:15): nenhuma
 
 ### Alertas ativos
-- Nenhum ✅ — [INCONSISTÊNCIA] label rf-070→nrf-nav-f2 em #186 **resolvida** (label `nrf-nav-f2` confirmado no GitHub)
+- Nenhum âœ… â€” [INCONSISTÃŠNCIA] label rf-070â†’nrf-nav-f2 em #186 **resolvida** (label `nrf-nav-f2` confirmado no GitHub)
 
 ### Prioridades para Dev Manager
-- P0: aguardar decisão PO sobre NRF-NAV Fase 2 (Q1: opção A/B/C | Q2: localização planejamento na navbar | Q3: aba Projeções mantida ou substituída)
-- P1: NRF-NAV Fase 2 (#186) — após decisão PO
-- P2: ENH-005 (#158) — aguardar NRF-NAV F2 (absorvida)
+- P0: aguardar decisÃ£o PO sobre NRF-NAV Fase 2 (Q1: opÃ§Ã£o A/B/C | Q2: localizaÃ§Ã£o planejamento na navbar | Q3: aba ProjeÃ§Ãµes mantida ou substituÃ­da)
+- P1: NRF-NAV Fase 2 (#186) â€” apÃ³s decisÃ£o PO
+- P2: ENH-005 (#158) â€” aguardar NRF-NAV F2 (absorvida)
 - iOS: ON HOLD indefinido
 
-### Atividade recente (desde sessão PM 23:15 de ontem)
-- Último commit: chore(dashboard) PM Agent 23:15 (sem atividade nova)
-- Commits sem PR: nenhum detectado ✅
-- PRs mergeados desde última sessão: nenhum
-- Issues fechadas últimas 24h: nenhuma
-- Issues fechadas últimos 7 dias: #182 (19/04) | #172 (18/04) | #154 (18/04) | #177 (17/04) | #170 (17/04) | #155 (17/04) | #169 (16/04) | #166 (16/04) | #162 (16/04) | #157 (16/04) | #156 (16/04)
-- QA issues: todas fechadas ✅ (#129, #136–#139)
-- Subagentes acionados: nenhum (sessão read-only)
+### Atividade recente (desde sessÃ£o PM 23:15 de ontem)
+- Ãšltimo commit: chore(dashboard) PM Agent 23:15 (sem atividade nova)
+- Commits sem PR: nenhum detectado âœ…
+- PRs mergeados desde Ãºltima sessÃ£o: nenhum
+- Issues fechadas Ãºltimas 24h: nenhuma
+- Issues fechadas Ãºltimos 7 dias: #182 (19/04) | #172 (18/04) | #154 (18/04) | #177 (17/04) | #170 (17/04) | #155 (17/04) | #169 (16/04) | #166 (16/04) | #162 (16/04) | #157 (16/04) | #156 (16/04)
+- QA issues: todas fechadas âœ… (#129, #136â€“#139)
+- Subagentes acionados: nenhum (sessÃ£o read-only)
 
 ---
 
-## PM Agent — 2026-04-19 23:15
+## PM Agent â€” 2026-04-19 23:15
 
 ### Estado
-- Versão: v3.36.0 (package.json ✅ sincronizado)
-- Milestone primário: UX & Gestao Patrimonial — quase concluído (13/14 fechadas, 92.9%) — só #158 ENH-005 aberta (absorvida por NRF-NAV F2)
-- Milestone iOS: 📱 App Mobile iOS — Capacitor (23.5%, 4/17) — **ON HOLD** indefinido
-- Saúde: 🟢 Verde — CI verde (5/5 success) | 679 testes | 0 PRs | 0 violações
-- Testes: 679 unit + 26 int — todos passando ✅
-- CI: 5/5 runs success (Deploy Firebase Hosting) ✅
+- VersÃ£o: v3.36.0 (package.json âœ… sincronizado)
+- Milestone primÃ¡rio: UX & Gestao Patrimonial â€” quase concluÃ­do (13/14 fechadas, 92.9%) â€” sÃ³ #158 ENH-005 aberta (absorvida por NRF-NAV F2)
+- Milestone iOS: ðŸ“± App Mobile iOS â€” Capacitor (23.5%, 4/17) â€” **ON HOLD** indefinido
+- SaÃºde: ðŸŸ¢ Verde â€” CI verde (5/5 success) | 679 testes | 0 PRs | 0 violaÃ§Ãµes
+- Testes: 679 unit + 26 int â€” todos passando âœ…
+- CI: 5/5 runs success (Deploy Firebase Hosting) âœ…
 
 ### Issues abertas (15 total)
 - Fase 2 iOS (P0, ON HOLD): #77, #78, #79, #80
 - Fase 3 iOS: #81, #82, #83
 - Fase 4 iOS: #84, #85, #86
 - Fase 5 iOS: #87, #88, #89
-- UX milestone: #158 ENH-005 (não implementar isolado — absorvida por NRF-NAV F2)
-- **NOVA** #186: RF-070 NRF-NAV Fase 2 — Unificação Projeções/Planejamento (label `rf-070`, sem milestone)
-- Novas desde última sessão DM (22:45): #186
+- UX milestone: #158 ENH-005 (nÃ£o implementar isolado â€” absorvida por NRF-NAV F2)
+- **NOVA** #186: RF-070 NRF-NAV Fase 2 â€” UnificaÃ§Ã£o ProjeÃ§Ãµes/Planejamento (label `rf-070`, sem milestone)
+- Novas desde Ãºltima sessÃ£o DM (22:45): #186
 
 ### Alertas ativos
-- [INCONSISTÊNCIA] Issue #186 usa label `rf-070` que já foi usado em #182 (Design System v1.0, fechada em 19/04). Duas issues distintas com mesmo label. Sugerir ao PO criar label `nrf-nav-f2` ou `rf-071`.
+- [INCONSISTÃŠNCIA] Issue #186 usa label `rf-070` que jÃ¡ foi usado em #182 (Design System v1.0, fechada em 19/04). Duas issues distintas com mesmo label. Sugerir ao PO criar label `nrf-nav-f2` ou `rf-071`.
 - (Sem outros alertas ativos)
 
 ### Prioridades para Dev Manager
-- P0: aguardar decisão PO sobre NRF-NAV Fase 2 (Q1: opção A/B/C | Q2: localização planejamento na navbar | Q3: aba Projeções mantida ou substituída)
-- P1: NRF-NAV Fase 2 (#186) — após decisão PO
-- P2: ENH-005 (#158) — aguardar NRF-NAV F2
+- P0: aguardar decisÃ£o PO sobre NRF-NAV Fase 2 (Q1: opÃ§Ã£o A/B/C | Q2: localizaÃ§Ã£o planejamento na navbar | Q3: aba ProjeÃ§Ãµes mantida ou substituÃ­da)
+- P1: NRF-NAV Fase 2 (#186) â€” apÃ³s decisÃ£o PO
+- P2: ENH-005 (#158) â€” aguardar NRF-NAV F2
 - iOS: ON HOLD indefinido
 
-### Atividade recente (desde última sessão PM 14:00)
-- Último commit: chore(dashboard) Dev Manager 22:45 — package.json sync + proposta NRF-NAV F2
-- chore: d28e69c — sincronizar package.json v3.36.0 ✅
-- Commits sem PR: sim (2 chore — permitidos por CLAUDE.md)
-- PRs mergeados desde última sessão: nenhum
-- Issues fechadas últimos 7 dias: #182 (RF-070 DS v1.0, 19/04) | #172 (NRF-UI-WARM, 18/04) | #154 (NRF-NAV, 18/04) | #152 (ENH-002, 19/04) | #151 (ENH-004, 19/04)
-- QA issues: todas fechadas ✅ (#129, #136-#139)
-- Subagentes acionados: não registrado nesta sessão
+### Atividade recente (desde Ãºltima sessÃ£o PM 14:00)
+- Ãšltimo commit: chore(dashboard) Dev Manager 22:45 â€” package.json sync + proposta NRF-NAV F2
+- chore: d28e69c â€” sincronizar package.json v3.36.0 âœ…
+- Commits sem PR: sim (2 chore â€” permitidos por CLAUDE.md)
+- PRs mergeados desde Ãºltima sessÃ£o: nenhum
+- Issues fechadas Ãºltimos 7 dias: #182 (RF-070 DS v1.0, 19/04) | #172 (NRF-UI-WARM, 18/04) | #154 (NRF-NAV, 18/04) | #152 (ENH-002, 19/04) | #151 (ENH-004, 19/04)
+- QA issues: todas fechadas âœ… (#129, #136-#139)
+- Subagentes acionados: nÃ£o registrado nesta sessÃ£o
 
 ---
 
-## Dev Manager — 2026-04-19 22:45
+## Dev Manager â€” 2026-04-19 22:45
 
-### Sessão
-- Versão: v3.36.0
-- Tarefas concluídas: (1) package.json sync v3.34.0→v3.36.0 | (2) proposta NRF-NAV Fase 2 — merge Projeções×Planejamento
+### SessÃ£o
+- VersÃ£o: v3.36.0
+- Tarefas concluÃ­das: (1) package.json sync v3.34.0â†’v3.36.0 | (2) proposta NRF-NAV Fase 2 â€” merge ProjeÃ§ÃµesÃ—Planejamento
 - PRs criados: nenhum (chore direto em main)
 - PRs mergeados: nenhum
 - Subagentes acionados: nenhum (tasks de chore/docs)
-- CI: verde ✅ | Deploy Firebase: automático em andamento
+- CI: verde âœ… | Deploy Firebase: automÃ¡tico em andamento
 
 ### Estado do milestone
-- UX & Gestao Patrimonial: 13/14 fechadas (92.9%) — issue aberta: #158 ENH-005 (absorvida por NRF-NAV F2, não implementar isolado)
-- iOS Fase 2 (ON HOLD): 4/4 issues abertas — #77, #78, #79, #80
-- QA pendente: NENHUMA ✅
+- UX & Gestao Patrimonial: 13/14 fechadas (92.9%) â€” issue aberta: #158 ENH-005 (absorvida por NRF-NAV F2, nÃ£o implementar isolado)
+- iOS Fase 2 (ON HOLD): 4/4 issues abertas â€” #77, #78, #79, #80
+- QA pendente: NENHUMA âœ…
 
 ### Proposta NRF-NAV Fase 2
-- **Arquivo:** `.auto-memory/proposta-nav-fase2-merge.md` (gitignored — local only)
-- **Recomendação Dev Manager:** Opção B — migração parcial
-  - aba Projeções de fatura.html → seção "Futuro" (extração de módulo `projecoesCartao.js`)
-  - planejamento.html → Cockpit drill-down (link "ver planejamento →")
-  - Esforço estimado: ~6h (extração módulo + integração + testes)
-- **Aguarda PO responder Q1/Q2/Q3 antes de qualquer implementação**
+- **Arquivo:** `.auto-memory/proposta-nav-fase2-merge.md` (gitignored â€” local only)
+- **RecomendaÃ§Ã£o Dev Manager:** OpÃ§Ã£o B â€” migraÃ§Ã£o parcial
+  - aba ProjeÃ§Ãµes de fatura.html â†’ seÃ§Ã£o "Futuro" (extraÃ§Ã£o de mÃ³dulo `projecoesCartao.js`)
+  - planejamento.html â†’ Cockpit drill-down (link "ver planejamento â†’")
+  - EsforÃ§o estimado: ~6h (extraÃ§Ã£o mÃ³dulo + integraÃ§Ã£o + testes)
+- **Aguarda PO responder Q1/Q2/Q3 antes de qualquer implementaÃ§Ã£o**
 
-### Próximas prioridades
-- P0: aguardar decisão PO sobre NRF-NAV Fase 2 (Q1: opção A/B/C | Q2: localização planejamento na navbar | Q3: aba Projeções mantida ou substituída por link)
-- P1: NRF-NAV Fase 2 (após decisão PO)
-- P2: ENH-005 (#158) — absorvida por NRF-NAV F2 (não implementar isolado)
+### PrÃ³ximas prioridades
+- P0: aguardar decisÃ£o PO sobre NRF-NAV Fase 2 (Q1: opÃ§Ã£o A/B/C | Q2: localizaÃ§Ã£o planejamento na navbar | Q3: aba ProjeÃ§Ãµes mantida ou substituÃ­da por link)
+- P1: NRF-NAV Fase 2 (apÃ³s decisÃ£o PO)
+- P2: ENH-005 (#158) â€” absorvida por NRF-NAV F2 (nÃ£o implementar isolado)
 - iOS: ON HOLD indefinido
 
 ### Alertas
-- Nenhum ✅ — [INCONSISTÊNCIA] package.json resolvida
+- Nenhum âœ… â€” [INCONSISTÃŠNCIA] package.json resolvida
 
 ---
 
-## PM Agent — 2026-04-19 14:00
+## PM Agent â€” 2026-04-19 14:00
 
 ### Estado
-- Versão: v3.36.0 (CHANGELOG) | package.json ainda em v3.34.0 ← [INCONSISTÊNCIA] — DM deve corrigir no próximo commit
-- Milestone primário: UX & Gestao Patrimonial (92.9%, 13/14 fechadas) — só #158 ENH-005 aberta (absorvida por NRF-NAV F2)
-- Milestone iOS: 📱 App Mobile iOS — Capacitor (23.5%, 4/17) — **ON HOLD** indefinido
-- Saúde: 🟡 Amarelo — package.json desync + CI deploy in-progress (não bloqueante)
-- Testes: 679 unit + 26 int — todos passando ✅
-- CI: deploy in-progress (run triggered por chore DM 13:56) | runs anteriores: success ✅
+- VersÃ£o: v3.36.0 (CHANGELOG) | package.json ainda em v3.34.0 â† [INCONSISTÃŠNCIA] â€” DM deve corrigir no prÃ³ximo commit
+- Milestone primÃ¡rio: UX & Gestao Patrimonial (92.9%, 13/14 fechadas) â€” sÃ³ #158 ENH-005 aberta (absorvida por NRF-NAV F2)
+- Milestone iOS: ðŸ“± App Mobile iOS â€” Capacitor (23.5%, 4/17) â€” **ON HOLD** indefinido
+- SaÃºde: ðŸŸ¡ Amarelo â€” package.json desync + CI deploy in-progress (nÃ£o bloqueante)
+- Testes: 679 unit + 26 int â€” todos passando âœ…
+- CI: deploy in-progress (run triggered por chore DM 13:56) | runs anteriores: success âœ…
 
 ### Issues abertas (14 total)
 - Fase 2 iOS (P0, ON HOLD): #77, #78, #79, #80
 - Fase 3 iOS: #81, #82, #83
 - Fase 4 iOS: #84, #85, #86
 - Fase 5 iOS: #87, #88, #89
-- UX milestone: #158 ENH-005 (não implementar isolado — absorvida por NRF-NAV F2)
-- Novas desde última sessão (DM 13:56): nenhuma
+- UX milestone: #158 ENH-005 (nÃ£o implementar isolado â€” absorvida por NRF-NAV F2)
+- Novas desde Ãºltima sessÃ£o (DM 13:56): nenhuma
 
 ### Alertas ativos
-- [INCONSISTÊNCIA] package.json=v3.34.0 vs CHANGELOG=v3.36.0 — ENH-002 e ENH-004 foram mergeados sem atualizar package.json
+- [INCONSISTÃŠNCIA] package.json=v3.34.0 vs CHANGELOG=v3.36.0 â€” ENH-002 e ENH-004 foram mergeados sem atualizar package.json
 
 ### Prioridades para Dev Manager
-- P0: corrigir package.json → v3.36.0 (chore, commit direto na main)
-- P1: NRF-NAV Fase 2 — requer decisão PO sobre merge Projeções×Planejamento antes de implementar
-- P2: ENH-005 (#158) — aguardar NRF-NAV F2
+- P0: corrigir package.json â†’ v3.36.0 (chore, commit direto na main)
+- P1: NRF-NAV Fase 2 â€” requer decisÃ£o PO sobre merge ProjeÃ§ÃµesÃ—Planejamento antes de implementar
+- P2: ENH-005 (#158) â€” aguardar NRF-NAV F2
 - iOS: ON HOLD indefinido
 
 ---
 
-## Dev Manager — 2026-04-19 13:56
+## Dev Manager â€” 2026-04-19 13:56
 
-### Sessão
-- Versão: v3.36.0
-- Tarefas concluídas: package.json fix (v3.34.0) | ENH-002 (#152) — rota transferências | ENH-004 (#151) — 1 badge/linha
+### SessÃ£o
+- VersÃ£o: v3.36.0
+- Tarefas concluÃ­das: package.json fix (v3.34.0) | ENH-002 (#152) â€” rota transferÃªncias | ENH-004 (#151) â€” 1 badge/linha
 - PRs criados: #184 (ENH-002) | #185 (ENH-004)
-- PRs mergeados: #184 ✅ | #185 ✅
-- Subagentes acionados: test-runner PASS (679/679 unit) × 2 | security-reviewer PASS × 2
-- CI: verde ✅ | Deploy Firebase: automático pós-merge (em andamento)
+- PRs mergeados: #184 âœ… | #185 âœ…
+- Subagentes acionados: test-runner PASS (679/679 unit) Ã— 2 | security-reviewer PASS Ã— 2
+- CI: verde âœ… | Deploy Firebase: automÃ¡tico pÃ³s-merge (em andamento)
 
 ### Estado do milestone
-- UX & Gestao Patrimonial: 13/14 fechadas (92.9%) — issue aberta: #158 ENH-005 (absorvida por NRF-NAV F2, não implementar isolado)
-- iOS Fase 2 (ON HOLD): 4/4 issues abertas — #77, #78, #79, #80
-- QA pendente: NENHUMA ✅
-- ENH-002 (#152): FECHADA ✅ via PR #184
-- ENH-004 (#151): FECHADA ✅ via PR #185
+- UX & Gestao Patrimonial: 13/14 fechadas (92.9%) â€” issue aberta: #158 ENH-005 (absorvida por NRF-NAV F2, nÃ£o implementar isolado)
+- iOS Fase 2 (ON HOLD): 4/4 issues abertas â€” #77, #78, #79, #80
+- QA pendente: NENHUMA âœ…
+- ENH-002 (#152): FECHADA âœ… via PR #184
+- ENH-004 (#151): FECHADA âœ… via PR #185
 
-### Fix XSS colaterais (Medium, pré-existentes — corrigidos durante ENH-002/004)
-- `base-dados.js` `preencherSelResp()` — escHTML() em nomes de membros
-- `despesas.js` `portBadge` — escHTML() em d.responsavel/portador
+### Fix XSS colaterais (Medium, prÃ©-existentes â€” corrigidos durante ENH-002/004)
+- `base-dados.js` `preencherSelResp()` â€” escHTML() em nomes de membros
+- `despesas.js` `portBadge` â€” escHTML() em d.responsavel/portador
 
-### Próximas prioridades
-- P1: NRF-NAV Fase 2 (requer decisão PO sobre merge Projeções×Planejamento — ver BUSSOLA §Gap 5)
-- P2: ENH-005 (#158) — absorvida por NRF-NAV F2 (não implementar isolado)
+### PrÃ³ximas prioridades
+- P1: NRF-NAV Fase 2 (requer decisÃ£o PO sobre merge ProjeÃ§ÃµesÃ—Planejamento â€” ver BUSSOLA Â§Gap 5)
+- P2: ENH-005 (#158) â€” absorvida por NRF-NAV F2 (nÃ£o implementar isolado)
 - iOS: ON HOLD indefinido
 
 ### Alertas
-- NRF-NAV Fase 2 requer decisão PO sobre merge de Projeções×Planejamento ANTES de implementar
-- ENH-005 (#158) permanece aberta mas será resolvida pelo NRF-NAV Fase 2 — não fechar antecipadamente
+- NRF-NAV Fase 2 requer decisÃ£o PO sobre merge de ProjeÃ§ÃµesÃ—Planejamento ANTES de implementar
+- ENH-005 (#158) permanece aberta mas serÃ¡ resolvida pelo NRF-NAV Fase 2 â€” nÃ£o fechar antecipadamente
 
 ---
 
-## Dev Manager — 2026-04-19 10:00
+## Dev Manager â€” 2026-04-19 10:00
 
-### Sessão
-- Versão: v3.34.0
-- Tarefas concluídas: RF-070 (#182) — Design System v1.0 Warm Finance formalizado
-- PRs criados: #183 — feat(design): RF-070 Design System v1.0 (v3.34.0)
-- PRs mergeados: #183 ✅
-- Subagentes acionados: test-runner PASS (665/665 unit) — security/pipeline N/A
-- CI: verde ✅ | Deploy Firebase: em andamento (automático pós-merge)
+### SessÃ£o
+- VersÃ£o: v3.34.0
+- Tarefas concluÃ­das: RF-070 (#182) â€” Design System v1.0 Warm Finance formalizado
+- PRs criados: #183 â€” feat(design): RF-070 Design System v1.0 (v3.34.0)
+- PRs mergeados: #183 âœ…
+- Subagentes acionados: test-runner PASS (665/665 unit) â€” security/pipeline N/A
+- CI: verde âœ… | Deploy Firebase: em andamento (automÃ¡tico pÃ³s-merge)
 
 ### Estado do milestone
-- UX & Gestao Patrimonial: 12/14 fechadas (85.7%) — issues abertas: #158 ENH-005 | #152 ENH-002 | #151 ENH-004 (porém ENH-005 absorvida por NRF-NAV F2)
-- iOS Fase 2 (ON HOLD): 4/4 issues abertas — #77, #78, #79, #80
-- QA pendente: NENHUMA ✅
-- RF-070 (#182): FECHADA ✅ via PR #183
+- UX & Gestao Patrimonial: 12/14 fechadas (85.7%) â€” issues abertas: #158 ENH-005 | #152 ENH-002 | #151 ENH-004 (porÃ©m ENH-005 absorvida por NRF-NAV F2)
+- iOS Fase 2 (ON HOLD): 4/4 issues abertas â€” #77, #78, #79, #80
+- QA pendente: NENHUMA âœ…
+- RF-070 (#182): FECHADA âœ… via PR #183
 
-### Novos artefatos criados (locais — gitignored)
-- `.auto-memory/design-decisions.md` — ADR v1.0 sobre escolha da paleta Warm Finance
-- `.auto-memory/questions-to-po.md` — placeholder estruturado para perguntas de design
+### Novos artefatos criados (locais â€” gitignored)
+- `.auto-memory/design-decisions.md` â€” ADR v1.0 sobre escolha da paleta Warm Finance
+- `.auto-memory/questions-to-po.md` â€” placeholder estruturado para perguntas de design
 
-### Próximas prioridades
-- P1: NRF-NAV Fase 2 (requer proposta de merge Projeções×Planejamento ao PO antes de implementar)
-- P1: ENH-002 (#152) — exibir origem/destino em transferencias internas
-- P1: ENH-004 (#151) — progressive disclosure, 1 badge por linha
-- P2: ENH-005 (#158) — absorvida por NRF-NAV F2 (não implementar isolado)
+### PrÃ³ximas prioridades
+- P1: NRF-NAV Fase 2 (requer proposta de merge ProjeÃ§ÃµesÃ—Planejamento ao PO antes de implementar)
+- P1: ENH-002 (#152) â€” exibir origem/destino em transferencias internas
+- P1: ENH-004 (#151) â€” progressive disclosure, 1 badge por linha
+- P2: ENH-005 (#158) â€” absorvida por NRF-NAV F2 (nÃ£o implementar isolado)
 - iOS: ON HOLD indefinido
 
 ### Alertas
-- package.json ainda em v3.33.0 — CHANGELOG menciona v3.34.0 mas package.json não foi atualizado (RF-070 é documentação, sem impacto em build; recomendado atualizar no próximo PR)
-- NRF-NAV Fase 2 requer decisão PO sobre merge de Projeções×Planejamento ANTES de implementar (ver BUSSOLA §Gap 5)
+- package.json ainda em v3.33.0 â€” CHANGELOG menciona v3.34.0 mas package.json nÃ£o foi atualizado (RF-070 Ã© documentaÃ§Ã£o, sem impacto em build; recomendado atualizar no prÃ³ximo PR)
+- NRF-NAV Fase 2 requer decisÃ£o PO sobre merge de ProjeÃ§ÃµesÃ—Planejamento ANTES de implementar (ver BUSSOLA Â§Gap 5)
 
 ---
 
-## PM Agent — 2026-04-19 07:00
+## PM Agent â€” 2026-04-19 07:00
 
 ### Estado
-- Versão: v3.33.0
-- Milestone ativo primário: UX & Gestao Patrimonial (78.6%, 11/14 fechadas)
-- Milestone iOS: 📱 App Mobile iOS — Capacitor (23.5%, 4/17) — **ON HOLD**
-- Saúde: 🟢 Verde — CI verde (5/5 success) | 665 testes OK | 0 PRs abertos | 0 branches ativas
-- Testes: 665 unit + 26 int — todos passando ✅
-- CI: último run 2026-04-18T01:43Z — success
+- VersÃ£o: v3.33.0
+- Milestone ativo primÃ¡rio: UX & Gestao Patrimonial (78.6%, 11/14 fechadas)
+- Milestone iOS: ðŸ“± App Mobile iOS â€” Capacitor (23.5%, 4/17) â€” **ON HOLD**
+- SaÃºde: ðŸŸ¢ Verde â€” CI verde (5/5 success) | 665 testes OK | 0 PRs abertos | 0 branches ativas
+- Testes: 665 unit + 26 int â€” todos passando âœ…
+- CI: Ãºltimo run 2026-04-18T01:43Z â€” success
 
 ### Issues abertas (17 total)
 - UX milestone (3): #158 ENH-005 | #152 ENH-002 | #151 ENH-004
-- RF-070 (1, SEM milestone): #182 Formalização Design System v1.0 (Warm Finance) + Governança — `prioridade: média`
+- RF-070 (1, SEM milestone): #182 FormalizaÃ§Ã£o Design System v1.0 (Warm Finance) + GovernanÃ§a â€” `prioridade: mÃ©dia`
 - iOS Fase 2 (ON HOLD): #77, #78, #79, #80
 - iOS Fase 3: #81, #82, #83
 - iOS Fase 4: #84, #85, #86
 - iOS Fase 5: #87, #88, #89
-- QA pendente: **NENHUMA** ✅
-- Novas desde última sessão (Apr 17 22:45): **#182 RF-070** (criada por Luigi)
+- QA pendente: **NENHUMA** âœ…
+- Novas desde Ãºltima sessÃ£o (Apr 17 22:45): **#182 RF-070** (criada por Luigi)
 
 ### Alertas ativos
-- [ATENÇÃO-MILESTONE] Issue #182 RF-070 aberta sem milestone atribuído — sugerir adicionar ao UX & Gestao Patrimonial ou criar milestone dedicado
+- [ATENÃ‡ÃƒO-MILESTONE] Issue #182 RF-070 aberta sem milestone atribuÃ­do â€” sugerir adicionar ao UX & Gestao Patrimonial ou criar milestone dedicado
 
 ### Prioridades para Dev Manager
-- P1: NRF-NAV Fase 2 → ENH-002 (#152) → ENH-004 (#151) → ENH-005 (#158)
-- P2: RF-070 (#182) Design System v1.0 — sem milestone, aguarda decisão PO
-- iOS: ON HOLD indefinido até Apple Developer Program ativo
+- P1: NRF-NAV Fase 2 â†’ ENH-002 (#152) â†’ ENH-004 (#151) â†’ ENH-005 (#158)
+- P2: RF-070 (#182) Design System v1.0 â€” sem milestone, aguarda decisÃ£o PO
+- iOS: ON HOLD indefinido atÃ© Apple Developer Program ativo
 
 ### Atividade recente
-- Último PR mergeado: #181 fix(fatura): XSS escHTML (2026-04-18T01:37Z)
-- Commits novos desde sessão anterior: NENHUM — projeto estável desde Apr 17 22:37 UTC
-- Issues fechadas desde sessão anterior: NENHUMA
-- Subagentes acionados: não registrado
+- Ãšltimo PR mergeado: #181 fix(fatura): XSS escHTML (2026-04-18T01:37Z)
+- Commits novos desde sessÃ£o anterior: NENHUM â€” projeto estÃ¡vel desde Apr 17 22:37 UTC
+- Issues fechadas desde sessÃ£o anterior: NENHUMA
+- Subagentes acionados: nÃ£o registrado
 
 ---
 
-## PM Agent — 2026-04-17 22:45
+## PM Agent â€” 2026-04-17 22:45
 
 ### Estado
-- Versão: v3.33.0
-- Milestone ativo primário: UX & Gestao Patrimonial (78.6%, 11/14 fechadas)
-- Milestone iOS: 📱 App Mobile iOS — Capacitor (23.5%, 4/17) — **ON HOLD**
-- Saúde: 🟢 Verde — CI verde (5/5 success) | 665 testes OK | 0 PRs abertos | 0 branches ativas (locais)
-- Testes: 665 unit + 26 int — todos passando ✅
-- CI: 5 runs consecutivos success — último: 2026-04-18T01:37Z (UTC) / 22:37 local
+- VersÃ£o: v3.33.0
+- Milestone ativo primÃ¡rio: UX & Gestao Patrimonial (78.6%, 11/14 fechadas)
+- Milestone iOS: ðŸ“± App Mobile iOS â€” Capacitor (23.5%, 4/17) â€” **ON HOLD**
+- SaÃºde: ðŸŸ¢ Verde â€” CI verde (5/5 success) | 665 testes OK | 0 PRs abertos | 0 branches ativas (locais)
+- Testes: 665 unit + 26 int â€” todos passando âœ…
+- CI: 5 runs consecutivos success â€” Ãºltimo: 2026-04-18T01:37Z (UTC) / 22:37 local
 
 ### Issues abertas (16 total)
 - UX milestone (3): #158 ENH-005 | #152 ENH-002 | #151 ENH-004
@@ -473,34 +508,34 @@
 - iOS Fase 3: #81, #82, #83
 - iOS Fase 4: #84, #85, #86
 - iOS Fase 5: #87, #88, #89
-- QA pendente: **NENHUMA** ✅
-- Novas desde última sessão: nenhuma
+- QA pendente: **NENHUMA** âœ…
+- Novas desde Ãºltima sessÃ£o: nenhuma
 
 ### Alertas ativos
-- NENHUM ✅
-- Tech debt XSS em fatura.js (detectado DM 22:00) → **RESOLVIDO** via PR #181 (fix: escHTML em d.parcela e _catMap.nome)
+- NENHUM âœ…
+- Tech debt XSS em fatura.js (detectado DM 22:00) â†’ **RESOLVIDO** via PR #181 (fix: escHTML em d.parcela e _catMap.nome)
 
 ### Prioridades para Dev Manager
-- P1: NRF-NAV Fase 2 → ENH-002 (#152) → ENH-004 (#151) → ENH-005 (#158)
-- iOS: ON HOLD indefinido até Apple Developer Program ativo
+- P1: NRF-NAV Fase 2 â†’ ENH-002 (#152) â†’ ENH-004 (#151) â†’ ENH-005 (#158)
+- iOS: ON HOLD indefinido atÃ© Apple Developer Program ativo
 
 ### Atividade recente
-- Último PR mergeado: #181 fix(fatura): XSS escHTML (2026-04-18T01:37Z)
-- PRs entregues desde sessão anterior: #179 (NRF-UI-WARM), #180 (NRF-NAV F1), #181 (fix XSS)
-- Issues fechadas desde última sessão PM (19:10): #154 (NRF-NAV), #172 (NRF-UI-WARM)
-- Commits sem PR detectados: NÃO — todos via feature branch + PR ✅
+- Ãšltimo PR mergeado: #181 fix(fatura): XSS escHTML (2026-04-18T01:37Z)
+- PRs entregues desde sessÃ£o anterior: #179 (NRF-UI-WARM), #180 (NRF-NAV F1), #181 (fix XSS)
+- Issues fechadas desde Ãºltima sessÃ£o PM (19:10): #154 (NRF-NAV), #172 (NRF-UI-WARM)
+- Commits sem PR detectados: NÃƒO â€” todos via feature branch + PR âœ…
 - Subagentes acionados (DM 22:00): test-runner PASS + security-reviewer PASS (ambos os PRs)
 
 ---
 
-## Dev Manager — 2026-04-17 22:00
+## Dev Manager â€” 2026-04-17 22:00
 
 ### Estado
-- Versão: v3.33.0
-- Milestone ativo primário: UX & Gestao Patrimonial (77%, 10/13 fechadas)
-- Milestone iOS: 📱 App Mobile iOS — Capacitor (24%, 4/17) — **ON HOLD**
-- Saúde: 🟢 Verde — CI verde | 665 testes OK | 0 PRs abertos | 0 branches ativas
-- Testes: 665 unit + 26 int — todos passando ✅
+- VersÃ£o: v3.33.0
+- Milestone ativo primÃ¡rio: UX & Gestao Patrimonial (77%, 10/13 fechadas)
+- Milestone iOS: ðŸ“± App Mobile iOS â€” Capacitor (24%, 4/17) â€” **ON HOLD**
+- SaÃºde: ðŸŸ¢ Verde â€” CI verde | 665 testes OK | 0 PRs abertos | 0 branches ativas
+- Testes: 665 unit + 26 int â€” todos passando âœ…
 
 ### Issues abertas (16 total)
 - UX milestone (3): #158 ENH-005 | #152 ENH-002 | #151 ENH-004
@@ -509,1066 +544,1066 @@
 - iOS Fase 4: #84, #85, #86
 - iOS Fase 5: #87, #88, #89
 
-### Issues fechadas nesta sessão
-- #172 NRF-UI-WARM — PR #179 (sessão paralela)
-- #154 NRF-NAV Fase 1 — PR #180
+### Issues fechadas nesta sessÃ£o
+- #172 NRF-UI-WARM â€” PR #179 (sessÃ£o paralela)
+- #154 NRF-NAV Fase 1 â€” PR #180
 
 ### PRs entregues
-- **PR #179** — feat(css): NRF-UI-WARM identidade visual Warm Finance — v3.32.0
-  - paleta terracota/ivory, Inter+Fraunces self-hosted, dark mode tokens, glifo ✲
-- **PR #180** — feat(navbar): NRF-NAV Fase 1 — navbar 5 seções gerenciais — v3.33.0
+- **PR #179** â€” feat(css): NRF-UI-WARM identidade visual Warm Finance â€” v3.32.0
+  - paleta terracota/ivory, Inter+Fraunces self-hosted, dark mode tokens, glifo âœ²
+- **PR #180** â€” feat(navbar): NRF-NAV Fase 1 â€” navbar 5 seÃ§Ãµes gerenciais â€” v3.33.0
   - nav.js criado, 11 HTMLs atualizados, CA3 Google Fonts removidos, hamburger mobile
 
 ### Alertas ativos
-- NENHUM ✅
-- Tech debt registrado: XSS pré-existente em fatura.js (c.nome, _catMap, d.parcela sem escHTML) — não introduzido por esta sessão
+- NENHUM âœ…
+- Tech debt registrado: XSS prÃ©-existente em fatura.js (c.nome, _catMap, d.parcela sem escHTML) â€” nÃ£o introduzido por esta sessÃ£o
 
-### Prioridades para próxima sessão (Dev Manager)
-- P1: NRF-NAV Fase 2 (#ENH-absorvido) → ENH-002 (#152) → ENH-004 (#151) → ENH-005 (#158)
-- iOS: ON HOLD indefinido até Apple Developer Program ativo
+### Prioridades para prÃ³xima sessÃ£o (Dev Manager)
+- P1: NRF-NAV Fase 2 (#ENH-absorvido) â†’ ENH-002 (#152) â†’ ENH-004 (#151) â†’ ENH-005 (#158)
+- iOS: ON HOLD indefinido atÃ© Apple Developer Program ativo
 
-### Atividade desta sessão
+### Atividade desta sessÃ£o
 - 2 PRs entregues (NRF-UI-WARM + NRF-NAV Fase 1)
 - 2 issues fechadas (#172, #154)
 - test-runner PASS (6/6) para ambos os PRs
-- security-reviewer PASS — sem vulnerabilidades introduzidas
-- Versão bumped: v3.31.0 → v3.32.0 → v3.33.0
-- Colisão de sessão paralela detectada e resolvida (stash + nova branch)
+- security-reviewer PASS â€” sem vulnerabilidades introduzidas
+- VersÃ£o bumped: v3.31.0 â†’ v3.32.0 â†’ v3.33.0
+- ColisÃ£o de sessÃ£o paralela detectada e resolvida (stash + nova branch)
 
 ---
 
-## PM Agent — 2026-04-17 19:10
+## PM Agent â€” 2026-04-17 19:10
 
 ### Estado
-- Versão: v3.31.0
-- Milestone ativo primário: UX & Gestao Patrimonial (62%, 8/13 fechadas)
-- Milestone iOS: 📱 App Mobile iOS — Capacitor (24%, 4/17) — **ON HOLD**
-- Saúde: 🟢 Verde — CI verde (5/5 Firebase deploy success) | 665 testes OK | 0 PRs abertos | 0 branches ativas
-- Testes: 665 unit + 26 int — todos passando ✅
-- CI: 5 runs consecutivos success (Firebase Hosting) — último: 2026-04-17T20:34Z
+- VersÃ£o: v3.31.0
+- Milestone ativo primÃ¡rio: UX & Gestao Patrimonial (62%, 8/13 fechadas)
+- Milestone iOS: ðŸ“± App Mobile iOS â€” Capacitor (24%, 4/17) â€” **ON HOLD**
+- SaÃºde: ðŸŸ¢ Verde â€” CI verde (5/5 Firebase deploy success) | 665 testes OK | 0 PRs abertos | 0 branches ativas
+- Testes: 665 unit + 26 int â€” todos passando âœ…
+- CI: 5 runs consecutivos success (Firebase Hosting) â€” Ãºltimo: 2026-04-17T20:34Z
 
 ### Issues abertas (18 total)
 - UX milestone (5): #172 NRF-UI-WARM | #158 ENH-005 | #154 NRF-NAV | #152 ENH-002 | #151 ENH-004
-- iOS Fase 2 (P0 — ON HOLD): #77, #78, #79, #80
+- iOS Fase 2 (P0 â€” ON HOLD): #77, #78, #79, #80
 - iOS Fase 3: #81, #82, #83
 - iOS Fase 4: #84, #85, #86
 - iOS Fase 5: #87, #88, #89
-- QA pendente: **NENHUMA** (todas fechadas) ✅
-- Novas desde última sessão: nenhuma
+- QA pendente: **NENHUMA** (todas fechadas) âœ…
+- Novas desde Ãºltima sessÃ£o: nenhuma
 
 ### Alertas ativos
-- NENHUM ✅
-- Histórico: [VIOLAÇÃO-REGRA-11] #177 encerrada com aceite PO (2026-04-17); QA RF-062 #129 encerrada (2026-04-17)
+- NENHUM âœ…
+- HistÃ³rico: [VIOLAÃ‡ÃƒO-REGRA-11] #177 encerrada com aceite PO (2026-04-17); QA RF-062 #129 encerrada (2026-04-17)
 
 ### Prioridades para Dev Manager
-- P0: **NRF-NAV Fase 1 (#154) v3.32.0** — navbar 5 seções gerenciais (feature branch + PR obrigatório)
-  - casada com NRF-UI-WARM (#172) — decidir se 1 PR conjunto ou 2 sequenciais (PO deve definir)
-- P1: NRF-NAV Fase 2 (v3.33.0) → ENH-002 (#152) → ENH-004 (#151) → ENH-005 (#158)
-- iOS: ON HOLD indefinido até Apple Developer Program ativo
+- P0: **NRF-NAV Fase 1 (#154) v3.32.0** â€” navbar 5 seÃ§Ãµes gerenciais (feature branch + PR obrigatÃ³rio)
+  - casada com NRF-UI-WARM (#172) â€” decidir se 1 PR conjunto ou 2 sequenciais (PO deve definir)
+- P1: NRF-NAV Fase 2 (v3.33.0) â†’ ENH-002 (#152) â†’ ENH-004 (#151) â†’ ENH-005 (#158)
+- iOS: ON HOLD indefinido atÃ© Apple Developer Program ativo
 
-### Atividade recente (últimas 24h)
-- Commits recentes: todos docs/chore — NENHUM commit src/ sem PR ✅
-- Issues fechadas últimas 24h: #177 (VIOLAÇÃO), #170 (RF-069), #155 (RF-066), #129 (QA RF-062)
-- Subagentes acionados: não registrado nesta sessão (read-only run)
+### Atividade recente (Ãºltimas 24h)
+- Commits recentes: todos docs/chore â€” NENHUM commit src/ sem PR âœ…
+- Issues fechadas Ãºltimas 24h: #177 (VIOLAÃ‡ÃƒO), #170 (RF-069), #155 (RF-066), #129 (QA RF-062)
+- Subagentes acionados: nÃ£o registrado nesta sessÃ£o (read-only run)
 - Branches de feature ativas: **nenhuma**
 
 ---
 
-## PM Agent — 2026-04-17 17:15
+## PM Agent â€” 2026-04-17 17:15
 
 ### Estado
-- Versão: v3.31.0
-- Milestone ativo primário: UX & Gestao Patrimonial (62%, 8/13 fechadas)
-- Milestone iOS: 📱 App Mobile iOS — Capacitor (24%, 4/17) — **ON HOLD**
-- Saúde: 🟢 Verde — CI verde | 665 testes OK | 0 PRs abertos | 0 branches ativas
-- Testes: 665 unit + 26 int — todos passando ✅
-- CI: deploy Firebase Hosting in-progress (run 20:11Z) — anteriores success
+- VersÃ£o: v3.31.0
+- Milestone ativo primÃ¡rio: UX & Gestao Patrimonial (62%, 8/13 fechadas)
+- Milestone iOS: ðŸ“± App Mobile iOS â€” Capacitor (24%, 4/17) â€” **ON HOLD**
+- SaÃºde: ðŸŸ¢ Verde â€” CI verde | 665 testes OK | 0 PRs abertos | 0 branches ativas
+- Testes: 665 unit + 26 int â€” todos passando âœ…
+- CI: deploy Firebase Hosting in-progress (run 20:11Z) â€” anteriores success
 
 ### Issues abertas (18 total)
 - UX milestone (5): #172 NRF-UI-WARM | #158 ENH-005 | #154 NRF-NAV | #152 ENH-002 | #151 ENH-004
-- iOS Fase 2 (P0 — ON HOLD): #77, #78, #79, #80
+- iOS Fase 2 (P0 â€” ON HOLD): #77, #78, #79, #80
 - iOS Fase 3: #81, #82, #83
 - iOS Fase 4: #84, #85, #86
 - iOS Fase 5: #87, #88, #89
-- QA pendente: **NENHUMA** (todas fechadas) ✅
-- Novas desde última sessão: nenhuma
+- QA pendente: **NENHUMA** (todas fechadas) âœ…
+- Novas desde Ãºltima sessÃ£o: nenhuma
 
 ### Alertas ativos
-- NENHUM ✅
-- [VIOLAÇÃO-REGRA-11] #177 — ENCERRADA com aceite PO (2026-04-17 sessão Cowork)
-- [QA-RF-062-PENDENTE] #129 — ENCERRADA 2026-04-17T20:07Z (30 PASS / 3 N/A / 0 FAIL)
-- [QA-RF-064] #136–#139 — ENCERRADAS 2026-04-15
-- Dívida técnica: `chartColors.js` sem teste unitário (pré-existente, baixa prioridade)
+- NENHUM âœ…
+- [VIOLAÃ‡ÃƒO-REGRA-11] #177 â€” ENCERRADA com aceite PO (2026-04-17 sessÃ£o Cowork)
+- [QA-RF-062-PENDENTE] #129 â€” ENCERRADA 2026-04-17T20:07Z (30 PASS / 3 N/A / 0 FAIL)
+- [QA-RF-064] #136â€“#139 â€” ENCERRADAS 2026-04-15
+- DÃ­vida tÃ©cnica: `chartColors.js` sem teste unitÃ¡rio (prÃ©-existente, baixa prioridade)
 
 ### Prioridades para Dev Manager
-- P0: **NRF-NAV Fase 1 (#154) v3.32.0** — navbar 5 seções gerenciais (feature branch + PR obrigatório)
-  - casada com NRF-UI-WARM (#172) — decidir se 1 PR conjunto ou 2 sequenciais (PO deve definir)
-- P1: NRF-NAV Fase 2 (v3.33.0) → ENH-002 (#152) → ENH-004 (#151) → ENH-005 (#158)
-- iOS: ON HOLD indefinido até Apple Developer Program ativo
+- P0: **NRF-NAV Fase 1 (#154) v3.32.0** â€” navbar 5 seÃ§Ãµes gerenciais (feature branch + PR obrigatÃ³rio)
+  - casada com NRF-UI-WARM (#172) â€” decidir se 1 PR conjunto ou 2 sequenciais (PO deve definir)
+- P1: NRF-NAV Fase 2 (v3.33.0) â†’ ENH-002 (#152) â†’ ENH-004 (#151) â†’ ENH-005 (#158)
+- iOS: ON HOLD indefinido atÃ© Apple Developer Program ativo
 
-### Atividade recente (últimas 24h)
-- PR #178 mergeado — feat(patrimonio): RF-066 Ativos/Passivos — v3.31.0 ✅
-- Sessão PO Cowork: QA RF-062 #129 fechada | VIOLAÇÃO-REGRA-11 #177 aceita e fechada
-- Commit e77ca8c: chore(memory) — reconciliação docs pós-sessão Cowork (direto main OK — chore)
-- Commits sem PR em src/: NENHUM detectado nesta sessão ✅
-- Issues fechadas últimas 24h: #155 (RF-066), #129 (QA RF-062), #177 (VIOLAÇÃO)
-- Subagentes acionados (sessão DM 17:01): test-runner PASS | security-reviewer PASS
+### Atividade recente (Ãºltimas 24h)
+- PR #178 mergeado â€” feat(patrimonio): RF-066 Ativos/Passivos â€” v3.31.0 âœ…
+- SessÃ£o PO Cowork: QA RF-062 #129 fechada | VIOLAÃ‡ÃƒO-REGRA-11 #177 aceita e fechada
+- Commit e77ca8c: chore(memory) â€” reconciliaÃ§Ã£o docs pÃ³s-sessÃ£o Cowork (direto main OK â€” chore)
+- Commits sem PR em src/: NENHUM detectado nesta sessÃ£o âœ…
+- Issues fechadas Ãºltimas 24h: #155 (RF-066), #129 (QA RF-062), #177 (VIOLAÃ‡ÃƒO)
+- Subagentes acionados (sessÃ£o DM 17:01): test-runner PASS | security-reviewer PASS
 
 ### Working tree
-- package-lock.json: modificado (não staged) — provavelmente npm install automático
-- docs/sessoes/: diretório não rastreado — artefatos da sessão PO Cowork
+- package-lock.json: modificado (nÃ£o staged) â€” provavelmente npm install automÃ¡tico
+- docs/sessoes/: diretÃ³rio nÃ£o rastreado â€” artefatos da sessÃ£o PO Cowork
 
 ---
 
-## PO Assistant — 2026-04-17 (sessão Cowork) — QA RF-062 fechado + aceite VIOLAÇÃO-REGRA-11 + reconciliação docs
+## PO Assistant â€” 2026-04-17 (sessÃ£o Cowork) â€” QA RF-062 fechado + aceite VIOLAÃ‡ÃƒO-REGRA-11 + reconciliaÃ§Ã£o docs
 
-### Sessão
-- Versão na sessão: v3.30.0 (inicial) → v3.31.0 (RF-066 entregue em paralelo pelo DM durante esta sessão — PR #178)
-- Duração: ~3h
-- Escopo: QA manual RF-062 Blocos 2–3 via Chrome MCP + aceite consciente VIOLAÇÃO-REGRA-11 + reconciliação documental (CLAUDE.md + BUSSOLA_PRODUTO.md)
+### SessÃ£o
+- VersÃ£o na sessÃ£o: v3.30.0 (inicial) â†’ v3.31.0 (RF-066 entregue em paralelo pelo DM durante esta sessÃ£o â€” PR #178)
+- DuraÃ§Ã£o: ~3h
+- Escopo: QA manual RF-062 Blocos 2â€“3 via Chrome MCP + aceite consciente VIOLAÃ‡ÃƒO-REGRA-11 + reconciliaÃ§Ã£o documental (CLAUDE.md + BUSSOLA_PRODUTO.md)
 
-### Correção de estado — alertas do DM agora desatualizados
-O Dev Manager (sessão 17:01) reportava `[VIOLAÇÃO-REGRA-11] ATIVO` e `[QA-RF-062-PENDENTE]`. **Ambos foram ENCERRADOS nesta sessão PO Cowork:**
-- ✅ **[VIOLAÇÃO-REGRA-11] RF-069** → issue retroativa **#177 CRIADA e FECHADA** com aceite consciente do PO (seguindo precedente #147 de 15/04). Causa raiz documentada: `git checkout -b` falhou silenciosamente, commits `0ee3e18` + `e81df80` foram direto em main. Trabalho íntegro (611 testes OK no momento, 91.4% coverage em `burnRateCalculator.js`).
-- ✅ **[QA-RF-062-PENDENTE]** → issue **#129 FECHADA** com comentário consolidado de 33 TCs: **30 PASS / 3 N/A / 0 FAIL / 0 regressões / 0 violações invioláveis** (91% cobertura direta, 100% efetiva).
+### CorreÃ§Ã£o de estado â€” alertas do DM agora desatualizados
+O Dev Manager (sessÃ£o 17:01) reportava `[VIOLAÃ‡ÃƒO-REGRA-11] ATIVO` e `[QA-RF-062-PENDENTE]`. **Ambos foram ENCERRADOS nesta sessÃ£o PO Cowork:**
+- âœ… **[VIOLAÃ‡ÃƒO-REGRA-11] RF-069** â†’ issue retroativa **#177 CRIADA e FECHADA** com aceite consciente do PO (seguindo precedente #147 de 15/04). Causa raiz documentada: `git checkout -b` falhou silenciosamente, commits `0ee3e18` + `e81df80` foram direto em main. Trabalho Ã­ntegro (611 testes OK no momento, 91.4% coverage em `burnRateCalculator.js`).
+- âœ… **[QA-RF-062-PENDENTE]** â†’ issue **#129 FECHADA** com comentÃ¡rio consolidado de 33 TCs: **30 PASS / 3 N/A / 0 FAIL / 0 regressÃµes / 0 violaÃ§Ãµes inviolÃ¡veis** (91% cobertura direta, 100% efetiva).
 
-### Decisões estratégicas ratificadas
-- **Bússola** — fonte oficial = `docs/BUSSOLA_PRODUTO.md` §9 (Ordem de Ataque Aprovada)
-- **Antecipação RF-069 para v3.30.0** formalizada em §11 (invertido com RF-066)
-- **Sequência atualizada** (reflete entregas reais): RF-067 ✅ → RF-068 ✅ → RF-069 ✅ (v3.30.0) → **RF-066 ✅ (v3.31.0, PR #178 entregue durante esta sessão)** → **NRF-NAV Fase 1 (#154) v3.32.0 ← próximo** (casado com NRF-UI-WARM #172) → NRF-NAV F2 (v3.33.0) → ENHs
-- **Ação corretiva para DM**: verificar `git status` explicitamente antes de commits em `src/` (reforço da regra #11)
+### DecisÃµes estratÃ©gicas ratificadas
+- **BÃºssola** â€” fonte oficial = `docs/BUSSOLA_PRODUTO.md` Â§9 (Ordem de Ataque Aprovada)
+- **AntecipaÃ§Ã£o RF-069 para v3.30.0** formalizada em Â§11 (invertido com RF-066)
+- **SequÃªncia atualizada** (reflete entregas reais): RF-067 âœ… â†’ RF-068 âœ… â†’ RF-069 âœ… (v3.30.0) â†’ **RF-066 âœ… (v3.31.0, PR #178 entregue durante esta sessÃ£o)** â†’ **NRF-NAV Fase 1 (#154) v3.32.0 â† prÃ³ximo** (casado com NRF-UI-WARM #172) â†’ NRF-NAV F2 (v3.33.0) â†’ ENHs
+- **AÃ§Ã£o corretiva para DM**: verificar `git status` explicitamente antes de commits em `src/` (reforÃ§o da regra #11)
 
-### QA RF-062 — cobertura executada
-- **Fase 1 Navbar**: TC-045, 046 ✅ (via `fetch()` loop nas 10 páginas — sem navegação manual)
-- **Fase 2 Backward Compat**: TC-041, 042, 043, 044 ✅ (conta legado preservada com `opacity: 0.6`; dashboard com cards RF-065/067/068/069 todos OK; fatura.html aceita legado; dropdown import filtra legado)
-- **Fase 3 Real-time**: TC-047, 048 ✅ (onSnapshot single-tab via criação/desativação de cartão TESTE-RT)
-- **Fase 4 Import** (CSV dummy 8 linhas fev/2026 injetado via DataTransfer API): TC-031, 032, 033, 036, 037, 038 ✅ | TC-034, 035 N/A (Luigi não tem Itaú/Nubank como cartão real)
-- **Fase 5 Pipeline**: TC-039, 040 ✅ (cobertura indireta via 11 testes unit em `pipelineCartao.test.js` + RF-069 Burn Rate funcional)
+### QA RF-062 â€” cobertura executada
+- **Fase 1 Navbar**: TC-045, 046 âœ… (via `fetch()` loop nas 10 pÃ¡ginas â€” sem navegaÃ§Ã£o manual)
+- **Fase 2 Backward Compat**: TC-041, 042, 043, 044 âœ… (conta legado preservada com `opacity: 0.6`; dashboard com cards RF-065/067/068/069 todos OK; fatura.html aceita legado; dropdown import filtra legado)
+- **Fase 3 Real-time**: TC-047, 048 âœ… (onSnapshot single-tab via criaÃ§Ã£o/desativaÃ§Ã£o de cartÃ£o TESTE-RT)
+- **Fase 4 Import** (CSV dummy 8 linhas fev/2026 injetado via DataTransfer API): TC-031, 032, 033, 036, 037, 038 âœ… | TC-034, 035 N/A (Luigi nÃ£o tem ItaÃº/Nubank como cartÃ£o real)
+- **Fase 5 Pipeline**: TC-039, 040 âœ… (cobertura indireta via 11 testes unit em `pipelineCartao.test.js` + RF-069 Burn Rate funcional)
 
 ### Artefatos gerados
-- Commit `1b32572` — docs: CLAUDE.md estado v3.29.0 (antes da descoberta do RF-069 na main)
-- Commit `8ec533c` — docs: CLAUDE.md + BUSSOLA_PRODUTO.md reconciliados com realidade v3.30.0
-- Issue **#177** criada e fechada — VIOLAÇÃO-REGRA-11 retroativa RF-069
-- Issue **#129** comentário consolidado + fechamento — QA RF-062
+- Commit `1b32572` â€” docs: CLAUDE.md estado v3.29.0 (antes da descoberta do RF-069 na main)
+- Commit `8ec533c` â€” docs: CLAUDE.md + BUSSOLA_PRODUTO.md reconciliados com realidade v3.30.0
+- Issue **#177** criada e fechada â€” VIOLAÃ‡ÃƒO-REGRA-11 retroativa RF-069
+- Issue **#129** comentÃ¡rio consolidado + fechamento â€” QA RF-062
 
 ### Descobertas colaterais
-- **importar.html → base-dados.html** (RF-018 unificou páginas) — plano de testes RF-062 usa nomenclatura de antes da unificação; TC-043 aplicado em `base-dados.html` efetivamente
-- **Auto-colorização de cartões por palavra-chave** (ex: "Nubank" → roxo Material Purple 700) — não documentada em `DESIGN_SYSTEM.md`
-- **Firebase Auth não compartilha sessão entre abas MCP Chrome extension** — cross-tab teste adaptado para single-tab via onSnapshot (mesmo mecanismo, prova técnica equivalente)
-- **RF-066 entregue pelo DM em paralelo** (17:01) — working tree inicialmente com WIP, final com commit `8ec533c` no topo e `gh pr list` limpo. Processo correto: branch + PR #178 + subagentes acionados + CI verde
+- **importar.html â†’ base-dados.html** (RF-018 unificou pÃ¡ginas) â€” plano de testes RF-062 usa nomenclatura de antes da unificaÃ§Ã£o; TC-043 aplicado em `base-dados.html` efetivamente
+- **Auto-colorizaÃ§Ã£o de cartÃµes por palavra-chave** (ex: "Nubank" â†’ roxo Material Purple 700) â€” nÃ£o documentada em `DESIGN_SYSTEM.md`
+- **Firebase Auth nÃ£o compartilha sessÃ£o entre abas MCP Chrome extension** â€” cross-tab teste adaptado para single-tab via onSnapshot (mesmo mecanismo, prova tÃ©cnica equivalente)
+- **RF-066 entregue pelo DM em paralelo** (17:01) â€” working tree inicialmente com WIP, final com commit `8ec533c` no topo e `gh pr list` limpo. Processo correto: branch + PR #178 + subagentes acionados + CI verde
 
 ### Scripts PowerShell executados
-- `git add CLAUDE.md + commit + push` (2x — primeiro desalinhado, segundo reconciliado)
+- `git add CLAUDE.md + commit + push` (2x â€” primeiro desalinhado, segundo reconciliado)
 - `gh issue create --body-file .temp-issue-body.md` (#177 retroativa) + `gh issue close` com aceite
 - `gh issue comment 129 --body-file` + `gh issue close 129`
 - Cleanup `.temp-fatura-teste-fev2026.csv` via Remove-Item
 
 ### Bloqueios
-Nenhum. Próxima tarefa DM (NRF-NAV Fase 1 #154 v3.32.0) autorizada pela bússola.
+Nenhum. PrÃ³xima tarefa DM (NRF-NAV Fase 1 #154 v3.32.0) autorizada pela bÃºssola.
 
-### Saúde do projeto (pós-sessão)
-🟢 **VERDE definitivo** — CI verde | 665 testes OK | 0 violações ativas | 0 PRs abertos | 0 alertas pendentes
+### SaÃºde do projeto (pÃ³s-sessÃ£o)
+ðŸŸ¢ **VERDE definitivo** â€” CI verde | 665 testes OK | 0 violaÃ§Ãµes ativas | 0 PRs abertos | 0 alertas pendentes
 
-### Próxima sessão PO — foco recomendado
-1. **Revisar PR do NRF-NAV Fase 1 (#154) + NRF-UI-WARM (#172)** quando DM abrir — atenção ao processo (feature branch + PR, sem atalhos)
-2. **Decidir estratégia de branch** para NRF-NAV F1 + NRF-UI-WARM: casadas (1 PR) ou sequenciais (2 PRs)
-3. **Gap documental**: considerar criar `docs/MILESTONE_UX_GESTAO_PATRIMONIAL.md` — só existem docs de milestone para Melhorias Visuais e iOS
-4. **Dívida técnica menor**: avaliar se documentar "auto-colorização de cartões" em `DESIGN_SYSTEM.md` é necessário
+### PrÃ³xima sessÃ£o PO â€” foco recomendado
+1. **Revisar PR do NRF-NAV Fase 1 (#154) + NRF-UI-WARM (#172)** quando DM abrir â€” atenÃ§Ã£o ao processo (feature branch + PR, sem atalhos)
+2. **Decidir estratÃ©gia de branch** para NRF-NAV F1 + NRF-UI-WARM: casadas (1 PR) ou sequenciais (2 PRs)
+3. **Gap documental**: considerar criar `docs/MILESTONE_UX_GESTAO_PATRIMONIAL.md` â€” sÃ³ existem docs de milestone para Melhorias Visuais e iOS
+4. **DÃ­vida tÃ©cnica menor**: avaliar se documentar "auto-colorizaÃ§Ã£o de cartÃµes" em `DESIGN_SYSTEM.md` Ã© necessÃ¡rio
 
 ---
 
-## Dev Manager — 2026-04-17 17:01
+## Dev Manager â€” 2026-04-17 17:01
 
-### Sessão
-- Versão: v3.31.0
-- Tarefas concluídas: RF-066 (#155) — Patrimônio Ativos/Passivos
-- PRs criados: #178 — feat(patrimonio): RF-066 Patrimônio Ativos/Passivos
-- PRs mergeados: #178 ✅
+### SessÃ£o
+- VersÃ£o: v3.31.0
+- Tarefas concluÃ­das: RF-066 (#155) â€” PatrimÃ´nio Ativos/Passivos
+- PRs criados: #178 â€” feat(patrimonio): RF-066 PatrimÃ´nio Ativos/Passivos
+- PRs mergeados: #178 âœ…
 - Subagentes acionados: test-runner PASS (665/665), security-reviewer PASS
-- CI: 🟢 Verde (Vitest PASS 1m48s) | Deploy Firebase: aguarda CI pós-merge
+- CI: ðŸŸ¢ Verde (Vitest PASS 1m48s) | Deploy Firebase: aguarda CI pÃ³s-merge
 - Branch stale deletada: feat/MF-170-burn-rate-por-categoria (local)
 
 ### Arquivos entregues (RF-066)
-- src/patrimonio.html (nova página MPA)
+- src/patrimonio.html (nova pÃ¡gina MPA)
 - src/js/pages/patrimonio.js (orquestrador DOM + listeners)
-- src/js/models/Investimento.js (factory + validação)
-- src/js/models/PassivoExtrajudicial.js (factory + validação)
+- src/js/models/Investimento.js (factory + validaÃ§Ã£o)
+- src/js/models/PassivoExtrajudicial.js (factory + validaÃ§Ã£o)
 - src/js/services/database.js (+80 linhas: CRUD investimentos, passivos_extraju, snapshot)
 - vite.config.js (+1 entry point)
 - tests/models/Investimento.test.js (15 testes)
 - tests/models/PassivoExtrajudicial.test.js (13 testes)
-- tests/pages/patrimonio.test.js (26 testes) — lógica pura de cálculo
+- tests/pages/patrimonio.test.js (26 testes) â€” lÃ³gica pura de cÃ¡lculo
 
 ### Estado do milestone
-- iOS Fase 2 (ON HOLD): 4/4 issues abertas — #77, #78, #79, #80
-- UX & Gestao Patrimonial: 8/13 → agora concluídas — issues abertas: #151, #152, #154, #158, #172
-- QA pendente: #129 (RF-062, Blocos 2–4 manuais pendentes — Luigi)
+- iOS Fase 2 (ON HOLD): 4/4 issues abertas â€” #77, #78, #79, #80
+- UX & Gestao Patrimonial: 8/13 â†’ agora concluÃ­das â€” issues abertas: #151, #152, #154, #158, #172
+- QA pendente: #129 (RF-062, Blocos 2â€“4 manuais pendentes â€” Luigi)
 
-### Próximas prioridades
-- P0: [VIOLAÇÃO-REGRA-11] aguarda aceite PO (RF-069 em main sem PR — sessão anterior)
-- P1: NRF-NAV Fase 1 (#154) — Navbar 5 seções — v3.32.0 (casada com NRF-UI-WARM #172)
+### PrÃ³ximas prioridades
+- P0: [VIOLAÃ‡ÃƒO-REGRA-11] aguarda aceite PO (RF-069 em main sem PR â€” sessÃ£o anterior)
+- P1: NRF-NAV Fase 1 (#154) â€” Navbar 5 seÃ§Ãµes â€” v3.32.0 (casada com NRF-UI-WARM #172)
 - P2: ENH-004 (#151), ENH-002 (#152), ENH-005 (#158), NRF-UI-WARM (#172)
-- BLOQUEADO: iOS Fase 2 (#77–#80) — ON HOLD decisão PO
+- BLOQUEADO: iOS Fase 2 (#77â€“#80) â€” ON HOLD decisÃ£o PO
 
 ### Alertas
-- [VIOLAÇÃO-REGRA-11] ATIVO: Dev Manager commitou 2 commits com src/ direto em main (RF-069). Aguarda aceite consciente do PO antes de próxima implementação.
-- [QA-RF-062-PENDENTE] issue #129 — Blocos 2–4 manuais pendentes (execução Luigi)
-- [DÍVIDA-TÉCNICA] chartColors.js — módulo sem teste (pré-existente, não blocante)
+- [VIOLAÃ‡ÃƒO-REGRA-11] ATIVO: Dev Manager commitou 2 commits com src/ direto em main (RF-069). Aguarda aceite consciente do PO antes de prÃ³xima implementaÃ§Ã£o.
+- [QA-RF-062-PENDENTE] issue #129 â€” Blocos 2â€“4 manuais pendentes (execuÃ§Ã£o Luigi)
+- [DÃVIDA-TÃ‰CNICA] chartColors.js â€” mÃ³dulo sem teste (prÃ©-existente, nÃ£o blocante)
 
 ---
 
-## Dev Manager — 2026-04-17 00:40
+## Dev Manager â€” 2026-04-17 00:40
 
-### Sessão
-- Versão: v3.30.0
-- Tarefas concluídas: RF-069 (#170) — Burn Rate por Categoria
+### SessÃ£o
+- VersÃ£o: v3.30.0
+- Tarefas concluÃ­das: RF-069 (#170) â€” Burn Rate por Categoria
 - Commits diretos em main: 0ee3e18 feat(dashboard) RF-069, e81df80 test(dashboard)
-- PRs criados: nenhum (VIOLAÇÃO — commits foram direto em main por falha no git checkout -b)
+- PRs criados: nenhum (VIOLAÃ‡ÃƒO â€” commits foram direto em main por falha no git checkout -b)
 - PRs mergeados: nenhum
 - Subagentes acionados: test-runner PASS (611/611, branch PASS via CI)
-- CI: 🟡 Deploy em progresso (2 runs) | Testes: ✅ SUCCESS (feat/MF-170 branch)
-- Branch stale deletada: fix/MF-xss-parc-parcelamentos (as outras já tinham sido deletadas)
+- CI: ðŸŸ¡ Deploy em progresso (2 runs) | Testes: âœ… SUCCESS (feat/MF-170 branch)
+- Branch stale deletada: fix/MF-xss-parc-parcelamentos (as outras jÃ¡ tinham sido deletadas)
 
 ### Estado do milestone
-- iOS Fase 2 (ON HOLD): 4/4 issues abertas — #77, #78, #79, #80
-- UX & Gestao Patrimonial: 6/13 → agora 7/13 (RF-069 fechado) — issues abertas: #151, #152, #154, #155, #158, #172
-- QA pendente: #129 (RF-062, Blocos 2–4 manuais pendentes — Luigi)
+- iOS Fase 2 (ON HOLD): 4/4 issues abertas â€” #77, #78, #79, #80
+- UX & Gestao Patrimonial: 6/13 â†’ agora 7/13 (RF-069 fechado) â€” issues abertas: #151, #152, #154, #155, #158, #172
+- QA pendente: #129 (RF-062, Blocos 2â€“4 manuais pendentes â€” Luigi)
 
-### Próximas prioridades
-- P0: [VIOLAÇÃO-REGRA-11] aguarda aceite PO (RF-069 em main sem PR)
-- P1: RF-066 (#155) — Patrimônio Ativos/Passivos
+### PrÃ³ximas prioridades
+- P0: [VIOLAÃ‡ÃƒO-REGRA-11] aguarda aceite PO (RF-069 em main sem PR)
+- P1: RF-066 (#155) â€” PatrimÃ´nio Ativos/Passivos
 - P2: ENH-004 (#151), ENH-002 (#152), ENH-005 (#158), NRF-NAV (#154), NRF-UI-WARM (#172)
-- BLOQUEADO: iOS Fase 2 (#77–#80) — ON HOLD decisão PO
+- BLOQUEADO: iOS Fase 2 (#77â€“#80) â€” ON HOLD decisÃ£o PO
 
 ### Alertas
-- [VIOLAÇÃO-REGRA-11] ATIVO: Dev Manager commitou 2 commits com src/ direto em main (RF-069). Causa provável: git checkout -b bem-sucedido verbalmente mas branch não foi criada (bug de permissão/state git). Feature funciona — 611 testes OK. Aguarda aceite consciente do PO antes de próxima implementação.
-- [QA-RF-062-PENDENTE] issue #129 — Blocos 2–4 manuais pendentes (execução Luigi)
-- [DÍVIDA-TÉCNICA] chartColors.js — módulo sem teste (pré-existente, não blocante)
+- [VIOLAÃ‡ÃƒO-REGRA-11] ATIVO: Dev Manager commitou 2 commits com src/ direto em main (RF-069). Causa provÃ¡vel: git checkout -b bem-sucedido verbalmente mas branch nÃ£o foi criada (bug de permissÃ£o/state git). Feature funciona â€” 611 testes OK. Aguarda aceite consciente do PO antes de prÃ³xima implementaÃ§Ã£o.
+- [QA-RF-062-PENDENTE] issue #129 â€” Blocos 2â€“4 manuais pendentes (execuÃ§Ã£o Luigi)
+- [DÃVIDA-TÃ‰CNICA] chartColors.js â€” mÃ³dulo sem teste (prÃ©-existente, nÃ£o blocante)
 
 ---
 
-## PM Agent — 2026-04-16 19:12
+## PM Agent â€” 2026-04-16 19:12
 
 ### Estado
-- Versão: v3.29.0
+- VersÃ£o: v3.29.0
 - Milestones ativos:
-  - 📱 App Mobile iOS — Capacitor (23.5%, 4/17 — Fase 2 ON HOLD por decisão PO)
-  - 🎨 UX & Gestao Patrimonial (1 closed / 8 total = 12.5% — 7 issues abertas)
-- Saúde: 🟢 VERDE — CI verde (3 deploys hoje), 594 testes OK, 0 PRs abertos
-- Testes: 594 unit (24 arquivos) + 26 int — todos passando ✅
-- CI: ✅ SUCCESS (3 deploys Firebase hoje + 1 run testes)
+  - ðŸ“± App Mobile iOS â€” Capacitor (23.5%, 4/17 â€” Fase 2 ON HOLD por decisÃ£o PO)
+  - ðŸŽ¨ UX & Gestao Patrimonial (1 closed / 8 total = 12.5% â€” 7 issues abertas)
+- SaÃºde: ðŸŸ¢ VERDE â€” CI verde (3 deploys hoje), 594 testes OK, 0 PRs abertos
+- Testes: 594 unit (24 arquivos) + 26 int â€” todos passando âœ…
+- CI: âœ… SUCCESS (3 deploys Firebase hoje + 1 run testes)
 
 ### Issues abertas (21 total)
 - Fase 2 iOS (ON HOLD): #77, #78, #79, #80
-- Fases 3–5 iOS (bloqueadas): #81, #82, #83, #84, #85, #86, #87, #88, #89
+- Fases 3â€“5 iOS (bloqueadas): #81, #82, #83, #84, #85, #86, #87, #88, #89
 - UX & Gestao Patrimonial: #151, #152, #154, #155, #158, #170, #172
-- QA pendente: #129 (RF-062, execução manual Luigi — Blocos 2–4 pendentes)
-- Novas desde última sessão (PM 18:51): nenhuma
+- QA pendente: #129 (RF-062, execuÃ§Ã£o manual Luigi â€” Blocos 2â€“4 pendentes)
+- Novas desde Ãºltima sessÃ£o (PM 18:51): nenhuma
 
 ### Alertas ativos
-- [QA-RF-062-PENDENTE] issue #129 — Blocos 2–4 manuais pendentes (execução Luigi)
-- [DÍVIDA-TÉCNICA] chartColors.js — módulo sem teste (pré-existente, não blocante)
-- [STALE-BRANCHES] 3 branches remotas não deletadas: feat/MF-169-saldo-real-por-conta, fix/MF-xss-parc-parcelamentos, fix/MF-xss-parcelamentos
-- Nenhum [VIOLAÇÃO-REGRA-11] ativo
+- [QA-RF-062-PENDENTE] issue #129 â€” Blocos 2â€“4 manuais pendentes (execuÃ§Ã£o Luigi)
+- [DÃVIDA-TÃ‰CNICA] chartColors.js â€” mÃ³dulo sem teste (prÃ©-existente, nÃ£o blocante)
+- [STALE-BRANCHES] 3 branches remotas nÃ£o deletadas: feat/MF-169-saldo-real-por-conta, fix/MF-xss-parc-parcelamentos, fix/MF-xss-parcelamentos
+- Nenhum [VIOLAÃ‡ÃƒO-REGRA-11] ativo
 
 ### Prioridades para Dev Manager
-- P0: RF-069 (#170) — Burn Rate por Categoria → v3.30.0
-- P1: RF-066 (#155) — Patrimônio Ativos/Passivos
+- P0: RF-069 (#170) â€” Burn Rate por Categoria â†’ v3.30.0
+- P1: RF-066 (#155) â€” PatrimÃ´nio Ativos/Passivos
 - P2: ENH-004 (#151), ENH-002 (#152), ENH-005 (#158), NRF-NAV (#154), NRF-UI-WARM (#172)
-- BLOQUEADO: iOS Fase 2 (#77–#80) — ON HOLD decisão PO
+- BLOQUEADO: iOS Fase 2 (#77â€“#80) â€” ON HOLD decisÃ£o PO
 
 ### Atividade recente
-- Último PR mergeado: #176 fix(app) XSS escHTML (2026-04-16 21:30)
-- Commits diretos main (últimas 24h): aae56a4 chore(changelog) — OK (docs-only, sem src/)
-- Issues fechadas últimos 7 dias: 10 — #147, #148, #149, #150, #153, #156, #157, #162, #166, #169
-- Subagentes acionados (última sessão DM): test-runner PASS (594/594), security-reviewer PASS
+- Ãšltimo PR mergeado: #176 fix(app) XSS escHTML (2026-04-16 21:30)
+- Commits diretos main (Ãºltimas 24h): aae56a4 chore(changelog) â€” OK (docs-only, sem src/)
+- Issues fechadas Ãºltimos 7 dias: 10 â€” #147, #148, #149, #150, #153, #156, #157, #162, #166, #169
+- Subagentes acionados (Ãºltima sessÃ£o DM): test-runner PASS (594/594), security-reviewer PASS
 
 ---
 
-## PM Agent — 2026-04-16 18:51
+## PM Agent â€” 2026-04-16 18:51
 
 ### Estado
-- Versão: v3.29.0
+- VersÃ£o: v3.29.0
 - Milestones ativos:
-  - 📱 App Mobile iOS — Capacitor (23.5%, 4/17 — Fase 2 ON HOLD por decisão PO)
-  - 🎨 UX & Gestao Patrimonial (46.2%, 6/13 — ativo, alta velocidade)
-- Saúde: 🟢 VERDE — CI verde (deploy chore em andamento), 594 testes OK, 0 PRs abertos
-- Testes: 594 unit (24 arquivos) + 26 int — todos passando ✅
-- CI: 🟡 Deploy em andamento (chore changelog) | CI testes: ✅ SUCCESS | Último deploy completo: SUCCESS
+  - ðŸ“± App Mobile iOS â€” Capacitor (23.5%, 4/17 â€” Fase 2 ON HOLD por decisÃ£o PO)
+  - ðŸŽ¨ UX & Gestao Patrimonial (46.2%, 6/13 â€” ativo, alta velocidade)
+- SaÃºde: ðŸŸ¢ VERDE â€” CI verde (deploy chore em andamento), 594 testes OK, 0 PRs abertos
+- Testes: 594 unit (24 arquivos) + 26 int â€” todos passando âœ…
+- CI: ðŸŸ¡ Deploy em andamento (chore changelog) | CI testes: âœ… SUCCESS | Ãšltimo deploy completo: SUCCESS
 
 ### Issues abertas (21 total)
 - Fase 2 iOS (ON HOLD): #77, #78, #79, #80
-- Fases 3–5 iOS (bloqueadas por Fase 2): #81, #82, #83, #84, #85, #86, #87, #88, #89
+- Fases 3â€“5 iOS (bloqueadas por Fase 2): #81, #82, #83, #84, #85, #86, #87, #88, #89
 - UX & Gestao Patrimonial: #151, #152, #154, #155, #158, #170, #172
-- QA pendente: #129 (RF-062, execução manual Luigi — Bloco 1 PASS 13/14; Blocos 2–4 pendentes)
-- Novas desde última sessão (PM 07:28): nenhuma nova issue aberta
+- QA pendente: #129 (RF-062, execuÃ§Ã£o manual Luigi â€” Bloco 1 PASS 13/14; Blocos 2â€“4 pendentes)
+- Novas desde Ãºltima sessÃ£o (PM 07:28): nenhuma nova issue aberta
 
 ### Alertas ativos
-- [QA-RF-062-PENDENTE] issue #129 — Blocos 2–4 manuais pendentes (execução Luigi)
-- [DÍVIDA-TÉCNICA] chartColors.js — módulo sem teste (pré-existente, não blocante)
-- Nenhum [VIOLAÇÃO-REGRA-11] ativo
+- [QA-RF-062-PENDENTE] issue #129 â€” Blocos 2â€“4 manuais pendentes (execuÃ§Ã£o Luigi)
+- [DÃVIDA-TÃ‰CNICA] chartColors.js â€” mÃ³dulo sem teste (prÃ©-existente, nÃ£o blocante)
+- Nenhum [VIOLAÃ‡ÃƒO-REGRA-11] ativo
 
 ### Prioridades para Dev Manager
-- P0: RF-069 (#170) — Burn Rate por Categoria → v3.30.0
-- P1: RF-066 (#155) — Patrimônio Ativos/Passivos
+- P0: RF-069 (#170) â€” Burn Rate por Categoria â†’ v3.30.0
+- P1: RF-066 (#155) â€” PatrimÃ´nio Ativos/Passivos
 - P2: ENH-004 (#151), ENH-002 (#152), ENH-005 (#158), NRF-NAV (#154), NRF-UI-WARM (#172)
-- BLOQUEADO: iOS Fase 2 (#77–#80) — ON HOLD decisão PO
+- BLOQUEADO: iOS Fase 2 (#77â€“#80) â€” ON HOLD decisÃ£o PO
 
 ### Atividade recente
-- Último PR mergeado: #176 fix(app) XSS escHTML (2026-04-16 21:30)
-- Commits diretos main (últimas 24h): aae56a4 chore(changelog) — OK (docs-only, sem src/)
-- Issues fechadas últimos 7 dias: 10 (velocidade muito alta) — #147, #148, #149, #150, #153, #156, #157, #162, #166, #169
-- Subagentes acionados (última sessão DM): test-runner PASS (594/594), security-reviewer PASS
+- Ãšltimo PR mergeado: #176 fix(app) XSS escHTML (2026-04-16 21:30)
+- Commits diretos main (Ãºltimas 24h): aae56a4 chore(changelog) â€” OK (docs-only, sem src/)
+- Issues fechadas Ãºltimos 7 dias: 10 (velocidade muito alta) â€” #147, #148, #149, #150, #153, #156, #157, #162, #166, #169
+- Subagentes acionados (Ãºltima sessÃ£o DM): test-runner PASS (594/594), security-reviewer PASS
 
 ---
 
-## Dev Manager — 2026-04-16 14:55
+## Dev Manager â€” 2026-04-16 14:55
 
-### Sessão
-- Versão: v3.29.0
-- Tarefas concluídas: RF-068 Saldo Real por Conta (#169); XSS fix renderizarPainelParcelamentos
-- PRs criados: #174 (RF-068), #175 (fechado — base errada), #176 (XSS fix)
+### SessÃ£o
+- VersÃ£o: v3.29.0
+- Tarefas concluÃ­das: RF-068 Saldo Real por Conta (#169); XSS fix renderizarPainelParcelamentos
+- PRs criados: #174 (RF-068), #175 (fechado â€” base errada), #176 (XSS fix)
 - PRs mergeados: #174 (RF-068 v3.29.0), #176 (XSS fix)
 - Subagentes acionados: test-runner PASS (594/594), security-reviewer PASS (2 achados Medium/Low corrigidos)
-- CI: verde ✅ | Deploy Firebase: SUCCESS (automático pós-merge)
-- Resolução git: PR #173 fechado (continha RF-068+XSS juntos); PRs separados criados
-- BUG-032 mesFatura: JÁ ESTAVA CORRIGIDO em origin/main (opcionais corretos em Despesa.js e Receita.js)
+- CI: verde âœ… | Deploy Firebase: SUCCESS (automÃ¡tico pÃ³s-merge)
+- ResoluÃ§Ã£o git: PR #173 fechado (continha RF-068+XSS juntos); PRs separados criados
+- BUG-032 mesFatura: JÃ ESTAVA CORRIGIDO em origin/main (opcionais corretos em Despesa.js e Receita.js)
 
 ### Estado do milestone
-- iOS Fase 2 (ON HOLD — decisão PO): 4/4 issues abertas — #77, #78, #79, #80
-- UX & Gestao Patrimonial: 7 issues abertas — #151, #152, #154, #155, #158, #170, #172
-  - RF-068 (#169) ✅ FECHADA (entregue v3.29.0)
-- QA pendente: 1 — #129 (RF-062, execução manual Luigi)
+- iOS Fase 2 (ON HOLD â€” decisÃ£o PO): 4/4 issues abertas â€” #77, #78, #79, #80
+- UX & Gestao Patrimonial: 7 issues abertas â€” #151, #152, #154, #155, #158, #170, #172
+  - RF-068 (#169) âœ… FECHADA (entregue v3.29.0)
+- QA pendente: 1 â€” #129 (RF-062, execuÃ§Ã£o manual Luigi)
 
-### Próximas prioridades
-- P0: RF-069 (#170) — Burn Rate por Categoria → v3.30.0
-- P1: RF-066 (#155) — Patrimônio Ativos/Passivos
+### PrÃ³ximas prioridades
+- P0: RF-069 (#170) â€” Burn Rate por Categoria â†’ v3.30.0
+- P1: RF-066 (#155) â€” PatrimÃ´nio Ativos/Passivos
 - P2: ENH-004 (#151), ENH-002 (#152), ENH-005 (#158), NRF-UI-WARM (#172)
-- BLOQUEADO: iOS Fase 2 (#77–#80) — ON HOLD decisão PO
+- BLOQUEADO: iOS Fase 2 (#77â€“#80) â€” ON HOLD decisÃ£o PO
 
 ### Alertas
-- [QA-RF-062-PENDENTE] issue #129 — 50 TCs manuais, execução pelo Luigi
-- [DÍVIDA-TÉCNICA] chartColors.js — módulo pré-existente sem teste (não blocante)
-- Nenhum [VIOLAÇÃO-REGRA-11] ativo
+- [QA-RF-062-PENDENTE] issue #129 â€” 50 TCs manuais, execuÃ§Ã£o pelo Luigi
+- [DÃVIDA-TÃ‰CNICA] chartColors.js â€” mÃ³dulo prÃ©-existente sem teste (nÃ£o blocante)
+- Nenhum [VIOLAÃ‡ÃƒO-REGRA-11] ativo
 
 ---
 
-## PO — 2026-04-16 — QA Bloco 1 RF-062 concluído (13/14 PASS)
+## PO â€” 2026-04-16 â€” QA Bloco 1 RF-062 concluÃ­do (13/14 PASS)
 
-**Sessão PO (Cowork)** — QA manual #129, Bloco 1: CRUD de Cartões
+**SessÃ£o PO (Cowork)** â€” QA manual #129, Bloco 1: CRUD de CartÃµes
 
-- Resultado: **13/14 PASS** · 1 N/A (TC-012 — empty state impossível) · 0 FAIL
-- Nenhuma regressão · 0 violações de regras invioláveis
-- TCs validados: TC-001 a TC-014 (criação, edição, desativação, validação, XSS, modal dismiss, seção bancárias read-only)
-- Dados de teste limpos (cartões TESTE-*/XSS desativados)
-- Descoberta: auto-colorização por nome de banco não documentada em DESIGN_SYSTEM.md
-- Decisões de pauta: RF-068 adiado para próxima sessão; NRF-UI-WARM mantido P2
+- Resultado: **13/14 PASS** Â· 1 N/A (TC-012 â€” empty state impossÃ­vel) Â· 0 FAIL
+- Nenhuma regressÃ£o Â· 0 violaÃ§Ãµes de regras inviolÃ¡veis
+- TCs validados: TC-001 a TC-014 (criaÃ§Ã£o, ediÃ§Ã£o, desativaÃ§Ã£o, validaÃ§Ã£o, XSS, modal dismiss, seÃ§Ã£o bancÃ¡rias read-only)
+- Dados de teste limpos (cartÃµes TESTE-*/XSS desativados)
+- Descoberta: auto-colorizaÃ§Ã£o por nome de banco nÃ£o documentada em DESIGN_SYSTEM.md
+- DecisÃµes de pauta: RF-068 adiado para prÃ³xima sessÃ£o; NRF-UI-WARM mantido P2
 - Despacho: `docs/sessoes/2026-04-16_despacho_sessao_PO.md`
-- Comentário consolidado pendente de post na issue #129 (script PS gerado)
-- Próxima sessão: Bloco 2 (Importação, TCs 15–35) + autorizar RF-068 se Bloco 2 pass
+- ComentÃ¡rio consolidado pendente de post na issue #129 (script PS gerado)
+- PrÃ³xima sessÃ£o: Bloco 2 (ImportaÃ§Ã£o, TCs 15â€“35) + autorizar RF-068 se Bloco 2 pass
 
 ---
 
-## PO — 2026-04-16 — Decisão: iOS Fase 2 ON HOLD
+## PO â€” 2026-04-16 â€” DecisÃ£o: iOS Fase 2 ON HOLD
 
-**iOS Fase 2 (issues #77–#80) colocado em ON HOLD por decisão do PO Luigi.**
+**iOS Fase 2 (issues #77â€“#80) colocado em ON HOLD por decisÃ£o do PO Luigi.**
 
-- Status: **ON HOLD** — pausado indefinidamente. Não cancelado.
+- Status: **ON HOLD** â€” pausado indefinidamente. NÃ£o cancelado.
 - Issues afetadas: #77 (Firebase Auth nativo), #78 (Firestore nativo), #79 (Biometria), #80 (FCM Push)
-- Motivo: decisão estratégica do PO; milestone iOS App Fase 2 permanece aberto no GitHub
+- Motivo: decisÃ£o estratÃ©gica do PO; milestone iOS App Fase 2 permanece aberto no GitHub
 - Impacto: nenhum na fila ativa de RFs (RF-068, RF-066, RF-069, NRF-NAV, NRF-UI-WARM)
-- iOS Fases 3–5 (#81–#89): permanecem na fila, aguardam retomada da Fase 2
-- Retomada: quando PO decidir, é P0 e entra em paralelo sem afetar a sequência de RFs ativos
+- iOS Fases 3â€“5 (#81â€“#89): permanecem na fila, aguardam retomada da Fase 2
+- Retomada: quando PO decidir, Ã© P0 e entra em paralelo sem afetar a sequÃªncia de RFs ativos
 
 ---
 
-## PM Agent — 2026-04-16 07:28
+## PM Agent â€” 2026-04-16 07:28
 
 ### Estado
-- Versão: v3.28.1
+- VersÃ£o: v3.28.1
 - Milestones ativos:
-  - 📱 App Mobile iOS — Capacitor (23.5%, 4/17 issues)
-  - 🎨 UX & Gestao Patrimonial (38.5%, 5/13 issues — nova #172 NRF-UI-WARM)
-- Saúde: 🟢 VERDE — CI verde, 594 testes OK, deploy Firebase OK, sem P0 abertos
-- Testes: 594 unit (24 arquivos) + 26 int — todos passando ✅
-- CI: 🟢 VERDE — 3 runs Deploy Firebase OK (último: 2026-04-16T10:05Z) | PRs abertos: 0
+  - ðŸ“± App Mobile iOS â€” Capacitor (23.5%, 4/17 issues)
+  - ðŸŽ¨ UX & Gestao Patrimonial (38.5%, 5/13 issues â€” nova #172 NRF-UI-WARM)
+- SaÃºde: ðŸŸ¢ VERDE â€” CI verde, 594 testes OK, deploy Firebase OK, sem P0 abertos
+- Testes: 594 unit (24 arquivos) + 26 int â€” todos passando âœ…
+- CI: ðŸŸ¢ VERDE â€” 3 runs Deploy Firebase OK (Ãºltimo: 2026-04-16T10:05Z) | PRs abertos: 0
 
 ### Issues abertas (22 total)
-- iOS Fase 2 (**ON HOLD** — decisão PO 2026-04-16): #77, #78, #79, #80
-- iOS Fases 3–5: #81–#89 (9 issues — aguardam retomada da Fase 2)
-- QA pendente: #129 (RF-062 — Cartões como Contas Individuais, 50 TCs manuais)
+- iOS Fase 2 (**ON HOLD** â€” decisÃ£o PO 2026-04-16): #77, #78, #79, #80
+- iOS Fases 3â€“5: #81â€“#89 (9 issues â€” aguardam retomada da Fase 2)
+- QA pendente: #129 (RF-062 â€” CartÃµes como Contas Individuais, 50 TCs manuais)
 - UX & Gestao Patrimonial: #151, #152, #154, #155, #158, #169 (RF-068), #170 (RF-069), #172 (NRF-UI-WARM)
-- Nova desde última sessão PM: #172 (NRF-UI-WARM — Identidade Visual Warm Finance: paleta terracota + ivory)
+- Nova desde Ãºltima sessÃ£o PM: #172 (NRF-UI-WARM â€” Identidade Visual Warm Finance: paleta terracota + ivory)
 
 ### Alertas ativos
-- [QA-RF-062-BLOCO1-DONE] issue #129 — Bloco 1 concluído (13/14 PASS). Blocos 2 e 3 pendentes (TCs 15–50)
-- [DÍVIDA-TÉCNICA] chartColors.js — módulo pré-existente sem teste (não blocante)
+- [QA-RF-062-BLOCO1-DONE] issue #129 â€” Bloco 1 concluÃ­do (13/14 PASS). Blocos 2 e 3 pendentes (TCs 15â€“50)
+- [DÃVIDA-TÃ‰CNICA] chartColors.js â€” mÃ³dulo prÃ©-existente sem teste (nÃ£o blocante)
 
 ### Alertas resolvidos
-- ✅ [BUILD-BROKEN-P0] — PR #171 mergeado em 2026-04-16, deploy restaurado
-- ✅ [VIOLAÇÃO-REGRA-11] — issue retroativa #147 criada e fechada (aceite PO)
-- ✅ QA RF-064 — issues #136–#139 fechadas
+- âœ… [BUILD-BROKEN-P0] â€” PR #171 mergeado em 2026-04-16, deploy restaurado
+- âœ… [VIOLAÃ‡ÃƒO-REGRA-11] â€” issue retroativa #147 criada e fechada (aceite PO)
+- âœ… QA RF-064 â€” issues #136â€“#139 fechadas
 
 ### Velocidade recente (Apr 9-16)
-- Issues fechadas últimos 7 dias: #166, #162, #157, #156, #153, #150, #149, #148, #147, #139 (10 issues)
-- 1 nova issue desde última sessão PM: #172 (NRF-UI-WARM)
+- Issues fechadas Ãºltimos 7 dias: #166, #162, #157, #156, #153, #150, #149, #148, #147, #139 (10 issues)
+- 1 nova issue desde Ãºltima sessÃ£o PM: #172 (NRF-UI-WARM)
 - PRs mergeados recentes: #171 (fix/database buscarDespesasMes), #168 (RF-067), #167 (RF-065), #165 (ENH-003), #164 (ENH-001), #163 (BUG-032)
 
 ### Prioridades para Dev Manager
-- P0: RF-068 (#169) — Saldo Real por Conta (prioridade: alta) → v3.29.0
-- P1: RF-069 (#170) — Burn Rate por Categoria → v3.30.0
-- P1: RF-066 (#155) — Patrimônio Ativos/Passivos
+- P0: RF-068 (#169) â€” Saldo Real por Conta (prioridade: alta) â†’ v3.29.0
+- P1: RF-069 (#170) â€” Burn Rate por Categoria â†’ v3.30.0
+- P1: RF-066 (#155) â€” PatrimÃ´nio Ativos/Passivos
 - P2: ENH-004 (#151), ENH-002 (#152), ENH-005 (#158)
-- P2: NRF-UI-WARM (#172) — Identidade Visual Warm Finance (nova)
-- ON HOLD: iOS Fase 2 (#77–#80) — pausado por decisão do PO (2026-04-16), não cancelado
+- P2: NRF-UI-WARM (#172) â€” Identidade Visual Warm Finance (nova)
+- ON HOLD: iOS Fase 2 (#77â€“#80) â€” pausado por decisÃ£o do PO (2026-04-16), nÃ£o cancelado
 - QA: Luigi executar #129 (50 TCs RF-062)
 
 ---
 
-## Dev Manager — 2026-04-16 03:40
+## Dev Manager â€” 2026-04-16 03:40
 
-### Sessão
-- Versão: v3.28.1
-- Tarefas concluídas: BUILD-BROKEN-P0 (buscarDespesasMes duplicado — database.js)
-- PRs criados: #171 — fix(database): remover buscarDespesasMes duplicado
-- PRs mergeados: #171 — CI verde (Vitest PASS ×2) + Deploy Firebase SUCCESS
+### SessÃ£o
+- VersÃ£o: v3.28.1
+- Tarefas concluÃ­das: BUILD-BROKEN-P0 (buscarDespesasMes duplicado â€” database.js)
+- PRs criados: #171 â€” fix(database): remover buscarDespesasMes duplicado
+- PRs mergeados: #171 â€” CI verde (Vitest PASS Ã—2) + Deploy Firebase SUCCESS
 - Subagentes acionados: test-runner PASS (594/594)
-- CI: verde | Deploy Firebase: SUCCESS (restaurado após 5 runs consecutivos falhos)
+- CI: verde | Deploy Firebase: SUCCESS (restaurado apÃ³s 5 runs consecutivos falhos)
 
 ### Estado do milestone
-- iOS Fase 2 (ON HOLD — decisão PO 2026-04-16): 4/4 issues abertas — #77, #78, #79, #80
-- UX & Gestao Patrimonial: 7 issues abertas — #151, #152, #154, #155, #158, #169, #170
-- QA pendente: 1 — #129 (RF-062, execução manual Luigi)
+- iOS Fase 2 (ON HOLD â€” decisÃ£o PO 2026-04-16): 4/4 issues abertas â€” #77, #78, #79, #80
+- UX & Gestao Patrimonial: 7 issues abertas â€” #151, #152, #154, #155, #158, #169, #170
+- QA pendente: 1 â€” #129 (RF-062, execuÃ§Ã£o manual Luigi)
 
-### Próximas prioridades
-- P0: RF-068 (#169) — Saldo Real por Conta (prioridade: alta) → v3.29.0
-- P1: RF-069 (#170) — Burn Rate por Categoria → v3.30.0
-- P1: RF-066 (#155) — Patrimônio Ativos/Passivos
+### PrÃ³ximas prioridades
+- P0: RF-068 (#169) â€” Saldo Real por Conta (prioridade: alta) â†’ v3.29.0
+- P1: RF-069 (#170) â€” Burn Rate por Categoria â†’ v3.30.0
+- P1: RF-066 (#155) â€” PatrimÃ´nio Ativos/Passivos
 - P2: ENH-004 (#151), ENH-002 (#152), ENH-005 (#158)
-- ON HOLD: iOS Fase 2 (#77–#80) — pausado por decisão do PO (2026-04-16)
+- ON HOLD: iOS Fase 2 (#77â€“#80) â€” pausado por decisÃ£o do PO (2026-04-16)
 
 ### Alertas
-- [QA-RF-062-PENDENTE] issue #129 — 50 TCs manuais, execução pelo Luigi
-- [DÍVIDA-TÉCNICA] chartColors.js — módulo pré-existente sem teste (não blocante)
+- [QA-RF-062-PENDENTE] issue #129 â€” 50 TCs manuais, execuÃ§Ã£o pelo Luigi
+- [DÃVIDA-TÃ‰CNICA] chartColors.js â€” mÃ³dulo prÃ©-existente sem teste (nÃ£o blocante)
 
 ---
 
-## PM Agent — 2026-04-16 00:26
+## PM Agent â€” 2026-04-16 00:26
 
 ### Estado
-- Versão: v3.28.0
+- VersÃ£o: v3.28.0
 - Milestones ativos:
-  - 📱 App Mobile iOS — Capacitor (23.5%, 4/17 issues)
-  - 🎨 UX & Gestao Patrimonial (41.7%, 5/12 issues — 2 novas: #169 RF-068, #170 RF-069)
-- Saúde: 🔴 VERMELHO — BUILD QUEBRADO: `buscarDespesasMes` declarado duas vezes em `database.js` (linhas 665 e 1092, com ordem de parâmetros diferente)
-- Testes: 594 unit (24 arquivos) + 26 int — todos passando ✅ (localmente; Rollup/Vite build falha)
-- CI: 🔴 VERMELHA — 5 runs consecutivos falhando desde 2026-04-16T02:52Z | Deploy Firebase: inacessível
+  - ðŸ“± App Mobile iOS â€” Capacitor (23.5%, 4/17 issues)
+  - ðŸŽ¨ UX & Gestao Patrimonial (41.7%, 5/12 issues â€” 2 novas: #169 RF-068, #170 RF-069)
+- SaÃºde: ðŸ”´ VERMELHO â€” BUILD QUEBRADO: `buscarDespesasMes` declarado duas vezes em `database.js` (linhas 665 e 1092, com ordem de parÃ¢metros diferente)
+- Testes: 594 unit (24 arquivos) + 26 int â€” todos passando âœ… (localmente; Rollup/Vite build falha)
+- CI: ðŸ”´ VERMELHA â€” 5 runs consecutivos falhando desde 2026-04-16T02:52Z | Deploy Firebase: inacessÃ­vel
 - PRs abertos: 0
 
 ### Issues abertas (21 total)
-- iOS Fase 2 (P0 — requer Mac/Xcode): #77, #78, #79, #80
-- iOS Fases 3–5: #81–#89 (9 issues)
-- QA pendente: #129 (RF-062 — Cartões como Contas Individuais, 50 TCs manuais)
+- iOS Fase 2 (P0 â€” requer Mac/Xcode): #77, #78, #79, #80
+- iOS Fases 3â€“5: #81â€“#89 (9 issues)
+- QA pendente: #129 (RF-062 â€” CartÃµes como Contas Individuais, 50 TCs manuais)
 - UX & Gestao Patrimonial: #151, #152, #154, #155, #158, #169 (RF-068), #170 (RF-069)
-- Novas desde última sessão PM: #169 (RF-068 Saldo Real por Conta, P1), #170 (RF-069 Burn Rate por Categoria, P2)
+- Novas desde Ãºltima sessÃ£o PM: #169 (RF-068 Saldo Real por Conta, P1), #170 (RF-069 Burn Rate por Categoria, P2)
 
 ### Alertas ativos
-- **[BUILD-BROKEN-P0]** `database.js` tem `buscarDespesasMes` declarado duas vezes: linha 665 `(grupoId, ano, mes)` adicionada pelo RF-067 (commit 4c4d9a5) e linha 1092 `(grupoId, mes, ano)` pré-existente de RF-060/planejamento. Rollup falha com "Identifier has already been declared". Dev Manager deve criar `fix/MF-database-buscarDespesasMes-dedup`, resolver conflito de assinaturas e abrir PR.
-- **[QA-RF-062-PENDENTE]** issue #129 — 50 TCs manuais RF-062 Cartões como Contas Individuais (execução pelo Luigi)
-- **[DÍVIDA-TÉCNICA]** chartColors.js — módulo pré-existente sem teste (não blocante)
+- **[BUILD-BROKEN-P0]** `database.js` tem `buscarDespesasMes` declarado duas vezes: linha 665 `(grupoId, ano, mes)` adicionada pelo RF-067 (commit 4c4d9a5) e linha 1092 `(grupoId, mes, ano)` prÃ©-existente de RF-060/planejamento. Rollup falha com "Identifier has already been declared". Dev Manager deve criar `fix/MF-database-buscarDespesasMes-dedup`, resolver conflito de assinaturas e abrir PR.
+- **[QA-RF-062-PENDENTE]** issue #129 â€” 50 TCs manuais RF-062 CartÃµes como Contas Individuais (execuÃ§Ã£o pelo Luigi)
+- **[DÃVIDA-TÃ‰CNICA]** chartColors.js â€” mÃ³dulo prÃ©-existente sem teste (nÃ£o blocante)
 
 ### Alertas resolvidos
-- ✅ [VIOLAÇÃO-REGRA-11] — issue retroativa #147 criada e fechada (aceite PO)
-- ✅ QA RF-064 — issues #136–#139 fechadas (inclusive #139 fechada em Apr 15)
-- ✅ [INCONSISTÊNCIA] package.json ≠ CHANGELOG — v3.28.0 sincronizados
+- âœ… [VIOLAÃ‡ÃƒO-REGRA-11] â€” issue retroativa #147 criada e fechada (aceite PO)
+- âœ… QA RF-064 â€” issues #136â€“#139 fechadas (inclusive #139 fechada em Apr 15)
+- âœ… [INCONSISTÃŠNCIA] package.json â‰  CHANGELOG â€” v3.28.0 sincronizados
 
 ### Velocidade recente (Apr 15-16)
-- Issues fechadas últimos 7 dias: #166, #162, #157, #156, #153, #150, #149, #148, #147, #139 (10 issues)
+- Issues fechadas Ãºltimos 7 dias: #166, #162, #157, #156, #153, #150, #149, #148, #147, #139 (10 issues)
 - 2 novas issues abertas: #169 (RF-068), #170 (RF-069)
 
 ### Prioridades para Dev Manager
-- **P0 IMEDIATO**: Fix `buscarDespesasMes` duplicado em `database.js` → `fix/MF-database-buscarDespesasMes-dedup` → PR → deploy restaurado
-- P2: RF-068 (#169) — Saldo Real por Conta → v3.29.0
-- P2: RF-066 (#155) — Patrimônio Ativos/Passivos
-- P2: ENH-004 (#151) — progressive disclosure base-dados.html
-- P2: ENH-002 (#152) — exibir origem/destino em transferências internas
-- P2: ENH-005 (#158) — simplificar despesas.html
-- P2: RF-069 (#170) — Burn Rate por Categoria
-- BLOQUEADO: iOS Fase 2 (#77–#80) requer Mac/Xcode
+- **P0 IMEDIATO**: Fix `buscarDespesasMes` duplicado em `database.js` â†’ `fix/MF-database-buscarDespesasMes-dedup` â†’ PR â†’ deploy restaurado
+- P2: RF-068 (#169) â€” Saldo Real por Conta â†’ v3.29.0
+- P2: RF-066 (#155) â€” PatrimÃ´nio Ativos/Passivos
+- P2: ENH-004 (#151) â€” progressive disclosure base-dados.html
+- P2: ENH-002 (#152) â€” exibir origem/destino em transferÃªncias internas
+- P2: ENH-005 (#158) â€” simplificar despesas.html
+- P2: RF-069 (#170) â€” Burn Rate por Categoria
+- BLOQUEADO: iOS Fase 2 (#77â€“#80) requer Mac/Xcode
 - QA: Luigi executar #129 (50 TCs RF-062)
 
-### Subagentes acionados (Dev Manager sessão v3.28.0)
-- test-runner: PASS (594/594) — sessão anterior (Apr 15)
+### Subagentes acionados (Dev Manager sessÃ£o v3.28.0)
+- test-runner: PASS (594/594) â€” sessÃ£o anterior (Apr 15)
 
 ---
 
-## PM Agent — 2026-04-15 23:55
+## PM Agent â€” 2026-04-15 23:55
 
 ### Estado
-- Versão: v3.28.0
+- VersÃ£o: v3.28.0
 - Milestones ativos:
-  - 📱 App Mobile iOS — Capacitor (23.5%, 4/17 issues)
-  - 🎨 UX & Gestao Patrimonial (50%, 5/10 issues — #166 fechada com PR #168)
-- Saúde: 🟢 Verde — RF-067 entregue (PR #168) | 594 testes OK | CI verde
-- Testes: 594 unit (24 arquivos) + 26 int — todos passando ✅
-- CI: Verde (último deploy: automático pós-merge PR #168) | PRs abertos: 0
+  - ðŸ“± App Mobile iOS â€” Capacitor (23.5%, 4/17 issues)
+  - ðŸŽ¨ UX & Gestao Patrimonial (50%, 5/10 issues â€” #166 fechada com PR #168)
+- SaÃºde: ðŸŸ¢ Verde â€” RF-067 entregue (PR #168) | 594 testes OK | CI verde
+- Testes: 594 unit (24 arquivos) + 26 int â€” todos passando âœ…
+- CI: Verde (Ãºltimo deploy: automÃ¡tico pÃ³s-merge PR #168) | PRs abertos: 0
 
 ### Issues abertas (19 total)
-- iOS Fase 2 (P0 — requer Mac/Xcode): #77, #78, #79, #80
-- iOS Fases 3–5: #81–#89 (9 issues)
-- QA pendente: #129 (RF-062 — Cartões como Contas Individuais, 50 TCs manuais)
+- iOS Fase 2 (P0 â€” requer Mac/Xcode): #77, #78, #79, #80
+- iOS Fases 3â€“5: #81â€“#89 (9 issues)
+- QA pendente: #129 (RF-062 â€” CartÃµes como Contas Individuais, 50 TCs manuais)
 - UX & Gestao Patrimonial (P2): #151, #152, #154, #155, #158
-- Novas desde última sessão PM: nenhuma (19 total, fechadas 13 em 2 dias)
+- Novas desde Ãºltima sessÃ£o PM: nenhuma (19 total, fechadas 13 em 2 dias)
 
 ### Alertas ativos
-- [QA-RF-062-PENDENTE] issue #129 — 50 TCs manuais, execução pelo Luigi (RF-062 Cartões como Contas Individuais)
-- [DÍVIDA-TÉCNICA] chartColors.js — 30 linhas, módulo pré-existente sem teste
+- [QA-RF-062-PENDENTE] issue #129 â€” 50 TCs manuais, execuÃ§Ã£o pelo Luigi (RF-062 CartÃµes como Contas Individuais)
+- [DÃVIDA-TÃ‰CNICA] chartColors.js â€” 30 linhas, mÃ³dulo prÃ©-existente sem teste
 
 ### Alertas resolvidos
-- ✅ [VIOLAÇÃO-REGRA-11] — issue retroativa #147 criada e fechada
-- ✅ QA RF-064 — issues #136–#139 fechadas
-- ✅ [INCONSISTÊNCIA] package.json ≠ CHANGELOG — v3.28.0 sincronizados
-- ✅ RF-067 (#166) — forecastEngine.js + 31 TCs + fluxo-caixa página completa — PR #168 mergeado
+- âœ… [VIOLAÃ‡ÃƒO-REGRA-11] â€” issue retroativa #147 criada e fechada
+- âœ… QA RF-064 â€” issues #136â€“#139 fechadas
+- âœ… [INCONSISTÃŠNCIA] package.json â‰  CHANGELOG â€” v3.28.0 sincronizados
+- âœ… RF-067 (#166) â€” forecastEngine.js + 31 TCs + fluxo-caixa pÃ¡gina completa â€” PR #168 mergeado
 
 ### Velocidade do Sprint (Apr 15-16)
 - 13 issues fechadas em 2 dias: #162, #157, #156, #153, #150, #149, #148, #147, #139-#136, #166
-- Sprints por dia: ~6.5 issues/dia — velocidade excepcional
+- Sprints por dia: ~6.5 issues/dia â€” velocidade excepcional
 
 ### Prioridades para Dev Manager
-- P2: RF-066 (#155) — Patrimônio Ativos/Passivos → v3.29.0
-- P2: ENH-004 (#151) — progressive disclosure base-dados.html
-- P2: ENH-002 (#152) — exibir origem/destino em transferências internas
-- P2: ENH-005 (#158) — simplificar despesas.html
-- BLOQUEADO: iOS Fase 2 (#77–#80) requer Mac/Xcode
+- P2: RF-066 (#155) â€” PatrimÃ´nio Ativos/Passivos â†’ v3.29.0
+- P2: ENH-004 (#151) â€” progressive disclosure base-dados.html
+- P2: ENH-002 (#152) â€” exibir origem/destino em transferÃªncias internas
+- P2: ENH-005 (#158) â€” simplificar despesas.html
+- BLOQUEADO: iOS Fase 2 (#77â€“#80) requer Mac/Xcode
 - QA: Luigi executar #129 (50 TCs RF-062)
 
-### Subagentes acionados (Dev Manager sessão v3.28.0)
+### Subagentes acionados (Dev Manager sessÃ£o v3.28.0)
 - test-runner: PASS (594/594)
 
 ---
 
-## Dev Manager — 2026-04-17 00:00 (sessão v3.28.0)
+## Dev Manager â€” 2026-04-17 00:00 (sessÃ£o v3.28.0)
 
-### Sessão
-- Versão: v3.28.0 (MINOR — RF-067)
-- Tarefas concluídas:
-  - RF-067 (#166) — Forecast de Caixa Prospectivo 6 Meses implementado em fluxo-caixa.html
-- PRs criados: #168 — feat(fluxo-caixa): RF-067 Forecast de Caixa Prospectivo 6 Meses
+### SessÃ£o
+- VersÃ£o: v3.28.0 (MINOR â€” RF-067)
+- Tarefas concluÃ­das:
+  - RF-067 (#166) â€” Forecast de Caixa Prospectivo 6 Meses implementado em fluxo-caixa.html
+- PRs criados: #168 â€” feat(fluxo-caixa): RF-067 Forecast de Caixa Prospectivo 6 Meses
 - PRs mergeados: #168
 - Subagentes acionados: test-runner PASS (594/594)
-- CI: verde | Deploy Firebase: automático pós-merge
+- CI: verde | Deploy Firebase: automÃ¡tico pÃ³s-merge
 
 ### Estado do milestone
-- UX & Gestao Patrimonial: 5 issues abertas — #151, #152, #154, #155, #158
-- iOS Fase 2 (P0 — requer Mac/Xcode): 4 issues — #77, #78, #79, #80
-- QA pendente: 1 — #129 (RF-062, execução manual Luigi)
+- UX & Gestao Patrimonial: 5 issues abertas â€” #151, #152, #154, #155, #158
+- iOS Fase 2 (P0 â€” requer Mac/Xcode): 4 issues â€” #77, #78, #79, #80
+- QA pendente: 1 â€” #129 (RF-062, execuÃ§Ã£o manual Luigi)
 - Total issues abertas: 19
 
-### Próximas prioridades
-- P2: RF-066 (#155) — Patrimônio (carteira investimentos + dívidas ativas + PL) → feat/MF-155-patrimonio → v3.29.0
-- P2: ENH-004 (#151) — progressive disclosure, 1 badge por linha em base-dados.html
-- P2: ENH-002 (#152) — exibir origem e destino em transferências internas
-- P2: ENH-005 (#158) — simplificar despesas.html (remover KPI carousel + widget Parcelamentos)
-- BLOQUEADO: iOS Fase 2 (#77–#80) requer Mac/Xcode
+### PrÃ³ximas prioridades
+- P2: RF-066 (#155) â€” PatrimÃ´nio (carteira investimentos + dÃ­vidas ativas + PL) â†’ feat/MF-155-patrimonio â†’ v3.29.0
+- P2: ENH-004 (#151) â€” progressive disclosure, 1 badge por linha em base-dados.html
+- P2: ENH-002 (#152) â€” exibir origem e destino em transferÃªncias internas
+- P2: ENH-005 (#158) â€” simplificar despesas.html (remover KPI carousel + widget Parcelamentos)
+- BLOQUEADO: iOS Fase 2 (#77â€“#80) requer Mac/Xcode
 
 ### Alertas ativos
-- [QA-RF-062-PENDENTE] issue #129 — 50 TCs manuais RF-062 Cartões como Contas Individuais (execução pelo Luigi)
+- [QA-RF-062-PENDENTE] issue #129 â€” 50 TCs manuais RF-062 CartÃµes como Contas Individuais (execuÃ§Ã£o pelo Luigi)
 
-### Alertas resolvidos nesta sessão
-- ✅ [PM-YELLOW] PM Agent havia marcado saúde Amarelo por RF-067 em progresso — resolvido, PR #168 mergeado
+### Alertas resolvidos nesta sessÃ£o
+- âœ… [PM-YELLOW] PM Agent havia marcado saÃºde Amarelo por RF-067 em progresso â€” resolvido, PR #168 mergeado
 
 ---
 
-## PM Agent — 2026-04-15 23:45
+## PM Agent â€” 2026-04-15 23:45
 
 ### Estado
-- Versão: v3.27.0
+- VersÃ£o: v3.27.0
 - Milestones ativos:
-  - 📱 App Mobile iOS — Capacitor (23.5%, 4/17 issues)
-  - 🎨 UX & Gestao Patrimonial (40%, 4/10 issues)
-- Saúde: 🟡 Amarelo — RF-067 em progresso (forecastEngine.js não commitado, sem teste) | QA #129 pendente | chartColors.js sem teste
-- Testes: 563 unit (23 arquivos) + 26 int — todos passando ✅
-- CI: Verde (último deploy: 2026-04-16 02:21 UTC — success) | PRs abertos: 0
+  - ðŸ“± App Mobile iOS â€” Capacitor (23.5%, 4/17 issues)
+  - ðŸŽ¨ UX & Gestao Patrimonial (40%, 4/10 issues)
+- SaÃºde: ðŸŸ¡ Amarelo â€” RF-067 em progresso (forecastEngine.js nÃ£o commitado, sem teste) | QA #129 pendente | chartColors.js sem teste
+- Testes: 563 unit (23 arquivos) + 26 int â€” todos passando âœ…
+- CI: Verde (Ãºltimo deploy: 2026-04-16 02:21 UTC â€” success) | PRs abertos: 0
 
 ### Issues abertas (20 total)
-- iOS Fase 2 (P0 — requer Mac/Xcode): #77, #78, #79, #80
-- iOS Fases 3–5: #81–#89 (9 issues)
-- QA pendente: #129 (RF-062 — Cartões como Contas Individuais, 50 TCs manuais)
+- iOS Fase 2 (P0 â€” requer Mac/Xcode): #77, #78, #79, #80
+- iOS Fases 3â€“5: #81â€“#89 (9 issues)
+- QA pendente: #129 (RF-062 â€” CartÃµes como Contas Individuais, 50 TCs manuais)
 - UX & Gestao Patrimonial (P2): #151, #152, #154, #155, #158, #166
-- Novas desde última sessão PM: nenhuma (20 total, fechadas 12 em 2 dias)
+- Novas desde Ãºltima sessÃ£o PM: nenhuma (20 total, fechadas 12 em 2 dias)
 
 ### Branch ativa
-- `feat/MF-166-forecast-caixa-6meses` — Dev Manager implementando RF-067 Forecast de Caixa
-- `forecastEngine.js` criado (121 linhas, módulo stateless+puro), não commitado, sem teste
+- `feat/MF-166-forecast-caixa-6meses` â€” Dev Manager implementando RF-067 Forecast de Caixa
+- `forecastEngine.js` criado (121 linhas, mÃ³dulo stateless+puro), nÃ£o commitado, sem teste
 
 ### Alertas ativos
-- [QA-RF-062-PENDENTE] issue #129 — 50 TCs manuais, execução pelo Luigi
-- [DÍVIDA-TÉCNICA] forecastEngine.js — RF-067 em progresso, teste pendente antes do PR
-- [DÍVIDA-TÉCNICA] chartColors.js — 30 linhas, módulo pré-existente sem teste
+- [QA-RF-062-PENDENTE] issue #129 â€” 50 TCs manuais, execuÃ§Ã£o pelo Luigi
+- [DÃVIDA-TÃ‰CNICA] forecastEngine.js â€” RF-067 em progresso, teste pendente antes do PR
+- [DÃVIDA-TÃ‰CNICA] chartColors.js â€” 30 linhas, mÃ³dulo prÃ©-existente sem teste
 
 ### Alertas resolvidos
-- ✅ [VIOLAÇÃO-REGRA-11] — issue retroativa #147 criada e fechada (Apr 15)
-- ✅ QA RF-064 — issues #136, #137, #138, #139 fechadas (Apr 15)
-- ✅ [INCONSISTÊNCIA] package.json v3.23.8 ≠ CHANGELOG — sincronizado para v3.27.0 (Apr 16)
+- âœ… [VIOLAÃ‡ÃƒO-REGRA-11] â€” issue retroativa #147 criada e fechada (Apr 15)
+- âœ… QA RF-064 â€” issues #136, #137, #138, #139 fechadas (Apr 15)
+- âœ… [INCONSISTÃŠNCIA] package.json v3.23.8 â‰  CHANGELOG â€” sincronizado para v3.27.0 (Apr 16)
 
 ### Velocidade do Sprint
 - Issues fechadas em 2 dias (Apr 15-16): 12 issues!
-  - BUG: #162 (mesFatura model), #157 (categoriaId), #156 (responsavel), #148 (BUG-029 gráfico)
+  - BUG: #162 (mesFatura model), #157 (categoriaId), #156 (responsavel), #148 (BUG-029 grÃ¡fico)
   - Features: #153 (RF-065 dashboard), #150 (ENH-003), #149 (ENH-001)
   - QA: #136, #137, #138, #139 (todos os planos RF-064)
   - Issue retroativa: #147
 
 ### Prioridades para Dev Manager
-- P1 (em progresso): RF-067 (#166) — Forecast de Caixa — feat/MF-166-forecast-caixa-6meses → v3.28.0
-  - Adicionar testes para forecastEngine.js antes do PR (obrigatório)
-- P2: RF-066 (#155) — Patrimônio Ativos/Passivos
-- P2: ENH-004 (#151), ENH-002 (#152) — UX progressiva
+- P1 (em progresso): RF-067 (#166) â€” Forecast de Caixa â€” feat/MF-166-forecast-caixa-6meses â†’ v3.28.0
+  - Adicionar testes para forecastEngine.js antes do PR (obrigatÃ³rio)
+- P2: RF-066 (#155) â€” PatrimÃ´nio Ativos/Passivos
+- P2: ENH-004 (#151), ENH-002 (#152) â€” UX progressiva
 - QA: Luigi executar #129 (50 TCs RF-062)
 
 ### Subagentes acionados
-- Não registrado (último registrado: test-runner PASS — Dev Manager sessão v3.27.0)
+- NÃ£o registrado (Ãºltimo registrado: test-runner PASS â€” Dev Manager sessÃ£o v3.27.0)
 
 ---
 
-## Dev Manager — 2026-04-16 23:17 (sessão v3.27.0)
+## Dev Manager â€” 2026-04-16 23:17 (sessÃ£o v3.27.0)
 
-### Sessão
-- Versão: v3.27.0 (MINOR — RF-065)
-- Tarefas concluídas:
-  - [CHORE] package.json bump v3.23.8 → v3.26.0 (sincronia com CHANGELOG) — commit direto main
-  - RF-065 (#153) — card Próxima Fatura no dashboard + deep link ?tab=projecoes em fatura.js
-- PRs criados: #167 — feat(dashboard): RF-065 card Próxima Fatura + deep link
+### SessÃ£o
+- VersÃ£o: v3.27.0 (MINOR â€” RF-065)
+- Tarefas concluÃ­das:
+  - [CHORE] package.json bump v3.23.8 â†’ v3.26.0 (sincronia com CHANGELOG) â€” commit direto main
+  - RF-065 (#153) â€” card PrÃ³xima Fatura no dashboard + deep link ?tab=projecoes em fatura.js
+- PRs criados: #167 â€” feat(dashboard): RF-065 card PrÃ³xima Fatura + deep link
 - PRs mergeados: #167
 - Subagentes acionados: test-runner PASS (563/563)
-- CI: verde | Deploy Firebase: automático pós-merge
+- CI: verde | Deploy Firebase: automÃ¡tico pÃ³s-merge
 
 ### Estado do milestone
-- UX & Gestao Patrimonial: 6 issues abertas — #151, #152, #154, #155, #158, #166
-- iOS Fase 2 (P0 — requer Mac/Xcode): 4 issues — #77, #78, #79, #80
-- QA pendente: 1 — #129 (RF-062)
+- UX & Gestao Patrimonial: 6 issues abertas â€” #151, #152, #154, #155, #158, #166
+- iOS Fase 2 (P0 â€” requer Mac/Xcode): 4 issues â€” #77, #78, #79, #80
+- QA pendente: 1 â€” #129 (RF-062)
 - Total issues abertas: 20
 
-### Próximas prioridades
-- P2: RF-067 (#166) — Forecast de Caixa Prospectivo 6 Meses → feat/MF-166-forecast-caixa-6meses
-  - Módulos: forecastEngine.js (NOVO stateless+puro), fluxo-caixa.js, database.js (buscarProjecoesRange)
-  - Versão alvo: v3.28.0
-- P2: RF-066 (#155) — Patrimônio (carteira investimentos + dívidas ativas + PL) → v3.29.0
-- P2: ENH-004 (#151), ENH-002 (#152) — UX progressiva
+### PrÃ³ximas prioridades
+- P2: RF-067 (#166) â€” Forecast de Caixa Prospectivo 6 Meses â†’ feat/MF-166-forecast-caixa-6meses
+  - MÃ³dulos: forecastEngine.js (NOVO stateless+puro), fluxo-caixa.js, database.js (buscarProjecoesRange)
+  - VersÃ£o alvo: v3.28.0
+- P2: RF-066 (#155) â€” PatrimÃ´nio (carteira investimentos + dÃ­vidas ativas + PL) â†’ v3.29.0
+- P2: ENH-004 (#151), ENH-002 (#152) â€” UX progressiva
 
 ### Alertas ativos
-- [QA-RF-062-PENDENTE] issue #129 — 50 TCs manuais, execução pelo Luigi
+- [QA-RF-062-PENDENTE] issue #129 â€” 50 TCs manuais, execuÃ§Ã£o pelo Luigi
 
-### Alertas resolvidos nesta sessão
-- ✅ [INCONSISTÊNCIA] package.json v3.23.8 ≠ CHANGELOG v3.26.0 — sincronizado para v3.27.0
-- ✅ RF-065 (#153) — card Próxima Fatura + deep link fatura.html?tab=projecoes
+### Alertas resolvidos nesta sessÃ£o
+- âœ… [INCONSISTÃŠNCIA] package.json v3.23.8 â‰  CHANGELOG v3.26.0 â€” sincronizado para v3.27.0
+- âœ… RF-065 (#153) â€” card PrÃ³xima Fatura + deep link fatura.html?tab=projecoes
 
 ---
 
-## PM Agent — 2026-04-15 23:05
+## PM Agent â€” 2026-04-15 23:05
 
 ### Estado
-- Versão: v3.26.0 (CHANGELOG) — package.json stuck em 3.23.8 → [INCONSISTÊNCIA]
+- VersÃ£o: v3.26.0 (CHANGELOG) â€” package.json stuck em 3.23.8 â†’ [INCONSISTÃŠNCIA]
 - Milestones ativos:
-  - 📱 App Mobile iOS — Capacitor (23.5%, 4/17 issues)
-  - 🎨 UX & Gestao Patrimonial (30%, 3/10 issues)
-- Saúde: 🟡 Amarelo — [INCONSISTÊNCIA] package.json stale
-- Testes: 563 unit (23 arquivos) + 26 int — todos passando ✅
-- CI: Verde (último deploy: 2026-04-16 01:45 UTC — success) | PRs abertos: 0
+  - ðŸ“± App Mobile iOS â€” Capacitor (23.5%, 4/17 issues)
+  - ðŸŽ¨ UX & Gestao Patrimonial (30%, 3/10 issues)
+- SaÃºde: ðŸŸ¡ Amarelo â€” [INCONSISTÃŠNCIA] package.json stale
+- Testes: 563 unit (23 arquivos) + 26 int â€” todos passando âœ…
+- CI: Verde (Ãºltimo deploy: 2026-04-16 01:45 UTC â€” success) | PRs abertos: 0
 
 ### Issues abertas (21 total)
-- iOS Fase 2 (P0 — requer Mac/Xcode): #77, #78, #79, #80
-- iOS Fases 3–5: #81–#89 (9 issues)
-- QA pendente: #129 (RF-062 — Cartões como Contas Individuais)
+- iOS Fase 2 (P0 â€” requer Mac/Xcode): #77, #78, #79, #80
+- iOS Fases 3â€“5: #81â€“#89 (9 issues)
+- QA pendente: #129 (RF-062 â€” CartÃµes como Contas Individuais)
 - UX & Gestao Patrimonial (P2): #151, #152, #153, #154, #155, #158, #166
-- Novas desde última sessão PM: #166 (RF-067 Forecast de Caixa — criada em sessão PO Cowork)
+- Novas desde Ãºltima sessÃ£o PM: #166 (RF-067 Forecast de Caixa â€” criada em sessÃ£o PO Cowork)
 
 ### Alertas ativos
-- [INCONSISTÊNCIA] package.json version v3.23.8 ≠ CHANGELOG v3.26.0 — Dev Manager deve bumpar package.json para v3.26.0
-- [QA-RF-062-PENDENTE] issue #129 ainda aberta — 50 TCs manuais Cartões como Contas Individuais (execução manual pelo Luigi)
-- [DÍVIDA-TÉCNICA-JUSTIFICADA] chartColors.js sem teste — DOM-dependent (getComputedStyle), decisão explícita PO
+- [INCONSISTÃŠNCIA] package.json version v3.23.8 â‰  CHANGELOG v3.26.0 â€” Dev Manager deve bumpar package.json para v3.26.0
+- [QA-RF-062-PENDENTE] issue #129 ainda aberta â€” 50 TCs manuais CartÃµes como Contas Individuais (execuÃ§Ã£o manual pelo Luigi)
+- [DÃVIDA-TÃ‰CNICA-JUSTIFICADA] chartColors.js sem teste â€” DOM-dependent (getComputedStyle), decisÃ£o explÃ­cita PO
 
-### Alertas resolvidos desde última sessão PM
-- ✅ [VIOLAÇÃO-REGRA-11] — encerrado (issue #147 criada+fechada, aceite consciente PO)
-- ✅ BUG-029 (PR #160), BUG-030 (PR #159), BUG-031 (PR #161), BUG-032 (PR #163) — todos fechados
-- ✅ ENH-001 (PR #164), ENH-003 (PR #165) — concluídos
-- ✅ QA RF-064 — issues #136, #137, #138, #139 fechadas
+### Alertas resolvidos desde Ãºltima sessÃ£o PM
+- âœ… [VIOLAÃ‡ÃƒO-REGRA-11] â€” encerrado (issue #147 criada+fechada, aceite consciente PO)
+- âœ… BUG-029 (PR #160), BUG-030 (PR #159), BUG-031 (PR #161), BUG-032 (PR #163) â€” todos fechados
+- âœ… ENH-001 (PR #164), ENH-003 (PR #165) â€” concluÃ­dos
+- âœ… QA RF-064 â€” issues #136, #137, #138, #139 fechadas
 
 ### Prioridades para Dev Manager
-- P2: RF-067 (#166) — Forecast de Caixa Prospectivo 6 Meses → feat/MF-166-forecast-caixa-6meses
-- P2: RF-065 (#153) — card Próxima Fatura na home + tab Projeções como default
-- P2: RF-066 (#155) — página Patrimônio (escopo expandido: investimentos + dívidas + PL)
-- P2: ENH-004 (#151), ENH-002 (#152) — UX progressiva
-- FIX: package.json bump → 3.26.0 (chore, pode ir direto em main)
-- BLOQUEADO: iOS Fase 2 (#77–#80) requer Mac/Xcode
+- P2: RF-067 (#166) â€” Forecast de Caixa Prospectivo 6 Meses â†’ feat/MF-166-forecast-caixa-6meses
+- P2: RF-065 (#153) â€” card PrÃ³xima Fatura na home + tab ProjeÃ§Ãµes como default
+- P2: RF-066 (#155) â€” pÃ¡gina PatrimÃ´nio (escopo expandido: investimentos + dÃ­vidas + PL)
+- P2: ENH-004 (#151), ENH-002 (#152) â€” UX progressiva
+- FIX: package.json bump â†’ 3.26.0 (chore, pode ir direto em main)
+- BLOQUEADO: iOS Fase 2 (#77â€“#80) requer Mac/Xcode
 
 ### Atividade recente
-- Último PR mergeado: #165 feat(categorias) ENH-003 — v3.26.0 | 563 testes
-- Commits diretos em main desde última sessão:
-  - a237740 docs: BUSSOLA_PRODUTO.md (OK — docs/)
-  - 7e0b38e chore(changelog): v3.26.0 (OK — chore)
-- Issues fechadas últimos 7 dias: #162, #157, #156, #150, #149, #148, #147, #139, #138, #137, #136 (11 issues)
-- Subagentes acionados (Dev Manager sessão 2026-04-16): test-runner PASS (563/563)
+- Ãšltimo PR mergeado: #165 feat(categorias) ENH-003 â€” v3.26.0 | 563 testes
+- Commits diretos em main desde Ãºltima sessÃ£o:
+  - a237740 docs: BUSSOLA_PRODUTO.md (OK â€” docs/)
+  - 7e0b38e chore(changelog): v3.26.0 (OK â€” chore)
+- Issues fechadas Ãºltimos 7 dias: #162, #157, #156, #150, #149, #148, #147, #139, #138, #137, #136 (11 issues)
+- Subagentes acionados (Dev Manager sessÃ£o 2026-04-16): test-runner PASS (563/563)
 
 ---
 
 ---
 
-## Dev Manager — 2026-04-16 (sessão v3.26.0)
+## Dev Manager â€” 2026-04-16 (sessÃ£o v3.26.0)
 
-### Sessão
-- Versão: v3.26.0 (era v3.25.0)
-- Tarefas concluídas: ENH-003 (#150)
+### SessÃ£o
+- VersÃ£o: v3.26.0 (era v3.25.0)
+- Tarefas concluÃ­das: ENH-003 (#150)
 - PRs criados: #165 ENH-003
 - PRs mergeados: #165
 - Subagentes acionados: test-runner PASS (563/563)
-- CI: verde | Deploy Firebase: automático pós-merge
+- CI: verde | Deploy Firebase: automÃ¡tico pÃ³s-merge
 
 ### Estado do milestone
-- iOS Fase 2 (P0 — requer Mac/Xcode): 4/4 issues abertas — #77, #78, #79, #80
-- UX & Gestao Patrimonial: 7/9 issues abertas (#151–#158) — ENH-001 #149 + ENH-003 #150 fechadas
-- QA pendente: 1 — #129 (RF-062)
+- iOS Fase 2 (P0 â€” requer Mac/Xcode): 4/4 issues abertas â€” #77, #78, #79, #80
+- UX & Gestao Patrimonial: 7/9 issues abertas (#151â€“#158) â€” ENH-001 #149 + ENH-003 #150 fechadas
+- QA pendente: 1 â€” #129 (RF-062)
 
-### Próximas prioridades
-- P2: RF-065 (#153) — card Próxima Fatura na home + tab Projeções como default
-- P2: RF-066 (#155) — página Ativos/Passivos + coleção patrimônio Firestore
-- P2: ENH-004 (#151) — melhorias UX na tela de fatura
-- P2: ENH-002 (#152) — bulk categorização em base-dados
+### PrÃ³ximas prioridades
+- P2: RF-065 (#153) â€” card PrÃ³xima Fatura na home + tab ProjeÃ§Ãµes como default
+- P2: RF-066 (#155) â€” pÃ¡gina Ativos/Passivos + coleÃ§Ã£o patrimÃ´nio Firestore
+- P2: ENH-004 (#151) â€” melhorias UX na tela de fatura
+- P2: ENH-002 (#152) â€” bulk categorizaÃ§Ã£o em base-dados
 
 ### Alertas
-- [QA-RF-062-PENDENTE] issue #129 ainda aberta — 50 TCs manuais, execução pelo Luigi
+- [QA-RF-062-PENDENTE] issue #129 ainda aberta â€” 50 TCs manuais, execuÃ§Ã£o pelo Luigi
 
 ### Alertas resolvidos
-- ✅ [ENH-003-P2] PR #165 — feat em base-dados.js + despesas.js: filtro não categorizada + seletores segregados
-- ✅ [BUG-032-P0] PR #163 — fix em Despesa.js + Receita.js: mesFatura adicionado aos opcionais
-- ✅ [ENH-001-P1] PR #164 — feat em importar.js: duplicata no preview faz updateDoc em vez de insert
-- ✅ [BUG-029-P0] PR #160 — fix em controllers/dashboard.js: filtro categoriasDesp
-- ✅ [BUG-031-P1] PR #161 — fix em importar.js: categoriaId=null nos blocos RF-063/064
-- ✅ [BUG-030-P0] PR #159 — fix em normalizadorTransacoes.js: portador='' sem coluna portador
+- âœ… [ENH-003-P2] PR #165 â€” feat em base-dados.js + despesas.js: filtro nÃ£o categorizada + seletores segregados
+- âœ… [BUG-032-P0] PR #163 â€” fix em Despesa.js + Receita.js: mesFatura adicionado aos opcionais
+- âœ… [ENH-001-P1] PR #164 â€” feat em importar.js: duplicata no preview faz updateDoc em vez de insert
+- âœ… [BUG-029-P0] PR #160 â€” fix em controllers/dashboard.js: filtro categoriasDesp
+- âœ… [BUG-031-P1] PR #161 â€” fix em importar.js: categoriaId=null nos blocos RF-063/064
+- âœ… [BUG-030-P0] PR #159 â€” fix em normalizadorTransacoes.js: portador='' sem coluna portador
 
 ---
 
-## PM Agent — 2026-04-15 20:31
+## PM Agent â€” 2026-04-15 20:31
 
 ### Estado
-- Versão: v3.23.8
+- VersÃ£o: v3.23.8
 - Milestones ativos:
-  - 📱 App Mobile iOS — Capacitor (23.5%, 4/17 issues)
-  - 🎨 UX & Gestao Patrimonial (0%, 0/9 — recém criado)
-- Saúde: 🔴 Vermelho — BUG-030 P0 aberto (responsavel como string negativa bloqueia edição manual de extrato bancário) + BUG-029 P0 (receitas no gráfico de despesas)
-- Testes: 514 unit (19 arquivos) + 26 int — todos passando
-- CI: Verde (último deploy: 2026-04-15 13:41 UTC — success) | PRs abertos: 0
+  - ðŸ“± App Mobile iOS â€” Capacitor (23.5%, 4/17 issues)
+  - ðŸŽ¨ UX & Gestao Patrimonial (0%, 0/9 â€” recÃ©m criado)
+- SaÃºde: ðŸ”´ Vermelho â€” BUG-030 P0 aberto (responsavel como string negativa bloqueia ediÃ§Ã£o manual de extrato bancÃ¡rio) + BUG-029 P0 (receitas no grÃ¡fico de despesas)
+- Testes: 514 unit (19 arquivos) + 26 int â€” todos passando
+- CI: Verde (Ãºltimo deploy: 2026-04-15 13:41 UTC â€” success) | PRs abertos: 0
 
-### Issues abertas (25 total — +11 novas desde 14/04)
+### Issues abertas (25 total â€” +11 novas desde 14/04)
 - Bugs P0 (BLOQUEANTES):
-  - #156 BUG-030 — responsavel salvo como string negativa em extrato bancário (bloqueia edição manual) — `pipelineBanco.js`
-  - #148 BUG-029 — receitas exibidas no gráfico de despesas (dashboard)
+  - #156 BUG-030 â€” responsavel salvo como string negativa em extrato bancÃ¡rio (bloqueia ediÃ§Ã£o manual) â€” `pipelineBanco.js`
+  - #148 BUG-029 â€” receitas exibidas no grÃ¡fico de despesas (dashboard)
 - Bug P1:
-  - #157 BUG-031 — categoriaId salvo como '__tipo__pagamento_fatura' em vez de null (`importar.js` ~linha 993/1026)
-- UX milestone — Épico A (P1, alta):
-  - #149 ENH-001 — edição de duplicata no preview faz update, não insert
-  - #150 ENH-003 — filtro não categorizada + seletores segregados por tipo
-- UX milestone — Épico B/C (P2):
+  - #157 BUG-031 â€” categoriaId salvo como '__tipo__pagamento_fatura' em vez de null (`importar.js` ~linha 993/1026)
+- UX milestone â€” Ã‰pico A (P1, alta):
+  - #149 ENH-001 â€” ediÃ§Ã£o de duplicata no preview faz update, nÃ£o insert
+  - #150 ENH-003 â€” filtro nÃ£o categorizada + seletores segregados por tipo
+- UX milestone â€” Ã‰pico B/C (P2):
   - #151 ENH-004, #152 ENH-002, #153 RF-065, #154 NRF-NAV, #155 RF-066, #158 ENH-005
-- QA pendente: #129 (RF-062 — Cartões como Contas Individuais)
-- iOS Fase 2 (P0 — requer Mac/Xcode): #77, #78, #79, #80
-- iOS Fases 3–5: #81–#89 (9 issues)
-- Novas desde última sessão: #148–#158 (11 issues criadas na sessão PO Cowork 2026-04-15)
+- QA pendente: #129 (RF-062 â€” CartÃµes como Contas Individuais)
+- iOS Fase 2 (P0 â€” requer Mac/Xcode): #77, #78, #79, #80
+- iOS Fases 3â€“5: #81â€“#89 (9 issues)
+- Novas desde Ãºltima sessÃ£o: #148â€“#158 (11 issues criadas na sessÃ£o PO Cowork 2026-04-15)
 
 ### Alertas ativos
-- [BUG-030-P0] responsavel como string negativa bloqueia edição manual de transações importadas do extrato bancário — fix em `pipelineBanco.js` (portador não definido → responsavel recebe valor negativo)
-- [BUG-029-P0] receitas exibidas no gráfico de despesas no dashboard — `BUG-029` (#148)
-- [BUG-031-P1] categoriaId salvo como '__tipo__pagamento_fatura' em Firestore — `importar.js` ~linha 993/1026 — bloco RF-064 não reseta `categoriaId = null`
-- [QA-RF-062-PENDENTE] issue #129 ainda aberta — 50 TCs manuais Cartões como Contas Individuais (execução manual pelo Luigi)
+- [BUG-030-P0] responsavel como string negativa bloqueia ediÃ§Ã£o manual de transaÃ§Ãµes importadas do extrato bancÃ¡rio â€” fix em `pipelineBanco.js` (portador nÃ£o definido â†’ responsavel recebe valor negativo)
+- [BUG-029-P0] receitas exibidas no grÃ¡fico de despesas no dashboard â€” `BUG-029` (#148)
+- [BUG-031-P1] categoriaId salvo como '__tipo__pagamento_fatura' em Firestore â€” `importar.js` ~linha 993/1026 â€” bloco RF-064 nÃ£o reseta `categoriaId = null`
+- [QA-RF-062-PENDENTE] issue #129 ainda aberta â€” 50 TCs manuais CartÃµes como Contas Individuais (execuÃ§Ã£o manual pelo Luigi)
 
-### Alertas resolvidos (desde última sessão)
-- ✅ [VIOLAÇÃO-REGRA-11] — issue retroativa #147 criada e fechada, aceite consciente do PO
-- ✅ [QA-RF-064] — issues #136, #137, #138, #139 fechadas, QA RF-064 concluído
+### Alertas resolvidos (desde Ãºltima sessÃ£o)
+- âœ… [VIOLAÃ‡ÃƒO-REGRA-11] â€” issue retroativa #147 criada e fechada, aceite consciente do PO
+- âœ… [QA-RF-064] â€” issues #136, #137, #138, #139 fechadas, QA RF-064 concluÃ­do
 
 ### Prioridades para Dev Manager
-- P0: BUG-030 (#156) — fix `pipelineBanco.js` (portador/responsavel como string negativa)
-- P0: BUG-029 (#148) — fix gráfico dashboard (receitas no gráfico de despesas)
-- P1: BUG-031 (#157) — fix `importar.js` ~linha 993/1026 (categoriaId = null após bloco RF-064)
-- P1: ENH-001 (#149) — edição de duplicata no preview faz update, não insert (UX milestone Épico A)
-- P2: Iniciar Épico A UX & Gestao Patrimonial (#149, #150) após bugs P0 resolvidos
+- P0: BUG-030 (#156) â€” fix `pipelineBanco.js` (portador/responsavel como string negativa)
+- P0: BUG-029 (#148) â€” fix grÃ¡fico dashboard (receitas no grÃ¡fico de despesas)
+- P1: BUG-031 (#157) â€” fix `importar.js` ~linha 993/1026 (categoriaId = null apÃ³s bloco RF-064)
+- P1: ENH-001 (#149) â€” ediÃ§Ã£o de duplicata no preview faz update, nÃ£o insert (UX milestone Ã‰pico A)
+- P2: Iniciar Ã‰pico A UX & Gestao Patrimonial (#149, #150) apÃ³s bugs P0 resolvidos
 
 ### Atividade recente
-- Último PR mergeado: #146 fix(importar) BUG-028b (2026-04-14 20:18)
-- Commits sem PR detectados: NENHUM desde resolução (cf77730 e abae7c4 são chore — permitidos)
-- Issues fechadas últimos 7 dias: #147, #139, #138, #137, #136 (hoje), #127, #126, #125 (12/13 abr)
-- Subagentes acionados: não registrado
-- Sessões PO Cowork hoje: 3 sessões — [VIOLAÇÃO-REGRA-11] encerrado, novo milestone UX criado, QA RF-064 concluído
+- Ãšltimo PR mergeado: #146 fix(importar) BUG-028b (2026-04-14 20:18)
+- Commits sem PR detectados: NENHUM desde resoluÃ§Ã£o (cf77730 e abae7c4 sÃ£o chore â€” permitidos)
+- Issues fechadas Ãºltimos 7 dias: #147, #139, #138, #137, #136 (hoje), #127, #126, #125 (12/13 abr)
+- Subagentes acionados: nÃ£o registrado
+- SessÃµes PO Cowork hoje: 3 sessÃµes â€” [VIOLAÃ‡ÃƒO-REGRA-11] encerrado, novo milestone UX criado, QA RF-064 concluÃ­do
 
 ---
 
-## PM Agent — 2026-04-15 06:35
+## PM Agent â€” 2026-04-15 06:35
 
 ### Estado
-- Versão: v3.23.8
-- Milestone ativo: 📱 App Mobile iOS — Capacitor (23.5%, 4/17 issues fechadas)
-- Saúde: 🟡 Amarelo — [VIOLAÇÃO-REGRA-11] feat(importar) commit direto em main sem PR (12c3d70) — aguardando decisão do PO
-- Testes: 514 unit (19 arquivos) + 26 int — todos passando
-- CI: Verde (último deploy: 2026-04-15 01:53 UTC — success) | PRs abertos: 0
+- VersÃ£o: v3.23.8
+- Milestone ativo: ðŸ“± App Mobile iOS â€” Capacitor (23.5%, 4/17 issues fechadas)
+- SaÃºde: ðŸŸ¡ Amarelo â€” [VIOLAÃ‡ÃƒO-REGRA-11] feat(importar) commit direto em main sem PR (12c3d70) â€” aguardando decisÃ£o do PO
+- Testes: 514 unit (19 arquivos) + 26 int â€” todos passando
+- CI: Verde (Ãºltimo deploy: 2026-04-15 01:53 UTC â€” success) | PRs abertos: 0
 
-### Issues abertas (18 total — sem alterações desde 14/04)
-- Fase 2 (P0 — requer Mac/Xcode): #77, #78, #79, #80
+### Issues abertas (18 total â€” sem alteraÃ§Ãµes desde 14/04)
+- Fase 2 (P0 â€” requer Mac/Xcode): #77, #78, #79, #80
 - QA pendente: #129, #136, #137, #138, #139
-- Novas desde última sessão: nenhuma
-- Fechadas últimos 7 dias: nenhuma
+- Novas desde Ãºltima sessÃ£o: nenhuma
+- Fechadas Ãºltimos 7 dias: nenhuma
 
 ### Alertas ativos
-- [VIOLAÇÃO-REGRA-11] commit `12c3d70` feat(importar): tipo de transacao no seletor de categoria do preview bancario — foi commitado diretamente em main sem PR, viola regra inviolável do CLAUDE.md (src/js/ exige feature branch + PR) — sugerir issue retroativa ao PO
-- [QA-PENDENTE] 5 planos de teste abertos: #129 (RF-062), #136–#139 (RF-064) — execução manual pelo Luigi
+- [VIOLAÃ‡ÃƒO-REGRA-11] commit `12c3d70` feat(importar): tipo de transacao no seletor de categoria do preview bancario â€” foi commitado diretamente em main sem PR, viola regra inviolÃ¡vel do CLAUDE.md (src/js/ exige feature branch + PR) â€” sugerir issue retroativa ao PO
+- [QA-PENDENTE] 5 planos de teste abertos: #129 (RF-062), #136â€“#139 (RF-064) â€” execuÃ§Ã£o manual pelo Luigi
 
 ### Prioridades para Dev Manager
-- P0: iOS App Fase 2 (#77–#80) — requer Mac/Xcode (bloqueado em ambiente Windows)
-- P1: Aguardar decisão do PO sobre [VIOLAÇÃO-REGRA-11] (issue retroativa ou aceite consciente)
-- Alertas a processar: [VIOLAÇÃO-REGRA-11], [QA-PENDENTE]
+- P0: iOS App Fase 2 (#77â€“#80) â€” requer Mac/Xcode (bloqueado em ambiente Windows)
+- P1: Aguardar decisÃ£o do PO sobre [VIOLAÃ‡ÃƒO-REGRA-11] (issue retroativa ou aceite consciente)
+- Alertas a processar: [VIOLAÃ‡ÃƒO-REGRA-11], [QA-PENDENTE]
 
 ### Atividade recente
-- Último PR mergeado: #146 fix(importar) BUG-028b (2026-04-14 20:18)
-- Commits sem PR detectados: SIM — 12c3d70 feat(importar) tipo-transacao (2026-04-14 22:08)
-  - NOTA: commits 0bac056 e e9be080 são chore(changelog) — permitidos direto em main
-- Issues fechadas últimos 7 dias: nenhuma
-- Subagentes acionados: não registrado
+- Ãšltimo PR mergeado: #146 fix(importar) BUG-028b (2026-04-14 20:18)
+- Commits sem PR detectados: SIM â€” 12c3d70 feat(importar) tipo-transacao (2026-04-14 22:08)
+  - NOTA: commits 0bac056 e e9be080 sÃ£o chore(changelog) â€” permitidos direto em main
+- Issues fechadas Ãºltimos 7 dias: nenhuma
+- Subagentes acionados: nÃ£o registrado
 
 ---
 
-## Versão Atual
-- **v3.23.8** (2026-04-14) — BUG-028b corrigido (PR #146) + feat importar tipo-transacao (commit direto)
-- 514 testes unitários (19 arquivos) + 26 testes de integração — **todos passando**
-- 42 requisitos funcionais concluídos + RF-062 + RF-063 + RF-064 concluídos ✅
-- Cadeia Luigi → Ana → Cartão **completamente implementada**
-- 14 páginas HTML, 51 módulos JS
-- Tech debt testes: **100% concluído** — bankFingerprintMap, detectorOrigemArquivo, recurringDetector (PR #140) + pdfParser (PR #141) + skeletons (PR #142)
+## VersÃ£o Atual
+- **v3.23.8** (2026-04-14) â€” BUG-028b corrigido (PR #146) + feat importar tipo-transacao (commit direto)
+- 514 testes unitÃ¡rios (19 arquivos) + 26 testes de integraÃ§Ã£o â€” **todos passando**
+- 42 requisitos funcionais concluÃ­dos + RF-062 + RF-063 + RF-064 concluÃ­dos âœ…
+- Cadeia Luigi â†’ Ana â†’ CartÃ£o **completamente implementada**
+- 14 pÃ¡ginas HTML, 51 mÃ³dulos JS
+- Tech debt testes: **100% concluÃ­do** â€” bankFingerprintMap, detectorOrigemArquivo, recurringDetector (PR #140) + pdfParser (PR #141) + skeletons (PR #142)
 
 ## Milestones
 
 | Milestone | Progresso | Status |
 |-----------|-----------|--------|
-| Requisitos Funcionais (backlog anterior) | 42/42 (100%) | Concluído |
-| Reconciliação Fatura ↔ Extrato (RF-062/063/064) | 3/3 (100%) | **Concluído** ✅ |
-| Melhorias Visuais | 26/26 (100%) | Concluído |
-| Manutenibilidade e Arquitetura | Completo | Concluído (v3.20.0) |
-| iOS App Fase 0 (Vite + Firebase npm) | 2/2 (100%) | Concluído |
-| iOS App Fase 1 (Capacitor + safe areas) | 2/2 (100%) | Concluído |
-| iOS App (Fases 2–5) | 4/17 (23.5%) | **ON HOLD** (decisão PO 2026-04-16 — não cancelado) |
-| Tech Debt — testes | 5/5 módulos cobertos | **Concluído** ✅ (skeletons — PR #142) |
+| Requisitos Funcionais (backlog anterior) | 42/42 (100%) | ConcluÃ­do |
+| ReconciliaÃ§Ã£o Fatura â†” Extrato (RF-062/063/064) | 3/3 (100%) | **ConcluÃ­do** âœ… |
+| Melhorias Visuais | 26/26 (100%) | ConcluÃ­do |
+| Manutenibilidade e Arquitetura | Completo | ConcluÃ­do (v3.20.0) |
+| iOS App Fase 0 (Vite + Firebase npm) | 2/2 (100%) | ConcluÃ­do |
+| iOS App Fase 1 (Capacitor + safe areas) | 2/2 (100%) | ConcluÃ­do |
+| iOS App (Fases 2â€“5) | 4/17 (23.5%) | **ON HOLD** (decisÃ£o PO 2026-04-16 â€” nÃ£o cancelado) |
+| Tech Debt â€” testes | 5/5 mÃ³dulos cobertos | **ConcluÃ­do** âœ… (skeletons â€” PR #142) |
 
-## Issues Abertas (18 total — verificado 2026-04-15)
+## Issues Abertas (18 total â€” verificado 2026-04-15)
 
-### Cadeia RF-062/063/064: COMPLETA ✅
-- RF-062 → CONCLUÍDO (PR #128, v3.21.0)
-- RF-063 → CONCLUÍDO (PR #132, v3.22.0)
-- RF-064 → CONCLUÍDO (PR #134, v3.23.0)
+### Cadeia RF-062/063/064: COMPLETA âœ…
+- RF-062 â†’ CONCLUÃDO (PR #128, v3.21.0)
+- RF-063 â†’ CONCLUÃDO (PR #132, v3.22.0)
+- RF-064 â†’ CONCLUÃDO (PR #134, v3.23.0)
 
-### QA — Plano de Testes RF-064 (4 issues abertas)
-- #136 — TC-001–007: Preview import + badge PAG FATURA
-- #137 — TC-008–014: Save no Firestore + campos tipo/score/status + dedup
-- #138 — TC-015–022: Dashboard + planejamento excluem pagamento_fatura
-- #139 — TC-023–029: Aba Liquidação + score auto/pendente + edge cases
+### QA â€” Plano de Testes RF-064 (4 issues abertas)
+- #136 â€” TC-001â€“007: Preview import + badge PAG FATURA
+- #137 â€” TC-008â€“014: Save no Firestore + campos tipo/score/status + dedup
+- #138 â€” TC-015â€“022: Dashboard + planejamento excluem pagamento_fatura
+- #139 â€” TC-023â€“029: Aba LiquidaÃ§Ã£o + score auto/pendente + edge cases
 
-### QA — Plano de Testes RF-062 (1 issue aberta)
-- #129 — 50 TCs manuais Cartões como Contas Individuais
+### QA â€” Plano de Testes RF-062 (1 issue aberta)
+- #129 â€” 50 TCs manuais CartÃµes como Contas Individuais
 
-### P0 — iOS App Fase 2 (4 issues)
+### P0 â€” iOS App Fase 2 (4 issues)
 - #77 GoogleService-Info.plist
 - #78 capacitor-firebase-authentication
 - #79 Biometria (Face ID / Touch ID)
 - #80 FCM Push notifications
 
-### P1 — iOS Fase 3 (3 issues)
-- #81 Ícones + splash screen
+### P1 â€” iOS Fase 3 (3 issues)
+- #81 Ãcones + splash screen
 - #82 UX mobile (teclado, toque, scroll)
 - #83 Dark Mode + status bar nativa
 
-### P2 — iOS Fase 4 (3 issues)
+### P2 â€” iOS Fase 4 (3 issues)
 - #84 Apple Developer Program + provisioning
 - #85 Primeiro upload TestFlight
 - #86 CI/CD GitHub Actions + Fastlane
 
-### P3 — iOS Fase 5 — Backlog (3 issues)
-- #87 Push: alerta orçamento ≥80%
+### P3 â€” iOS Fase 5 â€” Backlog (3 issues)
+- #87 Push: alerta orÃ§amento â‰¥80%
 - #88 Push: nova despesa conjunta
-- #89 Câmera: fotografar comprovantes
+- #89 CÃ¢mera: fotografar comprovantes
 
 ## Infraestrutura
-- **CI:** Verde (último deploy: 2026-04-15 01:53 UTC — Firebase Hosting, success)
+- **CI:** Verde (Ãºltimo deploy: 2026-04-15 01:53 UTC â€” Firebase Hosting, success)
 - **PRs abertos:** 0
 - **Branches remotas:** limpas (apenas branches fechadas de fix/MF-bug028*)
 - **Build:** OK
 
 ## Qualidade
-- Testes: 514 unitários (19 arquivos) + 26 integração — **todos passando**
-- Módulos sem teste (gap): **nenhum** — tech debt 100% concluído ✅
-  - chartColors.js: intencionalmente sem teste (usa getComputedStyle DOM, env=node, lógica trivial com fallbacks)
+- Testes: 514 unitÃ¡rios (19 arquivos) + 26 integraÃ§Ã£o â€” **todos passando**
+- MÃ³dulos sem teste (gap): **nenhum** â€” tech debt 100% concluÃ­do âœ…
+  - chartColors.js: intencionalmente sem teste (usa getComputedStyle DOM, env=node, lÃ³gica trivial com fallbacks)
 - Bugs abertos: 0
 
-## Contexto da Cadeia RF-062/063/064 — COMPLETA
+## Contexto da Cadeia RF-062/063/064 â€” COMPLETA
 
 **Triple count eliminado:**
-- PIX Luigi → Ana: R$ 1.750 → RF-063 ✅ (tipo: 'transferencia_interna', excluído)
-- PAG FATURA Ana → Cartão: R$ 3.500 → RF-064 ✅ (tipo: 'pagamento_fatura', excluído)
-- Compras do cartão: R$ 3.500 → correto desde sempre
+- PIX Luigi â†’ Ana: R$ 1.750 â†’ RF-063 âœ… (tipo: 'transferencia_interna', excluÃ­do)
+- PAG FATURA Ana â†’ CartÃ£o: R$ 3.500 â†’ RF-064 âœ… (tipo: 'pagamento_fatura', excluÃ­do)
+- Compras do cartÃ£o: R$ 3.500 â†’ correto desde sempre
 
-**Dashboard exibe R$ 3.500 (valor real), não R$ 8.750.**
+**Dashboard exibe R$ 3.500 (valor real), nÃ£o R$ 8.750.**
 
 ## Prioridades para o Dev Manager
-- **ON HOLD:** iOS App Fase 2 (#77–#80) — pausado por decisão do PO (2026-04-16); não executar até retomada explícita
-- **P1:** QA RF-064 — Luigi executa #136–#139 manualmente (sem Dev Manager)
-- **Alertas:** [VIOLAÇÃO-REGRA-11] aguardando decisão PO
+- **ON HOLD:** iOS App Fase 2 (#77â€“#80) â€” pausado por decisÃ£o do PO (2026-04-16); nÃ£o executar atÃ© retomada explÃ­cita
+- **P1:** QA RF-064 â€” Luigi executa #136â€“#139 manualmente (sem Dev Manager)
+- **Alertas:** [VIOLAÃ‡ÃƒO-REGRA-11] aguardando decisÃ£o PO
 
 ## Nota sobre chartColors.js
-`chartColors.js` usa `getComputedStyle(document.documentElement)` — requer jsdom ou browser. O vitest config usa `environment: 'node'`. O módulo tem 30 linhas, lógica trivial (lê CSS vars com fallbacks hardcoded). Decisão: sem teste unitário (custo/benefício baixo). Não é bug nem dívida técnica.
+`chartColors.js` usa `getComputedStyle(document.documentElement)` â€” requer jsdom ou browser. O vitest config usa `environment: 'node'`. O mÃ³dulo tem 30 linhas, lÃ³gica trivial (lÃª CSS vars com fallbacks hardcoded). DecisÃ£o: sem teste unitÃ¡rio (custo/benefÃ­cio baixo). NÃ£o Ã© bug nem dÃ­vida tÃ©cnica.
 
-## Últimas Ações
-- 2026-04-15 06:35: PM Agent — revisão diária: 514 testes OK, 18 issues, saúde Amarelo — [VIOLAÇÃO-REGRA-11] pendente, nenhum commit novo desde 14/04 22:56
-- 2026-04-14 22:56: chore(changelog): corrigir encoding e duplicata (0bac056) — commit direto em main (OK: chore)
-- 2026-04-14 22:53: chore(changelog): registrar feat importar RF-063/064 (e9be080) — commit direto em main (OK: chore)
-- 2026-04-14 22:08: feat(importar): tipo de transacao no seletor de categoria (12c3d70) — commit direto em main ⚠️ VIOLAÇÃO-REGRA-11
-- 2026-04-14 22:19: PM Agent — Merge PR #146 tech debt BUG-028b corrigido — 514 testes total, v3.23.8
-- 2026-04-14 22:19: Dev Manager — Merge PR #142 tech debt: +31 testes skeletons.js — v3.23.4, 501 testes total
-- 2026-04-14 22:06: Dev Manager — chore: bump package.json 3.23.2→3.23.3 (sincronia com docs/CLAUDE.md)
-- 2026-04-13 21:40: Dev Manager — Merge PR #141 tech debt: +47 testes pdfParser.js — v3.23.3, 470 testes total
+## Ãšltimas AÃ§Ãµes
+- 2026-04-15 06:35: PM Agent â€” revisÃ£o diÃ¡ria: 514 testes OK, 18 issues, saÃºde Amarelo â€” [VIOLAÃ‡ÃƒO-REGRA-11] pendente, nenhum commit novo desde 14/04 22:56
+- 2026-04-14 22:56: chore(changelog): corrigir encoding e duplicata (0bac056) â€” commit direto em main (OK: chore)
+- 2026-04-14 22:53: chore(changelog): registrar feat importar RF-063/064 (e9be080) â€” commit direto em main (OK: chore)
+- 2026-04-14 22:08: feat(importar): tipo de transacao no seletor de categoria (12c3d70) â€” commit direto em main âš ï¸ VIOLAÃ‡ÃƒO-REGRA-11
+- 2026-04-14 22:19: PM Agent â€” Merge PR #146 tech debt BUG-028b corrigido â€” 514 testes total, v3.23.8
+- 2026-04-14 22:19: Dev Manager â€” Merge PR #142 tech debt: +31 testes skeletons.js â€” v3.23.4, 501 testes total
+- 2026-04-14 22:06: Dev Manager â€” chore: bump package.json 3.23.2â†’3.23.3 (sincronia com docs/CLAUDE.md)
+- 2026-04-13 21:40: Dev Manager â€” Merge PR #141 tech debt: +47 testes pdfParser.js â€” v3.23.3, 470 testes total
 
 ## Notas Dev Manager (2026-04-14)
-- iOS Fase 2 (#77-#80): ON HOLD por decisão do PO (2026-04-16) — não cancelado, aguardar retomada explícita
-- Tech debt de testes: **COMPLETAMENTE CONCLUÍDO** — todos os módulos testáveis em src/js/utils/ têm cobertura
+- iOS Fase 2 (#77-#80): ON HOLD por decisÃ£o do PO (2026-04-16) â€” nÃ£o cancelado, aguardar retomada explÃ­cita
+- Tech debt de testes: **COMPLETAMENTE CONCLUÃDO** â€” todos os mÃ³dulos testÃ¡veis em src/js/utils/ tÃªm cobertura
 - chartColors.js: DOM-dependent via getComputedStyle, sem teste (justificado)
-- QA RF-062 (#129) e QA RF-064 (#136-#139) são para execução manual pelo Luigi
+- QA RF-062 (#129) e QA RF-064 (#136-#139) sÃ£o para execuÃ§Ã£o manual pelo Luigi
 
-## Sess�o 2026-04-15 � PO Assistant (Cowork)
-- Vers�o na sess�o: v3.23.8
-- Milestone ativo: iOS Fase 2 (issues #77�#80)
-- Decis�o: [VIOLA��O-REGRA-11] encerrado � issue retroativa #147 criada e fechada. Aceite consciente do PO: risco baixo (UI de preview, 514 testes passando, sem impacto em pipeline/dedup/mesFatura).
-- Sa�de: ?? Verde (alerta amarelo removido)
+## Sessï¿½o 2026-04-15 ï¿½ PO Assistant (Cowork)
+- Versï¿½o na sessï¿½o: v3.23.8
+- Milestone ativo: iOS Fase 2 (issues #77ï¿½#80)
+- Decisï¿½o: [VIOLAï¿½ï¿½O-REGRA-11] encerrado ï¿½ issue retroativa #147 criada e fechada. Aceite consciente do PO: risco baixo (UI de preview, 514 testes passando, sem impacto em pipeline/dedup/mesFatura).
+- Saï¿½de: ?? Verde (alerta amarelo removido)
 - Issues priorizadas: nenhuma nova
 - Bugs registrados: nenhum
 - Melhorias registradas: nenhuma
 - RFs criados: nenhum
-- Bloqueios identificados: iOS Fase 2 (#77�#80) requer Mac/Xcode
-- Artefatos gerados para PM/DM: n�o
+- Bloqueios identificados: iOS Fase 2 (#77ï¿½#80) requer Mac/Xcode
+- Artefatos gerados para PM/DM: nï¿½o
 - Scripts PowerShell executados: criar + fechar issue #147
-- Pr�xima sess�o: iniciar iOS Fase 2 ou executar QA RF-064 (#136�#139)
-## Sess�o 2026-04-15 � PO Assistant (Cowork)
-- Vers�o na sess�o: v3.23.8
-- Milestone ativo: iOS Fase 2 (#77�#80) � bloqueado (Mac/Xcode)
-- Decis�o principal: reorganiza��o da arquitetura de informa��o do app em 5 se��es
-  gerenciais (In�cio, Fatura, Ano, Patrim�nio, Transa��es) + ?? Configura��es
-- �picos criados: A (P1 � Corrigir), B (P2 � Clarear), C (P2-P3 � Expandir)
-- Novo milestone criado: ?? UX & Gest�o Patrimonial
+- Prï¿½xima sessï¿½o: iniciar iOS Fase 2 ou executar QA RF-064 (#136ï¿½#139)
+## Sessï¿½o 2026-04-15 ï¿½ PO Assistant (Cowork)
+- Versï¿½o na sessï¿½o: v3.23.8
+- Milestone ativo: iOS Fase 2 (#77ï¿½#80) ï¿½ bloqueado (Mac/Xcode)
+- Decisï¿½o principal: reorganizaï¿½ï¿½o da arquitetura de informaï¿½ï¿½o do app em 5 seï¿½ï¿½es
+  gerenciais (Inï¿½cio, Fatura, Ano, Patrimï¿½nio, Transaï¿½ï¿½es) + ?? Configuraï¿½ï¿½es
+- ï¿½picos criados: A (P1 ï¿½ Corrigir), B (P2 ï¿½ Clarear), C (P2-P3 ï¿½ Expandir)
+- Novo milestone criado: ?? UX & Gestï¿½o Patrimonial
 - Bugs registrados: BUG-029
 - Melhorias registradas: ENH-001, ENH-002, ENH-003, ENH-004, NRF-NAV
-- RFs criados: RF-065 (card home + tab default fatura), RF-066 (patrim�nio)
-- RF-065 reformulado: n�o � nova p�gina � card no dashboard + deep link fatura.html?tab=projecoes
-- RF-066 schema aprovado: nova cole��o patrimonio (n�o campos em despesas)
-- Pr�xima sess�o: autorizar Dev Manager a iniciar �pico A
+- RFs criados: RF-065 (card home + tab default fatura), RF-066 (patrimï¿½nio)
+- RF-065 reformulado: nï¿½o ï¿½ nova pï¿½gina ï¿½ card no dashboard + deep link fatura.html?tab=projecoes
+- RF-066 schema aprovado: nova coleï¿½ï¿½o patrimonio (nï¿½o campos em despesas)
+- Prï¿½xima sessï¿½o: autorizar Dev Manager a iniciar ï¿½pico A
 
-## Sessão 2026-04-15 — PO Assistant (Cowork) — QA RF-064 (Parte 2)
-- Versão na sessão: v3.23.8
-- Milestone ativo: iOS Fase 2 (#77–#80) — bloqueado (Mac/Xcode)
-- QA RF-064 (#136–#139): CONCLUÍDO ✅ — todas as 4 issues fechadas
+## SessÃ£o 2026-04-15 â€” PO Assistant (Cowork) â€” QA RF-064 (Parte 2)
+- VersÃ£o na sessÃ£o: v3.23.8
+- Milestone ativo: iOS Fase 2 (#77â€“#80) â€” bloqueado (Mac/Xcode)
+- QA RF-064 (#136â€“#139): CONCLUÃDO âœ… â€” todas as 4 issues fechadas
   - TC-008: 5/6 campos Firestore corretos; BUG-031 descoberto (categoriaId salvo errado)
-  - TC-013/015–019: isMovimentacaoReal() funciona corretamente — pagamento_fatura e transferencia_interna excluídos de todos os agregados (despesas, dashboard, planejamento)
-  - TC-139 (Aba Liquidação): score 40/100 Pendente correto para cartão novo (XP Visa, jan/2026, 0 transações)
-  - BUG-030 descoberto: responsavel salvo como "-42.5" em imports de extrato banco — bloqueia edição manual
+  - TC-013/015â€“019: isMovimentacaoReal() funciona corretamente â€” pagamento_fatura e transferencia_interna excluÃ­dos de todos os agregados (despesas, dashboard, planejamento)
+  - TC-139 (Aba LiquidaÃ§Ã£o): score 40/100 Pendente correto para cartÃ£o novo (XP Visa, jan/2026, 0 transaÃ§Ãµes)
+  - BUG-030 descoberto: responsavel salvo como "-42.5" em imports de extrato banco â€” bloqueia ediÃ§Ã£o manual
 - Bugs registrados:
-  - BUG-030 (#156 — P0): responsavel salvo como string negativa em importação extrato banco (pipelineBanco.js não define portador)
-  - BUG-031 (#157 — P1): categoriaId salvo como "__tipo__pagamento_fatura" em Firestore (importar.js linha 993, bloco RF-064 não reseta categoriaId = null)
+  - BUG-030 (#156 â€” P0): responsavel salvo como string negativa em importaÃ§Ã£o extrato banco (pipelineBanco.js nÃ£o define portador)
+  - BUG-031 (#157 â€” P1): categoriaId salvo como "__tipo__pagamento_fatura" em Firestore (importar.js linha 993, bloco RF-064 nÃ£o reseta categoriaId = null)
 - Melhorias registradas:
-  - ENH-005 (#158 — P2): despesas.html tem 3 responsabilidades misturadas — widget Parcelamentos deve migrar para seção Fatura
+  - ENH-005 (#158 â€” P2): despesas.html tem 3 responsabilidades misturadas â€” widget Parcelamentos deve migrar para seÃ§Ã£o Fatura
 - Issues fechadas: #136, #137, #138, #139
-- Artefatos gerados para DM: sim — BUG-030 (P0, fix em pipelineBanco.js) + BUG-031 (P1, fix em importar.js ~linha 1026)
-- Artefatos gerados para PM: sim — QA RF-064 encerrado, 3 novos itens, saúde Vermelho (BUG-030 P0)
+- Artefatos gerados para DM: sim â€” BUG-030 (P0, fix em pipelineBanco.js) + BUG-031 (P1, fix em importar.js ~linha 1026)
+- Artefatos gerados para PM: sim â€” QA RF-064 encerrado, 3 novos itens, saÃºde Vermelho (BUG-030 P0)
 - Handoff: .auto-memory/dm_tasks_pending.md + .auto-memory/pm_tasks_pending.md
-- Nota label: "prioridade: media" não existe no repo — usar "prioridade: média" (com acento) ou omitir
-- Próxima sessão: Dev Manager — BUG-030 P0 ANTES de qualquer Épico; BUG-031 P1 na sequência; QA #129 (RF-062) pode rodar em paralelo após BUG-030 corrigido
+- Nota label: "prioridade: media" nÃ£o existe no repo â€” usar "prioridade: mÃ©dia" (com acento) ou omitir
+- PrÃ³xima sessÃ£o: Dev Manager â€” BUG-030 P0 ANTES de qualquer Ã‰pico; BUG-031 P1 na sequÃªncia; QA #129 (RF-062) pode rodar em paralelo apÃ³s BUG-030 corrigido
 
-## Dev Manager — 2026-04-15 — BUG-030 concluído (PR #159)
-- Versão: v3.23.9 (bump de v3.23.8)
-- BUG-030 (#156) RESOLVIDO: normalizadorTransacoes.js — removido fallback idxPortador=2 quando header detectado; portador agora retorna '' em vez de string numérica
-- Bonus: importar.js _aplicarTipo('banco') agora funciona corretamente (condição \!l.portador era bloqueada pela string numérica truthy)
-- Testes: 519/519 unitários passando (era 514 — +5 novos testes do BUG-030)
+## Dev Manager â€” 2026-04-15 â€” BUG-030 concluÃ­do (PR #159)
+- VersÃ£o: v3.23.9 (bump de v3.23.8)
+- BUG-030 (#156) RESOLVIDO: normalizadorTransacoes.js â€” removido fallback idxPortador=2 quando header detectado; portador agora retorna '' em vez de string numÃ©rica
+- Bonus: importar.js _aplicarTipo('banco') agora funciona corretamente (condiÃ§Ã£o \!l.portador era bloqueada pela string numÃ©rica truthy)
+- Testes: 519/519 unitÃ¡rios passando (era 514 â€” +5 novos testes do BUG-030)
 - CI: verde | PR #159 mergeado | branch deletada
 - Subagentes: test-runner PASS + import-pipeline-reviewer PASS (sem Critical/High)
-- Próximas prioridades informadas pelo DM: BUG-029 (#148 P0) + BUG-031 (#157 P1)
+- PrÃ³ximas prioridades informadas pelo DM: BUG-029 (#148 P0) + BUG-031 (#157 P1)
 
-## Dev Manager — 2026-04-15 — BUG-032 + ENH-001 concluídos
-- Versão: v3.25.0 (MINOR — ENH-001 bump de v3.23.9)
-- Testes: 548/548 unitários passando (era 519 — +29 novos testes)
-- Saúde: 🟢 Verde | Issues abertas: 20 | CI: verde
+## Dev Manager â€” 2026-04-15 â€” BUG-032 + ENH-001 concluÃ­dos
+- VersÃ£o: v3.25.0 (MINOR â€” ENH-001 bump de v3.23.9)
+- Testes: 548/548 unitÃ¡rios passando (era 519 â€” +29 novos testes)
+- SaÃºde: ðŸŸ¢ Verde | Issues abertas: 20 | CI: verde
 
-### BUG-032 (#162) — PR #163 — RESOLVIDO ✅
-- mesFatura ausente das listas `opcionais` de modelDespesa e modelReceita → campo descartado silenciosamente antes de salvar no Firestore → aba Fatura sempre vazia para novos imports
+### BUG-032 (#162) â€” PR #163 â€” RESOLVIDO âœ…
+- mesFatura ausente das listas `opcionais` de modelDespesa e modelReceita â†’ campo descartado silenciosamente antes de salvar no Firestore â†’ aba Fatura sempre vazia para novos imports
 - Fix: 1 linha em Despesa.js + 1 linha em Receita.js
-- CRÍTICO: violava Regra Inviolável #2 (mesFatura obrigatório em despesas de cartão)
-- Novos testes: Receita.test.js (novo) + 2 regressões em Despesa.test.js
+- CRÃTICO: violava Regra InviolÃ¡vel #2 (mesFatura obrigatÃ³rio em despesas de cartÃ£o)
+- Novos testes: Receita.test.js (novo) + 2 regressÃµes em Despesa.test.js
 
-### ENH-001 (#149) — PR #164 — RESOLVIDO ✅
-- Duplicata marcada no preview → executarImportacao() chamava INSERT em vez de UPDATE
-- Fix: bloco ENH-001 no loop — se l.duplicado && l.duplicado_docId → atualizarDespesa/atualizarReceita
+### ENH-001 (#149) â€” PR #164 â€” RESOLVIDO âœ…
+- Duplicata marcada no preview â†’ executarImportacao() chamava INSERT em vez de UPDATE
+- Fix: bloco ENH-001 no loop â€” se l.duplicado && l.duplicado_docId â†’ atualizarDespesa/atualizarReceita
 - +4 testes em deduplicador.test.js para contrato duplicado_docId via Map
 - import-pipeline-reviewer: APPROVED
 
-### Próxima tarefa proposta pelo DM
-- ENH-003 (#150) — filtro "não categorizada" + seletores segregados por tipo em base-dados.js/categorias.js
+### PrÃ³xima tarefa proposta pelo DM
+- ENH-003 (#150) â€” filtro "nÃ£o categorizada" + seletores segregados por tipo em base-dados.js/categorias.js
 
-## Dev Manager — 2026-04-15 — ENH-003 concluído (PR #165)
-- Versão: v3.26.0 (MINOR)
-- Testes: 563/563 passando (era 548 — +15 novos em base-dados.filtro.test.js)
-- ENH-003 (#150) RESOLVIDO ✅
-  - Filtro "Não categorizada" (__nao_categorizada__) em base-dados.html
-  - Seletores segregados: despesas.html filtrado por tipo='despesa'; receitas.html já usava ouvirCategoriasReceita() — sem alteração necessária
+## Dev Manager â€” 2026-04-15 â€” ENH-003 concluÃ­do (PR #165)
+- VersÃ£o: v3.26.0 (MINOR)
+- Testes: 563/563 passando (era 548 â€” +15 novos em base-dados.filtro.test.js)
+- ENH-003 (#150) RESOLVIDO âœ…
+  - Filtro "NÃ£o categorizada" (__nao_categorizada__) em base-dados.html
+  - Seletores segregados: despesas.html filtrado por tipo='despesa'; receitas.html jÃ¡ usava ouvirCategoriasReceita() â€” sem alteraÃ§Ã£o necessÃ¡ria
 - CI: verde | PR #165 mergeado
 - Backlog P2 restante: RF-065 (#153), RF-066 (#155), ENH-004 (#151), ENH-002 (#152)
-- BUG-031 (#157) JÁ CONCLUÍDO — PR #161 mergeado (v3.24.0); nota stale removida
+- BUG-031 (#157) JÃ CONCLUÃDO â€” PR #161 mergeado (v3.24.0); nota stale removida
 
-## PO — 2026-04-15 — Correção de memória stale
+## PO â€” 2026-04-15 â€” CorreÃ§Ã£o de memÃ³ria stale
 - BUG-031 (#157): confirmado RESOLVIDO em v3.24.0 (PR #161, issue fechada 2026-04-16)
   - importar.js:1038 + 1048: despDados.categoriaId = null nos blocos RF-063 e RF-064
-  - 4 TCs de regressão em Despesa.test.js
-- Nota "ATENÇÃO: BUG-031 ainda não executado" removida — era stale
-- Estado real dos bugs: BUG-029 ✅, BUG-030 ✅, BUG-031 ✅, BUG-032 ✅ — todos fechados
+  - 4 TCs de regressÃ£o em Despesa.test.js
+- Nota "ATENÃ‡ÃƒO: BUG-031 ainda nÃ£o executado" removida â€” era stale
+- Estado real dos bugs: BUG-029 âœ…, BUG-030 âœ…, BUG-031 âœ…, BUG-032 âœ… â€” todos fechados
 - Backlog P2 ativo: RF-065 (#153), RF-066 (#155), ENH-004 (#151), ENH-002 (#152)
 
-## Sessao 2026-04-15 � PO Assistant (Cowork) � Bussola + RF-067 + RF-066 revisado
+## Sessao 2026-04-15 ï¿½ PO Assistant (Cowork) ï¿½ Bussola + RF-067 + RF-066 revisado
 
 - Versao na sessao: v3.26.0
-- Milestone ativo: UX & Gestao Patrimonial (milestone #18) � agora 8 issues abertas
+- Milestone ativo: UX & Gestao Patrimonial (milestone #18) ï¿½ agora 8 issues abertas
 - Decisoes da sessao:
-  1. BUSSOLA_PRODUTO.md criada em docs/ � commit a237740 � bussola estrategica do produto
+  1. BUSSOLA_PRODUTO.md criada em docs/ ï¿½ commit a237740 ï¿½ bussola estrategica do produto
   2. Persona central definida: Controller Familiar (family office simplificado)
   3. Tres horizontes de gestao documentados (H1 liquidez / H2 execucao / H3 futuro)
   4. Diagnostico: produto cobre bem H2, carece de H1 e H3
-  5. NRF-NAV criticada � estrutura alternativa proposta: Cockpit/Futuro/Historico/Transacoes/Config
-  6. RF-067 (Forecast Caixa 6 meses) criado e aprovado � issue #166 � v3.27.0 P2
+  5. NRF-NAV criticada ï¿½ estrutura alternativa proposta: Cockpit/Futuro/Historico/Transacoes/Config
+  6. RF-067 (Forecast Caixa 6 meses) criado e aprovado ï¿½ issue #166 ï¿½ v3.27.0 P2
   7. RF-066 escopo revisado (Patrimonio: carteira investimentos + dividas ativas + PL)
-     issue #155 atualizada � v3.28.0 P2
+     issue #155 atualizada ï¿½ v3.28.0 P2
 - RFs criados: RF-067 (#166)
-- RFs revisados: RF-066 (#155 � escopo expandido significativamente)
+- RFs revisados: RF-066 (#155 ï¿½ escopo expandido significativamente)
 - Bugs registrados: nenhum
 - Proximas prioridades P2 (backlog DM):
-    - RF-067 (#166) � forecast caixa � feat/MF-166-forecast-caixa-6meses
-    - RF-066 (#155) � patrimonio � feat/MF-155-patrimonio-investimentos-dividas
+    - RF-067 (#166) ï¿½ forecast caixa ï¿½ feat/MF-166-forecast-caixa-6meses
+    - RF-066 (#155) ï¿½ patrimonio ï¿½ feat/MF-155-patrimonio-investimentos-dividas
 - Bloqueios: iOS Fase 2 (#77-#80) requer Mac/Xcode
-- Artefatos gerados para PM: sim � pm_tasks_pending.md atualizado
-- Artefatos gerados para DM: sim � dm_tasks_pending.md atualizado
+- Artefatos gerados para PM: sim ï¿½ pm_tasks_pending.md atualizado
+- Artefatos gerados para DM: sim ï¿½ dm_tasks_pending.md atualizado
 - Proxima sessao: autorizar Dev Manager a iniciar RF-067; ou revisar NRF-NAV
   com estrutura alternativa Cockpit/Futuro/Historico/Transacoes/Config
 
-## Sessao 2026-04-15 � PO Assistant (Cowork) � Abertura + RF-065 validado
+## Sessao 2026-04-15 ï¿½ PO Assistant (Cowork) ï¿½ Abertura + RF-065 validado
 
-- Versao na sessao: v3.27.0 (bump resolvido � era inconsistente com v3.23.8)
-- RF-065 (#153): CONCLUIDO � PR #167 mergeado, 563/563 testes, CI verde
+- Versao na sessao: v3.27.0 (bump resolvido ï¿½ era inconsistente com v3.23.8)
+- RF-065 (#153): CONCLUIDO ï¿½ PR #167 mergeado, 563/563 testes, CI verde
   Card Proxima Fatura aparece quando ha tipo=projecao no mes seguinte
   Deep link fatura.html?tab=projecoes com whitelist de tabs
 - Versoes corrigidas: RF-067 v3.28.0 | RF-066 v3.29.0 (RF-065 consumiu v3.27.0)
-- Milestone UX & Gestao Patrimonial: ~37% (3/8 fechadas � ENH-001, ENH-003, RF-065)
-- Proxima prioridade autorizada: RF-067 (#166) � feat/MF-166-forecast-caixa-6meses
+- Milestone UX & Gestao Patrimonial: ~37% (3/8 fechadas ï¿½ ENH-001, ENH-003, RF-065)
+- Proxima prioridade autorizada: RF-067 (#166) ï¿½ feat/MF-166-forecast-caixa-6meses
 
-## Sessao 2026-04-15 � PO Assistant (Cowork) � NRF-NAV revisada e aprovada
+## Sessao 2026-04-15 ï¿½ PO Assistant (Cowork) ï¿½ NRF-NAV revisada e aprovada
 
 - Versao na sessao: v3.27.0
-- NRF-NAV (#154): escopo revisado e aprovado � v3.30.0 P2
+- NRF-NAV (#154): escopo revisado e aprovado ï¿½ v3.30.0 P2
   5 secoes: Cockpit | Futuro | Historico | Transacoes | Config
   Fase 1 (navbar pura, baixo risco) -> Fase 2 (consolidacao de paginas)
   iOS: mobile.html separado como light version
@@ -1675,25 +1710,25 @@ Nenhum. Próxima tarefa DM (NRF-NAV Fase 1 #154 v3.32.0) autorizada pela bússol
 
 ---
 
-## Sess�o 2026-04-16 � PO Assistant (Cowork)
-- Vers�o na sess�o: v3.23.8
-- Milestone ativo: iOS Fase 2 (issues #77�#80)
-- Decis�o: defini��o de foco da pr�xima sess�o PO
-- Pr�xima sess�o � foco:
+## Sessï¿½o 2026-04-16 ï¿½ PO Assistant (Cowork)
+- Versï¿½o na sessï¿½o: v3.23.8
+- Milestone ativo: iOS Fase 2 (issues #77ï¿½#80)
+- Decisï¿½o: definiï¿½ï¿½o de foco da prï¿½xima sessï¿½o PO
+- Prï¿½xima sessï¿½o ï¿½ foco:
   1. Validar PR do RF-067 quando DM abrir (revisar escopo, CA, subagentes acionados)
-  2. Autorizar RF-068 somente ap�s merge do RF-067 (evitar conflitos de contexto)
-  3. Rever escopo final de RF-066 (checar se CA est�o fechados antes de delegar)
-  4. Ao chegar em v3.32.0: decidir estrat�gia de branch para NRF-NAV F1 + NRF-UI-WARM
-     - Op��o A: branch �nica (menos churn, risco de PR grande)
-     - Op��o B: duas branches sequenciais (mais controle, mais overhead)
+  2. Autorizar RF-068 somente apï¿½s merge do RF-067 (evitar conflitos de contexto)
+  3. Rever escopo final de RF-066 (checar se CA estï¿½o fechados antes de delegar)
+  4. Ao chegar em v3.32.0: decidir estratï¿½gia de branch para NRF-NAV F1 + NRF-UI-WARM
+     - Opï¿½ï¿½o A: branch ï¿½nica (menos churn, risco de PR grande)
+     - Opï¿½ï¿½o B: duas branches sequenciais (mais controle, mais overhead)
 - Bloqueios identificados: nenhum novo
-- Artefatos gerados para PM/DM: n�o (apenas registro de mem�ria)
-- Scripts PowerShell executados: atualiza��o de project_mf_status.md
+- Artefatos gerados para PM/DM: nï¿½o (apenas registro de memï¿½ria)
+- Scripts PowerShell executados: atualizaï¿½ï¿½o de project_mf_status.md
 
-## Sessao 2026-04-17 � PO Assistant (Cowork)
+## Sessao 2026-04-17 ï¿½ PO Assistant (Cowork)
 
 - Versao na sessao: v3.31.0
-- Milestone ativo: UX & Gestao Patrimonial (#18) � 62% (8/13)
+- Milestone ativo: UX & Gestao Patrimonial (#18) ï¿½ 62% (8/13)
 - Sauda: Verde (665 testes OK, CI verde, 0 PRs abertos, 18 issues)
 
 ### Decisoes da sessao
@@ -1706,12 +1741,12 @@ Nenhum. Próxima tarefa DM (NRF-NAV Fase 1 #154 v3.32.0) autorizada pela bússol
    reversibilidade granular; menos area por PR para security-reviewer.
 
 2. Criar docs/MILESTONE_UX_GESTAO_PATRIMONIAL.md como fonte canonica do
-   milestone #18 � fecha gap documental (unico milestone ativo sem doc
+   milestone #18 ï¿½ fecha gap documental (unico milestone ativo sem doc
    dedicado; iOS e Melhorias Visuais ja possuiam). Rascunho aprovado pelo
    PO e gravado em .auto-memory\milestone_ux_gestao_patrimonial_rascunho.md
-   � DM executa criacao em docs/ e atualiza referencias cruzadas.
+   ï¿½ DM executa criacao em docs/ e atualiza referencias cruzadas.
 
-3. Auto-colorizacao de cartoes em DESIGN_SYSTEM.md � ON HOLD (nao entra
+3. Auto-colorizacao de cartoes em DESIGN_SYSTEM.md ï¿½ ON HOLD (nao entra
    no radar de metricas/alertas ate o PO reabrir).
 
 ### Bugs registrados: nenhum
@@ -1722,73 +1757,73 @@ Nenhum. Próxima tarefa DM (NRF-NAV Fase 1 #154 v3.32.0) autorizada pela bússol
 - iOS Fase 2 (#77-#80) continua ON HOLD (Apple Developer Program).
 
 ### Artefatos gerados
-- .auto-memory\pm_tasks_pending.md � bloco para PM Agent (decisoes + dashboard)
-- .auto-memory\dm_tasks_pending.md � bloco para Dev Manager (criar milestone
-  doc + reconciliar sequencia de versoes em CLAUDE.md, BUSSOLA �9/�11,
+- .auto-memory\pm_tasks_pending.md ï¿½ bloco para PM Agent (decisoes + dashboard)
+- .auto-memory\dm_tasks_pending.md ï¿½ bloco para Dev Manager (criar milestone
+  doc + reconciliar sequencia de versoes em CLAUDE.md, BUSSOLA ï¿½9/ï¿½11,
   RESUMO_PROJETO_PO.md, dashboard HTML)
-- .auto-memory\milestone_ux_gestao_patrimonial_rascunho.md � rascunho
+- .auto-memory\milestone_ux_gestao_patrimonial_rascunho.md ï¿½ rascunho
   aprovado, 105 linhas, pronto para DM copiar para docs/
 
 ### Scripts PowerShell executados
 1. Persistir tarefa PM Agent (pm_tasks_pending.md)
 2. Persistir tarefa Dev Manager (dm_tasks_pending.md)
 3. Gravar rascunho do milestone (milestone_ux_gestao_patrimonial_rascunho.md)
-4. Atualizar memoria persistente (project_mf_status.md � este bloco)
+4. Atualizar memoria persistente (project_mf_status.md ï¿½ este bloco)
 
-### Proxima sessao PO � foco
+### Proxima sessao PO ï¿½ foco
 1. Validar PR do NRF-NAV F1 quando DM abrir (branch feat/MF-154-navbar-5-secoes, v3.32.0)
 2. Apos merge F1, autorizar NRF-UI-WARM (#172 v3.33.0)
 3. Confirmar que DM criou docs/MILESTONE_UX_GESTAO_PATRIMONIAL.md e atualizou
-   CLAUDE.md / BUSSOLA �9-�11 / RESUMO / dashboard com nova sequencia de versoes
+   CLAUDE.md / BUSSOLA ï¿½9-ï¿½11 / RESUMO / dashboard com nova sequencia de versoes
 
 ---
 
-## Sessão 2026-04-17 — PO Assistant (Cowork) — Decisão estratégica NRF-NAV F1 + NRF-UI-WARM
-- Versão na sessão: v3.31.0
-- Milestone ativo: UX & Gestão Patrimonial (8/13 — 62%)
-- Decisão: NRF-NAV Fase 1 (#154) + NRF-UI-WARM (#172) entregues em **1 PR conjunto** → v3.32.0
-  - Opção descartada: 2 PRs sequenciais (evita retrabalho visual e honra a casada prevista na Bússola §9/§11)
-  - Racional arquivado: navbar nova consome tokens warm; repaint é isolado em variables.css; escopo 100% UI sem risco de pipeline/Firestore
+## SessÃ£o 2026-04-17 â€” PO Assistant (Cowork) â€” DecisÃ£o estratÃ©gica NRF-NAV F1 + NRF-UI-WARM
+- VersÃ£o na sessÃ£o: v3.31.0
+- Milestone ativo: UX & GestÃ£o Patrimonial (8/13 â€” 62%)
+- DecisÃ£o: NRF-NAV Fase 1 (#154) + NRF-UI-WARM (#172) entregues em **1 PR conjunto** â†’ v3.32.0
+  - OpÃ§Ã£o descartada: 2 PRs sequenciais (evita retrabalho visual e honra a casada prevista na BÃºssola Â§9/Â§11)
+  - Racional arquivado: navbar nova consome tokens warm; repaint Ã© isolado em variables.css; escopo 100% UI sem risco de pipeline/Firestore
   - Commits separados dentro do mesmo PR (#172 primeiro em variables.css, #154 depois na navbar)
-- Issues priorizadas: #154, #172 (juntas) — P1
+- Issues priorizadas: #154, #172 (juntas) â€” P1
 - Bugs registrados: nenhum
 - Melhorias registradas: nenhuma
 - RFs criados: nenhum
 - Bloqueios identificados: nenhum
-- Artefatos gerados para PM/DM: SIM — ambos gravados em .auto-memory\dm_tasks_pending.md e pm_tasks_pending.md (UTF-8 via AppendAllText)
-- Scripts PowerShell executados: 5 (Etapa 1A truncagem + 1B regravação DM; Etapa 2 handoff PM; Etapa 3 memória)
-- Próxima sessão PO — foco:
-  1. Revisar PR feat(ui+nav): NRF-UI-WARM + NRF-NAV F1 quando DM abrir — atenção especial a:
+- Artefatos gerados para PM/DM: SIM â€” ambos gravados em .auto-memory\dm_tasks_pending.md e pm_tasks_pending.md (UTF-8 via AppendAllText)
+- Scripts PowerShell executados: 5 (Etapa 1A truncagem + 1B regravaÃ§Ã£o DM; Etapa 2 handoff PM; Etapa 3 memÃ³ria)
+- PrÃ³xima sessÃ£o PO â€” foco:
+  1. Revisar PR feat(ui+nav): NRF-UI-WARM + NRF-NAV F1 quando DM abrir â€” atenÃ§Ã£o especial a:
      - cores hardcoded fora de variables.css (Regra #4)
      - escHTML em innerHTML novos da navbar (Regra #7)
-     - link ativo correto em todas as 13 páginas
+     - link ativo correto em todas as 13 pÃ¡ginas
      - CTA "Importar" com destaque visual
-  2. Aprovar ou vetar merge após verificar CI verde + 665 testes passando
-  3. Planejar NRF-NAV Fase 2 (v3.33.0): proposta de merge Projeções × Planejamento (Gap 5 da Bússola)
+  2. Aprovar ou vetar merge apÃ³s verificar CI verde + 665 testes passando
+  3. Planejar NRF-NAV Fase 2 (v3.33.0): proposta de merge ProjeÃ§Ãµes Ã— Planejamento (Gap 5 da BÃºssola)
 
-## Sessao 2026-04-17 — PO Assistant (Cowork) — v3.32.0 entregue + NRF-NAV F2 detalhada
+## Sessao 2026-04-17 â€” PO Assistant (Cowork) â€” v3.32.0 entregue + NRF-NAV F2 detalhada
 
 - Versao na sessao: v3.31.0 -> v3.32.0 (PR #179 mergeado)
-- Milestone ativo: UX & Gestao Patrimonial (#18) — 9/13 fechadas (~69%)
+- Milestone ativo: UX & Gestao Patrimonial (#18) â€” 9/13 fechadas (~69%)
 - Saude: Verde
 
-### Entrega v3.32.0 — NRF-UI-WARM (#172)
+### Entrega v3.32.0 â€” NRF-UI-WARM (#172)
 - PR #179 mergeado (merge commit 472fab1)
 - Issue #172 CLOSED (closes automatico)
 - Issue #154 (NRF-NAV F1) reposicionada para v3.33.0 solo
 - 665 testes passando | CI verde (2/2) | deploy Firebase iniciado apos merge
 - Paleta warm (terracota #CC785C / ivory #FAF9F5 / kraft #F0EEE6) + fontes
   Fraunces/Inter self-hosted + glifo U+2732 em 6 pontos auto-calc.
-- Auditoria de Regras Invioláveis verificada pelo PO:
-    #4 OK — 124 hex novos, TODOS confinados em variables.css
-    #5 OK — zero gstatic.com no diff
-    #7 OK — glifo em template literal estatico (sem dado de usuario)
-    #10 OK — feat(ui): NRF-UI-WARM ... (v3.32.0)
-    #11 OK — feature branch + PR #179
+- Auditoria de Regras InviolÃ¡veis verificada pelo PO:
+    #4 OK â€” 124 hex novos, TODOS confinados em variables.css
+    #5 OK â€” zero gstatic.com no diff
+    #7 OK â€” glifo em template literal estatico (sem dado de usuario)
+    #10 OK â€” feat(ui): NRF-UI-WARM ... (v3.32.0)
+    #11 OK â€” feature branch + PR #179
 
 ### Decisoes da sessao
 1. Decisao 17/04 "1 PR conjunto #154+#172" foi revisada: WIP do DM cobria so
-   warm; sem trabalho de navbar feito. Opcao (A) executada — warm sozinho
+   warm; sem trabalho de navbar feito. Opcao (A) executada â€” warm sozinho
    em v3.32.0, NRF-NAV F1 em v3.33.0 solo.
 2. NRF-NAV Fase 2 detalhada com 3 decisoes de arquitetura de informacao:
    - Patrimonio permanece pagina propria (drill-down em Futuro)
@@ -1803,21 +1838,21 @@ Nenhum. Próxima tarefa DM (NRF-NAV Fase 1 #154 v3.32.0) autorizada pela bússol
    v3.34.0+ -> ENH-004 (#151), ENH-002 (#152) P3
 
 ### Incidentes da sessao (todos recuperados)
-1. Git index.lock travado em .git/ — removido sem perda (outra sessao DM
+1. Git index.lock travado em .git/ â€” removido sem perda (outra sessao DM
    encerrou mal)
-2. HEAD apontava para refs/heads/feat/ (branch invalida) — corrigido com
+2. HEAD apontava para refs/heads/feat/ (branch invalida) â€” corrigido com
    git symbolic-ref HEAD refs/heads/main
 3. WIP do DM encontrado em working tree de main (violacao Regra #11 em
-   progresso) — migrado para branch feat/MF-172-warm-finance-tokens-v3.32.0
+   progresso) â€” migrado para branch feat/MF-172-warm-finance-tokens-v3.32.0
    sem perda
 4. Primeira tentativa de inserir bloco em CHANGELOG.md com encoding errado
    (Get-Content -Raw sem -Encoding UTF8 em PS5.1) resultou em 1129 linhas
-   mojibake — restaurado do HEAD e re-aplicado com UTF-8 explicito
-5. PR criado sem milestone ("🎯 UX & Gestao Patrimonial" do comando nao
-   bateu com "UX & Gestao Patrimonial" real no GitHub) — milestone aplicado
+   mojibake â€” restaurado do HEAD e re-aplicado com UTF-8 explicito
+5. PR criado sem milestone ("ðŸŽ¯ UX & Gestao Patrimonial" do comando nao
+   bateu com "UX & Gestao Patrimonial" real no GitHub) â€” milestone aplicado
    via gh pr edit depois
 6. Fantasma CRLF/LF em src/*.html apos merge (core.autocrlf=true brigando
-   com .gitattributes eol=lf) — descartado via git checkout -- src/
+   com .gitattributes eol=lf) â€” descartado via git checkout -- src/
 
 ### Divida tecnica nova registrada para housekeeping do DM
 - **Normalizacao EOL:** core.autocrlf=true + .gitattributes eol=lf geram
@@ -1826,7 +1861,7 @@ Nenhum. Próxima tarefa DM (NRF-NAV Fase 1 #154 v3.32.0) autorizada pela bússol
     git add --renormalize .
     git commit -m "chore: normalizar EOL para LF conforme .gitattributes"
 - **Nome do milestone:** divergencia entre GitHub ("UX & Gestao Patrimonial")
-  e docs/scripts ("🎯 UX & Gestão Patrimonial"). Decidir renomear no GitHub
+  e docs/scripts ("ðŸŽ¯ UX & GestÃ£o Patrimonial"). Decidir renomear no GitHub
   OU padronizar docs.
 
 ### Artefatos gerados para squad
@@ -1835,10 +1870,10 @@ Nenhum. Próxima tarefa DM (NRF-NAV Fase 1 #154 v3.32.0) autorizada pela bússol
 - Handoff PM: reordenacao roadmap + nota housekeeping milestone
   em .auto-memory/pm_tasks_pending.md
 - Commits desta sessao em main:
-    3ebe248 chore(memory): sessao PO 2026-04-17 — decisao 1 PR conjunto
+    3ebe248 chore(memory): sessao PO 2026-04-17 â€” decisao 1 PR conjunto
     702a731 feat(ui): NRF-UI-WARM ... (v3.32.0)
     472fab1 Merge pull request #179
-    [proximo] chore(memory): sessao PO 2026-04-17 — v3.32.0 entregue
+    [proximo] chore(memory): sessao PO 2026-04-17 â€” v3.32.0 entregue
 
 ### Scripts PowerShell executados nesta sessao
 - Diagnostico completo (status, branches, PRs, WIP)
@@ -1852,23 +1887,23 @@ Nenhum. Próxima tarefa DM (NRF-NAV Fase 1 #154 v3.32.0) autorizada pela bússol
 - Gravacao handoffs DM+PM via [System.IO.File]::AppendAllText UTF-8 NoBOM
 - Atualizacao desta entrada de memoria
 
-### Proxima sessao PO — foco sugerido
+### Proxima sessao PO â€” foco sugerido
 1. Aguardar DM abrir PR da NRF-NAV F1 (#154) em feat/MF-154-navbar-5-secoes-fase1-v3.33.0
 2. Revisar diff contra Regras #4/#7/#10/#11 (especialmente CTA Importar com cor primary sem hardcode)
 3. Decidir se housekeeping EOL + nome milestone entra antes ou depois da Fase 2
-## Adendo Sessao 2026-04-17 — Proximas Acoes do PO (registrado para convergencia com PM)
+## Adendo Sessao 2026-04-17 â€” Proximas Acoes do PO (registrado para convergencia com PM)
 
-### Imediato — RESOLVIDO nesta linha
-- WIP do DM (12 HTMLs + 1 CSS + nav.js untracked) estava em main — violacao
+### Imediato â€” RESOLVIDO nesta linha
+- WIP do DM (12 HTMLs + 1 CSS + nav.js untracked) estava em main â€” violacao
   Regra #11 em progresso (mesmo padrao do WIP do warm encontrado na abertura).
-- Acao tomada: git checkout feat/MF-154-navbar-5-secoes-fase1-v3.33.0 — WIP
+- Acao tomada: git checkout feat/MF-154-navbar-5-secoes-fase1-v3.33.0 â€” WIP
   viaja junto, branch ja existia desde Sub-passo 6 da sessao.
 - main agora limpa; trabalho do DM preservado integralmente na branch correta.
 
-### Proximas sessoes PO (resumo — detalhe completo em pm_tasks_pending.md)
-- Trigger 1: DM pushar PR NRF-NAV F1 (#154) → revisar contra Regras
+### Proximas sessoes PO (resumo â€” detalhe completo em pm_tasks_pending.md)
+- Trigger 1: DM pushar PR NRF-NAV F1 (#154) â†’ revisar contra Regras
   Inviolaveis (atencao especial a #4 CTA Importar e nav.js sem listener leak)
-- Trigger 2: F1 mergeada → DM trazer proposta Fase 2 → aprovar/vetar com
+- Trigger 2: F1 mergeada â†’ DM trazer proposta Fase 2 â†’ aprovar/vetar com
   base nas 3 decisoes ja tomadas (patrimonio pagina propria, timeline 3m,
   redirect deep link)
 - Continuo: housekeeping (EOL normalize + nome milestone + regra 1 agente
@@ -1882,95 +1917,135 @@ relatorio diario. Saude do projeto deve ser monitorada por:
 - Vermelho: testes quebrados ou encoding corrompido em arquivo versionado
 ---
 
-## Sess�o 2026-04-19 � PO Assistant (Cowork)
-- Vers�o na sess�o: v3.33.0 (alvo pr�ximo: v3.34.0)
-- Milestone ativo: UX & Gest�o Patrimonial (78.6%, 11/14)
-- **Decis�o est�tica:** descartado o Design System "Family CFO v1.1" trazido pelo Claude chat (proposta estrangeira, n�o alinhada com NRF-UI-WARM em produ��o). Aproveitada apenas a estrutura de governan�a e a ideia de pasta `design-system/`.
-- **Decis�o estrat�gica:** promover NRF-UI-WARM (Warm Finance, v3.32.0) a Design System v1.0 oficial do MF.
-- **RF criado:** RF-070 � Formaliza��o do Design System v1.0 (Warm Finance) + Governan�a � Issue #182 � P2 � alvo v3.34.0
-- **ENH absorvido:** ENH-006 (checklist de design no handoff) consolidado dentro do RF-070, n�o criado separadamente
+## Sessï¿½o 2026-04-19 ï¿½ PO Assistant (Cowork)
+- Versï¿½o na sessï¿½o: v3.33.0 (alvo prï¿½ximo: v3.34.0)
+- Milestone ativo: UX & Gestï¿½o Patrimonial (78.6%, 11/14)
+- **Decisï¿½o estï¿½tica:** descartado o Design System "Family CFO v1.1" trazido pelo Claude chat (proposta estrangeira, nï¿½o alinhada com NRF-UI-WARM em produï¿½ï¿½o). Aproveitada apenas a estrutura de governanï¿½a e a ideia de pasta `design-system/`.
+- **Decisï¿½o estratï¿½gica:** promover NRF-UI-WARM (Warm Finance, v3.32.0) a Design System v1.0 oficial do MF.
+- **RF criado:** RF-070 ï¿½ Formalizaï¿½ï¿½o do Design System v1.0 (Warm Finance) + Governanï¿½a ï¿½ Issue #182 ï¿½ P2 ï¿½ alvo v3.34.0
+- **ENH absorvido:** ENH-006 (checklist de design no handoff) consolidado dentro do RF-070, nï¿½o criado separadamente
 - **Bugs registrados:** nenhum
 - **Melhorias registradas:** nenhuma (separadas)
 - **Bloqueios identificados:** nenhum
-- **Artefatos gerados para PM/DM:** sim � handoffs gravados em `.auto-memory/pm_tasks_pending.md` e `.auto-memory/dm_tasks_pending.md`
-- **Scripts PowerShell executados:** cria��o do label rf-070 (idempotente), cria��o da Issue #182, regrava��o dos handoffs
-- **Alerta legado pendente:** verificar commit direto em `main` do run #166 (14/04/2026) � regra inviol�vel #11 � ainda n�o tratado
-- **Pr�xima sess�o:** revisar PR do RF-070 quando o DM finalizar; depois retomar fila NRF-NAV Fase 2 (#154 absorveu, pr�ximo � ENH-002 #152)
+- **Artefatos gerados para PM/DM:** sim ï¿½ handoffs gravados em `.auto-memory/pm_tasks_pending.md` e `.auto-memory/dm_tasks_pending.md`
+- **Scripts PowerShell executados:** criaï¿½ï¿½o do label rf-070 (idempotente), criaï¿½ï¿½o da Issue #182, regravaï¿½ï¿½o dos handoffs
+- **Alerta legado pendente:** verificar commit direto em `main` do run #166 (14/04/2026) ï¿½ regra inviolï¿½vel #11 ï¿½ ainda nï¿½o tratado
+- **Prï¿½xima sessï¿½o:** revisar PR do RF-070 quando o DM finalizar; depois retomar fila NRF-NAV Fase 2 (#154 absorveu, prï¿½ximo ï¿½ ENH-002 #152)
 
-## Sessao 2026-04-19 � PO Assistant (Cowork)
+## Sessao 2026-04-19 ï¿½ PO Assistant (Cowork)
 - Versao na sessao: CHANGELOG=v3.36.0 | package.json=v3.34.0 (inconsistencia a corrigir)
 - Milestone ativo: UX & Gestao Patrimonial 92,9% (13/14)
 - Decisoes:
-  - Item 1 APROVADO � DM deve corrigir package.json -> v3.36.0 (commit direto na main, sem PR)
-  - Item 2 POSTERGADO � NRF-NAV Fase 2 requer sessao de discovery dedicada; DM permanece em standby ate PO conduzir as 3 perguntas e gerar RF formal
-  - Item 3 APROVADO � 6 branches remotas stale deletadas pelo PO
+  - Item 1 APROVADO ï¿½ DM deve corrigir package.json -> v3.36.0 (commit direto na main, sem PR)
+  - Item 2 POSTERGADO ï¿½ NRF-NAV Fase 2 requer sessao de discovery dedicada; DM permanece em standby ate PO conduzir as 3 perguntas e gerar RF formal
+  - Item 3 APROVADO ï¿½ 6 branches remotas stale deletadas pelo PO
 - Issues priorizadas: chore package.json (P0 imediato) > NRF-NAV F2 (P1 apos discovery) > ENH-005 #158 (aguarda NRF-NAV F2)
 - Bugs registrados: nenhum
 - Melhorias registradas: nenhuma (sugerida mas nao formalizada: auto-bump de versao em CI para evitar nova desync)
 - RFs criados: nenhum
 - Bloqueios identificados: NRF-NAV F2 bloqueado ate discovery de merge Projecoes x Planejamento (BUSSOLA Gap 5)
-- Artefatos gerados para PM/DM: sim � tarefa DM para chore package.json
+- Artefatos gerados para PM/DM: sim ï¿½ tarefa DM para chore package.json
 - Scripts PowerShell executados: sincronizar main | deletar 6 branches remotas | registrar tarefa DM | atualizar memoria
 - Proxima sessao: discovery NRF-NAV Fase 2 (3 perguntas de arquitetura de informacao)
 
-## Sess�o 2026-04-19 � PO Assistant (Cowork)
-- Vers�o na sess�o: v3.31.0
-- Milestone ativo: UX & Gest�o Patrimonial (8/13 � 62%)
-- Decis�o: Abrir discovery NRF-NAV Fase 2 e desmembrar em RF-070 (merge de
-  p�ginas em tabs) + RF-071 (tab Caixa Futuro + agregador � a desenhar)
-- RFs criados: RF-070 � Unifica��o de Proje��es e Planejamento (issue #186)
-- RFs registrados como placeholder: RF-071 � Tab Caixa Futuro + agregadorFuturo.js
-- Decis�es de produto nesta sess�o:
-    1. Rota unificada: reutilizar planejamento.html (n�o criar futuro.html)
+## Sessï¿½o 2026-04-19 ï¿½ PO Assistant (Cowork)
+- Versï¿½o na sessï¿½o: v3.31.0
+- Milestone ativo: UX & Gestï¿½o Patrimonial (8/13 ï¿½ 62%)
+- Decisï¿½o: Abrir discovery NRF-NAV Fase 2 e desmembrar em RF-070 (merge de
+  pï¿½ginas em tabs) + RF-071 (tab Caixa Futuro + agregador ï¿½ a desenhar)
+- RFs criados: RF-070 ï¿½ Unificaï¿½ï¿½o de Projeï¿½ï¿½es e Planejamento (issue #186)
+- RFs registrados como placeholder: RF-071 ï¿½ Tab Caixa Futuro + agregadorFuturo.js
+- Decisï¿½es de produto nesta sessï¿½o:
+    1. Rota unificada: reutilizar planejamento.html (nï¿½o criar futuro.html)
     2. Escopo Fase 2: tabs 1:1, sem terceira tab "Caixa Futuro" (adiado para RF-071)
-    3. Depend�ncia HARD: NRF-NAV Fase 1 (#154) antes de iniciar RF-070
-- Trade-off registrado: motiva��o declarada era "vis�o de caixa futuro", mas
-  escolha de UX (tabs lado a lado) n�o entrega essa vis�o � por isso RF-071
-  foi criado como continua��o obrigat�ria para fechar a dor original
-- Higiene: label rf-070 existia com descri��o "Design System v1.0" (�rf�o,
-  sem contraparte em docs/CLAUDE.md/b�ssola). Resolvido via Op��o A �
-  descri��o do label atualizada para refletir o novo escopo. N�mero RF-070
-  permanece com o merge Proje��es/Planejamento.
+    3. Dependï¿½ncia HARD: NRF-NAV Fase 1 (#154) antes de iniciar RF-070
+- Trade-off registrado: motivaï¿½ï¿½o declarada era "visï¿½o de caixa futuro", mas
+  escolha de UX (tabs lado a lado) nï¿½o entrega essa visï¿½o ï¿½ por isso RF-071
+  foi criado como continuaï¿½ï¿½o obrigatï¿½ria para fechar a dor original
+- Higiene: label rf-070 existia com descriï¿½ï¿½o "Design System v1.0" (ï¿½rfï¿½o,
+  sem contraparte em docs/CLAUDE.md/bï¿½ssola). Resolvido via Opï¿½ï¿½o A ï¿½
+  descriï¿½ï¿½o do label atualizada para refletir o novo escopo. Nï¿½mero RF-070
+  permanece com o merge Projeï¿½ï¿½es/Planejamento.
 - Issues priorizadas: #154 (NRF-NAV Fase 1) ? #186 (RF-070) ? RF-071 (a criar)
-- Bloqueios identificados: #186 bloqueado at� #154 mergeada
+- Bloqueios identificados: #186 bloqueado atï¿½ #154 mergeada
 - Artefatos gerados para PM/DM: dm_tasks_pending.md e pm_tasks_pending.md
   atualizados com RF-070 e placeholder RF-071
 - Scripts PowerShell executados:
     - Registro DM/PM em .auto-memory ?
     - gh label create refactor ?
     - gh issue create RF-070 via body-file ? (issue #186)
-    - gh label edit rf-070 descri��o ?
+    - gh label edit rf-070 descriï¿½ï¿½o ?
     - gh issue comment #158 linkando ENH-005 ao RF-070 ? PENDENTE
-- Pr�xima sess�o: acompanhar entrega de NRF-NAV Fase 1 (#154); depois desenhar
+- Prï¿½xima sessï¿½o: acompanhar entrega de NRF-NAV Fase 1 (#154); depois desenhar
   RF-071 em discovery dedicada
 
 ---
 
-## Sessao 2026-04-20 — PO Assistant (Cowork)
+## Sessao 2026-04-20 â€” PO Assistant (Cowork)
 - Versao na sessao: v3.36.0
 - Milestone ativo: UX & Gestao Patrimonial (13/14 fechadas, 92.9%) | iOS Fase 2 ON HOLD
-- Decisao: NRF-NAV Fase 2 (#186) aprovada — **Opcao B (migracao parcial)**
-  - Q1: Opcao B � respeita H2/H3, resolve Gap 5 da BUSSOLA, ~6h
+- Decisao: NRF-NAV Fase 2 (#186) aprovada â€” **Opcao B (migracao parcial)**
+  - Q1: Opcao B ï¿½ respeita H2/H3, resolve Gap 5 da BUSSOLA, ~6h
   - Q2: planejamento.html vai para **Cockpit > Planejamento** (ferramenta gerencial H2)
   - Q3: aba Projecoes em fatura.html **mantida** + link "ver consolidado em Futuro ->" (modulo compartilhado projecoesCartao.js elimina duplicacao de logica)
 - Issues priorizadas: #186 (P1, desbloqueada) | #158 ENH-005 adiada para NRF-NAV Fase 3
 - Bugs registrados: nenhum
 - Melhorias registradas: nenhuma
 - RFs criados: nenhum
-- Bloqueios identificados: nenhum � Dev Manager desbloqueado
-- Artefatos gerados para PM/DM: sim � handoff DM em dm_tasks_pending.md | comentario publicado em #186
+- Bloqueios identificados: nenhum ï¿½ Dev Manager desbloqueado
+- Artefatos gerados para PM/DM: sim ï¿½ handoff DM em dm_tasks_pending.md | comentario publicado em #186
 - Scripts PowerShell executados: (1) correcao label rf-070 -> nrf-nav-f2 em #186 | (2) gh issue comment #186 | (3) handoff DM | (4) memory update
 - Proxima sessao: revisao do PR feat/MF-186-nav-fase2-consolidacao apos CI verde
 
-## Sessao 2026-04-20 � PO Assistant (Cowork)
+## Sessao 2026-04-20 ï¿½ PO Assistant (Cowork)
 - Versao na sessao: v3.37.0
-- Milestone primario: UX & Gestao Patrimonial � 13/15 antes da sessao; 13/14 (92.9%) apos fechamento de #158
-- Decisao: NRF-NAV Fase 3 (#189) = Opcao B � ENH-005 + refinamentos Design System. Opcao C (merge receitas/despesas) rejeitada � requer RF proprio se vier no futuro.
-- Issue fechada: #158 ENH-005 (absorvida por #189) � fechamento gerencial para evitar dupla contagem
+- Milestone primario: UX & Gestao Patrimonial ï¿½ 13/15 antes da sessao; 13/14 (92.9%) apos fechamento de #158
+- Decisao: NRF-NAV Fase 3 (#189) = Opcao B ï¿½ ENH-005 + refinamentos Design System. Opcao C (merge receitas/despesas) rejeitada ï¿½ requer RF proprio se vier no futuro.
+- Issue fechada: #158 ENH-005 (absorvida por #189) ï¿½ fechamento gerencial para evitar dupla contagem
 - Issues priorizadas: #189 (P2)
 - Bugs registrados: nenhum
 - Melhorias registradas: nenhuma (ENH-005 absorvida)
 - RFs criados: nenhum
-- Artefatos gerados para PM/DM: sim � 2 artefatos registrados em .auto-memory/
+- Artefatos gerados para PM/DM: sim ï¿½ 2 artefatos registrados em .auto-memory/
 - Scripts PowerShell executados: fechamento #158 + registro tarefas PM/DM + atualizacao memoria
-- Proxima sessao: revisar PR de F3 quando DM abrir; atualizar Bussola �9 apos merge
+- Proxima sessao: revisar PR de F3 quando DM abrir; atualizar Bussola ï¿½9 apos merge
+
+---
+
+## PO Assistant — 2026-04-21 (Cowork)
+
+### Estado na sessão
+- Versão: v3.38.0 (sincronizada com package.json)
+- Milestone UX & Gestão Patrimonial: 15/15 (100%) ?
+- Milestone iOS: ON HOLD (4/17) — sem mudança
+- Testes: 727 unit + 26 int — todos passando
+- Saúde: ?? VERDE
+
+### Decisões tomadas
+1. **NRF-VISUAL aprovado** — 4 fases (v3.39.0–v3.42.0), Opção B (1–3 cards hero por tela)
+2. **Bússola §12 criada** — Hierarquia Visual do Controller (PV1–PV6)
+3. **Bússola §9 revisada** — NRF-VISUAL como itens 8–11; ENH-004/002 rebaixados para itens 12–13
+
+### Issues criadas
+- NRF-VISUAL Fase 1 — Hierarquia de contraste, cards hero e tipografia de gráfico (v3.39.0) — label `nrf-visual` (#192)
+
+### Novas decisões pendentes do PO
+- Nenhuma — NRF-VISUAL F1 pronto para execução do DM
+
+### Artefatos gerados para PM/DM
+- Artefato 1 (PM Agent) — registro do NRF-VISUAL no backlog: SIM (.auto-memory/pm_tasks_pending.md)
+- Artefato 2 (Dev Manager) — tarefa NRF-VISUAL F1: SIM (.auto-memory/dm_tasks_pending.md)
+- Patch de BUSSOLA_PRODUTO.md §8/§9/§11/§12: texto pronto na sessão PO
+- Patch de DESIGN_SYSTEM.md §1/§2/§8/§10: texto pronto na sessão PO
+
+### Scripts PowerShell executados
+- Criar issue GitHub NRF-VISUAL F1 — ver seção 3.1 da sessão PO
+- Registrar tarefa PM — ver seção 3.2
+- Registrar tarefa DM — ver seção 3.3
+- Atualizar memória persistente — este script (seção 3.4)
+
+### Próxima sessão
+- Foco sugerido: DM executa NRF-VISUAL F1 (tokens + card-hero + chartDefaults + migração Cockpit)
+- PO valida no PR: screenshots antes/depois, contraste, migração correta dos patches documentais
+
+
