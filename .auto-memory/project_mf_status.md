@@ -1,8 +1,86 @@
 ﻿# Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-21 06:30 (PM Agent — revisão diária)
-> Versão: v3.38.0 | package.json = v3.38.0 ✅ (sincronizado)
-> Saúde: 🟢 VERDE — CI verde | 727 testes OK | 0 PRs abertos | 0 violações | 13 issues (12 iOS ON HOLD + #192 NRF-VISUAL) | UX milestone 100% ✅
+> Atualizado em: 2026-04-21 08:33 (PM Agent — sessão diária)
+> Versão: v3.39.0 | package.json = v3.39.0 ✅ (sincronizado)
+> Saúde: 🟢 VERDE — CI verde | 733 testes OK | 0 PRs abertos | 0 violações | 13 issues iOS ON HOLD | UX 100% ✅
+
+---
+
+## PM Agent — 2026-04-21 08:33
+
+### Estado
+- Versão: v3.39.0
+- Milestone primário: UX & Gestão Patrimonial (100%, 15/15) ✅ CONCLUÍDO — sem novas issues no milestone
+- Milestone iOS: ON HOLD (23.5%, 4/17) — aguarda Apple Developer Program
+- Saúde: verde — CI verde (5/5 success), 733 testes OK, 0 PRs, 0 violações, 0 P0/P1
+- Testes: 733 unit (32 arquivos, todos passando) + 26 int
+- CI: success — Deploy Firebase (3 runs today) | Testes: success
+
+### Issues abertas (13 total)
+- Milestone primário: nenhuma (milestone 100% concluído ✅)
+- iOS ON HOLD: #77–#89 (13 issues — não priorizar até Apple Developer Program)
+- Novas desde última sessão PM (2026-04-21 06:30): nenhuma
+
+### Alertas ativos
+- [iOS-ON-HOLD] #77–#89 pausadas — aguarda Apple Developer Program (sem mudança)
+
+### Prioridades para Dev Manager
+- P0: nenhuma
+- P1: nenhuma
+- P2: NRF-VISUAL Fase 2 (fluxo-caixa.html + Histórico, v3.40.0) — quando PO abrir issue
+- P3: iOS Fase 2 (#77–#80) — aguarda Apple Developer Program
+
+### Atividade recente
+- Último PR mergeado: #193 feat(visual) NRF-VISUAL F1 hierarquia de contraste (2026-04-21) — #192 fechada
+- Issues fechadas últimos 7 dias: #192 (21/04), #189 (20/04), #186 (20/04), #158 (20/04), #182 (19/04) = 5 issues
+- Commits diretos em src/ sem PR: nenhum ✅
+- Subagentes acionados (PR #193): test-runner PASS | security-reviewer N/A | import-pipeline-reviewer N/A
+- Branch remota órfã: feat/MF-192-nrf-visual-f1-hierarquia (já mergeada — DM pode deletar)
+
+### Decisões pendentes do PO
+- Nenhuma — próxima iniciativa é decisão do PO (NRF-VISUAL F2? iOS retomada? nova feature?)
+
+---
+
+## Dev Manager — 2026-04-21 06:51
+
+### Sessão
+- Versão: v3.39.0 (derivada de package.json após bump)
+- Tarefas concluídas: #192 NRF-VISUAL Fase 1 + arquivos não rastreados commitados
+- PRs criados: [#193](https://github.com/luigifilippozzi-cmyk/minhas-financas/pull/193) — feat(visual): NRF-VISUAL F1
+- PRs mergeados: #193
+- Subagentes acionados: test-runner PASS (733 testes) | security-reviewer N/A | import-pipeline-reviewer N/A
+- CI: verde (Vitest ×2 PASS) | Deploy Firebase: in_progress → esperado verde
+- Arquivos não rastreados resolvidos: docs/PLANO_DE_TESTES_v3.38.0.md + .xlsx + scripts/po-diagnostic.js → commitados diretamente em main
+
+### O que foi entregue (PR #193 — NRF-VISUAL F1)
+- `variables.css`: 7 tokens hero (light + dark pareados) + 6 tokens KPI/gráfico
+- `components.css`: `.card-hero` (carbono #1F1F1C, ivory #FAF9F5, 40px KPI, dark mode) + `.card-subtle`
+- `src/js/utils/chartDefaults.js`: novo módulo `aplicarDefaultsControllerCharts()` (font=14, tooltip/legend 14px)
+- `src/js/app.js`: import chartDefaults + chamada no boot; Saldo Real → hero permanente; Fatura → hero ≤7d; BurnRate → hero quando projeção >110%; ticks 11/12→13px, legend 14px (2 gráficos)
+- `src/js/pages/fluxo-caixa.js`: ticks/títulos 11/12→13px (gráfico fluxo anual)
+- `src/dashboard.html`: `card-saldo-real` recebe `card-hero` no HTML
+- `tests/utils/chartDefaults.test.js`: 6 testes novos
+- Docs: `DESIGN_SYSTEM.md` §2/§8/§10 + `BUSSOLA_PRODUTO.md` §8/§9/§11/§12 (nova seção PV1–PV6)
+- `CHANGELOG.md`: v3.39.0 documentado
+
+### Estado dos milestones
+- UX & Gestão Patrimonial (primário): 15/15 issues fechadas ✅ CONCLUÍDO
+- iOS Fase 2 (P3 — ON HOLD): 4/4 issues abertas — #77, #78, #79, #80
+- iOS Fases 3–5 (P3 — aguardando F2): 8 issues abertas — #81–#89
+- QA pendente: nenhum
+
+### Decisões pendentes do PO
+- Nenhuma — milestone primário 100% concluído, NRF-VISUAL F2 é próxima evolução natural (v3.40.0, fora de escopo desta sessão)
+
+### Próximas prioridades
+- P0: nenhuma
+- P1: nenhuma
+- P2: NRF-VISUAL Fase 2 (fluxo-caixa.html + Histórico, v3.40.0) — quando PO abrir issue
+- P3: iOS Fase 2 (#77–#80) — aguarda Apple Developer Program
+
+### Alertas
+- [iOS-ON-HOLD] #77–#89 pausadas — aguarda Apple Developer Program (sem mudança)
 
 ---
 
