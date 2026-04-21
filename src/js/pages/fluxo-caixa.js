@@ -258,7 +258,7 @@ function renderizarGrafico(dados) {
       scales: {
         x: {
           grid: { color: 'rgba(0,0,0,.05)' },
-          ticks: { font: { size: 12 } },
+          ticks: { font: { size: 13 } },
         },
         y: {
           beginAtZero: true,
@@ -268,9 +268,9 @@ function renderizarGrafico(dados) {
               new Intl.NumberFormat('pt-BR', {
                 notation: 'compact', style: 'currency', currency: 'BRL',
               }).format(v),
-            font: { size: 11 },
+            font: { size: 13 },
           },
-          title: { display: true, text: 'R$ / mês', font: { size: 11 } },
+          title: { display: true, text: 'R$ / mês', font: { size: 13 } },
         },
         yAcum: {
           position: 'right',
@@ -280,9 +280,9 @@ function renderizarGrafico(dados) {
               new Intl.NumberFormat('pt-BR', {
                 notation: 'compact', style: 'currency', currency: 'BRL',
               }).format(v),
-            font: { size: 11 },
+            font: { size: 13 },
           },
-          title: { display: true, text: 'Acumulado', font: { size: 11 } },
+          title: { display: true, text: 'Acumulado', font: { size: 13 } },
         },
       },
     },

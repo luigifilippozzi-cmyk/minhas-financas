@@ -82,6 +82,12 @@
 | `--font-size-lg` | 17px | Subtitulos |
 | `--font-size-xl` | 22px | Titulos de secao |
 | `--font-size-2xl` | 28px | Titulo principal (dashboard) |
+| `--font-size-kpi` | 28px | KPI cards padrão |
+| `--font-size-kpi-hero` | 40px | KPI em card hero (NRF-VISUAL F1) |
+| `--font-size-chart-tick` | 13px | Ticks de eixo nos gráficos |
+| `--font-size-chart-legend` | 14px | Legenda dos gráficos |
+| `--font-size-chart-title` | 13px | Título de eixo nos gráficos |
+| `--font-size-chart-tooltip` | 14px | Tooltip dos gráficos |
 
 ### Pesos
 | Peso | Uso |
@@ -200,6 +206,19 @@
 - Sombra `--shadow-sm` (repouso) / `--shadow-card-hover` (hover)
 - Variantes: `.resumo-card`, `.fat-card`, `.imp-card`
 
+**Card Hero** (NRF-VISUAL F1 — v3.39.0):
+- Classe: `.card-hero` — adicionar junto a `.card` e `.resumo-card`
+- Fundo `--color-surface-hero` (#1F1F1C), texto `--color-text-on-hero` (#FAF9F5)
+- Sombra `--shadow-hero`, borda `--color-border-on-hero`
+- KPI value: `--font-size-kpi-hero` (40px)
+- **Regra PV4:** máximo 3 cards hero simultâneos por tela
+- Uso no Cockpit: Saldo Real (permanente), Próxima Fatura (≤7 dias), Burn Rate (estouro >10%)
+- Contraste hero: ≥ 12:1 (ivory #FAF9F5 sobre carbono #1F1F1C)
+
+**Card Subtle**:
+- Classe: `.card-subtle` — fundo `--color-surface-alt`, borda `--color-border`
+- Uso: cards de suporte, contexto secundário
+
 ### Modais
 **Padrao A (preferido):** `.modal` + `.modal-backdrop` + `.modal-card`
 **Padrao B (legado):** `.modal-overlay` (backdrop integrado)
@@ -237,10 +256,12 @@
 ## 10. Acessibilidade
 
 - **Contraste WCAG AA:** texto muted >= 5.6:1, texto principal >= 15:1
+- **Card Hero:** contraste ≥ 12:1 (#FAF9F5 sobre #1F1F1C) — supera WCAG AAA
 - **Touch targets:** minimo 44x44px em mobile (aplicado via media query)
 - **Focus visible:** ring de 3px em todos os elementos interativos
 - **prefers-reduced-motion:** animacoes desativadas quando solicitado
 - **Semantica HTML:** uso de `<nav>`, `<main>`, `<section>`, `<button>`
+- **Gráficos:** tipografia mínima 13px (ticks) / 14px (legend/tooltip) para legibilidade Controller
 
 ---
 
