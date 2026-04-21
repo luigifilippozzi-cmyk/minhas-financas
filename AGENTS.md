@@ -83,6 +83,7 @@ git log --oneline -10               # últimos commits
 8. **Nunca** importar Firebase via CDN — usar pacotes npm
 9. **Sempre** usar Conventional Commits (`feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:`)
 10. **Nunca** usar `deleteDoc` em lote sem batch — viola regras Firestore
+11. **PR com `.html`/`.css`/templates inline**: acionar `ux-reviewer` — sem relatório = BLOQUEANTE (Regra #14 do CLAUDE.md)
 
 ---
 
@@ -121,6 +122,26 @@ git log --oneline -10               # últimos commits
 | **test-runner** | SEMPRE antes de criar PR | `npm test`, coverage, testes faltantes |
 | **security-reviewer** | Tocou em: `auth.js`, `database.js`, `firestore.rules`, `innerHTML`, formatters | Firestore rules (grupoId), escHTML, XSS, auth patterns |
 | **import-pipeline-reviewer** | Tocou em: normalizador, deduplicador, ajusteDetector, pdfParser, bankFingerprintMap, pipelineBanco/Cartao | chave_dedup, mesFatura, parsers CSV/XLSX/PDF, dedup fuzzy |
+| **ux-reviewer** | Tocou em: `src/**/*.html`, `src/css/**/*.css`, templates inline em `src/js/pages/*.js`, `chartColors.js` | PUX1–PUX6 (Bússola §12.5), tokens Design System, zero cores hardcoded |
+
+### `ux-reviewer` — Detalhes
+
+**Objetivo:** revisar conformidade visual/UX contra PUX1–PUX6 (Bússola §12.5) e tokens do Design System.
+
+**Reporta a:** Dev Manager (não ao PO).
+
+**Autonomia:** nenhuma. Apenas recomenda; DM decide.
+
+**Invocação obrigatória (Regra Inviolável #14):** quando PR toca qualquer `.html` em `src/`, `.css` em `src/css/`, templates inline em `src/js/pages/*.js` que emitem HTML via `innerHTML`, ou `chartColors.js`.
+
+**Entregável:** relatório em formato padronizado (ver `docs/MF_Prompt_UXReviewer_Squad.md`) com:
+- Arquivos revisados
+- Divergências bloqueantes (com referência PUX-X + arquivo:linha)
+- Divergências não bloqueantes
+- Pontos positivos
+- Recomendação (aprovar / aprovar com ajustes / bloquear)
+
+**Fonte de verdade:** `docs/MF_Prompt_UXReviewer_Squad.md`
 
 ### Protocolo pós-subagente
 1. Ler report do subagente
