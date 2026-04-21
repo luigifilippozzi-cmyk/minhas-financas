@@ -461,10 +461,10 @@
 // Dashboard state — PM Agent updates this section, Dev Manager reads it
 const DASHBOARD_DATA = {
   // PM Agent atualiza estes campos:
-  lastUpdate: "2026-04-21 20:05",
+  lastUpdate: "2026-04-21 20:33",
   version: "v3.39.1",
   health: "green", // green | yellow | red
-  healthText: "🟢 Verde — CI verde | 733 testes OK | 0 PRs | 0 violações | NRF-UX F2 ✅ | 6 NRF-UX P1 sem milestone (#195–#200) | 13 iOS ON HOLD | UX 100% ✅",
+  healthText: "🟢 Verde — CI verde | 733 testes OK | 0 PRs | 0 violações | NRF-UX F2 ✅ | 6 NRF-UX P1 sem milestone (#195–#200) aguardam PO | iOS ON HOLD | UX 100% ✅",
   testsUnit: "733",
   testsUnitStatus: "733 passando",
   testsInt: "26",
@@ -472,6 +472,7 @@ const DASHBOARD_DATA = {
   issuesSub: "NRF-UX P1: 6 (#195–#200) sem milestone | iOS ON HOLD: 13 (#77–#89) | 0 P0/P1 bloqueantes | UX 100% ✅",
   // Dev Manager atualiza via PR + merge
   activity: [
+    { time: "Apr 21", color: "var(--blue)", msg: "<strong>PM Agent 20:33</strong> — 🟢 Verde | v3.39.1 (package.json=3.39.0 — bump pendente) | 733 testes OK (verificado ao vivo) | CI verde (5/5 success) | 0 PRs | 0 branches ativas | 0 violações | 19 issues: 6 NRF-UX P1 sem milestone (#195–#200) + 13 iOS ON HOLD (#77–#89) | UX 100% ✅ (15/15) | iOS 23.5% (4/17) ON HOLD | utils/: 0 módulos sem teste | [AÇÃO-PENDENTE-PO] NRF-UX F3–F8 aguardam milestone | Próximo: NRF-UX F3 (#195 Remover emojis) quando PO confirmar milestone", tag: "pm" },
     { time: "Apr 21", color: "var(--green)", msg: "<strong>PR #201 mergeado</strong> — feat(design-system): NRF-UX F2 — Fraunces ativa em h1/h2 (components.css) + §12.5 PUX1–PUX6 (Bússola) + ux-reviewer subagente (AGENTS.md + docs/) + Regra Inviolável #14 (CLAUDE.md) | 733 testes OK | test-runner PASS | ux-reviewer PASS (estreia) | v3.39.1 | #194 fechada", tag: "merge" },
     { time: "Apr 21", color: "var(--blue)", msg: "<strong>Dev Manager 20:05</strong> — 🟢 Verde | v3.39.1 | 733 testes OK | CI verde | PR #201 NRF-UX F2 mergeado | 19 issues: 6 NRF-UX P1 sem milestone (#195–#200) + 13 iOS ON HOLD | ux-reviewer estreia PASS | Regra #14 ativa | próxima: NRF-UX F3 (#195) — aguarda PO confirmar milestone", tag: "dm" },
     { time: "Apr 21", color: "var(--blue)", msg: "<strong>PM Agent 19:50</strong> — 🟢 Verde | v3.39.0 | 733 testes OK (verificado ao vivo) | CI verde (5/5 Deploy Firebase success) | 20 issues: 7 NRF-UX P1 sem milestone (#194–#200) + 13 iOS ON HOLD (#77–#89) | 0 PRs | 0 branches ativas | 0 violações | UX 100% ✅ (15/15) | iOS 23.5% (4/17) ON HOLD | P2 tech debt: 4 controllers sem testes — aguarda PO | estado idêntico à sessão 19:44 (nenhuma atividade intermediária)", tag: "pm" },
