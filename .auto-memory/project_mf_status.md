@@ -1,8 +1,48 @@
 ﻿# Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-21 20:33 (PM Agent — sessão autônoma)
-> Versão: v3.39.1 (package.json=3.39.0 — bump pendente) | Testes: 733 unit + 26 int | Saúde: 🟢 VERDE
-> CI: verde (5/5 success) | PRs: 0 | Issues: 19 (6 NRF-UX P1 + 13 iOS ON HOLD) | UX 100% ✅
+> Atualizado em: 2026-04-21 21:32 (PM Agent — sessão autônoma)
+> Versão: v3.39.0 (package.json) / v3.39.1 (CHANGELOG — bump PATCH pendente) | Testes: 733 unit + 26 int | Saúde: 🟢 VERDE
+> CI: verde (5/5 success) | PRs: 0 | Issues: 19 (6 NRF-UX em milestone #19 + 13 iOS ON HOLD) | UX 100% ✅
+
+---
+
+## PM Agent — 2026-04-21 21:32
+
+### Estado
+- Versão: v3.39.0 (package.json) / v3.39.1 (CHANGELOG) — bump PATCH pendente (menor, não bloqueante)
+- Milestone primário: UX & Gestão Patrimonial (100%, 15/15) ✅ CONCLUÍDO
+- Milestone NRF-UX (milestone #19): 2/8 (25%) — F1+F2 concluídas, F3–F8 abertas (#195–#200)
+- Milestone iOS: ON HOLD (23.5%, 4/17) — aguarda Apple Developer Program
+- Saúde: verde — CI verde (5/5 Deploy Firebase), 733 testes OK, 0 PRs, 0 violações, 0 P0
+- Testes: 733 unit (32 arquivos, todos passando — verificado ao vivo) + 26 int
+- CI: success — Deploy Firebase (5 runs, todos success)
+
+### Issues abertas (19 total)
+- NRF-UX (milestone #19, prioridade alta): #195 F3 emojis, #196 F4 Lucide, #197 F5 skeletons, #198 F6 espaçamento, #199 F7 Chart.js, #200 F8 microcopy
+- iOS ON HOLD: #77–#89 (13 issues — não priorizar até Apple Developer Program)
+- Novas desde última sessão PM (20:33): nenhuma
+
+### Alertas ativos
+- [VERSÃO-DIVERGÊNCIA] package.json=3.39.0 vs CHANGELOG=3.39.1 — bump PATCH pendente (menor, não bloqueante)
+- [iOS-ON-HOLD] #77–#89 pausadas — aguarda Apple Developer Program
+- [BRANCHES-ORFAS] 2 branches remotas pós-merge não removidas: feat/MF-192-nrf-visual-f1-hierarquia + feat/MF-194-nrf-ux-f2-fraunces-patches
+
+### Alertas RESOLVIDOS desde última sessão
+- [AÇÃO-PENDENTE-PO] NRF-UX F3–F8 sem milestone → RESOLVIDO ✅ — milestone #19 criado e issues #195–#200 atribuídas (commit d269226, docs(bussola))
+
+### Prioridades para Dev Manager
+- P0: nenhum bloqueante
+- P1: NRF-UX F3 (#195 — Remover emojis de chrome) — milestone #19 confirmado, pode iniciar
+- P1: NRF-UX F4–F8 (#196–#200) — em sequência após F3
+- P2: testes de controllers (categorias, orcamentos, planejamento, receitas-dashboard) — aguarda PO
+- P2 (limpeza): remover branches órfãs remotas feat/MF-192 + feat/MF-194
+
+### Atividade recente
+- Último commit: d269226 docs(bussola): secao 9 — milestone NRF-UX #19 e fila F3-F8 com issues (2026-04-21)
+- Último PR mergeado: #201 feat(design-system): NRF-UX F2 — Fraunces + ux-reviewer + patches (2026-04-21)
+- Issues fechadas hoje (2026-04-21): #194 NRF-UX F2, #192 NRF-VISUAL F1
+- Commits sem PR em src/: NÃO — todas as features chegaram via PRs
+- utils/ sem teste: 0 módulos (zero dívidas técnicas de cobertura)
 
 ---
 
