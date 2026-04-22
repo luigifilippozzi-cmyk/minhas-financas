@@ -7,6 +7,18 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.39.6] - 2026-04-22
+
+### Adicionado
+
+- **NRF-UX F7 — Chart.js tokens + tabular-nums (#199):** tipografia dos gráficos migrada para tokens CSS; `font-variant-numeric: tabular-nums` aplicado em todas as classes de valores monetários.
+  - `src/css/variables.css`: token `--fw-chart: 500` adicionado à seção KPI/gráficos.
+  - `src/js/utils/chartDefaults.js`: `aplicarDefaultsControllerCharts()` reescrita para ler `--font-size-chart-tick` (13px), `--font-size-chart-legend` (14px), `--font-size-chart-tooltip` (14px), `--font-family` e `--fw-chart` via `getComputedStyle` — elimina `font.size = 14` hardcoded; guarda `typeof getComputedStyle === 'undefined'` para compatibilidade com ambiente Node.js.
+  - `src/css/main.css`: `tabular-nums` adicionado em `.orc-chip-valor`, `.desp-chip-valor`, `.desp-item-valor`/`.despesa-valor`, `.imp-chip-valor`, `.parc-total-valor`, `.parc-compra-valor`, `.rec-item-valor`, `.fat-card-valor`.
+  - `src/css/dashboard.css`: `tabular-nums` adicionado em `.parc-total-valor` e `.parc-compra-valor`.
+  - `src/css/planejamento.css`: `tabular-nums` adicionado em `.plan-kpi-valor`.
+  - `tests/utils/chartDefaults.test.js`: testes atualizados para mockar `getComputedStyle` e testar comportamento token-driven; 3 novos TCs (total: 756).
+
 ## [3.39.5] - 2026-04-22
 
 ### Adicionado
