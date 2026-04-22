@@ -175,6 +175,12 @@
   --space-8:  32px;
   --space-10: 40px;
 
+  /* ── Ícones (Lucide) ────────────────────────────────────── */
+  --icon-xs:  13px;
+  --icon-sm:  16px;
+  --icon-md:  20px;
+  --icon-lg:  24px;
+
   /* ── Safe Areas (iOS notch / Dynamic Island) ─────────────── */
   --safe-area-top:    env(safe-area-inset-top, 0px);
   --safe-area-bottom: env(safe-area-inset-bottom, 0px);

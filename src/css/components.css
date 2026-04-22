@@ -159,8 +159,8 @@ h1, h2 { font-family: var(--font-display); }
    ══════════════════════════════════════════════════════════════ */
 
 .nav-icon {
-  width: 16px;
-  height: 16px;
+  width: var(--icon-sm);
+  height: var(--icon-sm);
   flex-shrink: 0;
 }
 
@@ -186,8 +186,8 @@ h1, h2 { font-family: var(--font-display); }
 }
 
 .brand-icon {
-  width: 22px;
-  height: 22px;
+  width: var(--icon-lg);
+  height: var(--icon-lg);
   color: var(--color-primary);
   flex-shrink: 0;
 }
@@ -261,13 +261,13 @@ h1, h2 { font-family: var(--font-display); }
   color: var(--color-text-inverse);
 }
 
-.nav-section-icon { width: 15px; height: 15px; flex-shrink: 0; }
-.nav-sub-icon { width: 13px; height: 13px; flex-shrink: 0; vertical-align: middle; margin-right: 4px; color: var(--color-text-muted); }
-.section-icon  { width: 20px; height: 20px; flex-shrink: 0; vertical-align: middle; margin-right: 6px; color: var(--color-text-muted); }
+.nav-section-icon { width: var(--icon-sm); height: var(--icon-sm); flex-shrink: 0; }
+.nav-sub-icon { width: var(--icon-xs); height: var(--icon-xs); flex-shrink: 0; vertical-align: middle; margin-right: 4px; color: var(--color-text-muted); }
+.section-icon  { width: var(--icon-md); height: var(--icon-md); flex-shrink: 0; vertical-align: middle; margin-right: 6px; color: var(--color-text-muted); }
 
 .nav-chevron {
-  width: 13px;
-  height: 13px;
+  width: var(--icon-xs);
+  height: var(--icon-xs);
   transition: transform var(--transition);
   flex-shrink: 0;
   margin-left: 2px;
