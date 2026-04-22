@@ -13,7 +13,7 @@ import { onAuthChange, logout } from '../services/auth.js';
 import { buscarPerfil, buscarGrupo, ouvirContas, ouvirCategorias, ouvirDespesas, ouvirDespesasPorMesFatura, garantirContasPadrao } from '../services/database.js';
 import { formatarMoeda, formatarData, nomeMes, escHTML } from '../utils/formatters.js';
 import { recalcularScoreFatura } from '../utils/reconciliadorFatura.js';
-import { skeletonTableRows, errorStateHTML } from '../utils/skeletons.js';
+import { skeletonTableRows, skeletonChart, errorStateHTML } from '../utils/skeletons.js';
 import { CONTAS_PADRAO } from '../models/Conta.js';
 import { iniciar as iniciarProjecoes } from '../utils/projecoesCartao.js';
 
@@ -412,7 +412,7 @@ function carregarProjecoes() {
   _unsubProjecoes = [];
 
   const container = document.getElementById('fat-proj-content');
-  container.innerHTML = '<p class="fat-loading">Carregando...</p>';
+  container.innerHTML = skeletonChart(120);
   if (!_cartaoId) { container.innerHTML = '<p class="fat-loading">Selecione um cartão.</p>'; return; }
 
   const membros = _membrosDoGrupo();

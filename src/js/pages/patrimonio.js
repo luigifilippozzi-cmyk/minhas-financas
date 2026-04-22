@@ -24,6 +24,7 @@ import { modelInvestimento } from '../models/Investimento.js';
 import { modelPassivoExtrajudicial } from '../models/PassivoExtrajudicial.js';
 import { formatarMoeda, formatarData, escHTML } from '../utils/formatters.js';
 import { dataHoje, isMovimentacaoReal } from '../utils/helpers.js';
+import { skeletonPatrimonioItems } from '../utils/skeletons.js';
 
 // ── Estado da página ──────────────────────────────────────────
 let _usuario       = null;
@@ -80,6 +81,11 @@ onAuthChange(async (user) => {
 // ── Listeners ────────────────────────────────────────────────
 
 function iniciarListeners() {
+  const listaInv  = document.getElementById('lista-investimentos');
+  const listaPass = document.getElementById('lista-passivos');
+  if (listaInv)  listaInv.innerHTML  = skeletonPatrimonioItems(3);
+  if (listaPass) listaPass.innerHTML = skeletonPatrimonioItems(2);
+
   _unsubContas = ouvirContas(_grupoId, (contas) => {
     _contas = contas;
     reiniciarListenersTransacoes();
