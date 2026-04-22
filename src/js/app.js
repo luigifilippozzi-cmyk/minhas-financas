@@ -34,7 +34,7 @@ import { CONTAS_PADRAO } from './models/Conta.js';            // NRF-004
 import { mesAnoAtual, definirTexto, isMovimentacaoReal } from './utils/helpers.js';
 import { coresGrafico } from './utils/chartColors.js';
 import { nomeMes, escHTML } from './utils/formatters.js';
-import { skeletonCards, errorStateHTML } from './utils/skeletons.js';
+import { skeletonCards, skeletonKpiValue, skeletonChart, errorStateHTML } from './utils/skeletons.js';
 import { inicializarCapacitor } from './utils/capacitor.js';
 import { calcularBurnRate } from './utils/burnRateCalculator.js'; // RF-069
 import { aplicarDefaultsControllerCharts } from './utils/chartDefaults.js'; // NRF-VISUAL F1
@@ -153,7 +153,20 @@ function iniciarListeners() {
   if (catGrid && !estadoApp.categorias.length) catGrid.innerHTML = skeletonCards(6);
   ['total-orcado', 'total-gasto', 'total-disponivel', 'rec-total', 'rec-saldo'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.innerHTML = '<span class="skeleton skeleton-line--lg" style="display:inline-block;width:80px"></span>';
+    if (el) el.innerHTML = skeletonKpiValue();
+  });
+  ['dash-chart-categorias', 'dash-chart-evolucao'].forEach(id => {
+    const canvas = document.getElementById(id);
+    if (canvas && canvas.parentElement) {
+      canvas.parentElement.dataset.canvasId = id;
+      canvas.style.display = 'none';
+      if (!canvas.parentElement.querySelector('.skeleton-chart')) {
+        const ph = document.createElement('div');
+        ph.className = 'skeleton skeleton-chart';
+        ph.setAttribute('aria-hidden', 'true');
+        canvas.parentElement.insertBefore(ph, canvas);
+      }
+    }
   });
 
   // Categorias — não filtram por mês
@@ -263,9 +276,17 @@ async function carregarDadosAno() {
 
 // ── RF-017: Gráfico 1 — Receitas × Despesas por Categoria ────
 
+function _revelarCanvas(id) {
+  const canvas = document.getElementById(id);
+  if (!canvas) return;
+  canvas.style.display = '';
+  canvas.parentElement?.querySelectorAll('.skeleton-chart').forEach(el => el.remove());
+}
+
 function renderizarGraficoCategorias() {
   const canvas = document.getElementById('dash-chart-categorias');
   if (!canvas || typeof Chart === 'undefined') return;
+  _revelarCanvas('dash-chart-categorias');
 
   let despFiltradas, recFiltradas;
 
@@ -370,6 +391,7 @@ function renderizarGraficoCategorias() {
 function renderizarGraficoEvolucao() {
   const canvas = document.getElementById('dash-chart-evolucao');
   if (!canvas || typeof Chart === 'undefined' || !_dadosMeses) return;
+  _revelarCanvas('dash-chart-evolucao');
 
   const meses6   = _dadosMeses.meses;
   const hoje     = new Date();
