@@ -461,17 +461,18 @@
 // Dashboard state — PM Agent updates this section, Dev Manager reads it
 const DASHBOARD_DATA = {
   // PM Agent atualiza estes campos:
-  lastUpdate: "2026-04-22 22:17",
-  version: "v3.39.3",
+  lastUpdate: "2026-04-22 11:44",
+  version: "v3.39.4",
   health: "green", // green | yellow | red
-  healthText: "Verde — CI verde | 733 testes OK | 0 PRs | 0 violações | NRF-UX F4 concluída (PR #203) | F5–F8 em milestone #19 | iOS ON HOLD | UX 100%",
-  testsUnit: "733",
-  testsUnitStatus: "733 passando",
+  healthText: "Verde — CI verde | 753 testes OK | 0 PRs | 0 violações | NRF-UX F5 concluída (PR #204) | F6–F8 em milestone #19 | iOS ON HOLD | UX 100%",
+  testsUnit: "753",
+  testsUnitStatus: "753 passando",
   testsInt: "26",
-  issuesOpen: 17,
-  issuesSub: "NRF-UX milestone #19: 4 (#197–#200, F5–F8) | iOS ON HOLD: 13 (#77–#89) | 0 P0/P1 bloqueantes | UX 100%",
+  issuesOpen: 16,
+  issuesSub: "NRF-UX milestone #19: 3 (#198–#200, F6–F8) | iOS ON HOLD: 13 (#77–#89) | 0 P0/P1 bloqueantes | UX 100%",
   // Dev Manager atualiza via PR + merge
   activity: [
+    { time: "Apr 22", color: "var(--green)", msg: "<strong>PR #204 mergeado</strong> — feat(design-system): NRF-UX F5 — skeletons e estados de loading (v3.39.4) | tokens --color-surface-muted/strong | .skeleton-chart + .skeleton-kpi + .skeleton-patrimonio-item | 3 novos helpers (skeletonKpiValue/Chart/PatrimonioItems) | aria-hidden em todos os placeholders | skeleton dashboard (gráficos+KPI) + fatura (projeções) + patrimônio + fluxo-caixa (compromissos+forecast) | 753 testes OK | test-runner PASS | ux-reviewer PASS (PUX5+PUX6) | #197 fechada", tag: "merge" },
     { time: "Apr 22", color: "var(--green)", msg: "<strong>PR #203 mergeado</strong> — feat(design-system): NRF-UX F4 — unificar iconografia Lucide (v3.39.3) | tokens --icon-xs/sm/md/lg em variables.css | px hardcoded → tokens em 6 classes CSS | fix grupo.html + login.html (sem CDN) + patrimonio.html (sem createIcons) | ✅ → check-circle Lucide | 733 testes OK | test-runner PASS | ux-reviewer PASS | security-reviewer PASS | #196 fechada", tag: "merge" },
     { time: "Apr 22", color: "var(--green)", msg: "<strong>PR #202 mergeado</strong> — feat(design-system): NRF-UX F3 — remover emojis de chrome, ícones Lucide (v3.39.2) | 13 páginas HTML | 15 emojis nav substituídos | section-icon + nav-sub-icon CSS | aria-hidden corrigido em 132 ícones pré-existentes (PUX5) | 733 testes OK | ux-reviewer PASS | #195 fechada | branches órfãs removidas", tag: "merge" },
     { time: "Apr 21", color: "var(--blue)", msg: "<strong>PM Agent 21:32</strong> — 🟢 Verde | v3.39.0 (package.json) / v3.39.1 (CHANGELOG — bump PATCH pendente) | 733 testes OK (verificado ao vivo) | CI verde (5/5 Deploy Firebase success) | 0 PRs | 0 branches ativas | 0 violações | 19 issues: 6 NRF-UX (#195–#200) em milestone #19 ✅ [AÇÃO-PO RESOLVIDA] + 13 iOS ON HOLD (#77–#89) | NRF-UX: 2/8 (25%) — F3 próxima | UX 100% ✅ | iOS 23.5% ON HOLD | [AÇÃO] 2 branches órfãs remotas pós-merge: feat/MF-192 + feat/MF-194 | docs(bussola): secao 9 atualizada (commit d269226)", tag: "pm" },
