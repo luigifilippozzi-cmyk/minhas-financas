@@ -112,7 +112,7 @@ function renderizarLista() {
   if (!container) return;
 
   if (!_receitas.length) {
-    container.innerHTML = emptyStateHTML('💰', 'Nenhuma receita registrada neste mês.', 'Clique em + Nova Receita para começar.');
+    container.innerHTML = emptyStateHTML('', 'Nenhuma receita registrada neste mês.', 'Clique em + Nova Receita para começar.');
     return;
   }
 

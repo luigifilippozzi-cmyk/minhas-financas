@@ -602,7 +602,7 @@ async function confirmarAtualizacaoResp() {
     console.error('Erro ao atualizar responsável em massa:', e);
     mostrarToast('❌ Erro ao atualizar. Tente novamente.', true);
   } finally {
-    if (btnResp) { btnResp.disabled = false; btnResp.textContent = '👤 Aplicar'; }
+    if (btnResp) { btnResp.disabled = false; btnResp.textContent = 'Aplicar'; }
   }
 }
 
