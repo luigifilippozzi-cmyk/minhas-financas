@@ -112,7 +112,7 @@ function renderizarLista() {
   if (!container) return;
 
   if (!_receitas.length) {
-    container.innerHTML = emptyStateHTML('', 'Nenhuma receita registrada neste mês.', 'Clique em + Nova Receita para começar.');
+    container.innerHTML = emptyStateHTML('', `Sem receitas em ${nomeMes(_mes)}.`, 'Adicione a primeira.');
     return;
   }
 
@@ -195,6 +195,7 @@ function abrirModal(receita = null) {
 function fecharModal() {
   document.getElementById('modal-receita').style.display = 'none';
   document.getElementById('form-receita').reset();
+  _setErroModal('');
   _editandoId = null;
 }
 
@@ -208,17 +209,25 @@ function preencherSelectCategorias() {
 }
 
 // ── Salvar ─────────────────────────────────────────────────────
+function _setErroModal(msg) {
+  const el = document.getElementById('rec-modal-erro');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.toggle('hidden', !msg);
+}
+
 async function salvarReceita(e) {
   e.preventDefault();
+  _setErroModal('');
 
   const descricao   = document.getElementById('rec-descricao').value.trim();
   const valorRaw    = parseFloat(document.getElementById('rec-valor').value);
   const categoriaId = document.getElementById('rec-categoria').value;
   const dataVal     = document.getElementById('rec-data').value;
 
-  if (!descricao)           { alert('Informe uma descrição.');   return; }
-  if (!valorRaw || valorRaw <= 0) { alert('Informe um valor válido.'); return; }
-  if (!dataVal)             { alert('Informe a data.');           return; }
+  if (!descricao)                  { _setErroModal('Informe uma descrição.');  return; }
+  if (!valorRaw || valorRaw <= 0)  { _setErroModal('Informe um valor válido.'); return; }
+  if (!dataVal)                    { _setErroModal('Informe a data.');          return; }
 
   const dados = {
     grupoId:     _grupoId,
@@ -243,7 +252,7 @@ async function salvarReceita(e) {
     fecharModal();
   } catch (err) {
     console.error('[receitas] Erro ao salvar:', err);
-    alert('Erro ao salvar receita. Tente novamente.');
+    _setErroModal('Não consegui salvar a receita. Verifique sua conexão.');
   } finally {
     btnSalvar.disabled = false;
     btnSalvar.textContent = 'Salvar';
@@ -267,7 +276,7 @@ async function executarExclusao() {
     await excluirReceita(_excluindoId);
   } catch (err) {
     console.error('[receitas] Erro ao excluir:', err);
-    alert('Erro ao excluir receita.');
+    /* error already logged above */
   }
   fecharConfirmarExclusao();
 }
@@ -391,7 +400,7 @@ window._recMarcarTransferencia = async (id) => {
     });
   } catch (err) {
     console.error('[receitas] Erro ao marcar transferência:', err);
-    alert('Erro ao marcar como transferência interna.');
+    console.error('[receitas] Erro ao marcar transferência (já logado acima)');
   }
 };
 window._recDesmarcarTransferencia = async (id) => {
@@ -403,7 +412,7 @@ window._recDesmarcarTransferencia = async (id) => {
     });
   } catch (err) {
     console.error('[receitas] Erro ao desmarcar transferência:', err);
-    alert('Erro ao desmarcar transferência interna.');
+    console.error('[receitas] Erro ao desmarcar transferência (já logado acima)');
   }
 };
 
@@ -420,7 +429,7 @@ window._recDesmarcarTransferencia = async (id) => {
 
 // ── Geração de template xlsx via SheetJS ──────────────────────
 function _gerarTemplateRec() {
-  if (typeof XLSX === 'undefined') { alert('SheetJS não carregado.'); return; }
+  if (typeof XLSX === 'undefined') { console.error('[receitas] SheetJS não carregado'); return; }
   const wb = XLSX.utils.book_new();
   // Aba Receitas
   const dados = [

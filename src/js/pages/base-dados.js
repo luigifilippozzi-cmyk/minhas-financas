@@ -565,7 +565,7 @@ async function confirmarExclusao() {
     aplicarFiltros();
   } catch (e) {
     console.error('Erro ao excluir em massa:', e);
-    alert('Erro ao excluir transações. Tente novamente.');
+    mostrarToast('Não consegui excluir. Tente novamente.', true);
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = 'Excluir permanentemente'; }
   }
@@ -600,7 +600,7 @@ async function confirmarAtualizacaoResp() {
     mostrarToast(`✅ ${n} transaç${n !== 1 ? 'ões' : 'ão'} atualizada${n !== 1 ? 's' : ''} — responsável: ${responsavel}`);
   } catch (e) {
     console.error('Erro ao atualizar responsável em massa:', e);
-    mostrarToast('❌ Erro ao atualizar. Tente novamente.', true);
+    mostrarToast('Não consegui atualizar. Tente novamente.', true);
   } finally {
     if (btnResp) { btnResp.disabled = false; btnResp.textContent = 'Aplicar'; }
   }
@@ -676,7 +676,7 @@ function configurarLimpeza() {
       renderizarPagina();
     } catch (e) {
       console.error('Erro no purge:', e);
-      alert('Erro ao purgar a base de dados. Tente novamente.');
+      mostrarToast('Não consegui purgar a base de dados. Tente novamente.', true);
     } finally {
       btnConf.disabled = false;
       btnConf.textContent = '🗑️ Purgar agora';

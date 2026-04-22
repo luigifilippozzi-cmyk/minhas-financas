@@ -394,6 +394,15 @@ function renderizarGrafico(historico) {
 
 // ── Snapshot ──────────────────────────────────────────────────
 
+function _feedbackSnapshot(msg, isErro = false) {
+  const el = document.getElementById('snapshot-feedback');
+  if (!el) return;
+  el.textContent = msg;
+  el.className = `plan-feedback ${isErro ? 'plan-feedback-erro' : 'plan-feedback-ok'}`;
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.add('hidden'), 3000);
+}
+
 async function salvarSnapshot() {
   const saldoContas       = calcularSaldoContas();
   const totalInv          = calcularTotalInvestimentos();
@@ -412,11 +421,11 @@ async function salvarSnapshot() {
       saldoContas,
       totalInvestimentos: totalInv,
     });
-    alert(`Snapshot de ${mesAno} salvo com sucesso.`);
+    _feedbackSnapshot(`✅ Snapshot ${mesAno} salvo`);
     carregarHistorico();
   } catch (err) {
     console.error('[patrimonio] Erro ao salvar snapshot:', err);
-    alert('Erro ao salvar snapshot. Tente novamente.');
+    _feedbackSnapshot('Não consegui salvar o snapshot. Tente novamente.', true);
   }
 }
 
@@ -481,7 +490,8 @@ async function salvarInvestimentoForm(e) {
     fecharModalInvestimento();
   } catch (err) {
     console.error('[patrimonio] Erro ao salvar investimento:', err);
-    alert('Erro ao salvar investimento. Tente novamente.');
+    const el = document.getElementById('inv-modal-erro');
+    if (el) { el.textContent = 'Não consegui salvar. Tente novamente.'; el.classList.remove('hidden'); }
   }
 }
 
@@ -556,7 +566,8 @@ async function salvarPassivoForm(e) {
     fecharModalPassivo();
   } catch (err) {
     console.error('[patrimonio] Erro ao salvar passivo:', err);
-    alert('Erro ao salvar dívida. Tente novamente.');
+    const el = document.getElementById('pass-modal-erro');
+    if (el) { el.textContent = 'Não consegui salvar. Tente novamente.'; el.classList.remove('hidden'); }
   }
 }
 
