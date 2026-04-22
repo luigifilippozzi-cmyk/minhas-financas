@@ -651,8 +651,9 @@ a:hover { text-decoration: underline; }
 
 /* Valor da categoria de receita */
 .rec-cat-valor {
-  font-size: .875rem;
+  font-size: var(--font-size-sm);
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Card de categoria receita — override de cores */
@@ -928,7 +929,7 @@ a:hover { text-decoration: underline; }
 /* Seção footer de conjuntas */
 .fat-section-footer { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3) var(--space-4); background: var(--color-warning-light); border-top: 1px solid var(--color-warning); font-size: var(--font-size-sm); }
 .fat-footer-label { font-weight: 600; color: var(--color-text-secondary); }
-.fat-footer-valor { font-weight: 700; color: var(--color-text); }
+.fat-footer-valor { font-weight: 700; color: var(--color-text); font-variant-numeric: tabular-nums; }
 .fat-footer-sep { color: var(--color-text-muted); }
 .fat-footer-split { color: var(--color-info); }
 
