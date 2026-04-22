@@ -7,6 +7,18 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.39.3] - 2026-04-22
+
+### Adicionado
+
+- **NRF-UX F4 — Unificar iconografia Lucide (#196):** auditoria completa e consolidação de iconografia para PUX3 (única biblioteca em chrome).
+  - `src/css/variables.css`: tokens de ícone `--icon-xs` (13px), `--icon-sm` (16px), `--icon-md` (20px), `--icon-lg` (24px) adicionados ao sistema de design.
+  - `src/css/components.css`: todas as classes de ícone migradas de px hardcoded para tokens — `.nav-icon`, `.nav-section-icon`, `.nav-sub-icon`, `.section-icon`, `.brand-icon`, `.nav-chevron`.
+  - `src/css/main.css`: `.sucesso-icon` migrado de `font-size: 56px` (emoji) para `width/height: 56px` com suporte a SVG Lucide.
+  - `src/grupo.html`: Lucide CDN (0.460.0) + `createIcons()` adicionados; emoji `✅` substituído por `<i data-lucide="check-circle">`.
+  - `src/login.html`: Lucide CDN (0.460.0) + `createIcons()` adicionados (ícone `wallet` na logo da página).
+  - `src/patrimonio.html`: `createIcons()` adicionado (CDN já presente mas chamada ausente — fix de ícones quebrados).
+
 ## [3.39.2] - 2026-04-22
 
 ### Adicionado

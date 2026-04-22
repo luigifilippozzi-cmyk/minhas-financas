@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="css/variables.css" />
   <link rel="stylesheet" href="css/components.css" />
   <link rel="stylesheet" href="css/main.css" />
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
 </head>
 <body class="auth-page">
 
@@ -74,7 +75,7 @@
 
       <!-- ── Tela de Sucesso (exibida após criar/entrar) ── -->
       <div id="tela-sucesso" class="hidden">
-        <div class="sucesso-icon">✅</div>
+        <div class="sucesso-icon"><i data-lucide="check-circle" aria-hidden="true"></i></div>
         <h2 class="sucesso-titulo">Grupo configurado!</h2>
         <p id="sucesso-msg" class="sucesso-msg"></p>
 
@@ -97,6 +98,7 @@
   </main>
 
   <script type="module" src="js/pages/grupo.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => lucide.createIcons());</script>
 
 </body>
 </html>
