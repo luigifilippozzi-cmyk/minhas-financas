@@ -192,8 +192,8 @@ function renderizarLista() {
 
   if (!filtradas.length) {
     lista.innerHTML = _despesas.length
-      ? emptyStateHTML('🔍', 'Nenhuma despesa encontrada com os filtros aplicados.')
-      : emptyStateHTML('📋', 'Nenhuma despesa registrada neste período.', 'Clique em + Nova Despesa para começar.');
+      ? emptyStateHTML('', 'Nenhuma despesa encontrada com os filtros aplicados.')
+      : emptyStateHTML('', 'Nenhuma despesa registrada neste período.', 'Clique em + Nova Despesa para começar.');
     return;
   }
 
@@ -216,7 +216,7 @@ function renderizarLista() {
       ? `<span class="desp-parcela-badge">${d.parcela}</span>`
       : '';
     const projBadge = isProj
-      ? '<span class="desp-proj-badge" title="Parcela projetada — ainda não confirmada pela fatura">📋 projeção</span>'
+      ? '<span class="desp-proj-badge" title="Parcela projetada — ainda não confirmada pela fatura">projeção</span>'
       : '';
     // NRF-004: badge conta/banco
     const conta = _contaMap[d.contaId];
