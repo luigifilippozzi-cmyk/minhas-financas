@@ -1,8 +1,43 @@
 ﻿# Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-22 22:17 (Dev Manager — sessão autônoma)
-> Versão: v3.39.3 (package.json) | Testes: 733 unit + 26 int | Saúde: VERDE
-> CI: verde | PRs: 0 | Issues: 17 (4 NRF-UX F5–F8 em milestone #19 + 13 iOS ON HOLD) | UX 100%
+> Atualizado em: 2026-04-22 11:44 (Dev Manager — sessão autônoma)
+> Versão: v3.39.4 (package.json) | Testes: 753 unit + 26 int | Saúde: VERDE
+> CI: verde | PRs: 0 | Issues: 16 (3 NRF-UX F6–F8 em milestone #19 + 13 iOS ON HOLD) | UX 100%
+
+---
+
+## Dev Manager — 2026-04-22 11:44
+
+### Sessão
+- Versão: v3.39.4 (bump PATCH de 3.39.3)
+- Tarefas concluídas: NRF-UX F5 (#197 — Skeletons e estados de loading)
+- PRs criados: #204 — feat(design-system): NRF-UX F5 — skeletons e estados de loading (v3.39.4)
+- PRs mergeados: #204
+- Subagentes acionados: test-runner (PASS — 753/753, build OK) | ux-reviewer (APROVADO — PUX5+PUX6, finding HIGH aria-hidden corrigido antes do commit)
+- CI: verde (2/2 Vitest pass) | Deploy Firebase: in_progress (após merge em main)
+
+### Estado dos milestones
+- UX & Gestão Patrimonial (primário): 100% concluído ✅
+- NRF-UX (milestone #19): 5/8 (62.5%) — F1+F2+F3+F4+F5 concluídas, F6–F8 abertas (#198–#200)
+- iOS Fase 2 (P3 — ON HOLD): 4/4 issues abertas — #77, #78, #79, #80
+- iOS Fases 3–5 (P3 — aguardando F2): 9 issues abertas
+- QA pendente: nenhum
+
+### Decisões pendentes do PO
+- Nenhuma
+
+### Próximas prioridades
+- P1: NRF-UX F6 (#198 — Espaçamento e ritmo vertical) — milestone #19
+- P1: NRF-UX F7 (#199 — Chart.js tokens + tabular-nums)
+- P1: NRF-UX F8 (#200 — Microcopy e vocabulário)
+- P2: testes de controllers (categorias, orcamentos, planejamento, receitas-dashboard) — aguarda PO
+
+### Alertas
+- [iOS-ON-HOLD] #77–#89 pausadas — aguarda Apple Developer Program
+
+### Atividade recente
+- PR #204 mergeado: NRF-UX F5 — tokens --color-surface-muted/strong, .skeleton-chart/.skeleton-kpi/.skeleton-patrimonio-item, 3 helpers novos, skeleton em dashboard+fatura+patrimônio+fluxo-caixa, aria-hidden em todos os placeholders, 22 TCs novos
+- NRF-UX milestone #19: 5/8 concluídas (62.5%)
 
 ---
 
