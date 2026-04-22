@@ -1,8 +1,45 @@
 ﻿# Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-22 11:44 (Dev Manager — sessão autônoma)
+> Atualizado em: 2026-04-22 17:11 (PM Agent — revisão diária)
 > Versão: v3.39.4 (package.json) | Testes: 753 unit + 26 int | Saúde: VERDE
 > CI: verde | PRs: 0 | Issues: 16 (3 NRF-UX F6–F8 em milestone #19 + 13 iOS ON HOLD) | UX 100%
+
+---
+
+## PM Agent — 2026-04-22 17:11
+
+### Estado
+- Versão: v3.39.4
+- Milestone primário: NRF-UX — Experiência do Controller (62.5%, 5/8 issues)
+- Milestone UX & Gestão Patrimonial: 100% concluído ✅
+- Milestone iOS: ON HOLD (23.5%, 4/17) — aguarda Apple Dev Program
+- Saúde: verde — CI verde | 753 testes OK | 0 PRs | 0 violações | iOS ON HOLD
+- Testes: 753 unit + 26 int — todos passando (verificado ao vivo)
+- CI: 5/5 success (Deploy Firebase + Testes unitários)
+
+### Issues abertas (16 total)
+- NRF-UX milestone #19 (P1 ativo): #198 F6 Espaçamento e ritmo vertical, #199 F7 Chart.js tokens + tabular-nums, #200 F8 Microcopy e vocabulário
+- iOS ON HOLD: #77–#89 (13 issues — não priorizar)
+- Novas desde última sessão: nenhuma
+
+### Alertas ativos
+- [iOS-ON-HOLD] #77–#89 pausadas — aguarda Apple Developer Program
+- [ORPHAN-BRANCH] remotes/origin/feat/MF-197-nrf-ux-f5-skeletons — já mergeada (PR #204), pode ser removida
+- [UNCOMMITTED-LOCAL] .gitignore + package-lock.json modificados (não staged) — inofensivo
+
+### Prioridades para Dev Manager
+- P1: NRF-UX F6 (#198 — Espaçamento e ritmo vertical) — milestone #19
+- P1: NRF-UX F7 (#199 — Chart.js tokens + tabular-nums)
+- P1: NRF-UX F8 (#200 — Microcopy e vocabulário)
+- P2: testes de controllers (categorias, orcamentos, planejamento, receitas-dashboard) — aguarda PO
+
+### Atividade recente
+- Último PR mergeado: #204 NRF-UX F5 — skeletons e estados de loading (2026-04-22 11:44)
+- Commits sem PR em src/: não (todos via PR)
+- Issues fechadas últimos 7 dias: #197 F5, #196 F4, #195 F3, #194 F2, #192 NRF-VISUAL F1, #186 RF-070 NRF-NAV F2, #189 NRF-NAV F3 = 7 issues
+- Subagentes acionados (sessão DM 11:44): test-runner PASS | ux-reviewer PASS (PUX5+PUX6)
+
+---
 
 ---
 
