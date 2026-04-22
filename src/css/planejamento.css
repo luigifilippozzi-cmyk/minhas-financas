@@ -61,6 +61,7 @@
 .plan-kpi-valor {
   font-size: var(--font-size-xl);
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
 .plan-kpi--positivo .plan-kpi-valor { color: var(--color-ok); }
