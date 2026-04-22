@@ -59,7 +59,7 @@ h1, h2 { font-family: var(--font-display); }
 .navbar-user {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: var(--space-0-5);
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
   overflow-x: auto;
@@ -270,7 +270,7 @@ h1, h2 { font-family: var(--font-display); }
   height: var(--icon-xs);
   transition: transform var(--transition);
   flex-shrink: 0;
-  margin-left: 2px;
+  margin-left: var(--space-0-5);
 }
 .nav-section-group[open] > summary .nav-chevron { transform: rotate(180deg); }
 
@@ -604,13 +604,13 @@ h1, h2 { font-family: var(--font-display); }
   letter-spacing: 0.01em;
 }
 
-.form-required { color: var(--color-danger); font-weight: 700; margin-left: 2px; }
+.form-required { color: var(--color-danger); font-weight: 700; margin-left: var(--space-0-5); }
 
 .form-group input,
 .form-group select,
 .form-group textarea,
 .select-input {
-  padding: 9px var(--space-3);
+  padding: var(--space-2) var(--space-3);
   border: 1.5px solid var(--color-border);
   border-radius: var(--radius-md);
   font-family: var(--font-family);
@@ -812,8 +812,8 @@ h1, h2 { font-family: var(--font-display); }
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  padding: 2px var(--space-2);
+  gap: var(--space-0-75);
+  padding: var(--space-0-5) var(--space-2);
   border-radius: var(--radius-full);
   font-size: var(--font-size-xs);
   font-weight: 600;

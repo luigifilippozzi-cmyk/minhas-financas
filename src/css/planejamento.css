@@ -247,7 +247,7 @@
   border: none;
   cursor: pointer;
   font-size: var(--font-size-sm);
-  padding: 2px;
+  padding: var(--space-0-5);
   border-radius: var(--radius-sm);
   opacity: .5;
   transition: opacity var(--transition);
@@ -268,6 +268,6 @@
   .plan-nav-mes { justify-content: center; }
   .plan-acoes { justify-content: center; }
   .plan-resumo { grid-template-columns: 1fr; }
-  .plan-tabela { font-size: .8rem; }
-  .plan-tabela th, .plan-tabela td { padding: .4rem .5rem; }
+  .plan-tabela { font-size: var(--font-size-xs); }
+  .plan-tabela th, .plan-tabela td { padding: var(--space-1) var(--space-2); }
 }
