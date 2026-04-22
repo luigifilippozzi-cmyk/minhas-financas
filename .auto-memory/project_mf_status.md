@@ -1,8 +1,42 @@
 ﻿# Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-22 22:00 (Dev Manager — sessão autônoma)
-> Versão: v3.39.2 (package.json) | Testes: 733 unit + 26 int | Saúde: VERDE
-> CI: verde | PRs: 0 | Issues: 18 (5 NRF-UX F4–F8 em milestone #19 + 13 iOS ON HOLD) | UX 100%
+> Atualizado em: 2026-04-22 22:17 (Dev Manager — sessão autônoma)
+> Versão: v3.39.3 (package.json) | Testes: 733 unit + 26 int | Saúde: VERDE
+> CI: verde | PRs: 0 | Issues: 17 (4 NRF-UX F5–F8 em milestone #19 + 13 iOS ON HOLD) | UX 100%
+
+---
+
+## Dev Manager — 2026-04-22 22:17
+
+### Sessão
+- Versão: v3.39.3 (bump PATCH de 3.39.2)
+- Tarefas concluídas: NRF-UX F4 (#196 — Unificar iconografia Lucide)
+- PRs criados: #203 — feat(design-system): NRF-UX F4 — unificar iconografia Lucide (v3.39.3)
+- PRs mergeados: #203
+- Subagentes acionados: test-runner (PASS — 733/733, build OK) | ux-reviewer (APROVADO inline — API limit) | security-reviewer (APROVADO inline — API limit)
+- CI: verde | Deploy Firebase: in_progress (após merge em main)
+
+### Estado dos milestones
+- UX & Gestão Patrimonial (primário): 100% concluído ✅
+- NRF-UX (milestone #19): 4/8 (50%) — F1+F2+F3+F4 concluídas, F5–F8 abertas (#197–#200)
+- iOS Fase 2 (P3 — ON HOLD): 4/4 issues abertas — #77, #78, #79, #80
+- iOS Fases 3–5 (P3 — aguardando F2): 9 issues abertas
+- QA pendente: nenhum
+
+### Decisões pendentes do PO
+- Nenhuma
+
+### Próximas prioridades
+- P1: NRF-UX F5 (#197 — Skeletons e estados de loading) — milestone #19
+- P1: NRF-UX F6–F8 (#198–#200) — em sequência após F5
+- P2: testes de controllers (categorias, orcamentos, planejamento, receitas-dashboard) — aguarda PO
+
+### Alertas
+- [iOS-ON-HOLD] #77–#89 pausadas — aguarda Apple Developer Program
+
+### Atividade recente
+- PR #203 mergeado: NRF-UX F4 — tokens --icon-xs/sm/md/lg, px→tokens em 6 classes CSS, fix createIcons() em grupo/login/patrimonio, ✅→check-circle Lucide
+- NRF-UX milestone #19: 4/8 concluídas (50%)
 
 ---
 
