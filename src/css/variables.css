@@ -159,13 +159,14 @@
   --line-height-normal:  1.5;
   --line-height-relaxed: 1.65;
 
-  /* ── KPI e gráficos (NRF-VISUAL F1 #192) ────────────────────── */
+  /* ── KPI e gráficos (NRF-VISUAL F1 #192 / NRF-UX F7 #199) ─── */
   --font-size-kpi:            28px;
   --font-size-kpi-hero:       40px;
   --font-size-chart-tick:     13px;
   --font-size-chart-legend:   14px;
   --font-size-chart-title:    13px;
   --font-size-chart-tooltip:  14px;
+  --fw-chart:                 500;
 
   /* ── Espaçamento ─────────────────────────────────────────── */
   --space-0-5:  2px;
