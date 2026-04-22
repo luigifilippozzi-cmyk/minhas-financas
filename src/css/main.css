@@ -84,7 +84,8 @@ a:hover { text-decoration: underline; }
   margin-bottom: var(--space-4);
   line-height: 1.6;
 }
-.sucesso-icon { font-size: 56px; text-align: center; margin-bottom: var(--space-3); }
+.sucesso-icon { display: flex; justify-content: center; margin-bottom: var(--space-3); }
+.sucesso-icon i[data-lucide], .sucesso-icon svg { width: 56px; height: 56px; color: var(--color-ok); }
 .sucesso-titulo { font-size: var(--font-size-xl); font-weight: 700; text-align: center; color: var(--color-text); margin-bottom: var(--space-2); }
 .sucesso-msg { font-size: var(--font-size-sm); color: var(--color-text-muted); text-align: center; line-height: 1.6; margin-bottom: var(--space-5); }
 .codigo-convite { background: var(--color-primary-light); border: 2px dashed var(--color-primary); border-radius: var(--radius-md); padding: var(--space-4); text-align: center; margin-bottom: var(--space-4); }

@@ -1,8 +1,43 @@
 ﻿# Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-21 21:32 (PM Agent — sessão autônoma)
-> Versão: v3.39.0 (package.json) / v3.39.1 (CHANGELOG — bump PATCH pendente) | Testes: 733 unit + 26 int | Saúde: 🟢 VERDE
-> CI: verde (5/5 success) | PRs: 0 | Issues: 19 (6 NRF-UX em milestone #19 + 13 iOS ON HOLD) | UX 100% ✅
+> Atualizado em: 2026-04-22 22:00 (Dev Manager — sessão autônoma)
+> Versão: v3.39.2 (package.json) | Testes: 733 unit + 26 int | Saúde: VERDE
+> CI: verde | PRs: 0 | Issues: 18 (5 NRF-UX F4–F8 em milestone #19 + 13 iOS ON HOLD) | UX 100%
+
+---
+
+## Dev Manager — 2026-04-22 22:00
+
+### Sessão
+- Versão: v3.39.2 (bump de 3.39.0 — fix versão-divergência + NRF-UX F3)
+- Tarefas concluídas: NRF-UX F3 (#195 — remover emojis de chrome)
+- PRs criados: #202 — feat(design-system): NRF-UX F3 — remover emojis de chrome, ícones Lucide (v3.39.2)
+- PRs mergeados: #202
+- Subagentes acionados: ux-reviewer (APROVADO — PUX5 finding implementado)
+- CI: verde | Deploy Firebase: success
+
+### Estado dos milestones
+- UX & Gestão Patrimonial (primário): 100% concluído ✅
+- NRF-UX (milestone #19): 3/8 (37.5%) — F1+F2+F3 concluídas, F4–F8 abertas (#196–#200)
+- iOS Fase 2 (P3 — ON HOLD): 4/4 issues abertas — #77, #78, #79, #80
+- iOS Fases 3–5 (P3 — aguardando F2): 9 issues abertas
+- QA pendente: nenhum
+
+### Decisões pendentes do PO
+- Nenhuma
+
+### Próximas prioridades
+- P1: NRF-UX F4 (#196 — Unificar iconografia Lucide) — milestone #19 confirmado
+- P1: NRF-UX F5–F8 (#197–#200) — em sequência após F4
+- P2: testes de controllers (categorias, orcamentos, planejamento, receitas-dashboard) — aguarda PO
+
+### Alertas
+- [iOS-ON-HOLD] #77–#89 pausadas — aguarda Apple Developer Program
+- [VERSÃO-DIVERGÊNCIA] RESOLVIDA — package.json=3.39.2 alinhado com CHANGELOG
+
+### Atividade recente
+- PR #202 mergeado: NRF-UX F3 — 13 páginas HTML atualizadas, 15 emojis nav → Lucide, CSS nav-sub-icon + section-icon, aria-hidden em 132 ícones pré-existentes
+- Branches órfãs remotas (feat/MF-192 + feat/MF-194): já removidas anteriormente pelo merge
 
 ---
 
