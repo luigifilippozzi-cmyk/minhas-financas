@@ -11,7 +11,7 @@
   padding: var(--space-6) calc(var(--space-6) + var(--safe-area-right)) calc(var(--space-6) + var(--safe-area-bottom)) calc(var(--space-6) + var(--safe-area-left));
   display: flex;
   flex-direction: column;
-  gap: var(--space-8);
+  gap: var(--rhythm-lg);
 }
 
 .section {}
@@ -20,7 +20,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--space-5);
+  margin-bottom: var(--rhythm-md);
   flex-wrap: wrap;
   gap: var(--space-3);
 }
@@ -39,7 +39,7 @@
   color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  margin: var(--space-8) 0 var(--space-4);
+  margin: var(--rhythm-lg) 0 var(--rhythm-md);
   padding-bottom: var(--space-2);
   border-bottom: 1px solid var(--color-border);
 }
@@ -101,7 +101,7 @@
   margin-top: var(--space-2);
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space-0-5);
 }
 .saldo-real-linha {
   display: flex;
@@ -142,7 +142,7 @@
 .resumo-sublabel {
   font-size: var(--font-size-xs);
   color: var(--color-text-muted);
-  margin-top: 2px;
+  margin-top: var(--space-0-5);
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -184,7 +184,7 @@
 .categoria-percentual {
   font-size: var(--font-size-xs);
   font-weight: 700;
-  padding: 3px var(--space-2);
+  padding: var(--space-0-75) var(--space-2);
   border-radius: var(--radius-full);
   letter-spacing: 0.01em;
 }
@@ -240,7 +240,7 @@
 .despesa-info {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space-0-5);
   flex: 1;
   min-width: 0;
 }
@@ -266,9 +266,9 @@
 .despesa-categoria-badge {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
+  gap: var(--space-0-75);
   font-size: var(--font-size-xs);
-  padding: 2px var(--space-2);
+  padding: var(--space-0-5) var(--space-2);
   border-radius: var(--radius-full);
   background: var(--color-surface-alt);
   color: var(--color-text-secondary);
@@ -353,7 +353,7 @@
 .burn-rate-badge {
   font-size: 10px;
   font-weight: 700;
-  padding: 2px 7px;
+  padding: var(--space-0-5) var(--space-2);
   border-radius: var(--radius-full);
   letter-spacing: 0.04em;
   white-space: nowrap;
@@ -452,14 +452,14 @@
 .parc-resp-nome  { font-weight: 600; font-size: var(--font-size-sm); }
 .parc-resp-total { font-weight: 800; color: var(--color-primary); font-size: var(--font-size-sm); }
 
-.parc-resp-items { display: flex; flex-direction: column; gap: 4px; }
+.parc-resp-items { display: flex; flex-direction: column; gap: var(--space-1); }
 
 .parc-compra-item {
   display: flex;
   align-items: center;
   gap: var(--space-2);
   font-size: var(--font-size-sm);
-  padding: 3px 0;
+  padding: var(--space-0-75) 0;
   border-top: 1px solid var(--color-border);
 }
 .parc-compra-desc  { flex: 1; color: var(--color-text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -534,7 +534,7 @@
 @media (max-width: 640px) {
   .main-content {
     padding: var(--space-4) calc(var(--space-4) + var(--safe-area-right)) calc(var(--space-4) + var(--safe-area-bottom)) calc(var(--space-4) + var(--safe-area-left));
-    gap: var(--space-6);
+    gap: var(--rhythm-lg);
   }
 
   .resumo-cards {
@@ -550,7 +550,7 @@
 
   .section-header { flex-direction: column; align-items: flex-start; }
   .section-title  { font-size: var(--font-size-lg); }
-  .section-subtitle { margin: var(--space-6) 0 var(--space-3); }
+  .section-subtitle { margin: var(--rhythm-lg) 0 var(--rhythm-md); }
 
   .dash-graficos-row { grid-template-columns: 1fr; }
   .dash-chart-wrap  { height: 240px; }
