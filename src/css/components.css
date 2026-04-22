@@ -262,6 +262,8 @@ h1, h2 { font-family: var(--font-display); }
 }
 
 .nav-section-icon { width: 15px; height: 15px; flex-shrink: 0; }
+.nav-sub-icon { width: 13px; height: 13px; flex-shrink: 0; vertical-align: middle; margin-right: 4px; color: var(--color-text-muted); }
+.section-icon  { width: 20px; height: 20px; flex-shrink: 0; vertical-align: middle; margin-right: 6px; color: var(--color-text-muted); }
 
 .nav-chevron {
   width: 13px;

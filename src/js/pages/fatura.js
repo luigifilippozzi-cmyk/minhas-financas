@@ -467,7 +467,7 @@ function renderizarProjecoes(projecoesPorMes, membros) {
       </table>
     </div>
     <p class="fat-proj-link-futuro">
-      <a href="fluxo-caixa.html#compromissos" class="link-sutil">📊 ver todos os cartões consolidados em Futuro →</a>
+      <a href="fluxo-caixa.html#compromissos" class="link-sutil"ver todos os cartões consolidados em Futuro →</a>
     </p>`;
 }
 

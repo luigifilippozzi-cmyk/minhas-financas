@@ -7,6 +7,19 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.39.2] - 2026-04-22
+
+### Adicionado
+
+- **NRF-UX F3 — Remover emojis de chrome (#195):** substituição completa de todos os emojis de UI chrome por ícones Lucide em todas as 13 páginas HTML.
+  - `src/css/components.css`: classes `.nav-sub-icon` (13×13px, `color-text-muted`) e `.section-icon` (20×20px) para ícones nos sub-menus e títulos de seção.
+  - Navbar nav-sub-items: 15 emojis (🏠📋🔮💳📈🏛️⬆️📉🗃️🎯🏷️🏦👥) substituídos por `<i data-lucide="...">` em todas as páginas.
+  - Section headers: `<h2>/<h3 class="section-title">` com emojis atualizados para ícones Lucide com `class="section-icon"`.
+  - Buttons, labels, spans: todos os emojis de chrome removidos e substituídos por ícones ou texto simples (em `<option>` elements onde HTML não é suportado).
+  - Acessibilidade: `aria-hidden="true"` adicionado a todos os 132 ícones Lucide pré-existentes que faltavam este atributo (fix PUX5).
+  - JS pages: emojis de chrome em `textContent` (base-dados.js, grupo.js, orcamentos.js, fatura.js, despesas.js, receitas.js) substituídos por texto simples.
+  - Emojis de dados do usuário preservados: `inp-cartao-emoji`, `preview-emoji`, `cat-emoji` (input/preview do emoji de categoria/conta).
+
 ## [3.39.1] - 2026-04-21
 
 ### Adicionado
