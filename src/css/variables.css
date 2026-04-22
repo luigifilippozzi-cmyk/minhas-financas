@@ -43,6 +43,8 @@
   --color-surface-hover:  #FAF9F5;
   --color-border:         #E3E0D6;
   --color-border-hover:   #CCC8BC;
+  --color-surface-muted:        var(--color-surface-alt);   /* skeleton base */
+  --color-surface-muted-strong: var(--color-border);        /* skeleton shimmer peak */
 
   /* ── Texto ───────────────────────────────────────────────── */
   --color-text:           #1F1F1C;   /* carbono quente */
@@ -216,6 +218,8 @@
     --color-surface-hover:  #323028;
     --color-border:         #3A3832;
     --color-border-hover:   #504E46;
+    --color-surface-muted:        var(--color-surface-alt);
+    --color-surface-muted-strong: var(--color-border-hover);
 
     --color-text:           #F0EEE6;
     --color-ink:            #F0EEE6;

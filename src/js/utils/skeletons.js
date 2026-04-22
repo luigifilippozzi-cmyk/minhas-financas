@@ -14,7 +14,7 @@ export function skeletonCards(count = 5) {
   for (let i = 0; i < count; i++) {
     const w = widths[i % widths.length];
     html += `
-      <div class="skeleton-item">
+      <div class="skeleton-item" aria-hidden="true">
         <div class="skeleton skeleton-circle"></div>
         <div class="skeleton-lines">
           <div class="skeleton skeleton-line" style="width:${w}"></div>
@@ -36,12 +36,52 @@ export function skeletonTableRows(count = 6, cols = 7) {
   const colWidths = ['60px', '80%', '50%', '40%', '60px', '70px', '50px'];
   let html = '';
   for (let i = 0; i < count; i++) {
-    html += '<tr>';
+    html += '<tr aria-hidden="true">';
     for (let c = 0; c < cols; c++) {
       const w = colWidths[c % colWidths.length];
       html += `<td><div class="skeleton skeleton-line" style="width:${w};margin:0"></div></td>`;
     }
     html += '</tr>';
+  }
+  return html;
+}
+
+/**
+ * Gera um span skeleton inline para valores KPI numéricos (ex: "R$ 0,00" enquanto carrega).
+ * @param {string} [width] — largura do placeholder
+ * @returns {string} HTML string
+ */
+export function skeletonKpiValue(width = '90px') {
+  return `<span class="skeleton skeleton-kpi" style="width:${width};display:inline-block"></span>`;
+}
+
+/**
+ * Gera um bloco skeleton para área de gráfico (canvas container).
+ * @param {number} [height] — altura em px do placeholder
+ * @returns {string} HTML string
+ */
+export function skeletonChart(height = 200) {
+  return `<div class="skeleton skeleton-chart" style="height:${height}px" aria-hidden="true"></div>`;
+}
+
+/**
+ * Gera N itens skeleton para listas de investimentos ou passivos (patrimônio).
+ * @param {number} count — quantidade de itens
+ * @returns {string} HTML string
+ */
+export function skeletonPatrimonioItems(count = 3) {
+  const widths = ['55%', '70%', '45%'];
+  let html = '';
+  for (let i = 0; i < count; i++) {
+    const w = widths[i % widths.length];
+    html += `
+      <div class="skeleton-patrimonio-item" aria-hidden="true">
+        <div class="skeleton-patrimonio-info">
+          <div class="skeleton skeleton-line" style="width:${w}"></div>
+          <div class="skeleton skeleton-line--sm"></div>
+        </div>
+        <div class="skeleton skeleton-patrimonio-value"></div>
+      </div>`;
   }
   return html;
 }

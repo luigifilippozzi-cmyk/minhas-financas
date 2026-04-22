@@ -7,6 +7,20 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.39.4] - 2026-04-22
+
+### Adicionado
+
+- **NRF-UX F5 — Skeletons e estados de loading (#197):** cobertura completa de skeletons antes do primeiro `onSnapshot` em 6 páginas-alvo.
+  - `src/css/variables.css`: tokens semânticos `--color-surface-muted` e `--color-surface-muted-strong` (light + dark) para uso exclusivo em skeleton shimmer.
+  - `src/css/components.css`: skeleton shimmer migrado de cores hardcoded para os novos tokens; novas classes `.skeleton-chart` (placeholder de gráfico, 200px default), `.skeleton-kpi` (valor numérico inline, 1.75rem) e `.skeleton-patrimonio-item` (card flex de ativo/passivo).
+  - `src/js/utils/skeletons.js`: 3 novos helpers — `skeletonKpiValue(width)`, `skeletonChart(height)`, `skeletonPatrimonioItems(count)`. Todos os helpers passam a incluir `aria-hidden="true"` para compatibilidade com leitores de tela (WCAG 2.1 SC 1.3.1).
+  - `src/js/app.js` (dashboard): skeleton para containers dos gráficos Chart.js (`#dash-chart-categorias`, `#dash-chart-evolucao`) — canvas oculto + placeholder `.skeleton-chart` inserido antes do primeiro paint; `skeletonKpiValue()` substitui código inline nos 5 KPI values. Helper `_revelarCanvas(id)` remove placeholder e exibe canvas ao renderizar.
+  - `src/js/pages/fatura.js`: spinner genérico `<p class="fat-loading">Carregando...</p>` na seção de Projeções substituído por `skeletonChart(120)`.
+  - `src/js/pages/patrimonio.js`: `skeletonPatrimonioItems(3/2)` inserido em `iniciarListeners()` para `#lista-investimentos` e `#lista-passivos` antes do primeiro snapshot.
+  - `src/js/pages/fluxo-caixa.js`: `skeletonTableRows(3, 2)` em `carregarCompromissos()` e `skeletonTableRows(6, 6)` em `carregarForecast()` — substituindo strings de texto genérico.
+  - `tests/utils/skeletons.test.js`: 22 novos TCs para os 3 helpers adicionados + `aria-hidden` nos helpers existentes (total: 52 TCs no arquivo, +20 vs sessão anterior).
+
 ## [3.39.3] - 2026-04-22
 
 ### Adicionado
