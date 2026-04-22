@@ -146,9 +146,9 @@
 
 /* ── Valores ──────────────────────────────────────────────── */
 
-.plan-valor-previsto { color: var(--color-text-muted); }
+.plan-valor-previsto { color: var(--color-text-muted); font-variant-numeric: tabular-nums; }
 
-.plan-valor-realizado { font-weight: 600; }
+.plan-valor-realizado { font-weight: 600; font-variant-numeric: tabular-nums; }
 .plan-valor-realizado--ok    { color: var(--color-ok); }
 .plan-valor-realizado--acima { color: var(--color-danger); }
 .plan-valor-realizado--vazio { color: var(--color-text-muted); font-style: italic; }

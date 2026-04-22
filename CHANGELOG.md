@@ -19,6 +19,12 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
   - `src/css/planejamento.css`: `tabular-nums` adicionado em `.plan-kpi-valor`.
   - `tests/utils/chartDefaults.test.js`: testes atualizados para mockar `getComputedStyle` e testar comportamento token-driven; 3 novos TCs (total: 756).
 
+### Corrigido
+
+- **fix(design-system): tabular-nums em classes monetárias remanescentes** — 3 gaps pré-existentes identificados pelo ux-reviewer durante NRF-UX F7 (#199):
+  - `src/css/main.css`: `.rec-cat-valor` — `tabular-nums` + migração de `0.875rem` hardcoded → `var(--font-size-sm)`; `.fat-footer-valor` — `tabular-nums`.
+  - `src/css/planejamento.css`: `.plan-valor-previsto` e `.plan-valor-realizado` — `tabular-nums`.
+
 ## [3.39.5] - 2026-04-22
 
 ### Adicionado
