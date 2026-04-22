@@ -7,6 +7,17 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.39.5] - 2026-04-22
+
+### Adicionado
+
+- **NRF-UX F6 — Espaçamento e ritmo vertical (#198):** sistema de ritmo vertical via tokens CSS e conversão completa de valores rem hardcoded para tokens `--space-*`.
+  - `src/css/variables.css`: tokens `--space-0-5: 2px`, `--space-0-75: 3px`, `--space-1-5: 6px`, `--space-12: 48px`; tokens de ritmo `--rhythm-sm: 12px`, `--rhythm-md: 24px`, `--rhythm-lg: 48px`; override mobile `--rhythm-lg → 32px` em `@media (max-width: 640px)`.
+  - `src/css/dashboard.css`: `.main-content` gap migrado de `--space-8` (32px) para `--rhythm-lg` (48px/32px mobile); `.section-header` `margin-bottom` → `--rhythm-md` (24px); `.section-subtitle` margin → `--rhythm-lg`/`--rhythm-md`; micro valores 2px/3px convertidos para `--space-0-5`/`--space-0-75`.
+  - `src/css/main.css`: todos os valores rem hardcoded em `.desp-*`, `.imp-*`, `.rec-*`, `.fc-*`, `.fat-*`, `.ger-*`, `.base-*` e demais seletores convertidos para tokens `--space-*`; page-headers de despesas, importação e base-dados usam `--rhythm-md`.
+  - `src/css/components.css`: micro valores 2px/3px na navbar, badge e formulários convertidos; `.badge` padding usa `--space-0-5`/`--space-2`.
+  - `src/css/planejamento.css`: micro valores convertidos para tokens.
+
 ## [3.39.4] - 2026-04-22
 
 ### Adicionado

@@ -168,14 +168,23 @@
   --font-size-chart-tooltip:  14px;
 
   /* ── Espaçamento ─────────────────────────────────────────── */
-  --space-1:  4px;
-  --space-2:  8px;
-  --space-3:  12px;
-  --space-4:  16px;
-  --space-5:  20px;
-  --space-6:  24px;
-  --space-8:  32px;
-  --space-10: 40px;
+  --space-0-5:  2px;
+  --space-0-75: 3px;
+  --space-1:    4px;
+  --space-1-5:  6px;
+  --space-2:    8px;
+  --space-3:    12px;
+  --space-4:    16px;
+  --space-5:    20px;
+  --space-6:    24px;
+  --space-8:    32px;
+  --space-10:   40px;
+  --space-12:   48px;
+
+  /* ── Ritmo vertical de página (NRF-UX F6 #198) ──────────── */
+  --rhythm-sm: var(--space-3);    /* 12px — entre label e input */
+  --rhythm-md: var(--space-6);    /* 24px — entre blocos de formulário */
+  --rhythm-lg: var(--space-12);   /* 48px — entre seções de página */
 
   /* ── Ícones (Lucide) ────────────────────────────────────── */
   --icon-xs:  13px;
@@ -200,6 +209,11 @@
   /* ── Breakpoints (referência — usar nos @media) ────────── */
   --bp-mobile:  640px;
   --bp-tablet: 1024px;
+}
+
+/* ── Ritmo vertical reduzido em mobile (alinhado com --bp-mobile: 640px) ── */
+@media (max-width: 640px) {
+  :root { --rhythm-lg: var(--space-8); }   /* 48px → 32px em mobile */
 }
 
 /* ── Dark mode tokens (RN6 — desbloqueia dark mode iOS issue #83) ── */
