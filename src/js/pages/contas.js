@@ -103,7 +103,7 @@ function renderizarListas() {
   const bancosEl  = document.getElementById('bancos-lista');
 
   if (!cartoes.length) {
-    cartoesEl.innerHTML = '<p class="empty-state">Nenhum cartão cadastrado. Clique em "+ Novo Cartão" para adicionar.</p>';
+    cartoesEl.innerHTML = '<p class="empty-state">Nenhum cartão. Adicione o primeiro.</p>';
   } else {
     cartoesEl.innerHTML = cartoes.map(c => renderCartao(c)).join('');
   }
@@ -210,7 +210,8 @@ async function salvarSaldo(e) {
     fecharModalSaldo();
   } catch (err) {
     console.error('[contas] Erro ao salvar saldo:', err);
-    alert('Erro ao salvar saldo. Tente novamente.');
+    const el = document.getElementById('saldo-modal-erro');
+    if (el) { el.textContent = 'Não consegui salvar o saldo. Tente novamente.'; el.classList.remove('hidden'); }
   }
 }
 
@@ -301,7 +302,8 @@ async function salvarCartao(e) {
     fecharModalCartao();
   } catch (err) {
     console.error('[contas] Erro ao salvar cartão:', err);
-    alert('Erro ao salvar cartão. Tente novamente.');
+    const el = document.getElementById('cartao-modal-erro');
+    if (el) { el.textContent = 'Não consegui salvar o cartão. Tente novamente.'; el.classList.remove('hidden'); }
   }
 }
 
