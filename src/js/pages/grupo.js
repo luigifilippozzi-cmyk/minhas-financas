@@ -133,7 +133,7 @@ function inicializarPagina(user, perfil) {
     const codigo = document.getElementById('codigo-gerado').textContent;
     navigator.clipboard.writeText(codigo).then(() => {
       btnCopiar.textContent = '✅ Copiado!';
-      setTimeout(() => { btnCopiar.textContent = '📋 Copiar código'; }, 2000);
+      setTimeout(() => { btnCopiar.textContent = 'Copiar código'; }, 2000);
     });
   });
 

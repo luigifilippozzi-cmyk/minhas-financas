@@ -320,7 +320,7 @@ function configurarEventos() {
         mostrarFeedback('❌ Erro ao copiar: ' + err.message, true);
       } finally {
         btn.disabled = false;
-        btn.textContent = '📋 Copiar orçamentos do mês anterior';
+        btn.textContent = 'Copiar orçamentos do mês anterior';
       }
     });
 }
