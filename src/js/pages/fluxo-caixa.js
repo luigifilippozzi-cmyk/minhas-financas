@@ -17,6 +17,7 @@ import { gerarForecast } from '../utils/forecastEngine.js';
 import { coresGrafico } from '../utils/chartColors.js';
 import { isMovimentacaoReal } from '../utils/helpers.js';
 import { buscarProjecoesAgregadas } from '../utils/projecoesCartao.js';
+import { skeletonTableRows } from '../utils/skeletons.js';
 
 // ── Constantes ────────────────────────────────────────────────
 
@@ -354,7 +355,7 @@ function toMesStr(ano, mes0) {
 async function carregarForecast() {
   const tbody = document.getElementById('fc-forecast-tbody');
   if (!tbody) return;
-  tbody.innerHTML = '<tr><td colspan="6" class="fc-empty">Calculando forecast...</td></tr>';
+  tbody.innerHTML = skeletonTableRows(6, 6);
 
   try {
     const hoje    = new Date();
@@ -452,6 +453,8 @@ function escMesLabel(label, ano) {
 async function carregarCompromissos() {
   const tbody = document.getElementById('fc-compromissos-tbody');
   if (!tbody) return;
+
+  tbody.innerHTML = skeletonTableRows(3, 2);
 
   try {
     const hoje = new Date();
