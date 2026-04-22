@@ -316,7 +316,7 @@ Estes princípios devem guiar qualquer nova tela, RF ou redesenho:
 
 ## 9. Ordem de Ataque Aprovada (atualizada 2026-04-21)
 
-**Concluídos (v3.38.0):**
+**Concluídos (v3.39.1):**
 
 1. RF-067 Forecast 6 meses
 2. RF-068 Saldo Real por Conta
@@ -325,30 +325,27 @@ Estes princípios devem guiar qualquer nova tela, RF ou redesenho:
 5. NRF-NAV F1 — Navbar 5 seções
 6. NRF-NAV F2 — projecoesCartao unificado (#187)
 7. NRF-NAV F3 — Simplificar despesas.html + ENH-005 tokens (#190)
+8. NRF-UX F1 — Visual foundation: hero tokens + dark cards (#192, v3.39.0)
+9. NRF-UX F2 — Fraunces + ux-reviewer + Regra Inviolável #14 (#194, v3.39.1)
 
-**Em execução:**
+**Em fila (milestone GitHub #19 — "NRF-UX — Experiência do Controller", 2/8):**
 
-8. NRF-UX F1 — Visual foundation: hero tokens + dark cards (#192, ex NRF-VISUAL)
-
-**Em fila (NRF-UX umbrella):**
-
-9. NRF-UX F2 — Fraunces nos títulos + patches desta Bússola (§12.5, §9) ← **esta entrega**
-10. NRF-UX F3 — Remover emojis de chrome (dashboard, navbar, headers)
-11. NRF-UX F4 — Unificar iconografia Lucide
-12. NRF-UX F5 — Skeletons e estados de loading
-13. NRF-UX F6 — Espaçamento e ritmo vertical
-14. NRF-UX F7 — Chart.js tokens + tabular-nums
-15. NRF-UX F8 — Microcopy e vocabulário
+10. NRF-UX F3 — Remover emojis de chrome (dashboard, navbar, headers) — #195
+11. NRF-UX F4 — Unificar iconografia Lucide — #196
+12. NRF-UX F5 — Skeletons e estados de loading — #197
+13. NRF-UX F6 — Espaçamento e ritmo vertical — #198
+14. NRF-UX F7 — Chart.js tokens + tabular-nums — #199
+15. NRF-UX F8 — Microcopy e vocabulário — #200
 
 **ON HOLD:**
 
 16. iOS App F2–F5 — aguarda Apple Developer Program
 
 **Regra:** cada fase NRF-UX é um PR independente e exige relatório do
-`ux-reviewer` (Regra Inviolável #14 do `CLAUDE.md`).
+`ux-reviewer` (Regra Inviolável #14 do `CLAUDE.md`). Progresso rastreado no
+milestone GitHub **#19 — NRF-UX — Experiência do Controller**.
 
 ---
-
 ## 10. iOS e Experiência Mobile
 
 ### Decisão estratégica
