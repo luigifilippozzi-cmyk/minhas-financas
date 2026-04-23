@@ -13,9 +13,13 @@ import { onAuthChange, logout } from '../services/auth.js';
 import { buscarPerfil, buscarGrupo, ouvirContas, ouvirCategorias, ouvirDespesas, ouvirDespesasPorMesFatura, garantirContasPadrao } from '../services/database.js';
 import { formatarMoeda, formatarData, nomeMes, escHTML } from '../utils/formatters.js';
 import { recalcularScoreFatura } from '../utils/reconciliadorFatura.js';
-import { skeletonTableRows, skeletonChart, errorStateHTML } from '../utils/skeletons.js';
+import { skeletonTableRows, skeletonChart, errorStateHTML, emptyStateHTML } from '../utils/skeletons.js';
 import { CONTAS_PADRAO } from '../models/Conta.js';
 import { iniciar as iniciarProjecoes } from '../utils/projecoesCartao.js';
+
+// ── Ícones SVG para empty states ──────────────────────────────
+const SVG_INBOX = '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>';
+const SVG_FILTER_EMPTY = '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="2" y1="3" x2="22" y2="3"/><line x1="6" y1="9" x2="18" y2="9"/><line x1="10" y1="15" x2="14" y2="15"/><line x1="8" y1="18" x2="16" y2="18"/><line x1="18" y1="12" x2="22" y2="16"/><line x1="22" y1="12" x2="18" y2="16"/></svg>';
 
 // ── Estado ────────────────────────────────────────────────────
 let _usuario    = null;
@@ -186,6 +190,12 @@ function recarregarDespesas() {
 
 // ── Render principal ──────────────────────────────────────────
 function renderizarTudo() {
+  // ENH-007 Cenário A — cartão selecionado mas período sem despesas
+  if (!_despesas.length) {
+    mostrarEmpty(true, 'semDados');
+    return;
+  }
+  mostrarEmpty(false);
   const membros = _membrosDoGrupo();
   renderizarCards(membros);
   gerarTabsMembros(membros);
@@ -314,8 +324,29 @@ function renderizarTabela(tipo) {
     const rows = _despesas
       .filter(d => !busca || (d.descricao ?? '').toLowerCase().includes(busca))
       .sort((a, b) => _toTs(b.data) - _toTs(a.data));
-    tbody.innerHTML = rows.map(d => _rowTodas(d)).join('') ||
-      '<tr><td colspan="8" class="fat-td-empty">Nenhuma transação</td></tr>';
+    if (!rows.length) {
+      if (busca && _despesas.length) {
+        // ENH-007 Cenário B — filtro sem resultado
+        tbody.innerHTML = `<tr><td colspan="8">
+          <div class="empty-state empty-state--compact" role="status">
+            <span class="empty-state__icon" aria-hidden="true">${SVG_FILTER_EMPTY}</span>
+            <p class="empty-state__title">Nenhum resultado com os filtros aplicados.</p>
+            <p class="empty-state__hint">Ajuste a busca ou limpe para ver todos os lançamentos.</p>
+            <div class="empty-state__cta">
+              <button class="btn btn-outline btn-sm fat-busca-limpar">Limpar busca</button>
+            </div>
+          </div>
+        </td></tr>`;
+        tbody.querySelector('.fat-busca-limpar')?.addEventListener('click', () => {
+          const inp = document.getElementById('fat-busca');
+          if (inp) { inp.value = ''; renderizarTabela('todas'); }
+        });
+      } else {
+        tbody.innerHTML = '<tr><td colspan="8" class="fat-td-empty">Nenhuma transação</td></tr>';
+      }
+      return;
+    }
+    tbody.innerHTML = rows.map(d => _rowTodas(d)).join('');
     return;
   }
 
@@ -563,10 +594,31 @@ function atualizarTituloMes() {
   document.getElementById('fat-mes-titulo').textContent = `${nomeMes(_mes)} ${_ano}`;
 }
 
-function mostrarEmpty(show) {
-  document.getElementById('fat-empty').style.display = show ? '' : 'none';
-  document.getElementById('fat-resumo-cards').style.display  = show ? 'none' : '';
-  document.getElementById('fat-conteudo').style.display      = show ? 'none' : '';
+/**
+ * @param {boolean} show
+ * @param {'semCartao'|'semDados'} [tipo='semCartao']
+ */
+function mostrarEmpty(show, tipo = 'semCartao') {
+  const el = document.getElementById('fat-empty');
+  if (show) {
+    if (tipo === 'semDados') {
+      // ENH-007 Cenário A — cartão selecionado mas sem despesas no período
+      el.innerHTML = emptyStateHTML(
+        SVG_INBOX,
+        `Nenhuma despesa em ${escHTML(nomeMes(_mes))}/${_ano}.`,
+        'Importe um extrato da fatura ou adicione uma despesa manualmente.',
+        `<a href="importar.html" class="btn btn-primary btn-sm">Importar extrato</a>
+         <a href="despesas.html" class="btn btn-outline btn-sm">Adicionar despesa</a>`
+      );
+    } else {
+      el.innerHTML = `
+        <div class="fat-empty-icon"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+        <p>Selecione um cartão para visualizar a fatura do mês.</p>`;
+    }
+  }
+  el.style.display = show ? '' : 'none';
+  document.getElementById('fat-resumo-cards').style.display = show ? 'none' : '';
+  document.getElementById('fat-conteudo').style.display     = show ? 'none' : '';
 }
 
 function _toTs(data) {

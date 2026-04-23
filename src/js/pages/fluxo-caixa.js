@@ -17,7 +17,11 @@ import { gerarForecast } from '../utils/forecastEngine.js';
 import { coresGrafico } from '../utils/chartColors.js';
 import { isMovimentacaoReal } from '../utils/helpers.js';
 import { buscarProjecoesAgregadas } from '../utils/projecoesCartao.js';
-import { skeletonTableRows } from '../utils/skeletons.js';
+import { skeletonTableRows, emptyStateHTML } from '../utils/skeletons.js';
+
+// ── Ícones SVG para empty states ──────────────────────────────
+const SVG_BAR_CHART = '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>';
+const SVG_CHECK_CIRCLE = '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
 
 // ── Constantes ────────────────────────────────────────────────
 
@@ -296,8 +300,17 @@ function renderizarTabela(dados) {
   const tbody = document.getElementById('fc-tbody');
   if (!tbody) return;
 
-  if (!dados.length) {
-    tbody.innerHTML = '<tr><td colspan="7" class="fc-empty">Nenhum dado para o período.</td></tr>';
+  // ENH-007 Cenário A — ano selecionado sem nenhuma movimentação
+  const temDados = dados.some(d => d.rec > 0 || d.desp > 0);
+  if (!temDados) {
+    tbody.innerHTML = `<tr><td colspan="7">
+      ${emptyStateHTML(
+        SVG_BAR_CHART,
+        `Nenhuma movimentação em ${_ano}.`,
+        'Adicione uma receita ou despesa para começar.',
+        `<a href="despesas.html" class="btn btn-primary btn-sm">Nova movimentação</a>`
+      )}
+    </td></tr>`;
     return;
   }
 
@@ -419,7 +432,13 @@ function renderizarForecast(forecast) {
   }
 
   if (!forecast.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="fc-empty">Sem dados para forecast.</td></tr>';
+    tbody.innerHTML = `<tr><td colspan="6">
+      ${emptyStateHTML(
+        SVG_BAR_CHART,
+        'Sem dados suficientes para forecast.',
+        'Adicione movimentações dos últimos meses para ativar a previsão.'
+      )}
+    </td></tr>`;
     return;
   }
 
@@ -465,7 +484,13 @@ async function carregarCompromissos() {
 
     const temDados = meses.some(m => m.total > 0);
     if (!temDados) {
-      tbody.innerHTML = '<tr><td colspan="2" class="fc-empty">Nenhuma parcela comprometida nos próximos 6 meses.</td></tr>';
+      tbody.innerHTML = `<tr><td colspan="2">
+        ${emptyStateHTML(
+          SVG_CHECK_CIRCLE,
+          'Nenhuma parcela comprometida nos próximos 6 meses.',
+          'Ótimo — sem compromissos futuros de cartão.'
+        )}
+      </td></tr>`;
       return;
     }
 
