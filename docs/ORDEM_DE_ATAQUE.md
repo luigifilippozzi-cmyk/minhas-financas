@@ -4,7 +4,7 @@
 > Propósito: manter separadamente a sequência operacional de entrega. BUSSOLA é reflexão estratégica estável; Ordem de Ataque muda a cada sessão PO.
 > Fonte da verdade de priorização macro. Qualquer discrepância entre este arquivo e o backlog GitHub resolve-se por este arquivo.
 
-> Atualizada em: 2026-04-23 (pós-v3.39.8, Proposta C concluída 100% ✅)
+> Atualizada em: 2026-04-23 (pós-v3.40.0, Polimento Visual concluído 100% ✅)
 
 ---
 
@@ -36,16 +36,11 @@
 21. C4 — Varrer `alert(` e "Erro ao" — N/A: 0 ocorrências de `alert()` em src/ (2026-04-23 — DM) ✅
 22. C3 — Regenerar PLANO_DE_TESTES_v3.39.8.xlsx + UAT (commit 750e297, 85 TCs) ✅
 
-## Em execução — Polimento Visual v3.40.0 (decisão PO 2026-04-23)
+## Concluídos — Polimento Visual v3.40.0 ✅
 
-> Milestone consolidado decidido após Proposta C. 3 PRs sequenciais, release MINOR ao final.
-> Artefatos DM completos em `.auto-memory/dm_tasks_pending.md` (seção `[2026-04-23] Polimento Visual v3.40.0`).
-> Handoff histórico em `.auto-memory/handoffs/handoff_dm_polimento_visual_v3400_2026-04-23.md`.
-> **Ordem estrita: V3 → V2 → V1** (mais isolado → mais amplo). Bump de versão e CHANGELOG consolidado no PR 3.
-
-23. V3 — ENH-007 Empty states em fatura.html e fluxo-caixa.html — **PR 1, sem bump**
-24. V2 — RF-071 Chart.js series color tokens — **PR 2, sem bump**
-25. V1 — ENH-006 Cockpit density mobile <414px — **PR 3, bump v3.40.0 + CHANGELOG consolidado**
+23. V3 — ENH-007 Empty states em fatura.html e fluxo-caixa.html (PR #213) ✅
+24. V2 — RF-071 Chart.js series color tokens (PR #214) ✅
+25. V1 — ENH-006 Cockpit density mobile <414px (PR #215, v3.40.0) ✅
 
 ## Candidatos ao milestone seguinte (após v3.40.0)
 
