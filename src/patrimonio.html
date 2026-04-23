@@ -101,6 +101,7 @@
         <h2 class="section-title"><i data-lucide="landmark" class="nav-sub-icon" aria-hidden="true"></i> Patrimônio</h2>
         <div class="section-actions">
           <button id="btn-snapshot" class="btn btn-outline btn-sm" title="Salvar snapshot mensal"><i data-lucide="camera" class="nav-sub-icon" aria-hidden="true"></i> Snapshot</button>
+          <span id="snapshot-feedback" class="plan-feedback hidden" style="font-size:var(--font-size-xs);padding:var(--space-1) var(--space-2);"></span>
         </div>
       </div>
 
@@ -192,6 +193,7 @@
           <label class="form-label" for="inv-observacoes">Observações</label>
           <textarea id="inv-observacoes" class="form-input" rows="2" placeholder="Notas opcionais"></textarea>
         </div>
+        <p class="form-erro hidden" id="inv-modal-erro"></p>
         <div class="modal-actions">
           <button type="button" id="btn-cancelar-inv" class="btn btn-outline">Cancelar</button>
           <button type="submit" id="btn-salvar-inv" class="btn btn-primary">Salvar</button>
@@ -246,6 +248,7 @@
           <label class="form-label" for="pass-observacoes">Observações</label>
           <textarea id="pass-observacoes" class="form-input" rows="2" placeholder="Notas opcionais"></textarea>
         </div>
+        <p class="form-erro hidden" id="pass-modal-erro"></p>
         <div class="modal-actions">
           <button type="button" id="btn-cancelar-pass" class="btn btn-outline">Cancelar</button>
           <button type="submit" id="btn-salvar-pass" class="btn btn-primary">Salvar</button>

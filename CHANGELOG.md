@@ -7,6 +7,21 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.39.7] - 2026-04-22
+
+### Adicionado
+
+- **NRF-UX F8 — Microcopy e vocabulário (#200):** guia de tom, padronização de mensagens e remoção de todos os `alert()` do app.
+  - `docs/MF_Microcopy.md`: guia completo de tom de voz, padrões de botões, empty states, validação, erros, sucesso, placeholders, glossário de 10 termos e 20 exemplos antes × depois.
+  - `src/receitas.html` / `src/js/pages/receitas.js`: validação de formulário migrada de `alert()` para elemento inline `#rec-modal-erro` via helper `_setErroModal()`; erro limpo ao fechar modal; empty state usa mês dinâmico (`Sem receitas em {mês}.`).
+  - `src/contas.html` / `src/js/pages/contas.js`: erros de save (saldo e cartão) migrados de `alert()` para `#saldo-modal-erro` / `#cartao-modal-erro`.
+  - `src/patrimonio.html` / `src/js/pages/patrimonio.js`: erros de save (investimento e passivo) → `#inv-modal-erro` / `#pass-modal-erro`; snapshot → `_feedbackSnapshot()` com feedback inline temporário (3s).
+  - `src/js/pages/base-dados.js`: `alert()` em excluir em massa e purge → `mostrarToast()` existente; texto corrigido de `❌ Erro ao atualizar` → `Não consegui atualizar`.
+  - `src/js/pages/fatura.js`, `importar.js`: guards de XLSX não carregado → `console.error` silencioso.
+  - `src/js/pages/despesas.js`: empty state usa mês dinâmico; erros de transferência interna → silenciosos (já logados).
+  - Empty states padronizados: `Sem receitas em {mês}.` / `Sem despesas em {mês}.` / `Nenhuma despesa para os filtros selecionados.` / `Nenhum cartão. Adicione o primeiro.`
+  - Mensagens de erro padronizadas: `Não consegui salvar…` em vez de `Erro ao salvar…`; `Não consegui excluir…`; `Não consegui purgar…`
+
 ## [3.39.6] - 2026-04-22
 
 ### Adicionado

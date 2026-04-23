@@ -489,8 +489,8 @@ function ativarTab(tab) {
 
 // ── Exportação para Excel ─────────────────────────────────────
 function exportarExcel() {
-  if (typeof XLSX === 'undefined') { alert('SheetJS não carregado.'); return; }
-  if (!_despesas.length) { alert('Nenhuma transação para exportar.'); return; }
+  if (typeof XLSX === 'undefined') { console.error('[fatura] SheetJS não carregado'); return; }
+  if (!_despesas.length) return;
 
   const membros = _membrosDoGrupo();
   const totais  = calcularTotais(membros);
@@ -564,7 +564,7 @@ function atualizarTituloMes() {
 }
 
 function mostrarEmpty(show) {
-  document.getElementById('fat-empty').style.display         = show ? '' : 'none';
+  document.getElementById('fat-empty').style.display = show ? '' : 'none';
   document.getElementById('fat-resumo-cards').style.display  = show ? 'none' : '';
   document.getElementById('fat-conteudo').style.display      = show ? 'none' : '';
 }

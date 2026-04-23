@@ -513,7 +513,7 @@ function _recategorizarComOrigem() {
 // ── NRF-004: Geração dinâmica do template Excel ─────────────────
 function gerarTemplateDespesas() {
   if (typeof XLSX === 'undefined') {
-    alert('SheetJS não carregado. Tente recarregar a página.');
+    console.error('[importar] SheetJS não carregado');
     return;
   }
   const wb = XLSX.utils.book_new();
@@ -556,7 +556,7 @@ function gerarTemplateDespesas() {
 
 // ── NRF-006: Template Extrato Bancário ──────────────────────────
 function gerarTemplateBanco() {
-  if (typeof XLSX === 'undefined') { alert('SheetJS não carregado. Tente recarregar a página.'); return; }
+  if (typeof XLSX === 'undefined') { console.error('[importar] SheetJS não carregado'); return; }
   const wb = XLSX.utils.book_new();
   const header  = ['Data', 'Descrição', 'Valor'];
   const exemplos = [
@@ -586,7 +586,7 @@ function gerarTemplateBanco() {
 
 // ── NRF-006: Template Receitas ───────────────────────────────────
 function gerarTemplateReceitas() {
-  if (typeof XLSX === 'undefined') { alert('SheetJS não carregado. Tente recarregar a página.'); return; }
+  if (typeof XLSX === 'undefined') { console.error('[importar] SheetJS não carregado'); return; }
   const wb = XLSX.utils.book_new();
   const catsReceita = _categorias.filter(c => c.tipo === 'receita').map(c => c.nome);
   const header = ['Data', 'Descrição', 'Categoria', 'Valor'];

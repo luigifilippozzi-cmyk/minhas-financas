@@ -192,8 +192,8 @@ function renderizarLista() {
 
   if (!filtradas.length) {
     lista.innerHTML = _despesas.length
-      ? emptyStateHTML('', 'Nenhuma despesa encontrada com os filtros aplicados.')
-      : emptyStateHTML('', 'Nenhuma despesa registrada neste período.', 'Clique em + Nova Despesa para começar.');
+      ? emptyStateHTML('', 'Nenhuma despesa para os filtros selecionados.')
+      : emptyStateHTML('', `Sem despesas em ${nomeMes(_mes)}.`, 'Adicione a primeira.');
     return;
   }
 
@@ -574,7 +574,7 @@ function configurarEventos() {
 // ── Exportação CSV ────────────────────────────────────────────
 function exportarCSV() {
   const exportaveis = _despesas.filter(isMovimentacaoReal);
-  if (!exportaveis.length) { alert('Nenhuma despesa para exportar neste período.'); return; }
+  if (!exportaveis.length) return;
 
   const cabecalho = ['Data', 'Descrição', 'Responsável', 'Categoria', 'Emoji', 'Parcela', 'Valor (R$)'];
   const ordenadas = [...exportaveis].sort((a, b) => {
@@ -621,7 +621,7 @@ window._despMarcarTransferencia = async (id) => {
     });
   } catch (err) {
     console.error('[despesas] Erro ao marcar transferência:', err);
-    alert('Erro ao marcar como transferência interna.');
+    /* error already logged above */
   }
 };
 window._despDesmarcarTransferencia = async (id) => {
@@ -633,6 +633,6 @@ window._despDesmarcarTransferencia = async (id) => {
     });
   } catch (err) {
     console.error('[despesas] Erro ao desmarcar transferência:', err);
-    alert('Erro ao desmarcar transferência interna.');
+    /* error already logged above */
   }
 };
