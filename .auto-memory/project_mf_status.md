@@ -1,11 +1,61 @@
 ﻿# Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-23 21:57 (Dev Manager — sessão autônoma)
-> Versão: v3.39.7 (package.json) | Testes: 756 unit + 26 int | Saúde: VERDE
-> CI: verde | PRs: 0 | Issues: 13 (todos iOS ON HOLD) | UX 100% ✅ | NRF-UX 100% ✅
+> Atualizado em: 2026-04-22 (PO Assistant — sessão Cowork)
+> Versão: v3.39.8 (package.json + origin/main 780c75e) | Testes: 844 unit + 26 int | Saúde: VERDE
+> CI: verde | PRs: 0 | Issues: 13 (todos iOS ON HOLD) | UX 100% ✅ | NRF-UX 100% ✅ | Proposta C ativa
 
 ---
 
+## Sessão 2026-04-22 — PO Assistant (Cowork) + Dev Manager
+
+### Estado
+- Versão: v3.39.8 (package.json + CHANGELOG + remote origin/main commit 780c75e)
+- Testes: 844 unitários + 26 integração — todos passando (verificado ao vivo via `npm test`)
+- Milestone UX & Gestão Patrimonial: 100% ✅
+- Milestone NRF-UX — Experiência do Controller: 100% ✅ (#19, 8/8)
+- Milestone Tech Debt controllers: 100% ✅ (PR #209, +88 testes)
+- Milestone iOS: ON HOLD — 4/17 (23.5%)
+- Saúde remota: 🟢 VERDE — 0 PRs abertos, 0 violações invioláveis
+
+### Achado 0 — corrupção local (RECUPERADO)
+- Working tree local em C:\Dev\minhas-financas apresentou 37 arquivos modificados e truncados no meio (CHANGELOG, BUSSOLA, variables.css, app.js, despesas.html, project_mf_status.md, outros). Remote íntegro.
+- Recuperação: `git fetch`, `git clean -fd` (reset --hard falhou por index.lock). npm test voltou 844 passing.
+- Perda colateral: docs/PLANO_DE_TESTES_v3.39.7.md + .xlsx apagados pelo clean (backup também removido porque clean rodou antes do reset). Conteúdo será regerado em C3 (plano v3.39.8).
+- Causa-raiz: não investigada — possivelmente editor externo que gravou buffer parcial em múltiplos arquivos. Alerta para futuro: rodar `git status` antes de qualquer sessão.
+
+### Achado 1 — docs desincronizadas com entregas
+- CLAUDE.md declarava v3.38.0 / v3.37.0 (atrasado 4-6 releases) — CORRIGIDO em C1 nesta sessão
+- BUSSOLA §9 listava F3-F8 "em fila 2/8" quando já 100% entregue — será corrigido em C2
+- BUSSOLA §4 listava Gaps resolvidos como se estivessem abertos — será corrigido em C2
+- Prompt PO Cowork referenciava #158 + #186 já fechadas — fora do escopo de C (prompt é externo)
+
+### Decisões PO desta sessão
+- C5 (BUSSOLA §10 / mobile.html): REMOVER. mobile.html descontinuado. Mobile passa a ser atendido por PWA responsivo + iOS Capacitor Fase 2+. Materialização em C2.
+- Proposta C — Higiene Estratégica: APROVADA na ordem C5 → (C1 + C6 paralelo) → C2 → C4 → C3.
+- Propostas visuais V1-V3: APROVADAS como candidatas ao próximo milestone estratégico (não entram em C).
+
+### Backlog de higiene ativo (Proposta C)
+- [x] C5 — decisão §10 mobile.html (registrada)
+- [x] C1 — sincronizar CLAUDE.md (commit desta sessão)
+- [x] C6 — atualizar memória (este registro)
+- [ ] C2 — refatorar BUSSOLA §4/§9 + remover §10 + registrar decisão em §11
+- [ ] C4 — varredura alert()/Erro ao...
+- [ ] C3 — regerar PLANO_DE_TESTES_v3.39.8 + executar UAT
+
+### Backlog visual aprovado (próximo milestone, fora de C)
+- [ ] V1 → ENH-006 — densidade Cockpit mobile <414px (--font-size-kpi-hero 40→32px)
+- [ ] V2 → RF-071 — tokens de cor em séries Chart.js (fecha PV5 por completo)
+- [ ] V3 → ENH-007 — empty states em fatura.html + fluxo-caixa.html
+
+### Alertas ativos
+- [iOS-ON-HOLD] #77–#89 pausadas — aguarda Apple Developer Program
+- [HIGIENE-ATIVO] Proposta C em execução — 3/6 completos após esta sessão (C5, C1, C6)
+- [LOCAL-REPO-WATCH] monitorar `git status` a cada abertura de sessão após incidente de corrupção
+
+### Próxima ação
+- DM: executar C2 (refatorar BUSSOLA) após PO confirmar commit de C1+C6.
+
+---
 ## Dev Manager — 2026-04-23 21:57
 
 ### Sessão
