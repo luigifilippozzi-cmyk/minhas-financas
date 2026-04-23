@@ -172,6 +172,51 @@ a:hover { text-decoration: underline; }
   .resumo-cards { grid-template-columns: 1fr; }
 }
 
+/* ── Mobile pequeno (<414px) — ENH-006 densidade cockpit ── */
+@media (max-width: 413px) {
+  /* Padding lateral comprimido para maximizar conteúdo útil */
+  .main-content {
+    padding-left: calc(var(--space-3) + var(--safe-area-left));
+    padding-right: calc(var(--space-3) + var(--safe-area-right));
+    gap: var(--space-8);
+  }
+
+  /* 2 colunas de KPI cards: ~164px cada em 360px — acima do mínimo de 140px */
+  .resumo-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-2);
+  }
+
+  /* Card KPI: padding interno comprimido */
+  .resumo-card {
+    padding: var(--space-3);
+  }
+
+  /* Valor KPI: 17px em vez de 22px — legível em coluna estreita */
+  .resumo-valor {
+    font-size: var(--font-size-lg);
+  }
+
+  /* Section header: spacing comprimido entre título e ações */
+  .section-header {
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+
+  /* CTAs: alvo de toque ≥44px (Apple HIG) — empilhados e esticados */
+  .section-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .section-actions .btn,
+  .section-actions a.btn {
+    min-height: var(--touch-target-min);
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+}
+
 /* ============================================================
    RF-004 — Página de Orçamentos
    ============================================================ */
