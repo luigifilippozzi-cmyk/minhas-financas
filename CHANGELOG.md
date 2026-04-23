@@ -7,6 +7,17 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.39.8] - 2026-04-23
+
+### Adicionado
+
+- **Tech debt — Testes de controllers (#PR 209):** cobertura unitária dos 4 controllers que estavam sem testes, eliminando a dívida técnica P2.
+  - `tests/controllers/categorias.test.js` (16 testes): `getCategorias`, `salvarCategoria` (validações de nome/emoji, criação com grupoId/defaults, edição sem grupoId), `criarCategoriasPadrao`, `desativarCategoria`, `iniciarListenerCategorias`.
+  - `tests/controllers/orcamentos.test.js` (14 testes): `salvarOrcamento` (normalização de negativos/strings/undefined), `copiarMesAnterior` (transição jan→dez, não-sobrescrever já definidos, cópia múltipla), gerenciamento de unsubscribe em listeners.
+  - `tests/controllers/planejamento.test.js` (32 testes): `autoMatch` (parcelamentoId, descrição exata/substring/case-insensitive, sem double-match, ignora realizado/projecao/orcamento), `analisarGaps` (semPlano, excedidos, cancelado ignorado, acumulação multi-item), `despesasNaoPlanejadas` (RF-063: filtra `transferencia_interna`, `projecao`, `projecao_paga`).
+  - `tests/controllers/receitas-dashboard.test.js` (16 testes): `renderizarDashboardReceitas` — cálculo de totalReceitas, saldo ±, classes CSS positivo/negativo, empty-state, grid HTML, percentuais por categoria, acumulação de múltiplos lançamentos.
+- **756 → 844 testes unitários** (+88); todos os módulos `utils/` e `controllers/` com testes ✅
+
 ## [3.39.7] - 2026-04-22
 
 ### Adicionado
