@@ -1,8 +1,47 @@
 ﻿# Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-22 21:35 (PM Agent — revisão diária)
+> Atualizado em: 2026-04-23 21:57 (Dev Manager — sessão autônoma)
 > Versão: v3.39.7 (package.json) | Testes: 756 unit + 26 int | Saúde: VERDE
 > CI: verde | PRs: 0 | Issues: 13 (todos iOS ON HOLD) | UX 100% ✅ | NRF-UX 100% ✅
+
+---
+
+## Dev Manager — 2026-04-23 21:57
+
+### Sessão
+- Versão: v3.39.7
+- Tarefas concluídas: nenhuma (sem P0/P1 ativo — todos milestones concluídos)
+- PRs criados: nenhum
+- PRs mergeados: nenhum
+- Subagentes acionados: nenhum (sem implementação esta sessão)
+- CI: verde (5/5 success — Deploy Firebase) | Deploy Firebase: OK
+
+### Estado dos milestones
+- UX & Gestão Patrimonial (primário): 15/15 (100%) ✅ CONCLUÍDO
+- NRF-UX — Experiência do Controller (#19): 8/8 (100%) ✅ CONCLUÍDO
+- iOS Fase 2 (P3 — ON HOLD): 4/4 issues abertas — #77, #78, #79, #80
+- iOS Fases 3–5 (P3 — aguardando F2): 9/9 issues abertas
+- QA pendente: nenhum
+
+### Auditoria tech debt (verificado ao vivo)
+- Utils: 22/22 módulos com testes ✅ (cobertura completa)
+- Controllers sem teste: 4 — categorias.js (120L), orcamentos.js (107L), planejamento.js (230L), receitas-dashboard.js (65L) — P2, aguarda PO
+- Services sem teste unitário: auth.js, database.js, grupos.js, storage.js — cobertos por testes de integração (Firebase Emulator) — OK
+- Build: ✓ 3.88s (verde)
+
+### Decisões pendentes do PO
+- Próximo milestone: PO ainda não definiu nova iniciativa após NRF-UX 100%
+- Sugestão P2: testes de controllers (4 arquivos, 522 linhas) — aguarda aprovação PO
+
+### Próximas prioridades
+- P0: nenhum
+- P1: nenhum — aguarda PO
+- P2 (sugestão): testes de controllers (categorias, orcamentos, planejamento, receitas-dashboard)
+- P3: iOS Fase 2 (#77–#80) — ON HOLD
+
+### Alertas
+- [iOS-ON-HOLD] #77–#89 pausadas — aguarda Apple Developer Program
+- [P2-TECH-DEBT] 4 controllers sem testes — aguarda PO definir prioridade
 
 ---
 
