@@ -1,4 +1,4 @@
-# CLAUDE.md — Minhas Finanças
+﻿# CLAUDE.md — Minhas Finanças
 
 > Guia para o agente Claude Code. Leia este arquivo antes de qualquer tarefa.
 
@@ -8,7 +8,7 @@
 
 - **Usuários:** Luigi + Ana (casal)
 - **Dev:** Luigi (solo developer)
-- **Versão atual:** v3.38.0
+- **Versão atual:** v3.39.8
 - **Repo:** https://github.com/luigifilippozzi-cmyk/minhas-financas
 - **Stack:** HTML5 · CSS3 · JS ES6+ · **Vite 5** (bundler MPA) · **Capacitor 8** (iOS) · Firebase Auth · Cloud Firestore (via npm) · Chart.js v4 · SheetJS (XLSX)
 
@@ -20,7 +20,7 @@
 npm run dev                 # Vite dev server (HMR, hot reload)
 npm run build               # Vite build → dist/ (produção)
 npm run preview             # Preview do build de produção
-npm test                    # Vitest — roda suite de 665 testes unitários
+npm test                    # Vitest — roda suite de 844 testes unitários
 npm run test:watch          # Vitest em modo watch
 npm run test:coverage       # Coverage com V8
 npm run test:integration    # Testes de integração (requer Firebase Emulator)
@@ -187,7 +187,7 @@ Todas as cores, sombras e fontes estão em `variables.css` como CSS custom prope
 
 - Framework: **Vitest** com `@vitest/coverage-v8`
 - Localização: `tests/` (espelho de `src/js/utils/` e `src/js/services/`)
-- **665 testes unitários** cobrindo: parsers, dedup, ajusteDetector, normalizador, pipelineCartao, importarDedup, detectorTransferenciaInterna, reconciliadorFatura, bankFingerprintMap, detectorOrigemArquivo, recurringDetector, pdfParser, skeletons, forecastEngine, saldoRealPorConta, burnRateCalculator, Investimento, PassivoExtrajudicial, patrimonio
+- **844 testes unitários** cobrindo: parsers, dedup, ajusteDetector, normalizador, pipelineCartao, importarDedup, detectorTransferenciaInterna, reconciliadorFatura, bankFingerprintMap, detectorOrigemArquivo, recurringDetector, pdfParser, skeletons, forecastEngine, saldoRealPorConta, burnRateCalculator, Investimento, PassivoExtrajudicial, patrimonio
 - **26 testes de integração** (Firebase Emulator): regras Firestore, CRUD despesas, purge em lote
 - **Rodar antes de qualquer commit:** `npm test`
 - Testes de integração: `npm run test:integration` (requer emulador na porta 8080)
@@ -195,7 +195,7 @@ Todas as cores, sombras e fontes estão em `variables.css` como CSS custom prope
 
 ---
 
-## Estado Atual do Projeto (2026-04-20) — v3.37.0
+## Estado Atual do Projeto (2026-04-22) — v3.39.8
 
 ### Milestones
 | Milestone | Progresso | Status |
@@ -206,29 +206,36 @@ Todas as cores, sombras e fontes estão em `variables.css` como CSS custom prope
 | Manutenibilidade e Arquitetura | Completo | ✅ Concluído (v3.20.0) |
 | iOS App Fase 0 (Vite + Firebase npm) | 2/2 (100%) | ✅ Concluído |
 | iOS App Fase 1 (Capacitor + safe areas) | 2/2 (100%) | ✅ Concluído |
-| iOS App Fase 2 (Firebase nativo) | 0/4 issues | ⏸️ ON HOLD (decisão PO 2026-04-16) |
+| iOS App Fase 2 (Firebase nativo) | 0/4 issues | ⏸️ ON HOLD (aguarda Apple Dev Program) |
 | iOS App Fases 3–5 (UX mobile + TestFlight + Push) | 0/9 issues | ⚪ Aguardando Fase 2 |
 | UX & Gestão Patrimonial | 15/15 (100%) | ✅ Concluído (v3.38.0) |
-| Tech Debt | 2/2 (100%) — testes | ✅ Concluído |
+| NRF-UX — Experiência do Controller (#19) | 8/8 (100%) | ✅ Concluído (v3.39.7) |
+| Tech Debt — Cobertura de testes | Completo | ✅ Concluído (v3.39.8 — 844 testes) |
+| Higiene Estratégica (Proposta C) | Em execução | 🟡 Ativo (C1-C6 + V1-V3) |
 
 ### Estrutura de Desenvolvimento (Squad IA)
 ```
 Luigi (Product Owner)
   ├── PM Agent          → Relatório diário, métricas, alertas (read-only)
   └── Dev Manager       → Executor de código, orquestrador de subagentes
-        ├── test-runner              → Vitest (690 testes) + coverage
+        ├── test-runner              → Vitest (844 testes) + coverage
         ├── security-reviewer        → Firestore rules, escHTML/XSS, auth
         └── import-pipeline-reviewer → Pipeline de importação (parser, dedup, ajuste)
 ```
 Detalhes completos em `AGENTS.md`. Bússola estratégica em `docs/BUSSOLA_PRODUTO.md`. Memória persistente em `.auto-memory/project_mf_status.md`.
 
 ### Próximas prioridades
-1. ~~**NRF-NAV Fase 1** — Navbar 5 seções — v3.33.0~~ ✅ Concluído (PR #180)
-2. ~~**NRF-NAV Fase 2** — projecoesCartao.js + Cockpit + Compromissos — v3.37.0~~ ✅ Concluído (PR #187)
-3. ~~**NRF-NAV Fase 3 + ENH-005** (#189 + #158) — Simplificar despesas.html + DS tokens — v3.38.0~~ ✅ Concluído (PR #190)
-4. **iOS App Fase 2** — Firebase nativo — issues #77–#80 — **ON HOLD** até Apple Developer Program ativado
+1. ~~**NRF-NAV Fase 1-3** — Reestruturação navegação~~ ✅ Concluído (v3.33.0–v3.38.0)
+2. ~~**NRF-UX F1-F8** — Experiência do Controller (milestone #19)~~ ✅ Concluído (v3.39.0–v3.39.7)
+3. ~~**Tech Debt** — testes de controllers~~ ✅ Concluído (v3.39.8, +88 testes)
+4. 🟡 **Proposta C — Higiene Estratégica (ativa)** — sincronizar docs, refatorar BUSSOLA, varrer alert()/Erro ao, UAT v3.39.8
+5. ⚪ Próximo milestone estratégico — a definir pelo PO após C. Candidatos: Decisão Assistida (RF-071/072/073), Mobile-first (iOS F2 se Apple Dev ativar), ou melhorias visuais V1+V2+V3
+6. ⏸️ **iOS App Fase 2** — Firebase nativo — issues #77–#80 — **ON HOLD** até Apple Developer Program ativado
 
 **Milestone UX & Gestão Patrimonial:** 100% concluído ✅ (v3.38.0 — 2026-04-20)
+**Milestone NRF-UX — Experiência do Controller:** 100% concluído ✅ (v3.39.7 — 2026-04-22)
+**Testes:** 844 unitários + 26 integração — todos passando
+**Saúde do repo:** 🟢 VERDE — CI verde | 0 PRs abertos | 0 violações invioláveis | 13 issues iOS ON HOLD
 
 **QA concluído:** issue #129 (RF-062) **fechada** em 2026-04-17 — 30 PASS / 3 N/A / 0 FAIL / 0 regressões em 33 TCs cobertos.
 
