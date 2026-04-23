@@ -14,7 +14,7 @@ import {
   buscarProjecoesRange,
 } from '../services/database.js';
 import { gerarForecast } from '../utils/forecastEngine.js';
-import { coresGrafico } from '../utils/chartColors.js';
+import { coresGrafico, getChartColors } from '../utils/chartColors.js';
 import { isMovimentacaoReal } from '../utils/helpers.js';
 import { buscarProjecoesAgregadas } from '../utils/projecoesCartao.js';
 import { skeletonTableRows, emptyStateHTML } from '../utils/skeletons.js';
@@ -241,7 +241,7 @@ function renderizarGrafico(dados) {
           fill: true,
           pointRadius: 4,
           pointBackgroundColor: acumData.map((v) => (v >= 0 ? coresGrafico().pontoPositivo : coresGrafico().pontoNegativo)),
-          pointBorderColor: '#fff',
+          pointBorderColor: getChartColors().pointBorder,
           pointBorderWidth: 1.5,
           yAxisID: 'yAcum',
           order: 1,
@@ -262,12 +262,12 @@ function renderizarGrafico(dados) {
       },
       scales: {
         x: {
-          grid: { color: 'rgba(0,0,0,.05)' },
+          grid: { color: getChartColors().grid },
           ticks: { font: { size: 13 } },
         },
         y: {
           beginAtZero: true,
-          grid: { color: 'rgba(0,0,0,.05)' },
+          grid: { color: getChartColors().grid },
           ticks: {
             callback: (v) =>
               new Intl.NumberFormat('pt-BR', {
