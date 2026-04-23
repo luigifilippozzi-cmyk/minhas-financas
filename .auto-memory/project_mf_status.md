@@ -1,8 +1,44 @@
 ﻿# Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-22 17:11 (PM Agent — revisão diária)
-> Versão: v3.39.4 (package.json) | Testes: 753 unit + 26 int | Saúde: VERDE
-> CI: verde | PRs: 0 | Issues: 16 (3 NRF-UX F6–F8 em milestone #19 + 13 iOS ON HOLD) | UX 100%
+> Atualizado em: 2026-04-22 21:35 (PM Agent — revisão diária)
+> Versão: v3.39.7 (package.json) | Testes: 756 unit + 26 int | Saúde: VERDE
+> CI: verde | PRs: 0 | Issues: 13 (todos iOS ON HOLD) | UX 100% ✅ | NRF-UX 100% ✅
+
+---
+
+## PM Agent — 2026-04-22 21:35
+
+### Estado
+- Versão: v3.39.7
+- Milestone UX & Gestão Patrimonial: 100% concluído ✅ (15/15)
+- Milestone NRF-UX — Experiência do Controller: 100% concluído ✅ (8/8)
+- Milestone iOS: ON HOLD (23.5%, 4/17) — aguarda Apple Dev Program
+- Saúde: verde — CI verde | 756 testes OK | 0 PRs | 0 branches | 0 violações | iOS ON HOLD
+- Testes: 756 unit + 26 int — todos passando (verificado ao vivo)
+- CI: deploy in_progress (normal pós-merge #208) | Deploy Firebase: em andamento
+
+### Issues abertas (13 total)
+- iOS ON HOLD: #77–#89 (13 issues — não priorizar)
+- Novas desde última sessão: nenhuma
+- Fechadas desde última sessão (17:11 hoje): #198 F6, #199 F7, #200 F8 (NRF-UX completo)
+
+### Alertas ativos
+- [iOS-ON-HOLD] #77–#89 pausadas — aguarda Apple Developer Program
+- Nenhum P0/P1 bloqueante
+- Nenhuma decisão PO pendente
+- Nenhuma violação de processo
+
+### Prioridades para Dev Manager
+- P0: nenhum (todos milestones ativos 100%)
+- P1: aguarda PO definir próxima iniciativa
+- P2 (sugestão): testes de controllers (categorias, orcamentos, planejamento, receitas-dashboard) — aguarda PO
+
+### Atividade recente
+- Último PR mergeado: #208 NRF-UX F8 — Microcopy e vocabulário (2026-04-22 21:24)
+- PRs mergeados desde PM anterior (17:11): #206 F7, #207 fix tabular-nums, #208 F8
+- Commits sem PR em src/: não (todos via PR; chore commits em docs/.auto-memory/ direto em main — OK)
+- Issues fechadas hoje: #198 F6 Espaçamento, #199 F7 Chart.js tokens, #200 F8 Microcopy
+- Subagentes acionados (sessão DM): test-runner PASS | ux-reviewer PASS
 
 ---
 
