@@ -461,20 +461,20 @@
 // Dashboard state — PM Agent updates this section, Dev Manager reads it
 const DASHBOARD_DATA = {
   // PM Agent atualiza estes campos:
-  lastUpdate: "2026-04-22 18:45",
+  lastUpdate: "2026-04-22 21:25",
   version: "v3.39.7",
   health: "green", // green | yellow | red
-  healthText: "Verde — CI verde | 753 testes OK | 3 PRs abertos (#206 F7, #207 cleanup, #208 F8) | NRF-UX 8/8 (100%) ✅ | iOS ON HOLD | UX 100%",
-  testsUnit: "753",
-  testsUnitStatus: "753 passando (main) | 756 em branch F7",
+  healthText: "Verde — CI verde | 756 testes OK | 0 PRs abertos | NRF-UX 8/8 (100%) ✅ mergeado em main | iOS ON HOLD | UX 100%",
+  testsUnit: "756",
+  testsUnitStatus: "756 passando (main)",
   testsInt: "26",
-  issuesOpen: 14,
-  issuesSub: "NRF-UX milestone #19: 0 abertas (F6–F8 em PRs) | iOS ON HOLD: 13 (#77–#89) | 0 P0/P1 bloqueantes | NRF-UX 100% ✅",
+  issuesOpen: 13,
+  issuesSub: "NRF-UX milestone #19: 0 abertas (F6–F8 mergeados) | iOS ON HOLD: 13 (#77–#89) | 0 P0/P1 bloqueantes | NRF-UX 100% ✅",
   // Dev Manager atualiza via PR + merge
   activity: [
-    { time: "Apr 22", color: "var(--green)", msg: "<strong>PR #208 criado</strong> — feat(design-system): NRF-UX F8 — Microcopy e vocabulário (v3.39.7) | docs/MF_Microcopy.md (guia de tom + 20 exemplos) | todos alert() removidos (7 arquivos) → form-erro inline / mostrarToast / _feedbackSnapshot | empty states com mês dinâmico | mensagens Não consegui… | 753 testes OK | test-runner PASS | ux-reviewer APPROVED WITH NOTES (2 MEDIUMs corrigidos no mesmo commit) | #200 fecha", tag: "merge" },
-    { time: "Apr 22", color: "var(--green)", msg: "<strong>PR #207 criado</strong> — fix(design-system): tabular-nums em classes monetárias remanescentes (v3.39.6) | .rec-cat-valor (+ font-size token) + .fat-footer-valor + .plan-valor-previsto/realizado | 753 testes OK", tag: "merge" },
-    { time: "Apr 22", color: "var(--green)", msg: "<strong>PR #206 criado</strong> — feat(design-system): NRF-UX F7 — Chart.js tokens + tabular-nums (v3.39.6) | --fw-chart: 500 | chartDefaults.js lê CSS tokens via getComputedStyle | tabular-nums em 9 novas classes monetárias | 756 testes OK (+3 chartDefaults) | test-runner PASS | ux-reviewer APPROVED | #199 fecha", tag: "merge" },
+    { time: "Apr 22", color: "var(--green)", msg: "<strong>PR #208 mergeado</strong> — feat(design-system): NRF-UX F8 — Microcopy e vocabulário (v3.39.7) | docs/MF_Microcopy.md (guia de tom + 20 exemplos) | todos alert() removidos (7 arquivos) → form-erro inline / mostrarToast / _feedbackSnapshot | empty states com mês dinâmico | mensagens Não consegui… | 756 testes OK | #200 fechada ✅", tag: "merge" },
+    { time: "Apr 22", color: "var(--green)", msg: "<strong>PR #207 mergeado</strong> — fix(design-system): tabular-nums em classes monetárias remanescentes (v3.39.6) | .rec-cat-valor (+ font-size token) + .fat-footer-valor + .plan-valor-previsto/realizado | 756 testes OK", tag: "merge" },
+    { time: "Apr 22", color: "var(--green)", msg: "<strong>PR #206 mergeado</strong> — feat(design-system): NRF-UX F7 — Chart.js tokens + tabular-nums (v3.39.6) | --fw-chart: 500 | chartDefaults.js lê CSS tokens via getComputedStyle | tabular-nums em 9 novas classes monetárias | 756 testes OK (+3 chartDefaults) | test-runner PASS | ux-reviewer APPROVED | #199 fechada ✅", tag: "merge" },
     { time: "Apr 22", color: "var(--green)", msg: "<strong>PR #205 mergeado</strong> — feat(design-system): NRF-UX F6 — Espaçamento e ritmo vertical (v3.39.5) | --rhythm-sm/md/lg | --space-0-5/0-75/1-5/12 | conversão completa rem hardcoded → tokens (4 CSS files) | 753 testes OK | ux-reviewer APPROVED | #198 fechada", tag: "merge" },
     { time: "Apr 22", color: "var(--blue)", msg: "<strong>PM Agent 17:11</strong> — 🟢 Verde | v3.39.4 | 753 testes OK (verificado ao vivo) | CI verde (5/5 success — Deploy Firebase) | 0 PRs abertos | 0 branches ativas (feat/MF-197 orphan remoto — já mergeada) | 0 violações | 16 issues: 3 NRF-UX (#198 F6, #199 F7, #200 F8) em milestone #19 + 13 iOS ON HOLD (#77–#89) | NRF-UX: 5/8 (62.5%) | UX 100% ✅ | iOS ON HOLD | Uncommitted local: .gitignore + package-lock.json (não staged — inofensivo) | Próximo DM: NRF-UX F6 (#198 — Espaçamento e ritmo vertical)", tag: "pm" },
     { time: "Apr 22", color: "var(--green)", msg: "<strong>PR #204 mergeado</strong> — feat(design-system): NRF-UX F5 — skeletons e estados de loading (v3.39.4) | tokens --color-surface-muted/strong | .skeleton-chart + .skeleton-kpi + .skeleton-patrimonio-item | 3 novos helpers (skeletonKpiValue/Chart/PatrimonioItems) | aria-hidden em todos os placeholders | skeleton dashboard (gráficos+KPI) + fatura (projeções) + patrimônio + fluxo-caixa (compromissos+forecast) | 753 testes OK | test-runner PASS | ux-reviewer PASS (PUX5+PUX6) | #197 fechada", tag: "merge" },
