@@ -36,12 +36,20 @@
 21. C4 — Varrer `alert(` e "Erro ao" — N/A: 0 ocorrências de `alert()` em src/ (2026-04-23 — DM) ✅
 22. C3 — Regenerar PLANO_DE_TESTES_v3.39.8.xlsx + UAT (commit 750e297, 85 TCs) ✅
 
-## Candidatos ao próximo milestone (decisão PO após C)
+## Em execução — Polimento Visual v3.40.0 (decisão PO 2026-04-23)
 
-23. V1 — ENH-006 Cockpit density mobile <414px
-24. V2 — RF-071 Chart.js series color tokens
-25. V3 — ENH-007 Empty states em fatura.html e fluxo-caixa.html
-26. Alternativa A — Decisão Assistida (RF-071/072/073 — alertas inteligentes, cenários what-if)
+> Milestone consolidado decidido após Proposta C. 3 PRs sequenciais, release MINOR ao final.
+> Artefatos DM completos em `.auto-memory/dm_tasks_pending.md` (seção `[2026-04-23] Polimento Visual v3.40.0`).
+> Handoff histórico em `.auto-memory/handoffs/handoff_dm_polimento_visual_v3400_2026-04-23.md`.
+> **Ordem estrita: V3 → V2 → V1** (mais isolado → mais amplo). Bump de versão e CHANGELOG consolidado no PR 3.
+
+23. V3 — ENH-007 Empty states em fatura.html e fluxo-caixa.html — **PR 1, sem bump**
+24. V2 — RF-071 Chart.js series color tokens — **PR 2, sem bump**
+25. V1 — ENH-006 Cockpit density mobile <414px — **PR 3, bump v3.40.0 + CHANGELOG consolidado**
+
+## Candidatos ao milestone seguinte (após v3.40.0)
+
+26. Alternativa A — Decisão Assistida (RF-072/073 — alertas inteligentes, cenários what-if)
 27. Alternativa B — iOS Fase 2 (se Apple Dev Program ativar)
 
 ## ON HOLD
@@ -52,10 +60,11 @@
 
 ## Regras
 
-- Cada fase NRF-UX é um PR independente com relatório do `ux-reviewer` anexado (Regra Inviolável #14 do `CLAUDE.md`)
-- Progresso rastreado no milestone GitHub (NRF-UX #19 concluído; próximo milestone a definir)
+- Cada fase NRF-UX ou Polimento Visual é um PR independente com relatório do `ux-reviewer` anexado (Regra Inviolável #14 do `CLAUDE.md`)
+- Progresso rastreado no milestone GitHub ("Polimento Visual v3.40.0" a ser criado pelo DM antes do PR 1)
 - Alteração nesta ordem requer sessão PO formal e registro em BUSSOLA §11
-- Itens 23–27 permanecem como candidatos até PO escolher próximo milestone após Proposta C concluir
+- Itens 26–27 permanecem como candidatos até PO escolher próximo milestone após Polimento Visual concluir
+- Após merge dos 3 PRs do Polimento Visual: PO expande `docs/PLANO_DE_TESTES_v3.39.8.xlsx` → `v3.40.0.xlsx` e executa UAT
 
 ---
 
