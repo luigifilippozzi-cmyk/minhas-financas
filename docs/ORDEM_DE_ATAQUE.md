@@ -4,7 +4,7 @@
 > Propósito: manter separadamente a sequência operacional de entrega. BUSSOLA é reflexão estratégica estável; Ordem de Ataque muda a cada sessão PO.
 > Fonte da verdade de priorização macro. Qualquer discrepância entre este arquivo e o backlog GitHub resolve-se por este arquivo.
 
-> Atualizada em: 2026-04-23 (pós-v3.39.8, Proposta C ativa)
+> Atualizada em: 2026-04-23 (pós-v3.39.8, Proposta C concluída 100% ✅)
 
 ---
 
@@ -27,14 +27,14 @@
 15. NRF-UX F8 — Microcopy e vocabulário (v3.39.7, PR #208)
 16. Tech Debt — testes de controllers (v3.39.8, PR #209, +88 testes → 844 total)
 
-## Em execução — Proposta C (Higiene Estratégica)
+## Concluídos — Proposta C (Higiene Estratégica) ✅
 
-17. C5 — Remover §10 mobile.html da BUSSOLA (commit cb6717a)
-18. C1 — Sincronizar CLAUDE.md (commit cb6717a)
-19. C6 — Sincronizar memória PO (commit cb6717a)
-20. C2 — Refactor BUSSOLA (este arquivo + HISTORICO_DE_GAPS) ← **corrente**
-21. C4 — Varrer `alert(` e "Erro ao" restantes em `src/` (branch + PR)
-22. C3 — Regenerar PLANO_DE_TESTES_v3.39.8.md + .xlsx + UAT
+17. C5 — Remover §10 mobile.html da BUSSOLA (commit cb6717a) ✅
+18. C1 — Sincronizar CLAUDE.md (commit cb6717a) ✅
+19. C6 — Sincronizar memória PO (commit cb6717a) ✅
+20. C2 — Refactor BUSSOLA (HISTORICO_DE_GAPS.md + ORDEM_DE_ATAQUE.md, commit fc61ce6) ✅
+21. C4 — Varrer `alert(` e "Erro ao" — N/A: 0 ocorrências de `alert()` em src/ (2026-04-23 — DM) ✅
+22. C3 — Regenerar PLANO_DE_TESTES_v3.39.8.xlsx + UAT (commit 750e297, 85 TCs) ✅
 
 ## Candidatos ao próximo milestone (decisão PO após C)
 

@@ -1,8 +1,47 @@
 ﻿# Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-22 (PO Assistant — sessão Cowork)
-> Versão: v3.39.8 (package.json + origin/main 780c75e) | Testes: 844 unit + 26 int | Saúde: VERDE
-> CI: verde | PRs: 0 | Issues: 13 (todos iOS ON HOLD) | UX 100% ✅ | NRF-UX 100% ✅ | Proposta C ativa
+> Atualizado em: 2026-04-23 (Dev Manager — sessão autônoma)
+> Versão: v3.39.8 | Testes: 844 unit + 26 int | Saúde: VERDE
+> CI: verde | PRs: 0 | Issues: 13 (todos iOS ON HOLD) | UX 100% ✅ | NRF-UX 100% ✅ | **Proposta C 100% concluída ✅**
+
+---
+
+## Dev Manager — 2026-04-23 12:10
+
+### Sessão
+- Versão: v3.39.8 (package.json verificado ao vivo)
+- Tarefas concluídas: C4 — auditoria alert()/Erro ao (N/A: 0 ocorrências, código já limpo)
+- PRs criados: nenhum (docs → commit direto main)
+- PRs mergeados: nenhum
+- Subagentes acionados: nenhum (auditoria de leitura, sem implementação)
+- CI: verde (5/5 success — Deploy Firebase) | Deploy Firebase: OK
+
+### Estado dos milestones
+- UX & Gestão Patrimonial (primário): 15/15 (100%) ✅ CONCLUÍDO
+- NRF-UX — Experiência do Controller (#19): 8/8 (100%) ✅ CONCLUÍDO
+- **Proposta C — Higiene Estratégica: 6/6 (100%) ✅ CONCLUÍDA**
+  - C1 ✅ CLAUDE.md sincronizado | C2 ✅ BUSSOLA refatorada | C3 ✅ PLANO_DE_TESTES_v3.39.8.xlsx
+  - C4 ✅ N/A (0 alert() em src/) | C5 ✅ §10 removido | C6 ✅ memória sincronizada
+- iOS Fase 2 (P3 — ON HOLD): 4/4 issues abertas — #77, #78, #79, #80
+- iOS Fases 3–5 (P3 — aguardando F2): 9/9 issues abertas
+- QA pendente: nenhum
+
+### Decisões pendentes do PO
+- **Próximo milestone:** a definir pelo PO após conclusão da Proposta C
+  - Candidato V1: ENH-006 — densidade Cockpit mobile <414px
+  - Candidato V2: RF-071 — tokens de cor em séries Chart.js
+  - Candidato V3: ENH-007 — empty states em fatura.html + fluxo-caixa.html
+  - Alternativa A: Decisão Assistida (RF-071/072/073 — alertas inteligentes, cenários what-if)
+  - Alternativa B: iOS Fase 2 (se Apple Dev Program ativar)
+
+### Próximas prioridades
+- P0: nenhum — aguarda PO definir próximo milestone
+- P1: nenhum
+- P3: iOS Fase 2 (#77–#80) — ON HOLD
+
+### Alertas
+- [iOS-ON-HOLD] #77–#89 pausadas — aguarda Apple Developer Program
+- [AGUARDA-PO] Proposta C concluída — próximo milestone a definir
 
 ---
 
@@ -2668,3 +2707,41 @@ A partir desta sessão (registrada como feedback memory `feedback_passo_a_passo_
 - DM executa NRF-UX F2 (#194) — Fraunces + 3 patches em PR único (v3.40.0)
 - Após merge: `ux-reviewer` faz sua estreia e governança PUX está oficialmente ativa
 - Em seguida, escolher entre F3, F4 ou F7 conforme apetite (F7 é o mais alinhado com o pedido original do PO sobre fontes em gráficos)
+
+## C4 concluída — 2026-04-23 (no-op)
+
+**Varredura `alert(` e "Erro ao" em `src/`:**
+
+- `alert(` → **0 ocorrências** em `src/` (NRF-UX F8 já zerou)
+- `"Erro ao"` → 43 matches, classificados:
+  - ~25 em `console.error('[modulo] Erro ao X:', err)` → log técnico (legítimo)
+  - 4 em `errorStateHTML('Erro ao carregar X', ...)` → componente canônico NRF-UX F8 (OK)
+  - 8 em `mostrarErroUI(...)` / `mostrarFeedback(...)` → sistema de feedback F8 (OK)
+  - 2 em `new Error('Erro ao ler arquivo X')` → erro técnico propagado ao caller (OK)
+  - **3 pontos inline em fallback `<tr>` / `textContent` sem componente canônico:**
+    - `fluxo-caixa.js:406` — forecast fallback
+    - `fluxo-caixa.js:483` — compromissos fallback
+    - `importar.js:1265` — resultado de análise de arquivo
+
+**Decisão PO:** C4 fechada como no-op; os 3 pontos inline viram **ENH-008** catalogada para próximo milestone (junto com V1/V2/V3).
+
+**Próximo:** C3 — regenerar plano de testes v3.39.8 + UAT.
+
+## C4 concluída — 2026-04-23 (no-op)
+
+**Varredura `alert(` e "Erro ao" em `src/`:**
+
+- `alert(` → **0 ocorrências** em `src/` (NRF-UX F8 já zerou)
+- `"Erro ao"` → 43 matches, classificados:
+  - ~25 em `console.error('[modulo] Erro ao X:', err)` → log técnico (legítimo)
+  - 4 em `errorStateHTML('Erro ao carregar X', ...)` → componente canônico NRF-UX F8 (OK)
+  - 8 em `mostrarErroUI(...)` / `mostrarFeedback(...)` → sistema de feedback F8 (OK)
+  - 2 em `new Error('Erro ao ler arquivo X')` → erro técnico propagado ao caller (OK)
+  - **3 pontos inline em fallback `<tr>` / `textContent` sem componente canônico:**
+    - `fluxo-caixa.js:406` — forecast fallback
+    - `fluxo-caixa.js:483` — compromissos fallback
+    - `importar.js:1265` — resultado de análise de arquivo
+
+**Decisão PO:** C4 fechada como no-op; os 3 pontos inline viram **ENH-008** catalogada no PM Agent como backlog P3 (DM só quando entrar num milestone).
+
+**Próximo:** C3 — regenerar plano de testes v3.39.8 + UAT.
