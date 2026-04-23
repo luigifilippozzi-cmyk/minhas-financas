@@ -73,7 +73,7 @@ gh api repos/luigifilippozzi-cmyk/minhas-financas/milestones \
 Ler nesta ordem:
 1. `CLAUDE.md` — arquitetura, stack, **13 regras invioláveis**, padrões críticos, anti-patterns
 2. `AGENTS.md` — protocolo do squad, subagentes, workflow git, checklist PR
-3. `docs/BUSSOLA_PRODUTO.md` §9 — Ordem de Ataque Aprovada (prioridade macro)
+3. `docs/ORDEM_DE_ATAQUE.md` — Ordem de Ataque (prioridade macro; fonte da verdade)
 4. `.auto-memory/project_mf_status.md` — estado persistente (se existir)
 
 ---
@@ -156,7 +156,7 @@ Ler `.auto-memory/project_mf_status.md`:
 - `docs/BUGS.md` — último bug: **BUG-032**; próximo: **BUG-033**
 - `docs/REQUISITOS_FUNCIONAIS.md` — último RF implementado: **RF-070** (Design System v1.0); próximo: **RF-071**
 - `docs/MILESTONE_iOS_App.md` — fases 0–1 concluídas; fases 2–5 **ON HOLD**
-- `docs/BUSSOLA_PRODUTO.md` §9 — Ordem de Ataque Aprovada (fonte de priorização macro)
+- `docs/ORDEM_DE_ATAQUE.md` — Ordem de Ataque (fonte de priorização macro)
 - `CHANGELOG.md` — última entrada: v3.36.0 (verificar se há entradas novas)
 
 > **Princípio**: PM Agent NUNCA fica parado por falta de contexto.

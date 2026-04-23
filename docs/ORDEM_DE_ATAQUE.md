@@ -1,0 +1,62 @@
+# Ordem de Ataque — Minhas Finanças
+
+> Arquivo extraído da BUSSOLA_PRODUTO.md §9 em 2026-04-22.
+> Propósito: manter separadamente a sequência operacional de entrega. BUSSOLA é reflexão estratégica estável; Ordem de Ataque muda a cada sessão PO.
+> Fonte da verdade de priorização macro. Qualquer discrepância entre este arquivo e o backlog GitHub resolve-se por este arquivo.
+
+> Atualizada em: 2026-04-23 (pós-v3.39.8, Proposta C ativa)
+
+---
+
+## Concluídos (até v3.39.8)
+
+1. RF-067 Forecast 6 meses (v3.28.0, PR #168)
+2. RF-068 Saldo Real por Conta (v3.29.0, PR #174)
+3. RF-069 Burn Rate por Categoria (v3.30.0, commit 0ee3e18)
+4. RF-066 Patrimônio Ativos/Passivos (v3.31.0, PR #178)
+5. NRF-NAV F1 — Navbar 5 seções (v3.33.0, PR #180)
+6. NRF-NAV F2 — projecoesCartao unificado (v3.37.0, PR #187)
+7. NRF-NAV F3 — Simplificar despesas.html + ENH-005 tokens (v3.38.0, PR #190)
+8. NRF-UX F1 — Visual foundation: hero tokens + dark cards (v3.39.0, PR #193)
+9. NRF-UX F2 — Fraunces + ux-reviewer + Regra Inviolável #14 (v3.39.1, PR #201)
+10. NRF-UX F3 — Remover emojis de chrome (v3.39.2, PR #202)
+11. NRF-UX F4 — Unificar iconografia Lucide (v3.39.3, PR #203)
+12. NRF-UX F5 — Skeletons e estados de loading (v3.39.4, PR #204)
+13. NRF-UX F6 — Espaçamento e ritmo vertical (v3.39.5, PR #205)
+14. NRF-UX F7 — Chart.js tokens + tabular-nums (v3.39.6, PR #206)
+15. NRF-UX F8 — Microcopy e vocabulário (v3.39.7, PR #208)
+16. Tech Debt — testes de controllers (v3.39.8, PR #209, +88 testes → 844 total)
+
+## Em execução — Proposta C (Higiene Estratégica)
+
+17. C5 — Remover §10 mobile.html da BUSSOLA (commit cb6717a)
+18. C1 — Sincronizar CLAUDE.md (commit cb6717a)
+19. C6 — Sincronizar memória PO (commit cb6717a)
+20. C2 — Refactor BUSSOLA (este arquivo + HISTORICO_DE_GAPS) ← **corrente**
+21. C4 — Varrer `alert(` e "Erro ao" restantes em `src/` (branch + PR)
+22. C3 — Regenerar PLANO_DE_TESTES_v3.39.8.md + .xlsx + UAT
+
+## Candidatos ao próximo milestone (decisão PO após C)
+
+23. V1 — ENH-006 Cockpit density mobile <414px
+24. V2 — RF-071 Chart.js series color tokens
+25. V3 — ENH-007 Empty states em fatura.html e fluxo-caixa.html
+26. Alternativa A — Decisão Assistida (RF-071/072/073 — alertas inteligentes, cenários what-if)
+27. Alternativa B — iOS Fase 2 (se Apple Dev Program ativar)
+
+## ON HOLD
+
+28. iOS App F2–F5 — aguarda Apple Developer Program
+
+---
+
+## Regras
+
+- Cada fase NRF-UX é um PR independente com relatório do `ux-reviewer` anexado (Regra Inviolável #14 do `CLAUDE.md`)
+- Progresso rastreado no milestone GitHub (NRF-UX #19 concluído; próximo milestone a definir)
+- Alteração nesta ordem requer sessão PO formal e registro em BUSSOLA §11
+- Itens 23–27 permanecem como candidatos até PO escolher próximo milestone após Proposta C concluir
+
+---
+
+*Este arquivo é atualizado a cada sessão PO que altere priorização. Revisão recomendada: pelo menos 1x/sprint.*

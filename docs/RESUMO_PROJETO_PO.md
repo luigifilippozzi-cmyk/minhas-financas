@@ -13,7 +13,7 @@
 
 **Versão atual:** v3.31.0 (abril 2026) com 665 testes unitários e 26 testes de integração.
 
-**Bússola estratégica:** `docs/BUSSOLA_PRODUTO.md` §9 — Ordem de Ataque Aprovada — é a fonte da verdade para priorização de RFs.
+**Bússola estratégica:** `docs/BUSSOLA_PRODUTO.md` (reflexão) + `docs/ORDEM_DE_ATAQUE.md` (sequência) — a segunda é a fonte da verdade para priorização de RFs.
 
 ---
 
@@ -36,7 +36,7 @@
 
 ---
 
-## 3. Próximas Prioridades (fonte: `docs/BUSSOLA_PRODUTO.md` §9)
+## 3. Próximas Prioridades (fonte: `docs/ORDEM_DE_ATAQUE.md`)
 
 1. **NRF-NAV Fase 1** (#154) v3.32.0 — Navbar 5 seções gerenciais (Cockpit / Futuro / Histórico / Transações / Config). **Casado com NRF-UI-WARM** (#172, paleta warm finance) — decisão PO pendente: 1 PR conjunto ou 2 sequenciais.
 2. **NRF-NAV Fase 2** (#154) v3.33.0 — Consolidação de páginas (merge Projeções + Planejamento na seção Futuro). Absorve ENH-005.
