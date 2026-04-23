@@ -185,6 +185,7 @@
   --space-8:    32px;
   --space-10:   40px;
   --space-12:   48px;
+  --touch-target-min: 44px;  /* Apple HIG mínimo de alvo de toque */
 
   /* ── Ritmo vertical de página (NRF-UX F6 #198) ──────────── */
   --rhythm-sm: var(--space-3);    /* 12px — entre label e input */

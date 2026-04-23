@@ -7,6 +7,22 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.40.0] - 2026-04-23
+
+### Adicionado
+
+- **ENH-007 — Empty states em fatura e fluxo-caixa (PR #213):** estados semânticos de ausência de dados e filtro vazio nas telas de Fatura e Fluxo de Caixa.
+  - `src/js/utils/skeletons.js`: `emptyStateHTML()` agora aceita 4º argumento `ctaHtml` para botões de ação; `.empty-state` recebe `role="status"`; `.empty-state__icon` ganha `aria-hidden="true"`.
+  - `src/css/components.css`: tokens `.empty-state__cta`, `.empty-state--compact` e `color: var(--color-text-muted)` para o ícone.
+  - `src/js/pages/fatura.js`: Cenário A (sem despesas no mês) e Cenário B (filtro de busca sem resultado) com ícones SVG inline, microcopy contextual e CTA "Limpar busca".
+  - `src/js/pages/fluxo-caixa.js`: Cenário A (ano sem movimentações) com CTA "Nova movimentação"; empty states de Forecast e Compromissos.
+- **RF-071 — Tokens de cor em séries Chart.js (PR #214):** cores dos gráficos lidas via CSS custom properties, eliminando hex hardcoded.
+  - `src/css/variables.css`: tokens `--chart-grid` e `--chart-point-border` com overrides para dark mode.
+  - `src/js/utils/chartColors.js`: `getChartColors()` (semântico + patrimônio/ativos/passivos), `CORES_CATEGORIA` (paleta Tableau10, 12 slots), `corPorIndice(i)`.
+  - `src/js/pages/fluxo-caixa.js` + `src/js/pages/patrimonio.js`: 9 valores hex/rgba hardcoded substituídos por `getChartColors()`.
+- **ENH-006 — Densidade do cockpit em mobile <414px (PR #215):** ajustes de espaçamento, cards KPI e touch targets para iPhones SE/mini e Androids compactos.
+  - `src/css/main.css`: `@media (max-width: 413px)` com `.resumo-cards` em 2 colunas (~164px em 360px), `.resumo-card` com padding 12px, `.resumo-valor` reduzido para 17px, `.section-actions .btn` com `min-height: 44px` (Apple HIG), `.main-content` com padding lateral 12px e gap 32px entre seções.
+
 ## [3.39.8] - 2026-04-23
 
 ### Adicionado
