@@ -88,17 +88,19 @@ export function skeletonPatrimonioItems(count = 3) {
 
 /**
  * Gera bloco de empty-state centralizado.
- * @param {string} icon    — emoji ou ícone
- * @param {string} title   — título principal
- * @param {string} [hint]  — dica secundária
+ * @param {string} icon       — emoji, SVG inline ou ícone
+ * @param {string} title      — título principal
+ * @param {string} [hint]     — dica secundária
+ * @param {string} [ctaHtml]  — HTML do(s) CTA(s) (botões/links)
  * @returns {string} HTML string
  */
-export function emptyStateHTML(icon, title, hint = '') {
+export function emptyStateHTML(icon, title, hint = '', ctaHtml = '') {
   return `
-    <div class="empty-state">
-      <span class="empty-state__icon">${icon}</span>
+    <div class="empty-state" role="status">
+      <span class="empty-state__icon" aria-hidden="true">${icon}</span>
       <p class="empty-state__title">${title}</p>
       ${hint ? `<p class="empty-state__hint">${hint}</p>` : ''}
+      ${ctaHtml ? `<div class="empty-state__cta">${ctaHtml}</div>` : ''}
     </div>`;
 }
 
