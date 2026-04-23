@@ -25,6 +25,7 @@ import { modelPassivoExtrajudicial } from '../models/PassivoExtrajudicial.js';
 import { formatarMoeda, formatarData, escHTML } from '../utils/formatters.js';
 import { dataHoje, isMovimentacaoReal } from '../utils/helpers.js';
 import { skeletonPatrimonioItems } from '../utils/skeletons.js';
+import { getChartColors } from '../utils/chartColors.js';
 
 // ── Estado da página ──────────────────────────────────────────
 let _usuario       = null;
@@ -355,24 +356,24 @@ function renderizarGrafico(historico) {
         {
           label: 'Patrimônio Líquido',
           data: historico.map((h) => h.patrimonioLiquido ?? 0),
-          borderColor: '#6366f1',
-          backgroundColor: 'rgba(99,102,241,0.08)',
+          borderColor: getChartColors().patrimonio.border,
+          backgroundColor: getChartColors().patrimonio.bg,
           fill: true,
           tension: 0.3,
         },
         {
           label: 'Total Ativos',
           data: historico.map((h) => h.totalAtivos ?? 0),
-          borderColor: '#10b981',
-          backgroundColor: 'rgba(16,185,129,0.08)',
+          borderColor: getChartColors().ativos.border,
+          backgroundColor: getChartColors().ativos.bg,
           fill: false,
           tension: 0.3,
         },
         {
           label: 'Total Passivos',
           data: historico.map((h) => h.totalPassivos ?? 0),
-          borderColor: '#f43f5e',
-          backgroundColor: 'rgba(244,63,94,0.08)',
+          borderColor: getChartColors().passivos.border,
+          backgroundColor: getChartColors().passivos.bg,
           fill: false,
           tension: 0.3,
         },
