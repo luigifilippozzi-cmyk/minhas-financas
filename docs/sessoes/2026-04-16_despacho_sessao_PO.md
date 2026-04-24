@@ -2,7 +2,7 @@
 
 **Data:** 2026-04-16
 **Agente:** PO Assistant — Minhas Finanças (Cowork mode)
-**Product Owner:** REDACTED_NAME
+**Product Owner:** Luigi (PO)
 **Versão do produto na sessão:** v3.28.1
 **Saúde do projeto:** 🟢 VERDE (594/594 testes, CI verde, 0 PRs abertos)
 

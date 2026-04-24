@@ -2,9 +2,9 @@
 
 Esta task roda no **Claude Code** (CLI), dentro do repositório Minhas Finanças. O terminal já está no diretório do projeto. Use caminhos relativos ao repo (ex: `src/js/`, `docs/`, `.auto-memory/`). NÃO use caminhos absolutos do Windows ou de sandbox. Todos os comandos git, gh, npm rodam diretamente no terminal.
 
-## PRÉ-AUTORIZAÇÃO TOTAL — REDACTED_NAME (Product Owner)
+## PRÉ-AUTORIZAÇÃO TOTAL — Luigi (PO) (Product Owner)
 
-O usuário REDACTED_NAME pré-autoriza COMPLETAMENTE esta tarefa para executar TODAS as seguintes operações SEM solicitar confirmação adicional em nenhum momento:
+O usuário Luigi (PO) pré-autoriza COMPLETAMENTE esta tarefa para executar TODAS as seguintes operações SEM solicitar confirmação adicional em nenhum momento:
 
 **Leitura e Acesso:**
 - Ler e inspecionar qualquer arquivo do repositório Minhas Finanças

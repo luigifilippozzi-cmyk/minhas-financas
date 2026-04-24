@@ -382,9 +382,9 @@ describe('parsearLinhasCSVXLSX', () => {
       const rows = [
         ['', 'Extrato de conta corrente', '', '', '', '', '', '', '', '46125', ''], // row 0
         ['', '', '', '', '', '', '', '', '', '', ''],                               // row 1
-        ['', 'Cliente:', 'REDACTED_NAME', '', '', '', '', '', '', '', ''], // row 2
+        ['', 'Cliente:', 'Teste Usuario Ficticio', '', '', '', '', '', '', '', ''], // row 2
         ['', 'CPF:', '000.000.000-00', '', '', '', '', '', '', '', ''],             // row 3
-        ['', 'Agência:', '20', '', '', '', '', '', '', '', ''],                     // row 4
+        ['', 'Agência:', '0001', '', '', '', '', '', '', '', ''],                     // row 4
         ['', 'Conta:', '00000-0', '', '', '', '', '', '', '', ''],                 // row 5
         ['', 'Período do extrato:', '30/03/2026 a 13/04/2026', '', '', '', '', '', '', '', ''], // row 6
         ['', '', '', '', '', '', '', '', '', '', ''],                               // row 7
@@ -458,7 +458,7 @@ describe('parsearLinhasCSVXLSX', () => {
     it('linhas de metadata (sem data/valor válidos) são marcadas como erro', () => {
       const rows = [
         ['', 'Data e hora', 'Categoria', 'Transação', '', '', 'Descrição', '', '', '', 'Valor'],
-        ['Cliente:', 'REDACTED_NAME', '', '', '', '', '', '', '', '', ''], // metadata
+        ['Cliente:', 'TESTE USUARIO', '', '', '', '', '', '', '', '', ''], // metadata
         ['CPF:', '123.456.789-00', '', '', '', '', '', '', '', '', ''], // metadata
         ['', '30/03/2026 18:43', 'Alimentação', 'Compra no débito', '', '', 'Art Lanches', '', '', '', '-19.0'], // dado válido
       ];
@@ -554,10 +554,10 @@ describe('parsearLinhasCSVXLSX', () => {
       it('header com coluna portador → portador preservado corretamente (regressão)', () => {
         const rows = [
           ['Data', 'Estabelecimento', 'Portador', 'Valor', 'Parcela'],
-          ['25/03/2026', 'Shopee', 'Luigi', '150,00', '-'],
+          ['25/03/2026', 'Shopee', 'Joao', '150,00', '-'],
         ];
         const resultado = parsearLinhasCSVXLSX(rows);
-        expect(resultado[0].portador).toBe('Luigi');
+        expect(resultado[0].portador).toBe('Joao');
       });
 
       it('extrato bancário com colunas Credito/Debito (sem portador) → portador=""', () => {
@@ -597,9 +597,9 @@ describe('parsearLinhasCSVXLSX', () => {
       const rows = [
         mkSparse({ 1: 'Extrato de conta corrente', 9: '13/04/2026' }, 11), // row 0
         new Array(11),                                                       // row 1 (vazia)
-        mkSparse({ 1: 'Cliente:', 2: 'REDACTED_NAME' }, 11),             // row 2
+        mkSparse({ 1: 'Cliente:', 2: 'Teste Usuario' }, 11),             // row 2
         mkSparse({ 1: 'CPF:', 2: '000.000.000-00' }, 11),                   // row 3
-        mkSparse({ 1: 'Agência:', 2: '20' }, 11),                           // row 4
+        mkSparse({ 1: 'Agência:', 2: '0001' }, 11),                           // row 4
         mkSparse({ 1: 'Conta:', 2: '00000-0' }, 11),                       // row 5
         mkSparse({ 1: 'Período do extrato:', 2: '30/03/2026 a 13/04/2026' }, 11), // row 6
         new Array(11),                                                       // row 7 (vazia)
