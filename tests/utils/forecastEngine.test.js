@@ -163,8 +163,8 @@ describe('gerarForecast — componente recorrentes', () => {
 
 describe('gerarForecast — componente receitasEsperadas', () => {
   it('detecta receitas recorrentes', () => {
-    const recN1 = [mkRec('Salário Luigi', 5000, 'sal')];
-    const recN2 = [mkRec('Salário Luigi', 5000, 'sal')];
+    const recN1 = [mkRec('Salário Teste', 5000, 'sal')];
+    const recN2 = [mkRec('Salário Teste', 5000, 'sal')];
     const r = gerarForecast({ receitasMesN1: recN1, receitasMesN2: recN2, hoje: HOJE_ABRIL_2026 });
     r.forEach((m) => expect(m.receitasEsperadas).toBe(5000));
   });
@@ -175,8 +175,8 @@ describe('gerarForecast — componente receitasEsperadas', () => {
   });
 
   it('soma múltiplas receitas recorrentes', () => {
-    const recN1 = [mkRec('Salário Luigi', 5000, 'sal'), mkRec('Freela', 1000, 'fre')];
-    const recN2 = [mkRec('Salário Luigi', 5000, 'sal'), mkRec('Freela', 1000, 'fre')];
+    const recN1 = [mkRec('Salário Teste', 5000, 'sal'), mkRec('Freela', 1000, 'fre')];
+    const recN2 = [mkRec('Salário Teste', 5000, 'sal'), mkRec('Freela', 1000, 'fre')];
     const r = gerarForecast({ receitasMesN1: recN1, receitasMesN2: recN2, hoje: HOJE_ABRIL_2026 });
     r.forEach((m) => expect(m.receitasEsperadas).toBe(6000));
   });

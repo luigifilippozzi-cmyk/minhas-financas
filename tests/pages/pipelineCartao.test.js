@@ -130,7 +130,7 @@ describe('gerarProjecoes', () => {
   it('gera N-atual projeções com tipo "projecao"', () => {
     const l = linha({
       descricao: 'MAGAZINELUIZA', valor: 200, parcela: '02/05',
-      portador: 'Luigi',
+      portador: 'Teste',
     });
     const projs = gerarProjecoes(l, 'parc-002');
     expect(projs).toHaveLength(3); // parcelas 3, 4, 5

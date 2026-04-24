@@ -85,7 +85,7 @@ export async function seedDespesa(db, grupoId, overrides = {}) {
     descricao: 'Supermercado',
     categoria: 'Alimentação',
     data: '2026-03-15',
-    responsavel: 'Luigi',
+    responsavel: 'Teste',
     ...overrides,
   };
 

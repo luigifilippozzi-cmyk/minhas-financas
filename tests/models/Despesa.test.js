@@ -55,8 +55,8 @@ describe('modelDespesa — campos obrigatórios e defaults', () => {
   });
 
   it('campos opcionais presentes são incluídos', () => {
-    const d = modelDespesa(base({ portador: 'Luigi', origemBanco: 'nubank', status: 'pago' }));
-    expect(d.portador).toBe('Luigi');
+    const d = modelDespesa(base({ portador: 'Teste', origemBanco: 'nubank', status: 'pago' }));
+    expect(d.portador).toBe('Teste');
     expect(d.origemBanco).toBe('nubank');
     expect(d.status).toBe('pago');
   });

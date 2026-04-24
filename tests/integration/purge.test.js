@@ -81,7 +81,7 @@ describe('BUG-020 — purgeGrupoCompleto não deve ser bloqueado pelas regras', 
           valor:      1000 * i,
           descricao:  `Receita ${i}`,
           data:       '2026-03-01',
-          responsavel: 'Luigi',
+          responsavel: 'Teste',
         });
       }
     });

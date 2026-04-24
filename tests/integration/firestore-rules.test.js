@@ -108,7 +108,7 @@ describe('Membro do grupo — operações permitidas', () => {
         valor:      200.00,
         descricao:  'Farmácia',
         data:       '2026-03-20',
-        responsavel: 'Luigi',
+        responsavel: 'Teste',
       }),
     );
   });
@@ -160,7 +160,7 @@ describe('BUG-020 — delete não deve chamar isValidTransacao()', () => {
         valor:      3000,
         descricao:  'Salário',
         data:       '2026-03-01',
-        responsavel: 'Luigi',
+        responsavel: 'Teste',
       });
     });
 

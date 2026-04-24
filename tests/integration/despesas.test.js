@@ -53,7 +53,7 @@ describe('CREATE — salvar despesa', () => {
       descricao:   'Farmácia',
       categoria:   'Saúde',
       data:        '2026-03-20',
-      responsavel: 'Luigi',
+      responsavel: 'Teste',
     };
 
     await setDoc(doc(membroDb, 'despesas', despesaId), despesa);
@@ -77,7 +77,7 @@ describe('CREATE — salvar despesa', () => {
       isConjunta:   true,
       descricao:    'Mercado Conjunto',
       data:         '2026-03-15',
-      responsavel:  'Luigi',
+      responsavel:  'Teste',
     };
 
     await setDoc(doc(membroDb, 'despesas', 'conjunta-01'), despesa);
@@ -97,7 +97,7 @@ describe('CREATE — salvar despesa', () => {
       descricao:  'Compra parcelada',
       data:       '2026-02-20',   // data da compra
       mesFatura:  '2026-03',      // mês em que cai na fatura
-      responsavel: 'Luigi',
+      responsavel: 'Teste',
     };
 
     await setDoc(doc(membroDb, 'despesas', 'despesa-mesfatura'), despesa);

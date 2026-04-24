@@ -54,7 +54,7 @@ describe('isPagamentoFatura', () => {
   });
 
   it('não detecta PIX genérico', () => {
-    expect(isPagamentoFatura('PIX enviado Luigi')).toBe(false);
+    expect(isPagamentoFatura('PIX enviado Teste')).toBe(false);
   });
 
   it('não detecta supermercado', () => {

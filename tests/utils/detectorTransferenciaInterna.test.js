@@ -7,7 +7,7 @@ import {
 } from '../../src/js/utils/detectorTransferenciaInterna.js';
 
 const MEMBROS = {
-  uid1: 'Joao Silva',
+  uid1: 'Pedro Silva',
   uid2: 'Ana Silva',
 };
 
@@ -15,8 +15,8 @@ const MEMBROS = {
 
 describe('detectarMembroNaDescricao', () => {
   it('detecta nome completo na descrição', () => {
-    const result = detectarMembroNaDescricao('PIX enviado Joao Silva', MEMBROS);
-    expect(result).toEqual({ uid: 'uid1', nome: 'Joao Silva' });
+    const result = detectarMembroNaDescricao('PIX enviado Pedro Silva', MEMBROS);
+    expect(result).toEqual({ uid: 'uid1', nome: 'Pedro Silva' });
   });
 
   it('detecta primeiro nome na descrição', () => {
@@ -32,7 +32,7 @@ describe('detectarMembroNaDescricao', () => {
   });
 
   it('exclui o uid do uploader', () => {
-    const result = detectarMembroNaDescricao('PIX enviado Joao', MEMBROS, 'uid1');
+    const result = detectarMembroNaDescricao('PIX enviado Pedro', MEMBROS, 'uid1');
     expect(result).toBeNull();
   });
 
@@ -47,8 +47,8 @@ describe('detectarMembroNaDescricao', () => {
   });
 
   it('retorna null para nomesMembros vazio', () => {
-    expect(detectarMembroNaDescricao('PIX enviado Joao', {})).toBeNull();
-    expect(detectarMembroNaDescricao('PIX enviado Joao', null)).toBeNull();
+    expect(detectarMembroNaDescricao('PIX enviado Pedro', {})).toBeNull();
+    expect(detectarMembroNaDescricao('PIX enviado Pedro', null)).toBeNull();
   });
 
   it('ignora acentos e case na comparação', () => {
@@ -86,7 +86,7 @@ describe('detectarTransferenciasInternas', () => {
   });
 
   it('detecta PIX recebido de membro do grupo', () => {
-    const linhas = [criarLinha({ descricao: 'PIX recebido Joao Silva', tipoLinha: 'receita', valor: 1750 })];
+    const linhas = [criarLinha({ descricao: 'PIX recebido Pedro Silva', tipoLinha: 'receita', valor: 1750 })];
     const count = detectarTransferenciasInternas(linhas, MEMBROS, 'uid2');
     expect(count).toBe(1);
     expect(linhas[0]._transferenciaInterna.direcao).toBe('recebida');
@@ -131,7 +131,7 @@ describe('detectarTransferenciasInternas', () => {
 
   it('retorna 0 para grupo com menos de 2 membros', () => {
     const linhas = [criarLinha()];
-    const count = detectarTransferenciasInternas(linhas, { uid1: 'Joao' }, 'uid1');
+    const count = detectarTransferenciasInternas(linhas, { uid1: 'Pedro' }, 'uid1');
     expect(count).toBe(0);
   });
 
