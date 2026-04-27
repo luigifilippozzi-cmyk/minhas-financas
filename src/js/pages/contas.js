@@ -186,6 +186,8 @@ function abrirModalSaldo(contaId) {
   document.getElementById('modal-saldo-titulo').textContent = `Saldo — ${c.nome}`;
   document.getElementById('inp-saldo-inicial').value   = c.saldoInicial != null ? Number(c.saldoInicial) : '';
   document.getElementById('inp-data-referencia').value = c.dataReferenciaSaldo ?? '';
+  const erroSaldo = document.getElementById('saldo-modal-erro');
+  if (erroSaldo) { erroSaldo.textContent = ''; erroSaldo.classList.add('hidden'); }
   document.getElementById('modal-saldo-banco').classList.remove('hidden');
 }
 
@@ -203,7 +205,14 @@ async function salvarSaldo(e) {
   const saldoInicial        = parseFloat(document.getElementById('inp-saldo-inicial').value);
   const dataReferenciaSaldo = document.getElementById('inp-data-referencia').value;
 
-  if (isNaN(saldoInicial) || !dataReferenciaSaldo) return;
+  if (isNaN(saldoInicial) || !dataReferenciaSaldo) {
+    const el = document.getElementById('saldo-modal-erro');
+    if (el) {
+      el.textContent = isNaN(saldoInicial) ? 'Informe um valor de saldo válido.' : 'Informe a data de referência.';
+      el.classList.remove('hidden');
+    }
+    return;
+  }
 
   try {
     await atualizarConta(_editandoSaldoId, { saldoInicial, dataReferenciaSaldo });
@@ -234,6 +243,12 @@ function configurarEventos() {
   document.getElementById('form-saldo-banco').addEventListener('submit', salvarSaldo);
   document.getElementById('modal-saldo-banco').addEventListener('click', (e) => {
     if (e.target.id === 'modal-saldo-banco') fecharModalSaldo();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (!document.getElementById('modal-cartao').classList.contains('hidden')) fecharModalCartao();
+    if (!document.getElementById('modal-saldo-banco').classList.contains('hidden')) fecharModalSaldo();
   });
 }
 
@@ -267,6 +282,8 @@ function abrirModalCartao(contaId) {
     document.getElementById('inp-cartao-cor').value   = '#7B1FA2';
   }
 
+  const erroCartao = document.getElementById('cartao-modal-erro');
+  if (erroCartao) { erroCartao.textContent = ''; erroCartao.classList.add('hidden'); }
   document.getElementById('modal-cartao').classList.remove('hidden');
 }
 
@@ -292,6 +309,12 @@ async function salvarCartao(e) {
     contaPagadoraId: document.getElementById('sel-cartao-pagadora').value || undefined,
     titularPadraoId: document.getElementById('sel-cartao-titular').value || undefined,
   });
+
+  if (!dados.nome) {
+    const el = document.getElementById('cartao-modal-erro');
+    if (el) { el.textContent = 'O nome do cartão é obrigatório.'; el.classList.remove('hidden'); }
+    return;
+  }
 
   try {
     if (_editandoId) {
