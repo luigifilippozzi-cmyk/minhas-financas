@@ -460,6 +460,8 @@ function abrirModalInvestimento(id = null) {
     titulo.textContent = 'Novo Investimento';
   }
 
+  const erroInv = document.getElementById('inv-modal-erro');
+  if (erroInv) { erroInv.textContent = ''; erroInv.classList.add('hidden'); }
   modal.style.display = 'flex';
 }
 
@@ -481,6 +483,17 @@ async function salvarInvestimentoForm(e) {
     observacoes:  document.getElementById('inv-observacoes').value || undefined,
     dataAtualizacao: new Date(),
   });
+
+  if (!dados.nome) {
+    const el = document.getElementById('inv-modal-erro');
+    if (el) { el.textContent = 'O nome do investimento é obrigatório.'; el.classList.remove('hidden'); }
+    return;
+  }
+  if (!dados.valorAplicado || dados.valorAplicado <= 0) {
+    const el = document.getElementById('inv-modal-erro');
+    if (el) { el.textContent = 'Informe um valor aplicado maior que zero.'; el.classList.remove('hidden'); }
+    return;
+  }
 
   try {
     if (_editandoInvId) {
@@ -533,6 +546,8 @@ function abrirModalPassivo(id = null) {
     document.getElementById('pass-data-origem').value      = HOJE_STR;
   }
 
+  const erroPass = document.getElementById('pass-modal-erro');
+  if (erroPass) { erroPass.textContent = ''; erroPass.classList.add('hidden'); }
   modal.style.display = 'flex';
 }
 
@@ -557,6 +572,17 @@ async function salvarPassivoForm(e) {
     status:         document.getElementById('pass-status').value,
     observacoes:    document.getElementById('pass-observacoes').value || undefined,
   });
+
+  if (!dados.credor) {
+    const el = document.getElementById('pass-modal-erro');
+    if (el) { el.textContent = 'O nome do credor é obrigatório.'; el.classList.remove('hidden'); }
+    return;
+  }
+  if (isNaN(valorOrig) || valorOrig <= 0) {
+    const el = document.getElementById('pass-modal-erro');
+    if (el) { el.textContent = 'Informe um valor original válido (maior que zero).'; el.classList.remove('hidden'); }
+    return;
+  }
 
   try {
     if (_editandoPassId) {
@@ -604,4 +630,11 @@ function configurarEventos() {
   document.getElementById('btn-cancelar-conf').addEventListener('click', fecharModalConfirmar);
   document.getElementById('modal-conf-overlay').addEventListener('click', fecharModalConfirmar);
   document.getElementById('btn-confirmar-conf').addEventListener('click', () => { if (_confirmarCb) _confirmarCb(); });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (document.getElementById('modal-investimento').style.display !== 'none') fecharModalInvestimento();
+    if (document.getElementById('modal-passivo').style.display !== 'none') fecharModalPassivo();
+    if (document.getElementById('modal-confirmar').style.display !== 'none') fecharModalConfirmar();
+  });
 }
