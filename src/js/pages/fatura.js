@@ -10,7 +10,7 @@
 // ============================================================
 
 import { onAuthChange, logout } from '../services/auth.js';
-import { buscarPerfil, buscarGrupo, ouvirContas, ouvirCategorias, ouvirDespesas, ouvirDespesasPorMesFatura, garantirContasPadrao } from '../services/database.js';
+import { buscarPerfil, buscarGrupo, ouvirContas, ouvirCategorias, ouvirDespesas, ouvirDespesasPorMesFatura, garantirContasPadrao, buscarPagamentosFaturaCartao } from '../services/database.js';
 import { formatarMoeda, formatarData, nomeMes, escHTML } from '../utils/formatters.js';
 import { recalcularScoreFatura } from '../utils/reconciliadorFatura.js';
 import { skeletonTableRows, skeletonChart, errorStateHTML, emptyStateHTML } from '../utils/skeletons.js';
@@ -633,7 +633,7 @@ function _toTs(data) {
  * Renderiza o painel de liquidação: mostra se o ciclo atual tem pagamentos
  * de fatura associados e o status de reconciliação.
  */
-function renderizarLiquidacao() {
+async function renderizarLiquidacao() {
   const container = document.getElementById('fat-liquidacao-content');
   if (!container) return;
 
@@ -642,19 +642,31 @@ function renderizarLiquidacao() {
     return;
   }
 
-  const mesFaturaStr = String(_ano) + '-' + String(_mes).padStart(2, '0');
+  container.innerHTML = '<p class="fat-empty-text">Carregando…</p>';
 
-  // Despesas reais (excluindo projeções) do ciclo desta fatura
+  // Despesas reais (excluindo projeções) do ciclo desta fatura — já em _despesas
   const despesasReais = _despesas.filter(d =>
     d.tipo === 'despesa' || d.tipo === 'projecao_paga'
   );
   const totalFatura = despesasReais.reduce((s, d) => s + (d.valor ?? 0), 0);
 
-  // Pagamentos de fatura registrados (tipo = 'pagamento_fatura' que referenciam este cartão)
-  // Nota: pagamentos bancários ficam na conta bancária, não no cartão —
-  // buscamos por statusReconciliacaoFatura e contaCartaoId ou pelo mes faturado
-  const pagamentos = _despesas.filter(d => d.tipo === 'pagamento_fatura'
-    && (d.mesFaturaQuitado === mesFaturaStr || d.contaCartaoId === _cartaoId));
+  // BUG-035: pagamento_fatura tem contaId = conta bancária (não o cartão), portanto
+  // _despesas nunca os inclui (filtro d.contaId !== _cartaoId em _merge()).
+  // Query dedicada por contaCartaoId garante que os pagamentos apareçam.
+  let candidatos = [];
+  try {
+    candidatos = await buscarPagamentosFaturaCartao(_grupoId, _cartaoId);
+  } catch (err) {
+    console.error('[fatura] Erro ao buscar pagamentos de fatura:', err);
+  }
+
+  // Janela temporal: ±2 meses do ciclo. Evita mostrar pagamentos de outros anos.
+  const janelainicio = new Date(_ano, _mes - 2, 1);
+  const janelaFim   = new Date(_ano, _mes + 2, 1);
+  const pagamentos  = candidatos.filter(p => {
+    const dt = p.data?.toDate?.() ?? (p.data instanceof Date ? p.data : new Date(p.data));
+    return !isNaN(dt?.getTime()) && dt >= janelainicio && dt <= janelaFim;
+  });
 
   if (pagamentos.length === 0) {
     const aviso = totalFatura > 0

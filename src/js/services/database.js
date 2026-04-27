@@ -141,6 +141,21 @@ export async function atualizarDespesa(despesaId, dados) {
   return updateDoc(doc(db, 'despesas', despesaId), dados);
 }
 
+// RF-064: retorna pagamentos de fatura de um cartão específico.
+// pagamento_fatura tem contaId = conta bancária, não do cartão — query dedicada necessária.
+export async function buscarPagamentosFaturaCartao(grupoId, contaCartaoId) {
+  const q = query(
+    collection(db, 'despesas'),
+    where('grupoId', '==', grupoId),
+    where('tipo',    '==', 'pagamento_fatura'),
+    orderBy('data',  'asc'),
+  );
+  const snap = await getDocs(q);
+  return snap.docs
+    .map(d => ({ id: d.id, ...d.data() }))
+    .filter(d => d.contaCartaoId === contaCartaoId);
+}
+
 // BUG-022: retorna despesas pelo campo mesFatura (ciclo de faturamento).
 // Complementa ouvirDespesas (mês calendário) para cobrir transações com data fora do mês.
 export function ouvirDespesasPorMesFatura(grupoId, mesFatura, callback) {
