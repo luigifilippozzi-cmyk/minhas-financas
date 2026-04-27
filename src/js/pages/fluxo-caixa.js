@@ -123,22 +123,23 @@ function agregarMensalmente(despesas, receitas, orcamentos) {
   const despMes = Array(12).fill(0);
   const orcMes  = Array(12).fill(0);
 
+  // getUTCMonth() evita deslocamento de mês em datas armazenadas como UTC midnight
   receitas.forEach((r) => {
     const d = r.data?.toDate?.() ?? new Date(r.data);
-    recMes[d.getMonth()] += r.valor ?? 0;
+    recMes[d.getUTCMonth()] += r.valor ?? 0;
   });
 
-  // Exclui projeções e transferências internas das despesas realizadas
-  despesas.filter(isMovimentacaoReal).forEach((d) => {
+  // Exclui projeções, transferências internas e projecao_paga (o doc despesa real já conta)
+  despesas.filter(d => isMovimentacaoReal(d) && d.tipo !== 'projecao_paga').forEach((d) => {
     const dt = d.data?.toDate?.() ?? new Date(d.data);
-    despMes[dt.getMonth()] += d.valor ?? 0;
+    despMes[dt.getUTCMonth()] += d.valor ?? 0;
   });
 
-  // Inclui projeções separadas para visualização futura
+  // Inclui projeções pendentes (não reconciliadas) para todos os meses
   const projMes = Array(12).fill(0);
   despesas.filter((d) => d.tipo === 'projecao').forEach((d) => {
     const dt = d.data?.toDate?.() ?? new Date(d.data);
-    projMes[dt.getMonth()] += d.valor ?? 0;
+    projMes[dt.getUTCMonth()] += d.valor ?? 0;
   });
 
   orcamentos.forEach((o) => {
@@ -301,7 +302,7 @@ function renderizarTabela(dados) {
   if (!tbody) return;
 
   // ENH-007 Cenário A — ano selecionado sem nenhuma movimentação
-  const temDados = dados.some(d => d.rec > 0 || d.desp > 0);
+  const temDados = dados.some(d => d.rec > 0 || d.desp > 0 || d.proj > 0);
   if (!temDados) {
     tbody.innerHTML = `<tr><td colspan="7">
       ${emptyStateHTML(
@@ -316,14 +317,14 @@ function renderizarTabela(dados) {
 
   const mesAtualIdx = new Date().getFullYear() === _ano ? new Date().getMonth() : -1;
 
-  tbody.innerHTML = dados.map(({ mes, rec, desp, orc, saldo, acum, isFuturo }) => {
+  tbody.innerHTML = dados.map(({ mes, rec, desp, proj, orc, saldo, acum, isFuturo }) => {
     const isAtual = mes === mesAtualIdx;
-    const situacao = getSituacao(rec, desp, orc, isFuturo);
+    const situacao = getSituacao(rec, desp + proj, orc, isFuturo);
     return `
       <tr class="${isAtual ? 'fc-tr--atual' : ''} ${isFuturo ? 'fc-tr--futuro' : ''}">
         <td class="fc-td-mes">${isAtual ? '▶ ' : ''}${MESES_COMPLETOS[mes]}</td>
         <td class="fc-td-num fc-verde">${fmt(rec)}</td>
-        <td class="fc-td-num fc-vermelho">${fmt(desp)}</td>
+        <td class="fc-td-num fc-vermelho">${fmt(desp + proj)}</td>
         <td class="fc-td-num fc-cinza">${orc ? fmt(orc) : '—'}</td>
         <td class="fc-td-num ${saldo >= 0 ? 'fc-verde' : 'fc-vermelho'}">${fmt(saldo)}</td>
         <td class="fc-td-num ${acum >= 0 ? 'fc-azul' : 'fc-vermelho'}">${fmt(acum)}</td>
