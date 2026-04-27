@@ -13,6 +13,37 @@ Formato: descrição do problema → impacto → localização → correção ap
 
 ---
 
+### BUG-033 — Dedup falha em import de extrato PDF de banco BTG (CSV funciona)
+**Severidade:** 🔴 Crítico (P0 — re-import do mesmo PDF cria duplicatas; chave_dedup diverge entre PDF e CSV)
+**Versão introduzida:** v3.20.0 (RF-020 — pipeline PDF)
+**Versão corrigida:** v3.40.1
+**Arquivo:** `src/js/utils/pdfParser.js`
+**Issue:** [#218](https://github.com/luigifilippozzi-cmyk/minhas-financas/issues/218)
+**Descoberto em:** 2026-04-24 (UAT v3.39.8 — TC-IMP-01)
+
+**Descrição do problema:**
+O extrato PDF do BTG Pactual inclui o timestamp `HH:MM` na mesma linha após a data de cada transação (ex: `"30/03/2026 18:43 PIX RECEBIDO FULANO SILVA 500,00 C"`). O `pdfParser.js` extraía a descrição como o texto entre a data e o valor, capturando o timestamp como parte da descrição (`"18:43 PIX RECEBIDO FULANO SILVA"`).
+
+Resultado: a `chave_dedup` gerada pelo PDF era `"2026-03-30||18:43 pix recebido fulano silva||500.00||"`, enquanto o CSV do mesmo banco gerava `"2026-03-30||pix recebido fulano silva||500.00||"`. As chaves não batiam → dedup não detectava duplicatas → re-import criava transações duplicadas no Firestore.
+
+**Root cause:**
+`_parseLinhasTransacao` em `pdfParser.js` extraia `desc = texto.substring(dataPos + dataMatch[0].length, valorPos)`. Para PDFs com timestamp logo após a data, o timestamp ficava no início de `desc`. Nenhum strip de timestamp era aplicado.
+
+**Correção aplicada:**
+
+```javascript
+// src/js/utils/pdfParser.js — _parseLinhasTransacao, após o .trim() inicial:
+// BUG-033: BTG Pactual (e outros) incluem HH:MM após a data no PDF
+// ("30/03/2026 18:43 PIX RECEBIDO..."). O timestamp ficaria na descrição
+// e quebraria a chave_dedup vs. CSV do mesmo banco (sem timestamp).
+desc = desc.replace(/^\d{2}:\d{2}(?::\d{2})?\s+/, '').trim();
+```
+
+**Testes:** +7 TCs de regressão (`pdfParser.test.js` ×5 + `pipelineBanco.test.js` ×2). 844 → 851 testes passando.
+**PR:** a criar
+
+---
+
 ### BUG-032 — `mesFatura` ausente dos `opcionais` de `modelDespesa` / `modelReceita` — aba Fatura sempre vazia
 **Severidade:** 🔴 Crítico (P0 — aba Fatura vazia para todos os novos imports)
 **Versão introduzida:** desconhecida (omissão na lista opcionais desde o início do projeto)

@@ -7,6 +7,16 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.40.1] - 2026-04-27
+
+### Corrigido
+
+- **BUG-033 — Dedup falha em import de extrato PDF de banco BTG (#218):** o PDF do BTG Pactual inclui timestamp `HH:MM` após a data em cada linha (`"30/03/2026 18:43 PIX RECEBIDO..."`). O `pdfParser.js` extraía o timestamp como parte da descrição, gerando `chave_dedup` divergente da gerada pelo CSV do mesmo banco. Re-import do mesmo PDF criava duplicatas.
+  - `src/js/utils/pdfParser.js`: strip de `HH:MM` ou `HH:MM:SS` do início da descrição extraída, após normalização de espaços (`BUG-033`).
+  - `tests/utils/pdfParser.test.js`: 5 novos testes cobrindo strip de timestamp (`HH:MM`, `HH:MM:SS`), preservação de descrição sem timestamp, múltiplas transações e filtro de "Saldo Diário".
+  - `tests/pages/pipelineBanco.test.js`: 2 novos testes de regressão garantindo consistência da `chave_dedup` entre pipeline PDF e CSV para a mesma transação.
+  - **844 → 851 testes unitários** (+7 de regressão).
+
 ## [3.40.0] - 2026-04-23
 
 ### Adicionado

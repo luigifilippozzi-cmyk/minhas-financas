@@ -151,6 +151,11 @@ function _parseLinhasTransacao(linhas) {
       .replace(/\s{2,}/g, ' ')
       .trim();
 
+    // BUG-033: BTG Pactual (e outros) incluem HH:MM após a data no PDF
+    // ("30/03/2026 18:43 PIX RECEBIDO..."). O timestamp ficaria na descrição
+    // e quebraria a chave_dedup vs. CSV do mesmo banco (sem timestamp).
+    desc = desc.replace(/^\d{2}:\d{2}(?::\d{2})?\s+/, '').trim();
+
     // Se a descrição ficou vazia, tenta o que precede a data
     if (!desc || desc.length < 2) {
       desc = texto.substring(0, dataPos).replace(/\s{2,}/g, ' ').trim();
