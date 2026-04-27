@@ -1,8 +1,106 @@
 ﻿# Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-23 (Dev Manager — sessão autônoma)
-> Versão: v3.39.8 | Testes: 844 unit + 26 int | Saúde: VERDE
-> CI: verde | PRs: 0 | Issues: 13 (todos iOS ON HOLD) | UX 100% ✅ | NRF-UX 100% ✅ | **Proposta C 100% concluída ✅**
+> Atualizado em: 2026-04-27 (Dev Manager — sessão autônoma)
+> Versão: v3.40.2 | Testes: 851 unit + 26 int | Saúde: VERDE
+> CI: verde | PRs: 0 | Issues: 18 | UAT Fixes v3.40.x: 7/11 entregues ✅
+
+---
+
+## Dev Manager — 2026-04-27
+
+### Sessão
+- Versão: v3.40.2 (package.json bumped)
+- Continuação de sessão anterior que entregou BUG-034 (#PR #230)
+
+### Tarefas concluídas
+- **BUG-043 #228** — Empty state despesas sem ano/CTA → PR #231 ✅
+- **BUG-038 #223** — Validação silenciosa modais Contas → PR #232 ✅
+- **BUG-039 #224** — Validação silenciosa modais Patrimônio → PR #233 ✅
+- **BUG-037 #222** — Nav groups não fecham fora / Esc / accordion → PR #234 ✅
+- **BUG-036 #221** — Fluxo-caixa meses históricos + projeções (3 root causes) → PR #235 ✅
+- **BUG-035 #220** — Liquidação fatura sempre "em aberto" (contaId filter bug) → PR #236 ✅
+- **BUG-042 #227** — Flash skeleton fatura ao trocar mês/cartão (loading gate) → PR #237 ✅
+- CHANGELOG.md atualizado com v3.40.2
+- package.json v3.40.1 → v3.40.2
+- CLAUDE.md versão atual atualizada
+- BUGS.md: BUG-033 PR #230 preenchido
+
+### Estado dos milestones
+- **UAT Fixes v3.40.x:** 7/11 entregues (BUG-033/034/035/036/037/038/039/042/043 — BUG-040/041 deferred)
+- **Higiene Estratégica (C):** Em execução
+- **iOS Fase 2:** ON HOLD
+
+### Issues restantes do milestone UAT Fixes v3.40.x
+- **#225 BUG-040** — Ícones Lucide navbar — deferred (requer npm migration, escopo grande, v3.41.0)
+- **#226 BUG-041** — Regra Inviolável #14 violada em PRs anteriores (processo/docs, não código)
+- **#229 RF-071** — OCR PDF image-only — enhancement, deferred to v3.41.0
+
+### Subagentes acionados
+- ux-reviewer: 5× (BUG-043, BUG-037, BUG-036, BUG-035, BUG-042) — todos APROVADOS
+- import-pipeline-reviewer: 1× (BUG-035) — APROVADO
+
+### CI
+- Todos os PRs: verde ✅ (851/851 testes em todos)
+
+---
+
+## PM Agent — 2026-04-26 06:17
+
+### Estado
+- Versão: v3.40.0 (verificado ao vivo — package.json)
+- Milestone primário ativo: **UAT Fixes v3.40.x** (0/11, 0%) — 11 P0 bugs prioridade: alta
+- Milestone UX & Gestão Patrimonial: 15/15 (100%) ✅ CONCLUÍDO
+- Milestone NRF-UX — Experiência do Controller: 8/8 (100%) ✅ CONCLUÍDO
+- Milestone Polimento Visual (V1+V2+V3): 100% ✅ CONCLUÍDO (v3.40.0)
+- Milestone iOS: ON HOLD (4/17, 23.5%) — aguarda Apple Dev Program
+- Proposta C — Higiene Estratégica: 100% ✅ CONCLUÍDA
+- Saúde: **AMARELO** — 11 P0 bugs UAT Fixes v3.40.x abertos, CI 1 falha recuperada, [INCONSISTÊNCIA] numeração BUG-033/034
+- Testes: 844 unit + 26 int — todos passando ✅ (verificado ao vivo)
+- CI: 1 falha em 2026-04-24T14:05 (recuperada em 20:06) | últimos 3 runs: success ✅
+
+### Issues abertas (26 total)
+- **Milestone UAT Fixes v3.40.x (11 P0):**
+  - #218 BUG-033 — Dedup falha em import PDF extrato banco
+  - #219 BUG-034 — mesFatura não propagado em import PDF fatura cartão
+  - #220 BUG-035 — Reconciliação fatura x extrato falha em matching e ajuste
+  - #221 BUG-036 — Fluxo-caixa não exibe dados de meses históricos e projeções
+  - #222 BUG-037 — Abas em fluxo-caixa.html não fecham ao clicar fora
+  - #223 BUG-038 — Modais de erro de saldo e cartão em Contas não exibem validação
+  - #224 BUG-039 — Modais de erro de investimento e passivo em Patrimônio não exibem
+  - #225 BUG-040 — Ícones Lucide da navbar não renderizam em pelo menos 1 página
+  - #226 BUG-041 — Regra Inviolável #14 violada em PRs anteriores (processo)
+  - #227 BUG-042 — Skeleton de fatura ausente ao trocar mês/cartão
+  - #228 BUG-043 — Empty state de Despesas sem mês dinâmico
+- **Sem milestone (2 issues — precisam ser adicionadas ao UAT milestone):**
+  - #216 BUG-033 — Dados de meses históricos não exibidos em fluxo-caixa.html (≈ #221 BUG-036)
+  - #217 BUG-034 — Abas fluxo-caixa não fecham ao clicar fora (≈ #222 BUG-037)
+- **iOS ON HOLD: #77–#89 (13 issues) — não priorizar**
+
+### Alertas ativos
+- **[INCONSISTÊNCIA]** BUG-033 colide entre #216 (fluxo-caixa) e #218 (dedup PDF); BUG-034 colide entre #217 (abas) e #219 (mesFatura). #216/#217 sem milestone provavelmente são versões anteriores à criação do milestone — DM deve adicionar ao UAT milestone ou fechar como duplicatas de #221/#222.
+- **[iOS-ON-HOLD]** #77–#89 pausadas — aguarda Apple Developer Program
+- **[CI-RECOVERED]** 1 falha transiente 2026-04-24T14:05Z — sem código mudado, recuperada às 20:06. Monitorar próximos runs.
+
+### Prioridades para Dev Manager
+- P0: UAT Fixes v3.40.x — iniciar pelos mais críticos:
+  - BUG-035 (#220) Reconciliação fatura — impacta fluxo mesFatura (regra crítica)
+  - BUG-033 (#218) Dedup PDF — impacto pipeline de importação
+  - BUG-034 (#219) mesFatura PDF — impacto pipeline de importação
+  - BUG-036 (#221) + BUG-037 (#222) — fluxo-caixa (dados históricos + abas)
+  - BUG-038–043 (#223–228) — P1 dentro do milestone
+- P1: Resolver [INCONSISTÊNCIA] issues #216/#217 — adicionar ao milestone UAT ou fechar duplicatas
+- P3: iOS Fase 2 (#77–#80) — ON HOLD
+
+### Atividade recente (desde última sessão PM 2026-04-23 12:10)
+- Último PR mergeado: #215 feat(cockpit) ENH-006 densidade mobile (Apr 23) — fecha #212 ✅
+- Commits diretos em main em src/: NENHUM ✅ (c4f1869 e 41a060a tocaram apenas tests/ e docs/)
+- Issues fechadas desde última sessão: nenhuma nova (UAT adicionou, não fechou)
+- Issues criadas: #216–228 (13 novas — UAT bugs + plano de testes)
+- Milestone novo: "UAT Fixes v3.40.x" (milestone #21)
+- Subagentes acionados: não registrado na sessão DM anterior
+- Versão bumped: v3.39.8 → v3.40.0 (PR #215 ENH-006 cockpit density)
+
+---
 
 ---
 
@@ -2745,3 +2843,100 @@ A partir desta sessão (registrada como feedback memory `feedback_passo_a_passo_
 **Decisão PO:** C4 fechada como no-op; os 3 pontos inline viram **ENH-008** catalogada no PM Agent como backlog P3 (DM só quando entrar num milestone).
 
 **Próximo:** C3 — regenerar plano de testes v3.39.8 + UAT.
+## Sessão 2026-04-26 — PO Assistant (Cowork)
+
+- **Versão na sessão:** v3.39.8 (sem bump nesta sessão)
+- **Milestone primário:** UAT Fixes v3.40.x — 11 issues abertas (#218 a #228)
+- **Estado de saúde:** 🟢 VERDE — privacy rewrite concluído, 11 bugs no backlog organizados, 844 testes passando
+
+### Decisões da sessão
+
+1. **UAT v3.39.8 executado** pelo PO: 36 TCs, **9 FAILs** + **2 observações** Luigi em fluxo-caixa = **11 bugs** consolidados
+2. **Numeração:** BUG-033 a BUG-043 (anterior em `docs/BUGS.md` era BUG-032)
+3. **Estratégia 3 releases:** v3.40.0 (P0 pipeline) → v3.40.1 (P1 UX/governança) → v3.40.2 (P2 polish)
+4. **Workaround de label:** todas as 11 issues levaram `prioridade: alta` na CLI (encoding bug com `prioridade: média` no PS Windows). Prioridade real está no body de cada issue
+5. **Renumeração retroativa:** os 2 bugs antigos de fluxo-caixa (handoff de 2026-04-23 referenciando BUG-033/034 #216/#217) foram **renumerados** para **BUG-036 (#221)** e **BUG-037 (#222)** na consolidação
+
+### EMERGÊNCIA DE PRIVACIDADE — resolvida
+
+PDF anexado pelo PO em sessão anterior (BTG Pactual extrato) contém CPF, conta bancária e nome completo reais. Investigação revelou que **dois arquivos do repositório público** continham os mesmos dados sensíveis há ~4 semanas:
+
+- `tests/utils/normalizadorTransacoes.test.js` — CPF, conta, agência, nome completo
+- `tests/utils/detectorTransferenciaInterna.test.js` — nome completo
+- 5 arquivos `docs/*.md` — nome completo "Luigi Filippozzi"
+
+**Camada 1 — Sanitizar HEAD:** 3 commits (depois absorvidos pelo rewrite):
+- `69a838a` (camada 1) — CPF/conta/agência/nome em testes + Luigi Filippozzi → Luigi (PO) em 5 docs
+- `64d3972` (camada 1.5) — Luigi residual em 8 testes adicionais + ajuste fixture detectorTransferenciaInterna
+- `8f9bc2d` (camada 1.8) — `user-luigi` UID em 3 testes de integração
+
+**Camada 2 — Rewrite history:**
+- `git filter-repo` reescreveu **437 commits** com `--replace-text` (CPF, conta, nomes, user-luigi) + `--mailmap` (email → noreply)
+- Email autor migrado de `luigi.filippozzi@gmail.com` para **`240235469+luigifilippozzi-cmyk@users.noreply.github.com`** (formato oficial GitHub para autores privados)
+- 5 branches `claude/*` deletadas (uma com fix XSS já em main por outra rota — `claude/hardcore-lamarr`)
+- **Force push** em `main`: SHA `8f9bc2d...c4f1869`
+- **Code search GitHub:** 4 strings sensíveis testadas → **0 resultados** em todas
+- `git config user.email` global e local migrado para noreply (commits futuros usam noreply automaticamente)
+
+### Bugs registrados (BUG-033 a BUG-043 — 11 total)
+
+| BUG | Issue | Prioridade | Release |
+|---|---|---|---|
+| BUG-033 | #218 | P0 | v3.40.0 |
+| BUG-034 | #219 | P0 | v3.40.0 |
+| BUG-035 | #220 | P1 | v3.40.1 |
+| BUG-036 | #221 | P1 | v3.40.1 |
+| BUG-037 | #222 | P1 | v3.40.1 |
+| BUG-038 | #223 | P1 | v3.40.1 |
+| BUG-039 | #224 | P1 | v3.40.1 |
+| BUG-040 | #225 | P1 | v3.40.1 |
+| BUG-041 | #226 | P1 (processo, gatekeeper de v3.40.1) | v3.40.1 |
+| BUG-042 | #227 | P2 | v3.40.2 |
+| BUG-043 | #228 | P2 | v3.40.2 |
+
+**Issues sem milestone antes desta sessão:** mantém. Esta sessão criou novo milestone "UAT Fixes v3.40.x" (#21).
+
+### Artefatos gerados nesta sessão
+
+- `.auto-memory/v3.40.0-bugs-specs.md` — spec consolidado dos 11 bugs (fonte de verdade do DM)
+- `.auto-memory/v3.40.0-issue-map.md` — mapa BUG → Issue → URL
+- `.auto-memory/handoffs/2026-04-26-pm-handoff-uat-v3.40.0.md` — handoff PM standalone
+- `.auto-memory/handoffs/2026-04-26-dm-handoff-uat-v3.40.0.md` — handoff DM standalone
+- `.auto-memory/handoffs/2026-04-26-memory-block-uat-v3.40.0.md` — este bloco (já em `project_mf_status.md`)
+- `.auto-memory/scripts/camada1-sanitize-head.ps1` (e fixups v1, v2)
+- `.auto-memory/scripts/camada1-sanitize-head-fixup-v2.ps1`
+- `.auto-memory/scripts/camada2-finalizar.ps1`
+- `.auto-memory/scripts/etapa-b-criar-issues.ps1`
+- `.auto-memory/scripts/etapa-b-fixup-042-043.ps1`
+
+### Backups preservados
+
+- `C:\Dev\minhas-financas-BACKUP-20260424-095707.git` — pré-Camada 1 (8 MB) — **ainda contém PII**
+- `C:\Dev\minhas-financas-BACKUP-PRE-REWRITE-20260424-230546.git` — pós-Camada 1, pré-rewrite (8 MB) — **ainda contém PII em commits antigos**
+
+> ⚠️ Esses backups preservam o estado para rollback em caso de descoberta de problema. Recomendado deletar em **24-48h** após validação completa de que tudo funcionou. Comando: `Remove-Item <path> -Recurse -Force`
+
+### Decisões pendentes para próxima sessão
+
+1. **Backup deletion** — após 24-48h, deletar backups com PII (decisão "go/no-go" do PO)
+2. **GitHub Support request** — opcional; pedir invalidação de caches GitHub (search index, fork PRs cached). Útil mas não bloqueante. Template não gerado nesta sessão
+3. **PDF de fatura cartão** — PO precisa anexar para BUG-034 reproduzir; pode ser em `.auto-memory/evidence/` (gitignored) ou caminho fora do repo
+
+### Lições aprendidas (memória técnica)
+
+- **PowerShell 5.1 lê `.ps1` como ANSI por default** — caracteres UTF-8 multi-byte (é, ê, —) viram bytes mangled. Solução: scripts em ASCII puro + `[char]0xNNNN` para acentos em runtime
+- **Confusão é vs ê em português:** "Agência" usa `ê` (U+00EA), não `é` (U+00E9). Errei na 1ª tentativa
+- **`return` em sessão PS interativa top-level é no-op** — script pasted block-by-block não para. Solução: `& { ... }` script block ou `function Foo { } ; Foo`
+- **`gh issue create --label` com nome contendo acento falha no Windows** — args passados via `CreateProcess` em ANSI mangle UTF-8. Solução: label ASCII-only ou via `gh api` com JSON UTF-8
+- **`gh ... --template '{{...}}{{"\n"}}{{end}}'` quebra no PS** — escape do `\n` problemático. Solução: `--json` direto + `ConvertFrom-Json` + `Format-Table`
+- **`git config --local` sobrescreve `--global`** — sempre setar ambos quando migrar email autor
+- **`git filter-repo` remove origin remote** — re-adicionar antes do push
+- **`git filter-repo` remove commits que viram vazios** — esperado (commit "user-luigi → user-teste" virou vazio porque rewrite já fez essa substituição em todos)
+
+### Próxima prioridade sugerida
+
+**DM iniciar v3.40.0** com BUG-033 (#218) e BUG-034 (#219) em paralelo, com `import-pipeline-reviewer` obrigatório. Bloqueio em BUG-034: aguarda PDF de fatura cartão do PO.
+
+Após v3.40.0 mergeado, v3.40.1 começa com **BUG-041 (#226)** como gatekeeper antes dos demais P1.
+
+---

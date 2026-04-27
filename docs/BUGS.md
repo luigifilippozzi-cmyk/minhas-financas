@@ -40,7 +40,7 @@ desc = desc.replace(/^\d{2}:\d{2}(?::\d{2})?\s+/, '').trim();
 ```
 
 **Testes:** +7 TCs de regressão (`pdfParser.test.js` ×5 + `pipelineBanco.test.js` ×2). 844 → 851 testes passando.
-**PR:** a criar
+**PR:** [#230](https://github.com/luigifilippozzi-cmyk/minhas-financas/pull/230)
 
 ---
 

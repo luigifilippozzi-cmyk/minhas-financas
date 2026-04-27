@@ -7,6 +7,26 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.40.2] - 2026-04-27
+
+### Corrigido
+
+- **BUG-043 — Empty state em despesas sem mês/ano (#PR 231):** empty state agora inclui o ano e um botão CTA "Adicionar despesa" com `{ once: true }` para evitar listener duplicado em re-renders.
+  - `src/js/pages/despesas.js`: `renderizarLista()` usa `emptyStateHTML` com CTA inline.
+- **BUG-038 — Validação silenciosa no modal de saldo e cartão (#PR 232):** submissão de formulário inválido não mostrava mensagem de erro; modal não fechava com Esc.
+  - `src/js/pages/contas.js`: `salvarSaldo()` exibe `#saldo-modal-erro` com mensagem específica antes de retornar; `salvarCartao()` valida nome obrigatório; `abrirModalSaldo/Cartao()` limpa erros ao abrir; tecla Esc fecha os dois modais.
+- **BUG-039 — Validação silenciosa nos modais de Investimento e Passivo (#PR 233):** mesmos padrões de BUG-038 para Patrimônio.
+  - `src/js/pages/patrimonio.js`: validação de `nome` e `valorAplicado` em investimentos; validação de `credor` e `valorOriginal` em passivos; Esc fecha os 3 modais (usa `style.display !== 'none'` pois patrimônio usa `style.display` em vez de `classList`).
+- **BUG-037 — Grupos `<details>` da navbar não fecham ao clicar fora ou pressionar Esc (#PR 234):** accordion exclusivo também implementado.
+  - `src/js/nav.js`: helper `fecharGrupos`; listener click-outside em capture mode fecha `<details>` abertos; listener keydown Esc; accordion exclusivo via evento `toggle`.
+- **BUG-036 — Fluxo de caixa não exibe dados de meses históricos e projeções (#PR 235):** três bugs simultâneos.
+  - `src/js/pages/fluxo-caixa.js`: `getMonth()` → `getUTCMonth()` evita deslocamento de mês em datas UTC midnight; `projecao_paga` excluído de `despMes` (anti double-count com a `despesa` real correspondente); `projMes` acumula projeções pendentes; `temDados` considera `d.proj > 0`; coluna Despesas exibe `desp + proj`; `getSituacao` recebe `desp + proj` (consistente com o gráfico).
+- **BUG-035 — Aba Liquidação da Fatura sempre mostra "Fatura em aberto" (#PR 236):** `pagamento_fatura` tem `contaId = conta bancária` (não do cartão), sendo filtrado fora de `_despesas` por `_merge()`.
+  - `src/js/services/database.js`: nova função `buscarPagamentosFaturaCartao(grupoId, contaCartaoId)` usa o índice composto `(grupoId, tipo, data)` existente, filtra client-side por `contaCartaoId`.
+  - `src/js/pages/fatura.js`: `renderizarLiquidacao()` convertida para async, usa query dedicada em vez de `_despesas`; janela temporal ±2 meses.
+- **BUG-042 — Flash de lista vazia ao trocar mês/cartão na Fatura (#PR 237):** `_merge()` era chamado pelo primeiro listener a responder com sets vazios, chamando `renderizarTudo()` prematuramente.
+  - `src/js/pages/fatura.js`: gate `_calendarReady / _mesFaturaReady` — `_merge()` aguarda os dois listeners; skeleton estendido para `fat-tbody-conjuntas` (3×7 colunas).
+
 ## [3.40.1] - 2026-04-27
 
 ### Corrigido
