@@ -148,14 +148,21 @@ function recarregarDespesas() {
   }
   mostrarEmpty(false);
   const mesFaturaStr = String(_ano) + '-' + String(_mes).padStart(2, '0');
-  let _calendarSet   = [];
-  let _mesFaturaSet  = [];
+  let _calendarSet    = [];
+  let _mesFaturaSet   = [];
+  // BUG-042: gate — aguarda os dois listeners antes de renderizar para evitar
+  // flash de lista vazia → lista cheia quando um listener chega antes do outro.
+  let _calendarReady  = false;
+  let _mesFaturaReady = false;
 
-  // Skeleton enquanto dados carregam
-  const tbody = document.getElementById('fat-tbody-todas');
-  if (tbody) tbody.innerHTML = skeletonTableRows(6, 8);
+  // Skeleton em todas as tabelas visíveis enquanto os dados carregam
+  const tbodyTodas     = document.getElementById('fat-tbody-todas');
+  const tbodyConjuntas = document.getElementById('fat-tbody-conjuntas');
+  if (tbodyTodas)     tbodyTodas.innerHTML     = skeletonTableRows(6, 8);
+  if (tbodyConjuntas) tbodyConjuntas.innerHTML = skeletonTableRows(3, 7);
 
   function _merge() {
+    if (!_calendarReady || !_mesFaturaReady) return;
     const seen = new Set();
     _despesas = [..._calendarSet, ..._mesFaturaSet].filter(d => {
       if (d.tipo === 'projecao' || d.tipo === 'projecao_paga') return false;  // BUG-023
@@ -170,12 +177,14 @@ function recarregarDespesas() {
 
   try {
     _unsubDesp = ouvirDespesas(_grupoId, _mes, _ano, (todas) => {
-      _calendarSet = todas;
+      _calendarSet   = todas;
+      _calendarReady = true;
       _merge();
     });
 
     _unsubDespMesFatura = ouvirDespesasPorMesFatura(_grupoId, mesFaturaStr, (todas) => {
-      _mesFaturaSet = todas;
+      _mesFaturaSet   = todas;
+      _mesFaturaReady = true;
       _merge();
     });
   } catch (err) {
