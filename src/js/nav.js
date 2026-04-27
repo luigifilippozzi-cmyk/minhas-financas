@@ -13,13 +13,34 @@
     hamburger.setAttribute('aria-expanded', String(!open));
   });
 
+  const fecharGrupos = () => navEl.querySelectorAll('details[open]').forEach(d => d.removeAttribute('open'));
+
   // Fechar ao clicar fora da navbar
   document.addEventListener('click', (e) => {
     if (!hamburger.contains(e.target) && !navEl.contains(e.target)) {
       navEl.removeAttribute('data-open');
       hamburger.setAttribute('aria-expanded', 'false');
+      fecharGrupos();
     }
   }, true);
+
+  // Fechar ao pressionar Esc
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    navEl.removeAttribute('data-open');
+    hamburger.setAttribute('aria-expanded', 'false');
+    fecharGrupos();
+  });
+
+  // Accordion exclusivo — fechar outros ao abrir um grupo
+  navEl.querySelectorAll('details').forEach((det) => {
+    det.addEventListener('toggle', () => {
+      if (!det.open) return;
+      navEl.querySelectorAll('details').forEach((other) => {
+        if (other !== det) other.removeAttribute('open');
+      });
+    });
+  });
 
   // Detecção da seção ativa por pathname
   const page = window.location.pathname.split('/').pop().replace('.html', '') || 'dashboard';
