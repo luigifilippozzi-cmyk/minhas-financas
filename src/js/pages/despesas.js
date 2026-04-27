@@ -193,7 +193,14 @@ function renderizarLista() {
   if (!filtradas.length) {
     lista.innerHTML = _despesas.length
       ? emptyStateHTML('', 'Nenhuma despesa para os filtros selecionados.')
-      : emptyStateHTML('', `Sem despesas em ${nomeMes(_mes)}.`, 'Adicione a primeira.');
+      : emptyStateHTML(
+          '',
+          `Sem despesas em ${nomeMes(_mes)}/${_ano}.`,
+          '',
+          '<button class="btn btn-primary btn-sm" id="cta-empty-nova-despesa">Adicionar despesa</button>'
+        );
+    document.getElementById('cta-empty-nova-despesa')
+      ?.addEventListener('click', () => abrirModalDespesa(), { once: true });
     return;
   }
 
