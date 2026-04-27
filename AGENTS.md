@@ -164,7 +164,7 @@ git log --oneline -10               # últimos commits
 
 - [ ] Branch criada a partir de `main` atualizada
 - [ ] Commits em formato Conventional Commits
-- [ ] `npm test` passando (665+ testes)
+- [ ] `npm test` passando (851+ testes) — derivar baseline de `npm test`, nunca usar número congelado
 - [ ] Sem credenciais Firebase no diff
 - [ ] Se novo módulo: testes criados
 - [ ] Se alterou pipeline de importação: testar com dados reais de cada banco
@@ -175,6 +175,7 @@ git log --oneline -10               # últimos commits
 - [ ] **Se task de UI:** três estados implementados (conteúdo, vazio, loading)
 - [ ] **Se task de UI:** testado em viewport 375px e 414px
 - [ ] **Se task de UI:** `escHTML()` em todo `innerHTML` com dados do usuário
+- [ ] **🔴 BLOQUEANTE — Regra Inviolável #14:** se PR toca `src/**/*.html`, `src/css/**/*.css` ou templates inline em `src/js/pages/*.js` → relatório do subagente `ux-reviewer` OBRIGATÓRIO anexado na descrição do PR. **DM não abre merge sem este relatório.**
 
 ---
 
