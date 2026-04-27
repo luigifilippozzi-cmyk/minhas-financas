@@ -424,3 +424,62 @@ describe('extrairTransacoesPDF — estrutura do resultado', () => {
     }
   });
 });
+
+// ── BUG-033: BTG Pactual — timestamp HH:MM após data ─────────────────────────
+// O PDF do BTG inclui horário após a data: "30/03/2026 18:43 PIX RECEBIDO 500,00 C"
+// O timestamp não deve integrar a descrição, pois quebraria a chave_dedup vs. CSV.
+
+describe('extrairTransacoesPDF — BUG-033 timestamp pós-data (BTG)', () => {
+  it('strip HH:MM do início da descrição — formato BTG "DD/MM/YYYY HH:MM desc valor"', async () => {
+    vi.stubGlobal('window', { pdfjsLib: criarPdfjs([[
+      item('30/03/2026 18:43 PIX RECEBIDO FULANO SILVA 500,00 C', 10, 100),
+    ]])});
+    const result = await extrairTransacoesPDF(mockFile);
+    expect(result.length).toBe(1);
+    expect(result[0].desc).not.toMatch(/^18:43/);
+    expect(result[0].desc).toContain('PIX RECEBIDO');
+  });
+
+  it('strip HH:MM:SS do início da descrição', async () => {
+    vi.stubGlobal('window', { pdfjsLib: criarPdfjs([[
+      item('30/03/2026 18:43:22 TRANSFERENCIA BANCARIA 1.200,00 D', 10, 100),
+    ]])});
+    const result = await extrairTransacoesPDF(mockFile);
+    expect(result.length).toBe(1);
+    expect(result[0].desc).not.toMatch(/^18:43:22/);
+    expect(result[0].desc).toContain('TRANSFERENCIA');
+  });
+
+  it('descrição sem timestamp permanece inalterada', async () => {
+    vi.stubGlobal('window', { pdfjsLib: criarPdfjs([[
+      item('30/03/2026 PIX RECEBIDO FULANO SILVA 500,00', 10, 100),
+    ]])});
+    const result = await extrairTransacoesPDF(mockFile);
+    expect(result.length).toBe(1);
+    expect(result[0].desc).toContain('PIX RECEBIDO');
+  });
+
+  it('múltiplas transações BTG: todas sem timestamp na descrição', async () => {
+    vi.stubGlobal('window', { pdfjsLib: criarPdfjs([[
+      item('25/03/2026 08:01 DEBITO AUTOMATICO LUZ 200,00 D', 10, 300),
+      item('26/03/2026 10:30 TED ENVIADA JOAO 1.000,00 D',    10, 200),
+      item('27/03/2026 14:15 CREDITO SALARIO 5.000,00 C',     10, 100),
+    ]])});
+    const result = await extrairTransacoesPDF(mockFile);
+    expect(result.length).toBe(3);
+    for (const t of result) {
+      expect(t.desc).not.toMatch(/^\d{2}:\d{2}/);
+    }
+  });
+
+  it('ignora linha de Saldo Diário do extrato BTG', async () => {
+    vi.stubGlobal('window', { pdfjsLib: criarPdfjs([[
+      item('25/03/2026 18:01 PIX RECEBIDO FULANO 500,00 C', 10, 200),
+      item('25/03/2026 Saldo diário 10.500,00 C',           10, 100),
+    ]])});
+    const result = await extrairTransacoesPDF(mockFile);
+    // Saldo Diário deve ser filtrado pelo RE_IGNORAR (\bsaldo\b)
+    expect(result.length).toBe(1);
+    expect(result[0].desc).not.toMatch(/saldo/i);
+  });
+});

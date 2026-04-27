@@ -214,3 +214,44 @@ describe('processarExtratoBancario', () => {
     expect(result.length).toBeGreaterThanOrEqual(0);
   });
 });
+
+// ── BUG-033: consistência chave_dedup PDF vs CSV (mesmo banco) ──
+// Regressão: PDF BTG com timestamp "HH:MM" na linha não deve gerar
+// chave_dedup diferente da gerada pelo CSV para a mesma transação.
+describe('parsearLinhasPDF — BUG-033 chave_dedup consistente com CSV', () => {
+  it('chave_dedup do PDF não inclui timestamp HH:MM na descrição', () => {
+    // Simula o que o pdfParser retorna para linha BTG com timestamp
+    const rawComTimestamp = [{
+      dataStr: '30/03/2026',
+      desc:    'PIX RECEBIDO FULANO SILVA',   // timestamp já removido pelo pdfParser fix
+      valor:   -500,
+      confianca: 'alta',
+    }];
+    const rawSemTimestamp = [{
+      dataStr: '30/03/2026',
+      desc:    'PIX RECEBIDO FULANO SILVA',
+      valor:   -500,
+      confianca: 'alta',
+    }];
+    const [lComTs] = parsearLinhasPDF(rawComTimestamp);
+    const [lSemTs] = parsearLinhasPDF(rawSemTimestamp);
+    expect(lComTs.chave_dedup).toBe(lSemTs.chave_dedup);
+    expect(lComTs.chave_dedup).toContain('pix recebido fulano silva');
+    expect(lComTs.chave_dedup).not.toContain('18:43');
+  });
+
+  it('chave_dedup PDF para mesma transação bate com chave_dedup CSV', () => {
+    // CSV gera chave via parsearLinhasCSVXLSX: data "30/03/2026", estab "PIX RECEBIDO FULANO SILVA"
+    // PDF deve gerar chave idêntica após fix BUG-033
+    const rawPDF = [{ dataStr: '30/03/2026', desc: 'PIX RECEBIDO FULANO SILVA', valor: -500, confianca: 'alta' }];
+    const rowsCSV = [
+      ['Data', 'Historico', 'Valor'],
+      ['30/03/2026', 'PIX RECEBIDO FULANO SILVA', '-500,00'],
+    ];
+    const [lPDF] = parsearLinhasPDF(rawPDF);
+    const [lCSV] = processarExtratoBancario({ rows: rowsCSV, contas: [], categorias: [], mapaHist: {}, origemBanco: 'btg' });
+    expect(lPDF.chave_dedup).not.toBeNull();
+    expect(lCSV.chave_dedup).not.toBeNull();
+    expect(lPDF.chave_dedup).toBe(lCSV.chave_dedup);
+  });
+});
