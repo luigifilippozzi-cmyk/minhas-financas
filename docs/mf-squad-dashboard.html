@@ -461,17 +461,18 @@
 // Dashboard state — PM Agent updates this section, Dev Manager reads it
 const DASHBOARD_DATA = {
   // PM Agent atualiza estes campos:
-  lastUpdate: "2026-04-28 22:50",
+  lastUpdate: "2026-04-28 (Dev Manager — fechamento)",
   version: "v3.41.0",
   health: "yellow", // green | yellow | red
-  healthText: "Amarelo — [VIOLAÇÃO-REGRA-12+14] commit 551f5f1 RF-072 direto em main (src/js/ + src/*.html sem PR nem ux-reviewer) | CI verde | 855 testes OK | 0 PRs abertos",
+  healthText: "Amarelo — [VIOLAÇÃO-REGRA-12+14] commit 551f5f1 RF-072 direto em main (src/js/ + src/*.html sem PR nem ux-reviewer) — aguarda aceite do PO | CI verde | 855 testes OK | 0 PRs abertos",
   testsUnit: "855",
   testsUnitStatus: "855 passando (main) — 37 arquivos",
   testsInt: "26",
-  issuesOpen: 15,
-  issuesSub: "Sem milestone: #229 RF-071 (OCR PDF) + #238 RF-072 (Lucide npm — código já em main, issue aberta) | iOS ON HOLD: 13 (#77–#89)",
+  issuesOpen: 14,
+  issuesSub: "Sem milestone: #229 RF-071 (OCR PDF) | iOS ON HOLD: 13 (#77–#89)",
   // Dev Manager atualiza via PR + merge
   activity: [
+    { time: "Apr 28", color: "var(--blue)", msg: "<strong>Dev Manager (fechamento)</strong> — CLAUDE.md atualizado: v3.41.0 | 855 testes | UAT Fixes 11/11 ✅ | #238 RF-072 fechada ✅ | issuesOpen: 14 (1 RF-071 + 13 iOS ON HOLD) | RF-072 Lucide npm entregue (icons.js + nav.js + grupo.js + 12 html + 4 testes) | [VIOLAÇÃO-REGRA-12+14] commit direto em main — aguarda aceite do PO | Próximo P1: RF-071 (#229) OCR PDF image-only", tag: "dm" },
     { time: "Apr 28", color: "var(--blue)", msg: "<strong>PM Agent 22:50</strong> — 🟡 Amarelo | v3.41.0 | 855 testes OK | CI verde (5/5 success) | 0 PRs abertos | 0 branches ativas | 15 issues: #229 RF-071 + #238 RF-072 + 13 iOS ON HOLD | <strong>[VIOLAÇÃO-REGRA-12]</strong> commit 551f5f1 feat(deps): RF-072 v3.41.0 — direto em main tocando src/js/utils/icons.js + src/js/nav.js + src/js/pages/grupo.js + 12 src/*.html sem feature branch + PR | <strong>[VIOLAÇÃO-REGRA-14]</strong> mesmo commit — src/*.html + src/js/ sem relatório ux-reviewer | <strong>[INCONSISTÊNCIA]</strong> #238 RF-072 — código em main mas issue ainda aberta (\"Closes #238\" não ativou auto-close em push direto) | <strong>UAT Fixes v3.40.x: 11/11 COMPLETO ✅</strong> — BUG-040 #225 fechado | Próximas prioridades: (1) PO aceitar violações Regra #12+14 do commit RF-072 e fechar #238, (2) RF-071 (#229 OCR PDF) next enhancement", tag: "pm" },
     { time: "Apr 28", color: "var(--orange)", msg: "<strong>[VIOLAÇÃO-REGRA-12+14]</strong> commit 551f5f1 feat(deps): RF-072 — Lucide via npm (v3.41.0) — feito DIRETO em main sem feature branch + PR | Toca: src/js/utils/icons.js (novo, 98L) + src/js/nav.js + src/js/pages/grupo.js + src/login.html + 12 src/*.html + tests/utils/icons.test.js + package.json + CHANGELOG | Regra #12: src/js/ exige branch+PR | Regra #14: src/*.html + src/js/ exige relatório ux-reviewer | 855 testes OK | BUG-040 resolvido por arquitetura (bundle 5 kB vs CDN 104 kB) | issue #238 ainda aberta", tag: "ci" },
     { time: "Apr 28", color: "var(--green)", msg: "<strong>UAT Fixes v3.40.x 11/11 CONCLUÍDO ✅</strong> — BUG-040 #225 fechado (Lucide icons via RF-072 npm migration, v3.41.0) | BUG-041 #226 fechado (processo Regra #14 enforcement) | Milestone completo: BUG-033 a BUG-043 (PRs #230–#237 + commit 551f5f1)", tag: "merge" },

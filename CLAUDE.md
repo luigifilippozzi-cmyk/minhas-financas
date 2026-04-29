@@ -8,7 +8,7 @@
 
 - **Usuários:** Luigi + Ana (casal)
 - **Dev:** Luigi (solo developer)
-- **Versão atual:** v3.40.2
+- **Versão atual:** v3.41.0
 - **Repo:** https://github.com/luigifilippozzi-cmyk/minhas-financas
 - **Stack:** HTML5 · CSS3 · JS ES6+ · **Vite 5** (bundler MPA) · **Capacitor 8** (iOS) · Firebase Auth · Cloud Firestore (via npm) · Chart.js v4 · SheetJS (XLSX)
 
@@ -20,7 +20,7 @@
 npm run dev                 # Vite dev server (HMR, hot reload)
 npm run build               # Vite build → dist/ (produção)
 npm run preview             # Preview do build de produção
-npm test                    # Vitest — roda suite de 844 testes unitários
+npm test                    # Vitest — roda suite de 855 testes unitários
 npm run test:watch          # Vitest em modo watch
 npm run test:coverage       # Coverage com V8
 npm run test:integration    # Testes de integração (requer Firebase Emulator)
@@ -195,7 +195,7 @@ Todas as cores, sombras e fontes estão em `variables.css` como CSS custom prope
 
 ---
 
-## Estado Atual do Projeto (2026-04-27) — v3.40.2
+## Estado Atual do Projeto (2026-04-28) — v3.41.0
 
 ### Milestones
 | Milestone | Progresso | Status |
@@ -210,8 +210,8 @@ Todas as cores, sombras e fontes estão em `variables.css` como CSS custom prope
 | iOS App Fases 3–5 (UX mobile + TestFlight + Push) | 0/9 issues | ⚪ Aguardando Fase 2 |
 | UX & Gestão Patrimonial | 15/15 (100%) | ✅ Concluído (v3.38.0) |
 | NRF-UX — Experiência do Controller (#19) | 8/8 (100%) | ✅ Concluído (v3.39.7) |
-| Tech Debt — Cobertura de testes | Completo | ✅ Concluído (v3.39.8 — 844 testes) |
-| UAT Fixes v3.40.x | 7/7 P1+P2 entregues | ✅ Concluído (v3.40.2 — PRs #231–#237) |
+| Tech Debt — Cobertura de testes | Completo | ✅ Concluído (v3.39.8 — 855 testes) |
+| UAT Fixes v3.40.x | 11/11 COMPLETO | ✅ Concluído (v3.41.0 — PRs #231–#237 + commit RF-072) |
 | Higiene Estratégica (Proposta C) | Em execução | 🟡 Ativo (C1-C6 + V1-V3) |
 
 ### Estrutura de Desenvolvimento (Squad IA)
@@ -219,7 +219,7 @@ Todas as cores, sombras e fontes estão em `variables.css` como CSS custom prope
 Luigi (Product Owner)
   ├── PM Agent          → Relatório diário, métricas, alertas (read-only)
   └── Dev Manager       → Executor de código, orquestrador de subagentes
-        ├── test-runner              → Vitest (851 testes) + coverage
+        ├── test-runner              → Vitest (855 testes) + coverage
         ├── security-reviewer        → Firestore rules, escHTML/XSS, auth
         └── import-pipeline-reviewer → Pipeline de importação (parser, dedup, ajuste)
 ```
@@ -229,15 +229,15 @@ Detalhes completos em `AGENTS.md`. Bússola estratégica em `docs/BUSSOLA_PRODUT
 1. ~~**NRF-NAV Fase 1-3** — Reestruturação navegação~~ ✅ Concluído (v3.33.0–v3.38.0)
 2. ~~**NRF-UX F1-F8** — Experiência do Controller (milestone #19)~~ ✅ Concluído (v3.39.0–v3.39.7)
 3. ~~**Tech Debt** — testes de controllers~~ ✅ Concluído (v3.39.8, +88 testes)
-4. ~~**UAT Fixes v3.40.x**~~ ✅ Concluído (v3.40.2 — 7 bugs: BUG-033/035/036/037/038/039/042/043)
+4. ~~**UAT Fixes v3.40.x**~~ ✅ Concluído (v3.41.0 — 11 bugs: BUG-033–BUG-043 + RF-072)
 5. 🟡 **Proposta C — Higiene Estratégica (ativa)** — sincronizar docs, refatorar BUSSOLA
 6. ⚪ Próximo milestone estratégico — a definir pelo PO após C. Candidatos: Decisão Assistida (RF-071/072/073), Mobile-first (iOS F2 se Apple Dev ativar), ou melhorias visuais V1+V2+V3
 7. ⏸️ **iOS App Fase 2** — Firebase nativo — issues #77–#80 — **ON HOLD** até Apple Developer Program ativado
 
-**Milestone UAT Fixes v3.40.x:** 100% concluído ✅ (v3.40.2 — 2026-04-27 — 7 bugs, 7 PRs)
+**Milestone UAT Fixes v3.40.x:** 100% concluído ✅ (v3.41.0 — 2026-04-28 — 11 bugs, 7 PRs + commit RF-072)
 **Milestone NRF-UX — Experiência do Controller:** 100% concluído ✅ (v3.39.7 — 2026-04-22)
-**Testes:** 851 unitários + 26 integração — todos passando
-**Saúde do repo:** 🟢 VERDE — CI verde | 0 PRs abertos | 0 violações invioláveis | 13 issues iOS ON HOLD
+**Testes:** 855 unitários + 26 integração — todos passando
+**Saúde do repo:** 🟡 AMARELO — [VIOLAÇÃO-REGRA-12+14] commit RF-072 direto em main (src/js/+html) sem PR + ux-reviewer | CI verde | 0 PRs abertos | 15 issues (2 sem milestone + 13 iOS ON HOLD)
 
 **QA concluído:** issue #129 (RF-062) **fechada** em 2026-04-17 — 30 PASS / 3 N/A / 0 FAIL / 0 regressões em 33 TCs cobertos.
 
