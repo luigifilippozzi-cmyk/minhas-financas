@@ -6,6 +6,8 @@
 import { onAuthChange } from '../services/auth.js';
 import { buscarPerfil } from '../services/database.js';
 import { criarNovoGrupo, entrarNoGrupo } from '../services/grupos.js';
+import { initIcons } from '../utils/icons.js';
+initIcons();
 
 // ── Guarda de autenticação ────────────────────────────────────
 // Se o usuário não está logado, manda para o login.

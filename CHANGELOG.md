@@ -7,6 +7,19 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ## [Unreleased]
 
+## [3.41.0] - 2026-04-28
+
+### Adicionado
+
+- **RF-072 — Lucide via npm com tree-shaking (#PR 239):** migração do CDN `unpkg.com/lucide@0.460.0` para pacote npm com imports nomeados e tree-shaking via Vite. Elimina race condition de boot e reduz dependência de CDN externo.
+  - `src/js/utils/icons.js`: novo helper centralizado — importa os 40 ícones usados no app e expõe `initIcons()` via `createIcons({ icons })`.
+  - `src/js/nav.js`: chama `initIcons()` no boot (cobre 11 páginas com navbar).
+  - `src/js/pages/grupo.js`: chama `initIcons()` no boot (cobre `grupo.html`).
+  - `src/login.html`: inline module script substitui inline script CDN (cobre `login.html`).
+  - 12 demais `src/*.html`: removidos `<script src="unpkg.com/lucide...">` e `<script>lucide.createIcons()</script>`.
+  - **Bundle:** icons.js de 21 kB (5 kB gzip) substitui CDN externo de 104 kB. Resolve **BUG-040** por arquitetura.
+  - **851 → 855 testes unitários** (+4 testes para `icons.js`).
+
 ## [3.40.2] - 2026-04-27
 
 ### Corrigido
