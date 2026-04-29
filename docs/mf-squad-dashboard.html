@@ -461,17 +461,20 @@
 // Dashboard state — PM Agent updates this section, Dev Manager reads it
 const DASHBOARD_DATA = {
   // PM Agent atualiza estes campos:
-  lastUpdate: "2026-04-27 (Dev Manager)",
-  version: "v3.40.2",
-  health: "green", // green | yellow | red
-  healthText: "Verde — UAT Fixes v3.40.x 7/11 entregues ✅ | CI verde | 851 testes OK | 0 PRs abertos | BUG-040/041/RF-071 deferred v3.41.0",
-  testsUnit: "851",
-  testsUnitStatus: "851 passando (main)",
+  lastUpdate: "2026-04-28 22:50",
+  version: "v3.41.0",
+  health: "yellow", // green | yellow | red
+  healthText: "Amarelo — [VIOLAÇÃO-REGRA-12+14] commit 551f5f1 RF-072 direto em main (src/js/ + src/*.html sem PR nem ux-reviewer) | CI verde | 855 testes OK | 0 PRs abertos",
+  testsUnit: "855",
+  testsUnitStatus: "855 passando (main) — 37 arquivos",
   testsInt: "26",
-  issuesOpen: 18,
-  issuesSub: "UAT Fixes v3.40.x: 3 deferred (#225 BUG-040, #226 BUG-041, #229 RF-071) | iOS ON HOLD: 13 (#77–#89) | +2 sem milestone (#216,#217)",
+  issuesOpen: 15,
+  issuesSub: "Sem milestone: #229 RF-071 (OCR PDF) + #238 RF-072 (Lucide npm — código já em main, issue aberta) | iOS ON HOLD: 13 (#77–#89)",
   // Dev Manager atualiza via PR + merge
   activity: [
+    { time: "Apr 28", color: "var(--blue)", msg: "<strong>PM Agent 22:50</strong> — 🟡 Amarelo | v3.41.0 | 855 testes OK | CI verde (5/5 success) | 0 PRs abertos | 0 branches ativas | 15 issues: #229 RF-071 + #238 RF-072 + 13 iOS ON HOLD | <strong>[VIOLAÇÃO-REGRA-12]</strong> commit 551f5f1 feat(deps): RF-072 v3.41.0 — direto em main tocando src/js/utils/icons.js + src/js/nav.js + src/js/pages/grupo.js + 12 src/*.html sem feature branch + PR | <strong>[VIOLAÇÃO-REGRA-14]</strong> mesmo commit — src/*.html + src/js/ sem relatório ux-reviewer | <strong>[INCONSISTÊNCIA]</strong> #238 RF-072 — código em main mas issue ainda aberta (\"Closes #238\" não ativou auto-close em push direto) | <strong>UAT Fixes v3.40.x: 11/11 COMPLETO ✅</strong> — BUG-040 #225 fechado | Próximas prioridades: (1) PO aceitar violações Regra #12+14 do commit RF-072 e fechar #238, (2) RF-071 (#229 OCR PDF) next enhancement", tag: "pm" },
+    { time: "Apr 28", color: "var(--orange)", msg: "<strong>[VIOLAÇÃO-REGRA-12+14]</strong> commit 551f5f1 feat(deps): RF-072 — Lucide via npm (v3.41.0) — feito DIRETO em main sem feature branch + PR | Toca: src/js/utils/icons.js (novo, 98L) + src/js/nav.js + src/js/pages/grupo.js + src/login.html + 12 src/*.html + tests/utils/icons.test.js + package.json + CHANGELOG | Regra #12: src/js/ exige branch+PR | Regra #14: src/*.html + src/js/ exige relatório ux-reviewer | 855 testes OK | BUG-040 resolvido por arquitetura (bundle 5 kB vs CDN 104 kB) | issue #238 ainda aberta", tag: "ci" },
+    { time: "Apr 28", color: "var(--green)", msg: "<strong>UAT Fixes v3.40.x 11/11 CONCLUÍDO ✅</strong> — BUG-040 #225 fechado (Lucide icons via RF-072 npm migration, v3.41.0) | BUG-041 #226 fechado (processo Regra #14 enforcement) | Milestone completo: BUG-033 a BUG-043 (PRs #230–#237 + commit 551f5f1)", tag: "merge" },
     { time: "Apr 27", color: "var(--blue)", msg: "<strong>Dev Manager</strong> — 🟢 Verde | v3.40.2 | 851 testes OK | CI verde | <strong>UAT Fixes v3.40.x: 7 bugs entregues</strong> — BUG-043 #231 (empty state despesas) | BUG-038 #232 (validação modais Contas) | BUG-039 #233 (validação modais Patrimônio) | BUG-037 #234 (nav accordion + Esc) | BUG-036 #235 (fluxo-caixa histórico+projeções) | BUG-035 #236 (fatura liquidação query dedicada) | BUG-042 #237 (skeleton fatura loading gate) | Deferred: BUG-040 (Lucide npm migration), BUG-041 (processo), RF-071 (OCR) → v3.41.0 | 5× ux-reviewer APPROVED | 1× import-pipeline-reviewer APPROVED", tag: "dm" },
     { time: "Apr 27", color: "var(--green)", msg: "<strong>PR #237 mergeado</strong> — fix(fatura): skeleton ao trocar mês/cartão — gate duplo listener (BUG-042 #227) | loading gate _calendarReady/_mesFaturaReady | fat-tbody-conjuntas skeleton 3×7 | 851 testes OK ✅", tag: "merge" },
     { time: "Apr 27", color: "var(--green)", msg: "<strong>PR #236 mergeado</strong> — fix(fatura): buscar pagamentos de fatura via query dedicada (BUG-035 #220) | buscarPagamentosFaturaCartao() usa índice (grupoId,tipo,data) existente | renderizarLiquidacao() async + janela ±2 meses | 851 testes OK ✅", tag: "merge" },

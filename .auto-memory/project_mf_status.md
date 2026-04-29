@@ -1,8 +1,48 @@
 ﻿# Minhas Finanças — Estado do Projeto (Auto-Memory)
 
-> Atualizado em: 2026-04-27 (Dev Manager — sessão autônoma)
-> Versão: v3.40.2 | Testes: 851 unit + 26 int | Saúde: VERDE
-> CI: verde | PRs: 0 | Issues: 18 | UAT Fixes v3.40.x: 7/11 entregues ✅
+> Atualizado em: 2026-04-28 22:50 (PM Agent — sessão autônoma)
+> Versão: v3.41.0 | Testes: 855 unit + 26 int | Saúde: AMARELO
+> CI: verde | PRs: 0 | Issues: 15 | UAT Fixes v3.40.x: 11/11 COMPLETO ✅
+
+---
+
+## PM Agent — 2026-04-28 22:50
+
+### Estado
+- Versão: v3.41.0 (verificado ao vivo — package.json)
+- Milestone UAT Fixes v3.40.x: 11/11 (100%) ✅ CONCLUÍDO — todas issues #218–#228 + #225 fechadas
+- Milestone UX & Gestão Patrimonial: 15/15 (100%) ✅ CONCLUÍDO
+- Milestone NRF-UX — Experiência do Controller: 8/8 (100%) ✅ CONCLUÍDO
+- Milestone iOS: ON HOLD (4/17, 23.5%) — aguarda Apple Dev Program
+- Saúde: **AMARELO** — [VIOLAÇÃO-REGRA-12+14] commit RF-072 direto em main
+- Testes: 855 unit (37 arquivos) + 26 int — todos passando ✅
+- CI: 5/5 success (Deploy Firebase + Testes unitários) ✅
+- PRs abertos: 0 | Branches ativas: 0
+
+### Issues abertas (15 total)
+- **Sem milestone (2 issues):**
+  - #229 RF-071 — Suporte OCR em PDFs de fatura cartão image-only (prioridade: alta)
+  - #238 RF-072 — Lucide via npm com tree-shaking — código em main (551f5f1) mas issue aberta (auto-close não disparou em push direto) → DM deve fechar manualmente
+- **iOS ON HOLD: #77–#89 (13 issues) — não priorizar**
+
+### Alertas ativos
+- **[VIOLAÇÃO-REGRA-12]** commit `551f5f1` feat(deps): RF-072 v3.41.0 — direto em main sem feature branch + PR; toca src/js/utils/icons.js (novo), src/js/nav.js, src/js/pages/grupo.js, src/login.html + 12 src/*.html + tests/ + package.json. PO deve aceitar conscientemente.
+- **[VIOLAÇÃO-REGRA-14]** mesmo commit — src/*.html + src/js/ sem relatório ux-reviewer anexado. PO deve aceitar ou solicitar revisão retroativa.
+- **[INCONSISTÊNCIA]** issue #238 RF-072 — estado OPEN no GitHub, código já em main. DM deve fechar com `gh issue close 238 --reason completed`.
+- **[iOS-ON-HOLD]** #77–#89 pausadas — aguarda Apple Developer Program
+
+### Prioridades para Dev Manager
+- P0: Fechar issue #238 (`gh issue close 238 --reason completed`) — [INCONSISTÊNCIA]
+- P1: Obter aceite do PO para violações Regra #12 e #14 do commit RF-072
+- P2: RF-071 (#229) — OCR em PDFs de fatura image-only (prioridade: alta, no milestone)
+- P3: iOS Fase 2 (#77–#80) — ON HOLD
+
+### Atividade recente
+- Última sessão Dev Manager: 2026-04-28 (commit direto RF-072 v3.41.0 — 855 testes)
+- Último PR mergeado: #237 fix(fatura): BUG-042 skeleton (2026-04-27)
+- Commits diretos em src/ sem PR: **SIM** — `551f5f1` feat(deps): RF-072 v3.41.0 (2026-04-28) → [VIOLAÇÃO-REGRA-12+14]
+- Issues fechadas últimos 7 dias: #218 (BUG-033), #219 (BUG-034), #220 (BUG-035), #221 (BUG-036), #222 (BUG-037), #223 (BUG-038), #224 (BUG-039), #225 (BUG-040), #226 (BUG-041), #227 (BUG-042), #228 (BUG-043) — milestone UAT completo
+- Subagentes acionados na última sessão: não registrado (commit direto — nenhum subagente acionado)
 
 ---
 
@@ -2940,3 +2980,60 @@ PDF anexado pelo PO em sessão anterior (BTG Pactual extrato) contém CPF, conta
 Após v3.40.0 mergeado, v3.40.1 começa com **BUG-041 (#226)** como gatekeeper antes dos demais P1.
 
 ---
+
+---
+
+## Sessao 2026-04-27 — PO Assistant (pos-rotina DM v3.40.2)
+
+- **Versao na sessao:** v3.39.8 -> **v3.40.2** (bump pelo DM em 2026-04-27)
+- **Milestone primario:** UAT Fixes v3.40.x — 7/11 fechadas + 2 absorvidas por RFs + 2 abertas
+- **Estado de saude:** verde - 851 testes passando, CI 7/7, 0 violacoes invioláveis nos PRs
+
+### Decisões da sessão
+
+1. Reconhecimento da entrega DM: 7 PRs (#231-#237) mergeados em 1 dia, alta vazao, todos com ux-reviewer aprovado
+2. **BUG-033 (#218 P0)** - mantido escopo, **release alvo atualizado para v3.40.3** (patch focado, proxima rotina DM)
+3. **BUG-040 (#225 P1)** - **absorvido por RF-072** (Lucide npm migration, v3.42.0). DM identificou causa-raiz arquitetural (race condition CDN)
+4. **BUG-041 (#226 P1)** - **rebaixado para P3 aberto**. Comportamento ja praticado (5 ux-reviewer na rotina); formalizar quando houver janela livre
+
+### RFs criados nesta sessao
+
+- **RF-072** - Lucide npm migration com tree-shaking
+  - Spec: `.auto-memory/handoffs/2026-04-27-rf-072-spec.md`
+  - Estimativa: ~12h
+  - Bump alvo: v3.42.0
+  - Issue criada via script (numero registrado no mapa)
+
+### Plano de releases atualizado
+
+| Release | Conteudo | Status |
+|---|---|---|
+| v3.40.0 | (saltado pelo DM) | -- |
+| v3.40.1 | BUG-035, 036, 037, 038, 039, 043 (6 P1+P2) | merged 2026-04-27 |
+| v3.40.2 | BUG-035 query + BUG-042 skeleton | merged 2026-04-27 |
+| v3.40.3 | BUG-033 (P0 dedup) | aguarda DM |
+| v3.41.0 | RF-071 (OCR) | aguarda DM, depois de v3.40.3 |
+| v3.42.0 | RF-072 (Lucide npm) | aguarda DM, ortogonal ao v3.41.0 |
+
+### Bugs registrados / fechados nesta sessao
+
+- **Fechados via PR:** BUG-035, 036, 037, 038, 039, 042, 043 (7)
+- **Fechados como absorvidos:** BUG-040 (-> RF-072)
+- **Abertos remanescentes:** BUG-033 (P0 v3.40.3), BUG-041 (P3 sem urgencia)
+
+### Artefatos gerados
+
+- `.auto-memory/handoffs/2026-04-27-rf-072-spec.md` - spec RF-072
+- `.auto-memory/scripts/rf-072-criar-fechar-225.ps1` - script criar issue + fechar #225
+- Updates em `v3.40.0-bugs-specs.md` (banners em BUG-033, BUG-040, BUG-041)
+
+### Próxima prioridade sugerida
+
+DM iniciar **v3.40.3** com BUG-033 (#218). PDF de evidencia BTG ja em `.auto-memory/evidence/`. Após v3.40.3 mergeada, escolha entre RF-071 (OCR) e RF-072 (Lucide) - ortogonais, podem paralelizar.
+
+### Lições aprendidas adicionais
+
+- **DM pode pular release planejada por contexto operacional** - foi pragmatico ao saltar v3.40.0 e atacar P1+P2 que tinham contexto/evidencia clara. PO precisa estar pronto para reorganizar plan com base em descobertas
+- **Comportamento cultural pode preceder enforcement formal** - BUG-041 ainda aberto mas Regra #14 ja sendo cumprida na pratica. Vale priorizar enforcement so quando houver drift detectado
+- **Bug pode escalar para RF** quando descoberto que causa-raiz e arquitetural (BUG-034 -> RF-071, BUG-040 -> RF-072). Padrao agora: "se fix nao cabe em 1 PR, considere RF dedicado"
+
