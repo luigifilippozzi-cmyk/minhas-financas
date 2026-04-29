@@ -1,6 +1,6 @@
 {
   "name": "minhas-financas",
-  "version": "3.40.2",
+  "version": "3.41.0",
   "description": "Aplicativo web de gestão financeira familiar com Firebase",
   "main": "src/js/app.js",
   "type": "module",
@@ -32,7 +32,8 @@
     "@capacitor/core": "^8.3.0",
     "@capacitor/ios": "^8.3.0",
     "@capacitor/status-bar": "^8.0.2",
-    "firebase": "^10.14.1"
+    "firebase": "^10.14.1",
+    "lucide": "^0.460.0"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.3.0",

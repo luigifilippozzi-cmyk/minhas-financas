@@ -1,6 +1,9 @@
 // NRF-NAV Fase 1 — Inicialização da navbar 5 seções (#154)
 // Hamburger toggle (mobile) + active section detection por URL
 
+import { initIcons } from './utils/icons.js';
+initIcons();
+
 (function initNav() {
   const hamburger = document.getElementById('nav-hamburger');
   const navEl = document.getElementById('nav-sections');

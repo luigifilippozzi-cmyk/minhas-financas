@@ -1503,3 +1503,43 @@ Novos campos aplicáveis quando `tipo === 'pagamento_fatura'`:
 - **Ordem de detecção** — RF-063 (transferência) deve rodar **antes** de RF-064 (pagamento) no pipeline bancário
 - **NRF-010** — pagamentos de fatura nunca são `isConjunta`
 - **Performance** — cachear fatura líquida em memória durante o import para evitar queries linha a linha
+
+
+---
+
+## RF-072: Iconografia Lucide via npm com tree-shaking
+
+**Versão:** v3.41.0
+**Status:** ✅ Implementado (PR #239, 2026-04-28)
+
+### Contexto
+
+Lucide era carregado via CDN `unpkg.com` em todas as 13 páginas do MPA (~104 KB UMD, não cacheável com o restante do app, sujeito a race condition). BUG-040 identificou que `lucide.createIcons()` falhava silenciosamente em páginas onde o CDN ainda não terminou de carregar quando o JS da página executava.
+
+**Decisão de arquitetura:** migrar para `lucide` npm com tree-shaking via Vite, substituindo o CDN por imports nomeados no módulo `src/js/utils/icons.js`.
+
+### Regras de Negócio
+
+- **RN1 — Sem CDN:** zero referências a `unpkg.com/lucide` ou similares nos `src/*.html`
+- **RN2 — Tree-shaking:** apenas os 40 ícones efetivamente usados no app são bundled (~21 kB, vs 104 kB do CDN)
+- **RN3 — Helper centralizado:** `src/js/utils/icons.js` re-exporta ícones e expõe `initIcons()`
+- **RN4 — Inicialização:** `nav.js` chama `initIcons()` (cobre 11 páginas); `pages/grupo.js` e `login.html` inline module cobrem as 2 restantes
+
+### Arquivos Impactados
+
+- `package.json` — dependency `lucide@0.460.0`
+- `src/js/utils/icons.js` — **NOVO** — helper centralizado
+- `src/js/nav.js` — import + `initIcons()` call
+- `src/js/pages/grupo.js` — import + `initIcons()` call
+- `src/login.html` — inline module script substitui inline script CDN
+- 12 demais `src/*.html` — remoção do CDN `<script>` e do inline `createIcons()` script
+- `tests/utils/icons.test.js` — **NOVO** — 4 testes unitários
+
+### Resultado
+
+| Métrica | Antes | Depois |
+|---|---|---|
+| CDN externo | 104 kB (unpkg.com) | 0 |
+| Bundle icons.js | 0 | 21 kB (5 kB gzip) |
+| Race condition boot | Sim (CDN vs JS) | Não (módulo deferido) |
+| Testes | 851 | 855 (+4 de icons.js) |
